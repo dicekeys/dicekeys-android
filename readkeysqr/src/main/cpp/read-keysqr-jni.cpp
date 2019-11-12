@@ -1,5 +1,3 @@
-#ifdef __ANDROID__
-
 #include <string>
 #include <jni.h>
 #include "./read-keysqr/lib-read-keysqr/graphics/cv.h"
@@ -36,5 +34,3 @@ JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_HelloFromOpenCV
 }
 
 }
-
-#endif

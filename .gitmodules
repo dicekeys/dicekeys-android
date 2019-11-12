@@ -1,3 +1,4 @@
 [submodule "readkeysqr/src/main/cpp/read-keysqr"]
 	path = readkeysqr/src/main/cpp/read-keysqr
 	url = https://github.com/dicekeys/read-keysqr.git
+	branch = trying-to-fix-cmake

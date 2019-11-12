@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public class ReadKeySqr {
     static {
-        System.loadLibrary("lib-read-keysqr");
+        System.loadLibrary("jni-read-keysqr");
     }
 
     public static native String HelloFromOpenCV();
