@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
 
-            ByteBuffer buffer = ByteBuffer.allocate(imageBitmap.getByteCount());
+            ByteBuffer buffer = ByteBuffer.allocateDirect(imageBitmap.getByteCount());
             imageBitmap.copyPixelsToBuffer(buffer);
             String result = ReadKeySqr.ReadKeySqrJson(imageBitmap.getWidth(), imageBitmap.getHeight(), imageBitmap.getRowBytes(), buffer);
             txtMain.setText(result);
