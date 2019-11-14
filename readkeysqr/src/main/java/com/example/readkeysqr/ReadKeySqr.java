@@ -8,5 +8,10 @@ public class ReadKeySqr {
     }
 
     public static native String HelloFromOpenCV();
+    /**
+     * 
+     * 
+     * byteBufferForGrayscaleChannel must be a DirectByteBuffer (not just any old ByteBuffer)
+     */
     public static native String ReadKeySqrJson(int width, int height, int bytesPerRow, ByteBuffer byteBufferForGrayscaleChannel);
 }

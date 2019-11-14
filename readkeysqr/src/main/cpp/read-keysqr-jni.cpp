@@ -6,6 +6,10 @@
 
 extern "C" {
 
+/**
+ * Reads a KeySqr and returns JSON
+ * byteBufferForGrayscaleChannel must be a DirectByteBuffer (not just any old ByteBuffer)
+ */
 JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_ReadKeySqrJson(
      JNIEnv* env,
      jobject obj,
