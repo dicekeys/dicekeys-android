@@ -27,5 +27,5 @@ fun readKeySqrFromImageJson(image: Image): String {
     val grayscalePlane: Image.Plane = image.getPlanes()[0];
     val bytesPerRow = grayscalePlane.getRowStride();
     val grayscalePlaneBuffer: ByteBuffer = grayscalePlane.getBuffer();
-    return readKeySquare(width, height, bytesPerRow, grayscalePlaneBuffer);
+    return readKeySquareJson(width, height, bytesPerRow, grayscalePlaneBuffer);
 }
