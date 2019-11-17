@@ -38,7 +38,4 @@ dependencies {
     implementation project(':readkeysqr')
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
-    // For parsing json
-    implementation 'com.beust:klaxon:5.0.1'
 }
