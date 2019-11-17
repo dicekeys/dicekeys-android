@@ -1,6 +1,6 @@
-package com.example.KeySqr;
-import com.example.FaceSpecification;
+package com.example.KeySqr
 import com.example.FaceSpecification.decodeUndoverlineByte
+import com.beust.klaxon.Klaxon
 
 const val NumberOfFacesInKey = 25;
 
@@ -171,5 +171,9 @@ class FaceRead(
            center
    );
   }
+}
 
+fun keySqrFromJsonFacesRead(json: String): KeySqr<FaceRead>? {
+  val faces = Klaxon().parse<List<FaceRead>>(json)
+  return if (faces == null) null else KeySqr(faces)
 }
