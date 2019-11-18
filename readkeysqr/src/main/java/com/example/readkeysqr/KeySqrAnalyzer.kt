@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import java.nio.ByteBuffer
+import com.example.readkeysqr.KeySqr.keySqrFromJsonFacesRead
 import java.util.concurrent.TimeUnit
 
 public class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer {
@@ -30,6 +31,10 @@ public class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.An
                 bitmap.copyPixelsFromBuffer(bufferOverlay)
                 activity.runOnUiThread({
                     onActionJson(bitmap);
+                // val keySqr = keySqrFromJsonFacesRead(json)
+                // val humanReadableForm: String = keySqr?.toHumanReadableForm(true) ?: "null"
+                //activity.runOnUiThread({
+                //    onActionJson(humanReadableForm)
                 })
                 Log.d("KEYSQR", "**************************************")
             }
