@@ -1,8 +1,9 @@
 package com.example.readkeysqr
 
+import android.util.Log
 import java.nio.ByteBuffer
 
-public object ReadKeySqr {
+class ReadKeySqr {
     init {
         System.loadLibrary("jni-read-keysqr")
     }
@@ -15,11 +16,51 @@ public object ReadKeySqr {
             byteBufferForGrayscaleChannel: ByteBuffer
     ): String
 
-    external fun ProcessImage(
+    private external fun createObject(): Long
+    private external fun processImage(
+            reader: Long,
             width: Int,
             height: Int,
             bytesPerRow: Int,
-            byteBufferForGrayscaleChannel: ByteBuffer,
-            byteBufferForOverlay: ByteBuffer
+            byteBufferForGrayscaleChannel: ByteBuffer
     ): Boolean
+    private external fun renderAugmentationOverlay(
+            reader: Long,
+            width: Int,
+            height: Int,
+            byteBufferForOverlay: ByteBuffer
+    )
+    private external fun deleteObject(
+            reader: Long
+    )
+
+    private var obj: Long = 0
+
+    constructor() {
+        obj = createObject()
+    }
+
+    fun ProcessImage(
+            width: Int,
+            height: Int,
+            bytesPerRow: Int,
+            byteBufferForGrayscaleChannel: ByteBuffer
+    ): Boolean
+    {
+        return  processImage(obj, width, height, bytesPerRow, byteBufferForGrayscaleChannel)
+    }
+
+    fun RenderAugmentationOverlay(
+            width: Int,
+            height: Int,
+            byteBufferForOverlay: ByteBuffer
+    )
+    {
+        renderAugmentationOverlay(obj, width, height, byteBufferForOverlay)
+    }
+
+    fun finalize() {
+        deleteObject(obj)
+        obj = 0
+    }
 }
