@@ -2,6 +2,7 @@ package com.example.readkeysqr
 
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.example.readkeysqr.KeySqr.keySqrFromJsonFacesRead
 import java.util.concurrent.TimeUnit
 
 public class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer {
@@ -16,8 +17,10 @@ public class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.An
             val json = ReadKeySqr.ReadKeySqrJson(image.width, image.height, image.planes[0].rowStride, buffer);
             if(json != "null")
             {
+                val keySqr = keySqrFromJsonFacesRead(json)
+                val humanReadableForm: String = keySqr?.toHumanReadableForm(true) ?: "null"
                 activity.runOnUiThread({
-                    onActionJson(json)
+                    onActionJson(humanReadableForm)
                 })
             }
             lastAnalyzedTimestamp = currentTimestamp

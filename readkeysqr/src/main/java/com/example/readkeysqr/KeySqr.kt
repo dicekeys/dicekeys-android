@@ -1,7 +1,16 @@
 package com.example.readkeysqr.KeySqr
 import com.example.FaceSpecification.decodeUndoverlineByte
 import com.example.FaceSpecification.FaceRotationLetters
-import com.beust.klaxon.Klaxon
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.squareup.moshi.Types
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Types.newParameterizedType
+
+
+
+
 
 const val NumberOfFacesInKey = 25;
 
@@ -93,16 +102,19 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
   }
 }
 
+@JsonClass(generateAdapter = true)
 class Point(
   val x: Float,
   val y: Float
 );
 
+@JsonClass(generateAdapter = true)
 class Line(
   val start: Point,
   val end: Point
 );
 
+@JsonClass(generateAdapter = true)
 class Undoverline(
   val line: Line,
   val code: Int
@@ -116,12 +128,12 @@ fun majorityOfThree(a: Char, b: Char, c: Char): Char {
   }
 }
 
-fun trblToClockwise90DegreeRotationsFromUpright(trbl: Char): Byte? {
+fun trblToClockwise90DegreeRotationsFromUpright(trbl: String): Byte? {
   return when (trbl) {
-    't' -> 0
-    'r' -> 1
-    'b' -> 2
-    'l' -> 3
+    "t" -> 0
+    "r" -> 1
+    "b" -> 2
+    "l" -> 3
     else -> null
   }
 }
@@ -129,11 +141,11 @@ fun trblToClockwise90DegreeRotationsFromUpright(trbl: Char): Byte? {
 fun clockwise90DegreeRotationsFromUprightToTrbl(
         clockwise90DegreeRotationsFromUpright: Byte?,
         additionalClockwise90DegreeRotations: Int = 0
-): Char {
+): String {
   return if (clockwise90DegreeRotationsFromUpright == null)
-    '?'
+    "?"
   else
-    FaceRotationLetters[
+    "" + FaceRotationLetters[
       (
         clockwise90DegreeRotationsFromUpright +
         additionalClockwise90DegreeRotations
@@ -141,15 +153,16 @@ fun clockwise90DegreeRotationsFromUprightToTrbl(
     ]
 }
 
-
+@JsonClass(generateAdapter = true)
 class FaceRead(
   val underline: Undoverline?,
   val overline: Undoverline?,
-  val orientationAsLowercaseLetterTRBL: Char,
+  val orientationAsLowercaseLetterTRBL: String,
   val ocrLetterCharsFromMostToLeastLikely: String,
   val ocrDigitCharsFromMostToLeastLikely: String,
   val center: Point
 ): Face<FaceRead> {
+
   override val clockwise90DegreeRotationsFromUpright: Byte? get() =
     trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTRBL)
 
@@ -192,7 +205,7 @@ class FaceRead(
   override fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
     return String(
             if (includeFaceOrientations)
-              charArrayOf(letter, digit, orientationAsLowercaseLetterTRBL)
+              charArrayOf(letter, digit, orientationAsLowercaseLetterTRBL[0])
             else
               charArrayOf(letter, digit)
     )
@@ -213,7 +226,21 @@ class FaceRead(
   }
 }
 
+
 fun keySqrFromJsonFacesRead(json: String): KeySqr<FaceRead>? {
-  val faces = Klaxon().parse<List<FaceRead>>(json)
-  return if (faces == null) null else KeySqr(faces)
+  try {
+    val moshi = Moshi.Builder()
+      .add(KotlinJsonAdapterFactory())
+      .build()
+
+    val faceReadJsonAdapter: JsonAdapter<List<FaceRead>> =
+            moshi.adapter(Types.newParameterizedType(List::class.java, FaceRead::class.java))
+
+    if (json == "null" || json[0] != '[')
+      return null
+    val faces = faceReadJsonAdapter.fromJson(json)
+    return if (faces == null) null else KeySqr(faces)
+  } catch (e: Exception) {
+    return null
+  }
 }
