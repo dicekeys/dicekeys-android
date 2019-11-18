@@ -6,9 +6,16 @@
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
+/.idea/misc.xml
 /.idea/assetWizardSettings.xml
+.idea
+.vscode
+.classpath
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
+.project
+org.eclipse.buildship.core.prefs
+.idea/vcs.xml
