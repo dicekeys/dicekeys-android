@@ -33,6 +33,8 @@ JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_HelloFromOpenCV
     return env->NewStringUTF(name.c_str());
 }
 
+KeySqrImageReader reader = KeySqrImageReader();
+
 JNIEXPORT jboolean  JNICALL Java_com_example_readkeysqr_ReadKeySqr_ProcessImage(
 		JNIEnv* env,
 		jobject  obj,
@@ -46,7 +48,6 @@ JNIEXPORT jboolean  JNICALL Java_com_example_readkeysqr_ReadKeySqr_ProcessImage(
 	std::string jsonResult;
 	void *pointerToByteArrayForGrayscaleChannel = env->GetDirectBufferAddress(byteBufferForGrayscaleChannel);
 	if (pointerToByteArrayForGrayscaleChannel != NULL) {
-		KeySqrImageReader reader = KeySqrImageReader();
 		if(!reader.processImage((int)width, (int)height, (size_t)bytesPerRow, (void*) pointerToByteArrayForGrayscaleChannel))
 		{
 			return false;
