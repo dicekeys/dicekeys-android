@@ -1,5 +1,6 @@
-package com.example.KeySqr
+package com.example.readkeysqr.KeySqr
 import com.example.FaceSpecification.decodeUndoverlineByte
+import com.example.FaceSpecification.FaceRotationLetters
 import com.beust.klaxon.Klaxon
 
 const val NumberOfFacesInKey = 25;
@@ -44,43 +45,45 @@ val rotationIndexes = listOf<List<Byte>>(
 class InvalidKeySqrException(message: String) : Exception(message) {};
 
 interface Face<T: Face<T>> {
-  val letter: Char  // 'A' - 'Z' except 'Q'
-  val digit: Char   // '0' - '6'
-  val clockwise90DegreeRotationsFromUpright: Byte // 0 - 3
-  fun rotate(clockwiseTurns: Int): T;
+  val letter: Char  // 'A' - 'Z' except 'Q', or '?'
+  val digit: Char   // '0' - '6', or '?'
+  val clockwise90DegreeRotationsFromUpright: Byte? // 0 - 3
+
+  fun rotate(clockwiseTurns: Int): T
+  fun toHumanReadableForm(includeFaceOrientations: Boolean): String
 }
 
 class KeySqr<F: Face<F>>(val faces: List<F>) {
 
-  fun toHumanReadableForm(): String {
-    return faces.joinToString(separator = "") {
-      String(charArrayOf(it.letter, it.digit, "trlb"[it.clockwise90DegreeRotationsFromUpright.toInt()]));
-    };
-  };
+  fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
+    return faces.joinToString(separator = "") {it.toHumanReadableForm((includeFaceOrientations))}
+  }
 
-  fun rotate(clockwiseTurns: Int): KeySqr<F> {
-    val clockwiseTurnsMod4 = when {
-        (clockwiseTurns > 4) -> (clockwiseTurns % 4)
-        (clockwiseTurns < 0) -> (4 - (clockwiseTurns % 4))
-        else -> clockwiseTurns
-      }
-    val rotatedKeySqr =
-      if (clockwiseTurnsMod4 == 0)
+  val allOrientationsAreDefined: Boolean get() = faces.all { it.clockwise90DegreeRotationsFromUpright != null }
+  val allLettersAreDefined: Boolean get() = faces.all { it.letter != '?' }
+  val allDigitsAreDefined: Boolean get() = faces.all { it.digit != '?' }
+  val allLettersAndDigitsAreDefined: Boolean get() = allLettersAreDefined && allDigitsAreDefined
+  val allLettersDigitsAndOrientationsAreDefined: Boolean get() = allLettersAndDigitsAreDefined && allOrientationsAreDefined
+
+  fun rotate(clockwise90DegreeRotations: Int): KeySqr<F> {
+    val clockwiseTurnsMod4 = clockwise90DegreeRotations % 4
+    return if (clockwiseTurnsMod4 == 0)
         this@KeySqr
       else KeySqr(
         rotationIndexes[clockwiseTurnsMod4]
-          .map<Byte, F>(){ faces[it.toInt()] }
-          .map<F, F>(){ it.rotate(clockwiseTurnsMod4) }
-      );
-    return rotatedKeySqr;
+          .map<Byte, F>() { faces[it.toInt()] }
+          .map<F, F>() { it.rotate(clockwiseTurnsMod4) }
+      )
   }
 
-  fun toCanonicalRotation(): KeySqr<F> {
+  fun toCanonicalRotation(
+    includeFaceOrientations: Boolean = allOrientationsAreDefined
+  ): KeySqr<F> {
     var winningRotation: KeySqr<F> = this@KeySqr;
-    var winningReadableForm = toHumanReadableForm()
+    var winningReadableForm = toHumanReadableForm(includeFaceOrientations)
     for (clockwiseTurns in 1..3) {
       val rotatedKey = rotate(clockwiseTurns)
-      val readableForm = rotatedKey.toHumanReadableForm()
+      val readableForm = rotatedKey.toHumanReadableForm(includeFaceOrientations)
       if (readableForm < winningReadableForm) {
         winningRotation = rotatedKey
         winningReadableForm = readableForm
@@ -88,7 +91,6 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
     }
     return winningRotation;
   }
-
 }
 
 class Point(
@@ -107,23 +109,49 @@ class Undoverline(
 );
 
 fun majorityOfThree(a: Char, b: Char, c: Char): Char {
-  if (a == b || a == c) {
-    return a
-  } else if (b == c) {
-    return b
-  } else {
-    return '?'
+  return when {
+    (a == b || a == c) -> a
+    (b == c) -> b
+    else -> '?'
   }
 }
+
+fun trblToClockwise90DegreeRotationsFromUpright(trbl: Char): Byte? {
+  return when (trbl) {
+    't' -> 0
+    'r' -> 1
+    'b' -> 2
+    'l' -> 3
+    else -> null
+  }
+}
+
+fun clockwise90DegreeRotationsFromUprightToTrbl(
+        clockwise90DegreeRotationsFromUpright: Byte?,
+        additionalClockwise90DegreeRotations: Int = 0
+): Char {
+  return if (clockwise90DegreeRotationsFromUpright == null)
+    '?'
+  else
+    FaceRotationLetters[
+      (
+        clockwise90DegreeRotationsFromUpright +
+        additionalClockwise90DegreeRotations
+      ) % 4
+    ]
+}
+
 
 class FaceRead(
   val underline: Undoverline?,
   val overline: Undoverline?,
-  override val clockwise90DegreeRotationsFromUpright: Byte,
+  val orientationAsLowercaseLetterTRBL: Char,
   val ocrLetterCharsFromMostToLeastLikely: String,
   val ocrDigitCharsFromMostToLeastLikely: String,
   val center: Point
 ): Face<FaceRead> {
+  override val clockwise90DegreeRotationsFromUpright: Byte? get() =
+    trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTRBL)
 
   val underlineLetter: Char
     get() {
@@ -161,11 +189,23 @@ class FaceRead(
     get() = majorityOfThree(
             underlineDigit, overlineDigit, ocrDigitCharsFromMostToLeastLikely[0])
 
-  override fun rotate(clockwiseTurns: Int): FaceRead {
+  override fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
+    return String(
+            if (includeFaceOrientations)
+              charArrayOf(letter, digit, orientationAsLowercaseLetterTRBL)
+            else
+              charArrayOf(letter, digit)
+    )
+  }
+
+  override fun rotate(clockwise90DegreeRotations: Int): FaceRead {
    return FaceRead(
            underline,
            overline,
-           ((clockwise90DegreeRotationsFromUpright + clockwiseTurns) % 4).toByte(),
+           clockwise90DegreeRotationsFromUprightToTrbl(
+             clockwise90DegreeRotationsFromUpright,
+             clockwise90DegreeRotations
+           ),
            ocrLetterCharsFromMostToLeastLikely,
            ocrDigitCharsFromMostToLeastLikely,
            center
