@@ -14,4 +14,12 @@ public object ReadKeySqr {
             bytesPerRow: Int,
             byteBufferForGrayscaleChannel: ByteBuffer
     ): String
+
+    external fun ProcessImage(
+            width: Int,
+            height: Int,
+            bytesPerRow: Int,
+            byteBufferForGrayscaleChannel: ByteBuffer,
+            byteBufferForOverlay: ByteBuffer
+    ): Boolean
 }

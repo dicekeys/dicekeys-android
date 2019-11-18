@@ -3,7 +3,11 @@ package com.example.readkeysqr
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Size
@@ -11,14 +15,16 @@ import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import java.nio.ByteBuffer
+
 
 class ReadKeySqrActivity : AppCompatActivity() {
 
@@ -39,14 +45,17 @@ class ReadKeySqrActivity : AppCompatActivity() {
     private lateinit var txtJson: TextView
 
     private lateinit var panelButtons: LinearLayout
+    private lateinit var imageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read_key_sqr)
 
         txtJson = findViewById(R.id.txt_json)
-        viewFinder = findViewById(R.id.textureView)
+        viewFinder = findViewById(R.id.texture_view)
         panelButtons = findViewById(R.id.panel_buttons)
+
+        imageView = findViewById(R.id.overlay_view)
 
         if(allPermissionsGranted()) {
             viewFinder.post{startCamera()}
@@ -124,11 +133,30 @@ class ReadKeySqrActivity : AppCompatActivity() {
         // version 1.1.0 or higher.
         CameraX.bindToLifecycle(this, preview, analyzerUseCase)
 
-        analyzerKeySqr.onActionJson = fun(json) : Int {
+        analyzerKeySqr.onActionJson = fun(overlayBitmap) : Int {
             panelButtons.visibility = View.VISIBLE
-            preview.removePreviewOutputListener()
-            analyzerUseCase.removeAnalyzer()
-            txtJson.text = json
+            //preview.removePreviewOutputListener()
+            //analyzerUseCase.removeAnalyzer()
+
+            //val bitmap = BitmapFactory.decodeResource(resources, R.drawable.test1)
+            /*
+            val width = 100
+            val height = 100
+
+            val b1 = ByteBuffer.allocateDirect(4*width*height)
+            for(i in 1 until 4*width*height step 4)
+            {
+                b1.put(i, 0xFF.toByte())
+            }
+
+            val b2 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            b1.rewind()
+            b2.copyPixelsFromBuffer(b1)
+
+            */
+            imageView.setImageBitmap(overlayBitmap)
+
+            //txtJson.text = json
             return 0;
         }
 

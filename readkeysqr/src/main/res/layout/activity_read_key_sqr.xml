@@ -7,9 +7,16 @@
     tools:context=".ReadKeySqrActivity">
 
     <TextureView
-        android:id="@+id/textureView"
+        android:id="@+id/texture_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        />
+
+    <ImageView
+        android:id="@+id/overlay_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         />
 
     <LinearLayout
@@ -24,6 +31,7 @@
             android:textAlignment="center"
             android:layout_weight="1"
             />
+
         <LinearLayout
             android:id="@+id/panel_buttons"
             android:layout_width="wrap_content"
