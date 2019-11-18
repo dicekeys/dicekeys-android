@@ -45,22 +45,17 @@ JNIEXPORT jboolean  JNICALL Java_com_example_readkeysqr_ReadKeySqr_ProcessImage(
 		jobject byteBufferForOverlay
 		)
 {
-	std::string jsonResult;
 	void *pointerToByteArrayForGrayscaleChannel = env->GetDirectBufferAddress(byteBufferForGrayscaleChannel);
 	if (pointerToByteArrayForGrayscaleChannel != NULL) {
-		if(!reader.processImage((int)width, (int)height, (size_t)bytesPerRow, (void*) pointerToByteArrayForGrayscaleChannel))
-		{
-			return false;
-		}
+		bool res = reader.processImage((int)width, (int)height, (size_t)bytesPerRow, (void*) pointerToByteArrayForGrayscaleChannel);
+
 		void *pointerToByteArrayForOverlay = env->GetDirectBufferAddress(byteBufferForOverlay);
 		if(pointerToByteArrayForOverlay != NULL)
 		{
 			reader.renderAugmentationOverlay((int)width, (int)height, (uint32_t*)pointerToByteArrayForOverlay);
-			return true;
-		} else
-		{
-			return false;
 		}
+
+		return res;
 	} else{
 		return false;
 	}

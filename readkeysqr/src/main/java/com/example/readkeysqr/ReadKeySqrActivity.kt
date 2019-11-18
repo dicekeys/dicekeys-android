@@ -4,14 +4,10 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Matrix
-import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Size
-import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
@@ -20,11 +16,6 @@ import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import java.nio.ByteBuffer
-
 
 class ReadKeySqrActivity : AppCompatActivity() {
 
@@ -42,7 +33,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
     private val executor = Executors.newSingleThreadExecutor()
 
     private lateinit var viewFinder: TextureView
-    private lateinit var txtJson: TextView
 
     private lateinit var panelButtons: LinearLayout
     private lateinit var imageView: ImageView
@@ -51,7 +41,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read_key_sqr)
 
-        txtJson = findViewById(R.id.txt_json)
         viewFinder = findViewById(R.id.texture_view)
         panelButtons = findViewById(R.id.panel_buttons)
 
@@ -65,11 +54,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
         {
             ActivityCompat.requestPermissions(
                     this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-        }
-
-        // Every time the provided texture view changes, recompute layout
-        viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            updateTransform()
         }
     }
 
@@ -99,9 +83,11 @@ class ReadKeySqrActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
+        val screenSize = Size(viewFinder.width, viewFinder.height)
+
         // Create configuration object for the viewfinder use case
         val previewConfig = PreviewConfig.Builder().apply {
-            setTargetResolution(Size(640, 480))
+            setTargetResolution(screenSize)
         }.build()
 
         // Build the viewfinder use case
@@ -116,6 +102,7 @@ class ReadKeySqrActivity : AppCompatActivity() {
         val analyzerConfig = ImageAnalysisConfig.Builder().apply {
             // In our analysis, we care more about the latest image than
             // analyzing *every* image
+            setTargetResolution(screenSize)
             setImageReaderMode(
                     ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         }.build()
@@ -134,43 +121,23 @@ class ReadKeySqrActivity : AppCompatActivity() {
         CameraX.bindToLifecycle(this, preview, analyzerUseCase)
 
         analyzerKeySqr.onActionJson = fun(overlayBitmap) : Int {
-            panelButtons.visibility = View.VISIBLE
-            //preview.removePreviewOutputListener()
-            //analyzerUseCase.removeAnalyzer()
+            val matrix = Matrix()
+            matrix.postRotate(90f)
+            val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.getWidth(), overlayBitmap.getHeight(), matrix, true);
 
-            //val bitmap = BitmapFactory.decodeResource(resources, R.drawable.test1)
-            /*
-            val width = 100
-            val height = 100
-
-            val b1 = ByteBuffer.allocateDirect(4*width*height)
-            for(i in 1 until 4*width*height step 4)
-            {
-                b1.put(i, 0xFF.toByte())
-            }
-
-            val b2 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            b1.rewind()
-            b2.copyPixelsFromBuffer(b1)
-
-            */
-            imageView.setImageBitmap(overlayBitmap)
-
-            //txtJson.text = json
+            imageView.setImageBitmap(rotatedBitmap)
             return 0;
         }
 
         findViewById<Button>(R.id.btn_take).setOnClickListener({
             CameraX.unbindAll()
             var intent = Intent();
-            intent.putExtra("json", txtJson.text);
             setResult(RESULT_OK, intent);
             finish();
         })
 
         findViewById<Button>(R.id.btn_cancel).setOnClickListener({
             panelButtons.visibility = View.INVISIBLE
-            txtJson.text = ""
             preview.setOnPreviewOutputUpdateListener({
                 updateCameraOutput(it)
             })
@@ -186,29 +153,5 @@ class ReadKeySqrActivity : AppCompatActivity() {
         parent.addView(viewFinder, 0)
 
         viewFinder.surfaceTexture = it.surfaceTexture
-        updateTransform()
     }
-
-    private fun updateTransform() {
-        val matrix = Matrix()
-
-        // Compute the center of the view finder
-        val centerX = viewFinder.width / 2f
-        val centerY = viewFinder.height / 2f
-
-        // Correct preview output to account for display rotation
-        val rotationDegrees = when(viewFinder.display.rotation) {
-            Surface.ROTATION_0 -> 0
-            Surface.ROTATION_90 -> 90
-            Surface.ROTATION_180 -> 180
-            Surface.ROTATION_270 -> 270
-            else -> return
-        }
-        matrix.postRotate(-rotationDegrees.toFloat(), centerX, centerY)
-
-        // Finally, apply transformations to our TextureView
-        viewFinder.setTransform(matrix)
-    }
-
-
 }
