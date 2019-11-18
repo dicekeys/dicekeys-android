@@ -1,4 +1,4 @@
-package com.example.readkeysqrdemo
+package com.keysqr.readkeysqrdemo
 
 import android.app.Activity
 import android.content.Intent
@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import com.example.readkeysqr.ReadKeySqrActivity
+import com.keysqr.readkeysqr.ReadKeySqrActivity
 
 class MainActivity : AppCompatActivity() {
 

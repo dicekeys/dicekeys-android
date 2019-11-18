@@ -1,4 +1,4 @@
-package com.example.readkeysqr;
+package com.keysqr.readkeysqr;
 
 import org.junit.Test;
 

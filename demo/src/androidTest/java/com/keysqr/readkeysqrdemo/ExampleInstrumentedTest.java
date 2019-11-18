@@ -1,4 +1,4 @@
-package com.example.readkeysqrdemo;
+package com.keysqr.readkeysqrdemo;
 
 import android.content.Context;
 
