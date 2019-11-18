@@ -6,7 +6,7 @@
 
 extern "C" {
 
-JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_ReadKeySqrJson(
+JNIEXPORT jstring JNICALL Java_com_keysqr_readkeysqr_ReadKeySqr_ReadKeySqrJson(
      JNIEnv* env,
      jobject obj,
      jint width,
@@ -26,14 +26,14 @@ JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_ReadKeySqrJson(
  	return env->NewStringUTF(jsonResult.c_str());
 }
 
-JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_HelloFromOpenCV(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_com_keysqr_readkeysqr_ReadKeySqr_HelloFromOpenCV(JNIEnv *env, jobject obj) {
     std::string name = "OPENCV Version ";
     name += CV_VERSION;
 
     return env->NewStringUTF(name.c_str());
 }
 
-JNIEXPORT jlong Java_com_example_readkeysqr_ReadKeySqr_createObject(
+JNIEXPORT jlong Java_com_keysqr_readkeysqr_ReadKeySqr_createObject(
 		JNIEnv* env,
 		jobject obj
 		)
@@ -41,7 +41,7 @@ JNIEXPORT jlong Java_com_example_readkeysqr_ReadKeySqr_createObject(
 	return (long)(new KeySqrImageReader());
 }
 
-JNIEXPORT jboolean Java_com_example_readkeysqr_ReadKeySqr_processImage(
+JNIEXPORT jboolean Java_com_keysqr_readkeysqr_ReadKeySqr_processImage(
 		JNIEnv* env,
 		jobject obj,
 		jlong reader,
@@ -62,7 +62,7 @@ JNIEXPORT jboolean Java_com_example_readkeysqr_ReadKeySqr_processImage(
 	}
 }
 
-JNIEXPORT void Java_com_example_readkeysqr_ReadKeySqr_renderAugmentationOverlay(
+JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_renderAugmentationOverlay(
 		JNIEnv* env,
 		jobject  obj,
 		jlong reader,
@@ -80,7 +80,7 @@ JNIEXPORT void Java_com_example_readkeysqr_ReadKeySqr_renderAugmentationOverlay(
 	}
 }
 
-JNIEXPORT void Java_com_example_readkeysqr_ReadKeySqr_deleteObject(
+JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_deleteObject(
 		JNIEnv* env,
 		jobject  obj,
 		jlong reader

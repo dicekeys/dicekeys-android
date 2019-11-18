@@ -42,7 +42,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
         setContentView(R.layout.activity_read_key_sqr)
 
         viewFinder = findViewById(R.id.texture_view)
-        panelButtons = findViewById(R.id.panel_buttons)
 
         imageView = findViewById(R.id.overlay_view)
 
@@ -128,21 +127,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
             imageView.setImageBitmap(rotatedBitmap)
             return 0;
         }
-
-        findViewById<Button>(R.id.btn_take).setOnClickListener({
-            CameraX.unbindAll()
-            var intent = Intent();
-            setResult(RESULT_OK, intent);
-            finish();
-        })
-
-        findViewById<Button>(R.id.btn_cancel).setOnClickListener({
-            panelButtons.visibility = View.INVISIBLE
-            preview.setOnPreviewOutputUpdateListener({
-                updateCameraOutput(it)
-            })
-            analyzerUseCase.setAnalyzer(executor, analyzerKeySqr)
-        })
     }
 
     private fun updateCameraOutput(it: Preview.PreviewOutput)
