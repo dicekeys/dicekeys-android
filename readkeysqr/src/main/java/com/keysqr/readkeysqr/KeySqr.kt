@@ -1,6 +1,6 @@
-package com.example.readkeysqr.KeySqr
-import com.example.FaceSpecification.decodeUndoverlineByte
-import com.example.FaceSpecification.FaceRotationLetters
+package com.keysqr.readkeysqr.KeySqr
+import com.keysqr.FaceSpecification.decodeUndoverlineByte
+import com.keysqr.FaceSpecification.FaceRotationLetters
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
