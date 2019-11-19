@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import com.keysqr.readkeysqr.ReadKeySqrActivity
-import com.keysqr.readkeysqr.KeySqr.keySqrFromJsonFacesRead
+import com.keysqr.readkeysqr.keySqrFromJsonFacesRead
 
 class MainActivity : AppCompatActivity() {
 
