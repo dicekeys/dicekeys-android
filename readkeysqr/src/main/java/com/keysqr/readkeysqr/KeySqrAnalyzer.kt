@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import java.nio.ByteBuffer
+import com.example.readkeysqr.KeySqr.keySqrFromJsonFacesRead
 import java.util.concurrent.TimeUnit
 
 public class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer {

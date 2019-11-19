@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import com.keysqr.readkeysqr.ReadKeySqrActivity
+import com.keysqr.readkeysqr.KeySqr.keySqrFromJsonFacesRead
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,7 +28,10 @@ class MainActivity : AppCompatActivity() {
             if(resultCode == Activity.RESULT_OK)
             {
                 if(data!=null) {
-                    findViewById<TextView>(R.id.txt_json).text = data.getStringExtra("json")
+                    val json: String = data.getStringExtra("json")
+                    val keySqr = keySqrFromJsonFacesRead(json)
+                    val humanReadableForm = keySqr?.toHumanReadableForm(true) ?: null
+                    findViewById<TextView>(R.id.txt_json).text = humanReadableForm
                 }
             }
         }
