@@ -1,15 +1,10 @@
-package com.keysqr.readkeysqr.KeySqr
-import com.keysqr.FaceSpecification.decodeUndoverlineByte
-import com.keysqr.FaceSpecification.FaceRotationLetters
+package com.keysqr.readkeysqr
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.moshi.Types
 import com.squareup.moshi.JsonClass
-import com.squareup.moshi.Types.newParameterizedType
-
-
-
+// import com.squareup.moshi.Types.newParameterizedType
 
 
 const val NumberOfFacesInKey = 25;
@@ -58,7 +53,7 @@ interface Face<T: Face<T>> {
   val digit: Char   // '0' - '6', or '?'
   val clockwise90DegreeRotationsFromUpright: Byte? // 0 - 3
 
-  fun rotate(clockwiseTurns: Int): T
+  fun rotate(clockwise90DegreeRotations: Int): T
   fun toHumanReadableForm(includeFaceOrientations: Boolean): String
 }
 
