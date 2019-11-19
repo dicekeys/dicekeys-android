@@ -28,9 +28,7 @@ class MainActivity : AppCompatActivity() {
             if(resultCode == Activity.RESULT_OK)
             {
                 if(data!=null) {
-                    val json: String = data.getStringExtra("json")
-                    val keySqr = keySqrFromJsonFacesRead(json)
-                    val humanReadableForm = keySqr?.toHumanReadableForm(true) ?: null
+                    val humanReadableForm: String = data.getStringExtra("result")
                     findViewById<TextView>(R.id.txt_json).text = humanReadableForm
                 }
             }

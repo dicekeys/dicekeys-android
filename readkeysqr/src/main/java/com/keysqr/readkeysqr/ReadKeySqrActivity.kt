@@ -119,13 +119,20 @@ class ReadKeySqrActivity : AppCompatActivity() {
         // version 1.1.0 or higher.
         CameraX.bindToLifecycle(this, preview, analyzerUseCase)
 
-        analyzerKeySqr.onActionJson = fun(overlayBitmap) : Int {
+        analyzerKeySqr.onActionOverlay = fun(overlayBitmap){
             val matrix = Matrix()
             matrix.postRotate(90f)
             val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.getWidth(), overlayBitmap.getHeight(), matrix, true);
 
             imageView.setImageBitmap(rotatedBitmap)
-            return 0;
+        }
+
+        analyzerKeySqr.onActionDone = fun(humanReadableForm){
+            CameraX.unbindAll()
+            var intent = Intent()
+            intent.putExtra("result", humanReadableForm)
+            setResult(RESULT_OK, intent);
+            finish()
         }
     }
 
