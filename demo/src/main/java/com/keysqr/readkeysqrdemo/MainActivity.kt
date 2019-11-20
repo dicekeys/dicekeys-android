@@ -1,4 +1,4 @@
-package com.example.readkeysqrdemo
+package com.keysqr.readkeysqrdemo
 
 import android.app.Activity
 import android.content.Intent
@@ -6,7 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import com.example.readkeysqr.ReadKeySqrActivity
+import com.keysqr.readkeysqr.ReadKeySqrActivity
+import com.keysqr.readkeysqr.keySqrFromJsonFacesRead
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,7 +28,8 @@ class MainActivity : AppCompatActivity() {
             if(resultCode == Activity.RESULT_OK)
             {
                 if(data!=null) {
-                    findViewById<TextView>(R.id.txt_json).text = data.getStringExtra("json")
+                    val humanReadableForm: String = data.getStringExtra("result")
+                    findViewById<TextView>(R.id.txt_json).text = humanReadableForm
                 }
             }
         }

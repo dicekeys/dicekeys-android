@@ -6,7 +6,7 @@
 
 extern "C" {
 
-JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_ReadKeySqrJson(
+JNIEXPORT jstring JNICALL Java_com_keysqr_readkeysqr_ReadKeySqr_ReadKeySqrJson(
      JNIEnv* env,
      jobject obj,
      jint width,
@@ -26,11 +26,66 @@ JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_ReadKeySqrJson(
  	return env->NewStringUTF(jsonResult.c_str());
 }
 
-JNIEXPORT jstring JNICALL Java_com_example_readkeysqr_ReadKeySqr_HelloFromOpenCV(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_com_keysqr_readkeysqr_ReadKeySqr_HelloFromOpenCV(JNIEnv *env, jobject obj) {
     std::string name = "OPENCV Version ";
     name += CV_VERSION;
 
     return env->NewStringUTF(name.c_str());
 }
 
+JNIEXPORT jlong Java_com_keysqr_readkeysqr_ReadKeySqr_createObject(
+		JNIEnv* env,
+		jobject obj
+		)
+{
+	return (long)(new KeySqrImageReader());
+}
+
+JNIEXPORT jboolean Java_com_keysqr_readkeysqr_ReadKeySqr_processImage(
+		JNIEnv* env,
+		jobject obj,
+		jlong reader,
+		jint width,
+		jint height,
+		jint bytesPerRow,
+		jobject byteBufferForGrayscaleChannel
+		)
+{
+	KeySqrImageReader* pReader = (KeySqrImageReader*)reader;
+
+	void *pointerToByteArrayForGrayscaleChannel = env->GetDirectBufferAddress(byteBufferForGrayscaleChannel);
+	if (pointerToByteArrayForGrayscaleChannel != NULL) {
+		return pReader->processImage((int)width, (int)height, (int)bytesPerRow, pointerToByteArrayForGrayscaleChannel);
+	} else
+	{
+		return false;
+	}
+}
+
+JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_renderAugmentationOverlay(
+		JNIEnv* env,
+		jobject  obj,
+		jlong reader,
+		jint width,
+		jint height,
+		jobject byteBufferForOverlay
+		)
+{
+	KeySqrImageReader* pReader = (KeySqrImageReader*)reader;
+
+	void *pointerToByteArrayForOverlay = env->GetDirectBufferAddress(byteBufferForOverlay);
+	if(pointerToByteArrayForOverlay != NULL)
+	{
+		pReader->renderAugmentationOverlay((int)width, (int)height, (uint32_t*)pointerToByteArrayForOverlay);
+	}
+}
+
+JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_deleteObject(
+		JNIEnv* env,
+		jobject  obj,
+		jlong reader
+		)
+{
+	delete (KeySqrImageReader*)reader;
+}
 }

@@ -1,4 +1,4 @@
-package com.example.readkeysqrdemo;
+package com.keysqr.readkeysqr;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.example.readkeysqr", appContext.getPackageName());
+        assertEquals("com.keysqr.readkeysqr.test", appContext.getPackageName());
     }
 }

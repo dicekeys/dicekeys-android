@@ -1,20 +1,17 @@
-package com.example.readkeysqr
+package com.keysqr.readkeysqr
 
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Matrix
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Size
-import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -36,17 +33,17 @@ class ReadKeySqrActivity : AppCompatActivity() {
     private val executor = Executors.newSingleThreadExecutor()
 
     private lateinit var viewFinder: TextureView
-    private lateinit var txtJson: TextView
 
     private lateinit var panelButtons: LinearLayout
+    private lateinit var imageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read_key_sqr)
 
-        txtJson = findViewById(R.id.txt_json)
-        viewFinder = findViewById(R.id.textureView)
-        panelButtons = findViewById(R.id.panel_buttons)
+        viewFinder = findViewById(R.id.texture_view)
+
+        imageView = findViewById(R.id.overlay_view)
 
         if(allPermissionsGranted()) {
             viewFinder.post{startCamera()}
@@ -56,11 +53,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
         {
             ActivityCompat.requestPermissions(
                     this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-        }
-
-        // Every time the provided texture view changes, recompute layout
-        viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            updateTransform()
         }
     }
 
@@ -90,9 +82,11 @@ class ReadKeySqrActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
+        val screenSize = Size(viewFinder.width, viewFinder.height)
+
         // Create configuration object for the viewfinder use case
         val previewConfig = PreviewConfig.Builder().apply {
-            setTargetResolution(Size(640, 480))
+            setTargetResolution(screenSize)
         }.build()
 
         // Build the viewfinder use case
@@ -107,6 +101,7 @@ class ReadKeySqrActivity : AppCompatActivity() {
         val analyzerConfig = ImageAnalysisConfig.Builder().apply {
             // In our analysis, we care more about the latest image than
             // analyzing *every* image
+            setTargetResolution(screenSize)
             setImageReaderMode(
                     ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         }.build()
@@ -124,30 +119,21 @@ class ReadKeySqrActivity : AppCompatActivity() {
         // version 1.1.0 or higher.
         CameraX.bindToLifecycle(this, preview, analyzerUseCase)
 
-        analyzerKeySqr.onActionJson = fun(json) : Int {
-            panelButtons.visibility = View.VISIBLE
-            preview.removePreviewOutputListener()
-            analyzerUseCase.removeAnalyzer()
-            txtJson.text = json
-            return 0;
+        analyzerKeySqr.onActionOverlay = fun(overlayBitmap){
+            val matrix = Matrix()
+            matrix.postRotate(90f)
+            val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.getWidth(), overlayBitmap.getHeight(), matrix, true);
+
+            imageView.setImageBitmap(rotatedBitmap)
         }
 
-        findViewById<Button>(R.id.btn_take).setOnClickListener({
+        analyzerKeySqr.onActionDone = fun(humanReadableForm){
             CameraX.unbindAll()
-            var intent = Intent();
-            intent.putExtra("json", txtJson.text);
+            var intent = Intent()
+            intent.putExtra("result", humanReadableForm)
             setResult(RESULT_OK, intent);
-            finish();
-        })
-
-        findViewById<Button>(R.id.btn_cancel).setOnClickListener({
-            panelButtons.visibility = View.INVISIBLE
-            txtJson.text = ""
-            preview.setOnPreviewOutputUpdateListener({
-                updateCameraOutput(it)
-            })
-            analyzerUseCase.setAnalyzer(executor, analyzerKeySqr)
-        })
+            finish()
+        }
     }
 
     private fun updateCameraOutput(it: Preview.PreviewOutput)
@@ -158,29 +144,5 @@ class ReadKeySqrActivity : AppCompatActivity() {
         parent.addView(viewFinder, 0)
 
         viewFinder.surfaceTexture = it.surfaceTexture
-        updateTransform()
     }
-
-    private fun updateTransform() {
-        val matrix = Matrix()
-
-        // Compute the center of the view finder
-        val centerX = viewFinder.width / 2f
-        val centerY = viewFinder.height / 2f
-
-        // Correct preview output to account for display rotation
-        val rotationDegrees = when(viewFinder.display.rotation) {
-            Surface.ROTATION_0 -> 0
-            Surface.ROTATION_90 -> 90
-            Surface.ROTATION_180 -> 180
-            Surface.ROTATION_270 -> 270
-            else -> return
-        }
-        matrix.postRotate(-rotationDegrees.toFloat(), centerX, centerY)
-
-        // Finally, apply transformations to our TextureView
-        viewFinder.setTransform(matrix)
-    }
-
-
 }
