@@ -33,7 +33,7 @@ JNIEXPORT jstring JNICALL Java_com_keysqr_readkeysqr_ReadKeySqr_HelloFromOpenCV(
     return env->NewStringUTF(name.c_str());
 }
 
-JNIEXPORT jlong Java_com_keysqr_readkeysqr_ReadKeySqr_createObject(
+JNIEXPORT jlong Java_com_keysqr_readkeysqr_ReadKeySqr_newKeySqrImageReader(
 		JNIEnv* env,
 		jobject obj
 		)
@@ -80,7 +80,18 @@ JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_renderAugmentationOverlay(
 	}
 }
 
-JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_deleteObject(
+JNIEXPORT jstring Java_com_keysqr_readkeysqr_ReadKeySqr_jsonKeySqrRead(
+		JNIEnv* env,
+		jobject  obj,
+		jlong reader
+)
+{
+	KeySqrImageReader* pReader = (KeySqrImageReader*)reader;
+	std::string json = pReader->jsonKeySqrRead();
+	return env->NewStringUTF(json.c_str());
+}
+
+JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_deleteKeySqrImageReader(
 		JNIEnv* env,
 		jobject  obj,
 		jlong reader
