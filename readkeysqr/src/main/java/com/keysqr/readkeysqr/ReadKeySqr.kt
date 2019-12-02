@@ -9,14 +9,14 @@ class ReadKeySqr {
     }
 
     external fun HelloFromOpenCV(): String
-    external fun ReadKeySqrJson(
-            width: Int,
-            height: Int,
-            bytesPerRow: Int,
-            byteBufferForGrayscaleChannel: ByteBuffer
-    ): String
+//    external fun ReadKeySqrJson(
+//            width: Int,
+//            height: Int,
+//            bytesPerRow: Int,
+//            byteBufferForGrayscaleChannel: ByteBuffer
+//    ): String
 
-    private external fun createObject(): Long
+    private external fun newKeySqrImageReader(): Long
     private external fun processImage(
             reader: Long,
             width: Int,
@@ -30,14 +30,17 @@ class ReadKeySqr {
             height: Int,
             byteBufferForOverlay: ByteBuffer
     )
-    private external fun deleteObject(
+    private external fun deleteKeySqrImageReader(
             reader: Long
     )
+    private external fun jsonKeySqrRead(
+            reader: Long
+    ): String
 
-    private var obj: Long = 0
+    private var ptrToKeySqrImageReader: Long = 0
 
     constructor() {
-        obj = createObject()
+        ptrToKeySqrImageReader = newKeySqrImageReader()
     }
 
     fun ProcessImage(
@@ -47,7 +50,12 @@ class ReadKeySqr {
             byteBufferForGrayscaleChannel: ByteBuffer
     ): Boolean
     {
-        return  processImage(obj, width, height, bytesPerRow, byteBufferForGrayscaleChannel)
+        return  processImage(ptrToKeySqrImageReader, width, height, bytesPerRow, byteBufferForGrayscaleChannel)
+    }
+
+    fun JsonKeySqrRead(): String
+    {
+        return jsonKeySqrRead(ptrToKeySqrImageReader)
     }
 
     fun RenderAugmentationOverlay(
@@ -56,11 +64,11 @@ class ReadKeySqr {
             byteBufferForOverlay: ByteBuffer
     )
     {
-        renderAugmentationOverlay(obj, width, height, byteBufferForOverlay)
+        renderAugmentationOverlay(ptrToKeySqrImageReader, width, height, byteBufferForOverlay)
     }
 
     fun finalize() {
-        deleteObject(obj)
-        obj = 0
+        deleteKeySqrImageReader(ptrToKeySqrImageReader)
+        ptrToKeySqrImageReader = 0
     }
 }

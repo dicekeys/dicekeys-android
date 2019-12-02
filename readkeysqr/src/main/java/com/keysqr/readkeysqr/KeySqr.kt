@@ -1,13 +1,14 @@
 package com.keysqr.readkeysqr
+import android.graphics.Canvas
+import android.graphics.Paint
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.moshi.Types
 import com.squareup.moshi.JsonClass
-// import com.squareup.moshi.Types.newParameterizedType
 
 
-const val NumberOfFacesInKey = 25;
+const val NumberOfFacesInKey = 25
 
 
 val rotationIndexes = listOf<List<Byte>>(
@@ -48,6 +49,7 @@ val rotationIndexes = listOf<List<Byte>>(
 
 class InvalidKeySqrException(message: String) : Exception(message) {};
 
+
 interface Face<T: Face<T>> {
   val letter: Char  // 'A' - 'Z' except 'Q', or '?'
   val digit: Char   // '0' - '6', or '?'
@@ -55,6 +57,7 @@ interface Face<T: Face<T>> {
 
   fun rotate(clockwise90DegreeRotations: Int): T
   fun toHumanReadableForm(includeFaceOrientations: Boolean): String
+
 }
 
 class KeySqr<F: Face<F>>(val faces: List<F>) {

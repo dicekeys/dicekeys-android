@@ -24,19 +24,16 @@ class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer 
             try {
                 val buffer = image.planes[0].buffer
 
-                if(reader.ProcessImage(image.width, image.height, image.planes[0].rowStride, buffer))
+                val res = reader.ProcessImage(image.width, image.height, image.planes[0].rowStride, buffer);
+                if(res)
                 {
-                    val res = reader.ReadKeySqrJson(image.width, image.height, image.planes[0].rowStride, buffer);
-                    if(res != "null")
+                    val vKeySqr = keySqrFromJsonFacesRead(reader.JsonKeySqrRead())
+                    val humanReadableForm: String? = vKeySqr?.toHumanReadableForm(true)
+                    if(humanReadableForm != null)
                     {
-                        val vKeySqr = keySqrFromJsonFacesRead(res)
-                        val humanReadableForm = vKeySqr?.toHumanReadableForm(true)
-                        if(humanReadableForm != null)
-                        {
-                            activity.runOnUiThread({
-                                onActionDone(humanReadableForm)
-                            })
-                        }
+                        activity.runOnUiThread({
+                            onActionDone(humanReadableForm)
+                        })
                     }
                 }
 
