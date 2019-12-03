@@ -58,6 +58,25 @@ interface Face<T: Face<T>> {
   fun rotate(clockwise90DegreeRotations: Int): T
   fun toHumanReadableForm(includeFaceOrientations: Boolean): String
 
+  private val undoverlineCodes: FaceWithUnderlineAndOverlineCode?
+    get() {
+      val letterIndex = FaceLetters.indexOf(letter)
+      if (letterIndex < 0)
+        return null
+      val digitIndex = FaceDigits.indexOf(digit)
+      if (digitIndex < 0)
+        return null
+      return letterIndexTimesSixPlusDigitIndexFaceWithUndoverlineCodes[letterIndex * 6 + digitIndex]
+    }
+
+  val underlineCode: Short?
+    get() {
+      return undoverlineCodes?.underlineCode
+    }
+  val overlineCode: Short?
+    get() {
+      return undoverlineCodes?.overlineCode
+    }
 }
 
 class KeySqr<F: Face<F>>(val faces: List<F>) {
@@ -82,6 +101,7 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
           .map<F, F>() { it.rotate(clockwiseTurnsMod4) }
       )
   }
+
 
   fun toCanonicalRotation(
     includeFaceOrientations: Boolean = allOrientationsAreDefined
@@ -199,6 +219,14 @@ class FaceRead(
   override val digit: Char
     get() = majorityOfThree(
             underlineDigit, overlineDigit, ocrDigitCharsFromMostToLeastLikely[0])
+  override val underlineCode: Short?
+    get() {
+      return underline?.code?.toShort()
+    }
+  override val overlineCode: Short?
+    get() {
+      return overline?.code?.toShort()
+    }
 
   override fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
     return String(
