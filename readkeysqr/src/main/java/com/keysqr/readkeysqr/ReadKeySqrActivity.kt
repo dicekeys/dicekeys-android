@@ -127,11 +127,12 @@ class ReadKeySqrActivity : AppCompatActivity() {
             imageView.setImageBitmap(rotatedBitmap)
         }
 
-        analyzerKeySqr.onActionDone = fun(humanReadableForm){
+        analyzerKeySqr.onActionDone = fun(keySqrAsJson){
             CameraX.unbindAll()
             var intent = Intent()
-            intent.putExtra("result", humanReadableForm)
-            setResult(RESULT_OK, intent);
+            intent.putExtra("result", "meh")
+            intent.putExtra("keySqrAsJson", keySqrAsJson)
+            setResult(RESULT_OK, intent)
             finish()
         }
     }

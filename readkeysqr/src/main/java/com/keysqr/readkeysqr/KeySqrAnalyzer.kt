@@ -14,7 +14,7 @@ class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer 
     private var lastAnalyzedTimestamp = 0L
 
     var onActionOverlay = fun(overlay: Bitmap): Unit = null!!
-    var onActionDone = fun(humanReadableForm: String): Unit = null!!
+    var onActionDone = fun(keySqrAsJson: String): Unit = null!!
 
     private val reader = ReadKeySqr()
 
@@ -24,16 +24,15 @@ class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer 
             try {
                 val buffer = image.planes[0].buffer
 
-                val res = reader.ProcessImage(image.width, image.height, image.planes[0].rowStride, buffer);
+                val res = reader.ProcessImage(image.width, image.height, image.planes[0].rowStride, buffer)
                 if(res)
                 {
-                    val vKeySqr = keySqrFromJsonFacesRead(reader.JsonKeySqrRead())
-                    val humanReadableForm: String? = vKeySqr?.toHumanReadableForm(true)
-                    if(humanReadableForm != null)
+                    val keySqrAsJson = reader.JsonKeySqrRead()
+                    if (keySqrAsJson != "null")
                     {
-                        activity.runOnUiThread({
-                            onActionDone(humanReadableForm)
-                        })
+                        activity.runOnUiThread{
+                            onActionDone(keySqrAsJson)
+                        }
                     }
                 }
 
@@ -44,9 +43,9 @@ class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer 
                 val bitmap = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
                 bitmap.copyPixelsFromBuffer(bufferOverlay)
 
-                activity.runOnUiThread({
+                activity.runOnUiThread{
                     onActionOverlay(bitmap)
-                })
+                }
             }
             catch (ex: Exception)
             {

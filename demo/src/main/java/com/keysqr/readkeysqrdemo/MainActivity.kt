@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.ImageView
+import com.keysqr.readkeysqr.KeySqrDrawable
 import com.keysqr.readkeysqr.ReadKeySqrActivity
 import com.keysqr.readkeysqr.keySqrFromJsonFacesRead
 
@@ -24,12 +26,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == RC_READ_KEYSQR) {
-            if(resultCode == Activity.RESULT_OK)
-            {
-                if(data!=null) {
-                    val humanReadableForm: String = data.getStringExtra("result")
+        if (requestCode == RC_READ_KEYSQR && resultCode == Activity.RESULT_OK && data!=null) {
+            val keySqrAsJson: String? = data.getStringExtra("keySqrAsJson")
+            if (keySqrAsJson != null && keySqrAsJson != "null") {
+                val keySqr = keySqrFromJsonFacesRead(keySqrAsJson)
+                if (keySqr != null) {
+                    val humanReadableForm: String = keySqr.toHumanReadableForm(true)
                     findViewById<TextView>(R.id.txt_json).text = humanReadableForm
+
+                    val myDrawing = KeySqrDrawable(keySqr)
+                    val image: ImageView = findViewById(R.id.keysqr_view)
+                    image.setImageDrawable(myDrawing)
+                    image.contentDescription = humanReadableForm
+
+                    //val imageView = findViewById<KeySqrDrawable>(R.id.keysqr_canvas_container)
                 }
             }
         }

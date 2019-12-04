@@ -1,12 +1,11 @@
 package com.keysqr.readkeysqr
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
+import android.graphics.drawable.Drawable
 
 // Typeface inconsolata = Typeface.createFromAsset(assetManager, pathToFont) / ResourcesCompat.getFont(context, R.font.Inconsolata700)
 fun defaultPaint(faceSize: Float): Paint {
-    var paint = Paint()
+    val paint = Paint()
     // paint.setTypeface(inconsolata)
     paint.textAlign = Paint.Align.CENTER
     paint.textSize = faceSize * FaceDimensionsFractional.fontSize
@@ -20,23 +19,25 @@ fun <T: Face<T>>renderFace(
         canvas: Canvas,
         x: Float = 0f,
         y: Float = 0f,
-        faceSize: Float = maxOf(canvas.width, canvas.height).toFloat(),
+        faceSize: Float = minOf(canvas.width, canvas.height).toFloat(),
         paint: Paint = defaultPaint(faceSize)
 ) {
-    var whitePaint = Paint();
-    whitePaint.setColor(Color.WHITE)
-    val undoverlineDotWidth = FaceDimensionsFractional.undoverlineDotWidth * faceSize;
-    val undoverlineDotHeight = FaceDimensionsFractional.undoverlineDotHeight * faceSize;
+    val whitePaint = Paint()
+    whitePaint.color = Color.WHITE
+    val undoverlineDotWidth = FaceDimensionsFractional.undoverlineDotWidth * faceSize
+    val undoverlineDotHeight = FaceDimensionsFractional.undoverlineDotHeight * faceSize
     fun renderUndoverline(isOverline: Boolean) {
         val undoverlineDotTop = y + (
                 if (isOverline)
                     FaceDimensionsFractional.overlineDotTop
                 else
                     FaceDimensionsFractional.underlineDotTop
-                ) * faceSize
+            ) * faceSize
         val undoverlineDotBottom = undoverlineDotTop + undoverlineDotHeight
         fun renderUndoverlineBit(pos: Int) {
-            val undoverlineDotLeft = x + undoverlineDotWidth * pos
+            val undoverlineDotLeft = x +
+                    FaceDimensionsFractional.undoverlineFirstDotLeftEdge * faceSize +
+                    undoverlineDotWidth * pos
             val undoverlineDotRight = undoverlineDotLeft + undoverlineDotWidth
             canvas.drawRect(undoverlineDotLeft, undoverlineDotTop, undoverlineDotRight, undoverlineDotBottom, whitePaint)
         }
@@ -51,18 +52,17 @@ fun <T: Face<T>>renderFace(
         val right = left + FaceDimensionsFractional.undoverlineLength * faceSize
         val bottom = top + FaceDimensionsFractional.undoverlineThickness * faceSize
         paint.color = Color.BLACK
-        canvas.drawRect(top, top, right, bottom, paint)
+        canvas.drawRect(left, top, right, bottom, paint)
 
         val code: Short? = if (isOverline) face.overlineCode else face.underlineCode
-        if (code == null)
-            return
-        val fullCode = 1024 + (if (isOverline) 512 else 0) + (code.toInt() shl 1)
-        for (var pos in 0..10) {
-            if (((fullCode shr (10 - pos)) and 1) != 0) {
-                renderUndoverlineBit(pos)
+        if (code != null) {
+            val fullCode = 1024 + (if (isOverline) 512 else 0) + (code.toInt() shl 1)
+            for (pos in 0..10) {
+                if (((fullCode shr (10 - pos)) and 1) != 0) {
+                    renderUndoverlineBit(pos)
+                }
             }
         }
-
     }
     val fractionalXDistFromFaceCenterToCharCenter = (FaceDimensionsFractional.charWidth + FaceDimensionsFractional.spaceBetweenLetterAndDigit) / 2
     val letterX = x + (0.5f - fractionalXDistFromFaceCenterToCharCenter) * faceSize
@@ -78,15 +78,15 @@ fun <T: Face<T>>renderFace(
 fun <T: Face<T>>renderKeySqr(
         keySqr: KeySqr<T>,
         canvas: Canvas,
-        x: Float = canvas.width.toFloat() / 2,
-        y: Float = canvas.height.toFloat() / 2,
         size: Float = minOf(canvas.width, canvas.height).toFloat(),
-        paint: Paint = defaultPaint(size)
+        x: Float = (canvas.width - size) / 2,
+        y: Float = (canvas.height - size) / 2
 ) {
     val faceDist = size / 5f
-    val faceSize = size / 6f
+    val faceSize = size / 8f
     val left = x + (faceDist - faceSize) / 2f
     val top = y + (faceDist - faceSize) / 2f
+    val paint: Paint = defaultPaint(faceSize)
 
 
     keySqr.faces.forEachIndexed{ index, face -> run {
@@ -99,4 +99,26 @@ fun <T: Face<T>>renderKeySqr(
                 paint
         )
     }}
+}
+
+class KeySqrDrawable(
+    private val keySqr: KeySqr<FaceRead>
+) : Drawable() {
+
+
+    override fun draw(canvas: Canvas) {
+        renderKeySqr(keySqr, canvas)
+    }
+
+    override fun setAlpha(alpha: Int) {
+        // This method is required
+    }
+
+    override fun setColorFilter(colorFilter: ColorFilter?) {
+        // This method is required
+    }
+
+    override fun getOpacity(): Int =
+            // Must be PixelFormat.UNKNOWN, TRANSLUCENT, TRANSPARENT, or OPAQUE
+            PixelFormat.OPAQUE
 }
