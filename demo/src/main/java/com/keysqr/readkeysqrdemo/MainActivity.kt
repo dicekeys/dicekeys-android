@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
                     val humanReadableForm: String = keySqr.toHumanReadableForm(true)
                     findViewById<TextView>(R.id.txt_json).text = humanReadableForm
 
-                    val myDrawing = KeySqrDrawable(keySqr)
+                    val myDrawing = KeySqrDrawable(this, keySqr)
                     val image: ImageView = findViewById(R.id.keysqr_view)
                     image.setImageDrawable(myDrawing)
                     image.contentDescription = humanReadableForm
