@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Size
 import android.view.TextureView
-import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.camera.core.*
@@ -18,7 +17,6 @@ import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 
 class ReadKeySqrActivity : AppCompatActivity() {
-
     // This is an arbitrary number we are using to keep track of the permission
     // request. Where an app has multiple context for requesting permission,
     // this can help differentiate the different contexts.
@@ -121,17 +119,21 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
         analyzerKeySqr.onActionOverlay = fun(overlayBitmap){
             val matrix = Matrix()
+            // FIXME - not sure this will be correct is scanning in landscape.
+            // I'd assume this angle should be derived/read from somewhere.
+            // https://github.com/dicekeys/read-keysqr-android/issues/18
             matrix.postRotate(90f)
             val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.getWidth(), overlayBitmap.getHeight(), matrix, true);
 
             imageView.setImageBitmap(rotatedBitmap)
         }
 
-        analyzerKeySqr.onActionDone = fun(humanReadableForm){
+        analyzerKeySqr.onActionDone = fun(keySqrAsJson){
             CameraX.unbindAll()
             var intent = Intent()
-            intent.putExtra("result", humanReadableForm)
-            setResult(RESULT_OK, intent);
+            intent.putExtra("result", "meh")
+            intent.putExtra("keySqrAsJson", keySqrAsJson)
+            setResult(RESULT_OK, intent)
             finish()
         }
     }
