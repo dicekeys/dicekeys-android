@@ -35,6 +35,8 @@ class KeySqrRenderer(private val typeface: Typeface?) {
         blackPaint.color = Color.BLACK
         val undoverlineDotWidth = FaceDimensionsFractional.undoverlineDotWidth * faceSize
         val undoverlineDotHeight = FaceDimensionsFractional.undoverlineDotHeight * faceSize
+
+        // Draw an underline or overline
         fun renderUndoverline(isOverline: Boolean) {
             val undoverlineDotTop = y + (
                     if (isOverline)
@@ -43,14 +45,16 @@ class KeySqrRenderer(private val typeface: Typeface?) {
                         FaceDimensionsFractional.underlineDotTop
                     ) * faceSize
             val undoverlineDotBottom = undoverlineDotTop + undoverlineDotHeight
-            fun renderUndoverlineBit(pos: Int) {
-                val undoverlineDotLeft = x +
-                        FaceDimensionsFractional.undoverlineFirstDotLeftEdge * faceSize +
-                        undoverlineDotWidth * pos
-                val undoverlineDotRight = undoverlineDotLeft + undoverlineDotWidth
-                canvas.drawRect(undoverlineDotLeft, undoverlineDotTop, undoverlineDotRight, undoverlineDotBottom, whitePaint)
-            }
+//            // Draw a white box representing a pixel at a given position with the [und|ov]erline
+//            fun renderUndoverlineBit(pos: Int) {
+//                val undoverlineDotLeft = x +
+//                        FaceDimensionsFractional.undoverlineFirstDotLeftEdge * faceSize +
+//                        undoverlineDotWidth * pos
+//                val undoverlineDotRight = undoverlineDotLeft + undoverlineDotWidth
+//                canvas.drawRect(undoverlineDotLeft, undoverlineDotTop, undoverlineDotRight, undoverlineDotBottom, whitePaint)
+//            }
 
+            // Calculate the coordinates of the black [und|ov]erline rectangle
             val left = x + FaceDimensionsFractional.undoverlineLeftEdge * faceSize
             val top = y + (
                     if (isOverline)
@@ -62,25 +66,54 @@ class KeySqrRenderer(private val typeface: Typeface?) {
             val bottom = top + FaceDimensionsFractional.undoverlineThickness * faceSize
             canvas.drawRect(left, top, right, bottom, blackPaint)
 
+            // Draw the white boxes representing the code in the [und|ov]erline
+            // within the [und|ov]erline rectangle.
             val code: Short? = if (isOverline) face.overlineCode else face.underlineCode
             if (code != null) {
                 val fullCode = 1024 + (if (isOverline) 512 else 0) + (code.toInt() shl 1)
                 for (pos in 0..10) {
                     if (((fullCode shr (10 - pos)) and 1) != 0) {
-                        renderUndoverlineBit(pos)
+                        // Draw a white box at position pos because that bit is 1 in the code
+                        val undoverlineDotLeft = x +
+                                FaceDimensionsFractional.undoverlineFirstDotLeftEdge * faceSize +
+                                undoverlineDotWidth * pos
+                        val undoverlineDotRight = undoverlineDotLeft + undoverlineDotWidth
+                        canvas.drawRect(undoverlineDotLeft, undoverlineDotTop, undoverlineDotRight, undoverlineDotBottom, whitePaint)
                     }
                 }
             }
         }
 
+        // Calculate the center of the face (used for rotation below)
+        val centerX = x + faceSize / 2
+        val centerY = y + faceSize / 2
+        // Rotate the canvas in counterclockwise before rendering, so that
+        // when the rotation is restored (clockwise) the face will be in the
+        // correct direction
+        val rotateCanvasBy = 90f *
+                (face?.clockwise90DegreeRotationsFromUpright ?: 0).toFloat()
+        if (rotateCanvasBy != 0f) {
+            canvas.save()
+            canvas.rotate(rotateCanvasBy, centerX, centerY )
+        }
+
+        // Calculate the positions of the letter and digit
         val fractionalXDistFromFaceCenterToCharCenter = (FaceDimensionsFractional.charWidth + FaceDimensionsFractional.spaceBetweenLetterAndDigit) / 2
         val letterX = x + (0.5f - fractionalXDistFromFaceCenterToCharCenter) * faceSize
         val digitX = x + (0.5f + fractionalXDistFromFaceCenterToCharCenter) * faceSize
         val textY = y + FaceDimensionsFractional.textBaselineY * faceSize
+        // Render the letter and digit
         canvas.drawText(face.letter.toString(), letterX, textY, textPaint)
         canvas.drawText(face.digit.toString(), digitX, textY, textPaint)
+        // Render the underline and overline
         renderUndoverline(false)
         renderUndoverline(true)
+
+        // Undo the rotation used to render the face
+        if (rotateCanvasBy != 0f) {
+            canvas.restore()
+        }
+
     }
 
     fun <T : Face<T>> renderKeySqr(
@@ -120,7 +153,8 @@ class KeySqrDrawable(
     private val renderer = KeySqrRenderer(inconsolataBold)
 
     override fun draw(canvas: Canvas) {
-        renderer.renderKeySqr(keySqr, canvas)
+        // https://github.com/dicekeys/read-keysqr-android/issues/18
+        renderer.renderKeySqr(keySqr.rotate(1), canvas)
     }
 
     override fun setAlpha(alpha: Int) {

@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
             if (keySqrAsJson != null && keySqrAsJson != "null") {
                 val keySqr = keySqrFromJsonFacesRead(keySqrAsJson)
                 if (keySqr != null) {
-                    val humanReadableForm: String = keySqr.toHumanReadableForm(true)
+                    val humanReadableForm: String = keySqr.toCanonicalRotation().toHumanReadableForm(true)
                     findViewById<TextView>(R.id.txt_json).text = humanReadableForm
 
                     val myDrawing = KeySqrDrawable(this, keySqr)

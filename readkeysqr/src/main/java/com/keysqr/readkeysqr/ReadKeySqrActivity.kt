@@ -119,6 +119,9 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
         analyzerKeySqr.onActionOverlay = fun(overlayBitmap){
             val matrix = Matrix()
+            // FIXME - not sure this will be correct is scanning in landscape.
+            // I'd assume this angle should be derived/read from somewhere.
+            // https://github.com/dicekeys/read-keysqr-android/issues/18
             matrix.postRotate(90f)
             val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.getWidth(), overlayBitmap.getHeight(), matrix, true);
 
