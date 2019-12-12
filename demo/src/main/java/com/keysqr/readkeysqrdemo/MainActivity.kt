@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.ImageView
 import com.keysqr.readkeysqr.KeySqrDrawable
 import com.keysqr.readkeysqr.ReadKeySqrActivity
+import com.keysqr.readkeysqr.jsonGlobalPublicKey
 import com.keysqr.readkeysqr.keySqrFromJsonFacesRead
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +33,11 @@ class MainActivity : AppCompatActivity() {
                 val keySqr = keySqrFromJsonFacesRead(keySqrAsJson)
                 if (keySqr != null) {
                     val humanReadableForm: String = keySqr.toCanonicalRotation().toHumanReadableForm(true)
-                    findViewById<TextView>(R.id.txt_json).text = humanReadableForm
+                    val publicKeyStr = jsonGlobalPublicKey(
+                            humanReadableForm,
+                            "{\"purpose\":\"ForPublicKeySealedMessagesWithRestrictionsEnforcedPostDecryption\"}"
+                    )
+                    findViewById<TextView>(R.id.txt_json).text = publicKeyStr
 
                     val myDrawing = KeySqrDrawable(this, keySqr)
                     val image: ImageView = findViewById(R.id.keysqr_view)

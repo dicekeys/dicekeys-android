@@ -3,6 +3,11 @@ package com.keysqr.readkeysqr
 import android.util.Log
 import java.nio.ByteBuffer
 
+external fun jsonGlobalPublicKey(
+        keySqrInHumanReadableForm: String,
+        keyDerivationOptionsJson: String
+): String
+
 class ReadKeySqr {
     init {
         System.loadLibrary("jni-read-keysqr")

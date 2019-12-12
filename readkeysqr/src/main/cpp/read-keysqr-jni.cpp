@@ -1,8 +1,8 @@
 #include <string>
 #include <jni.h>
 #include "./read-keysqr/lib-read-keysqr/graphics/cv.h"
-
 #include "./read-keysqr/lib-read-keysqr/read-keysqr.h"
+#include "./read-keysqr/lib-keysqr/lib-keysqr.hpp"
 
 extern "C" {
 
@@ -89,6 +89,30 @@ JNIEXPORT jstring Java_com_keysqr_readkeysqr_ReadKeySqr_jsonKeySqrRead(
 	KeySqrImageReader* pReader = (KeySqrImageReader*)reader;
 	std::string json = pReader->jsonKeySqrRead();
 	return env->NewStringUTF(json.c_str());
+}
+
+
+JNIEXPORT jstring Java_com_keysqr_readkeysqr_ReadKeySqrKt_jsonGlobalPublicKey(
+		JNIEnv* env,
+		jobject  obj,
+		jstring keySqrInHumanReadableFormObj,
+		jstring KeyDerivationOptionsJsonObj
+)
+{
+	const std::string keySqrInHumanReadableForm(
+		env->GetStringUTFChars( keySqrInHumanReadableFormObj, NULL )
+	);
+	const std::string KeyDerivationOptionsJson(
+		env->GetStringUTFChars( KeyDerivationOptionsJsonObj, NULL )
+	);
+
+	const KeySqrFromString keySqrRead(keySqrInHumanReadableForm);
+	const GlobalPublicPrivateKeyPair gkp(
+			keySqrRead,
+			KeyDerivationOptionsJson
+	);
+	const std::string publicKeyJson = gkp.getPublicKey().toJson();
+	return env->NewStringUTF(publicKeyJson.c_str());
 }
 
 JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_deleteKeySqrImageReader(

@@ -91,7 +91,7 @@ class KeySqrRenderer(private val typeface: Typeface?) {
         // when the rotation is restored (clockwise) the face will be in the
         // correct direction
         val rotateCanvasBy = 90f *
-                (face?.clockwise90DegreeRotationsFromUpright ?: 0).toFloat()
+                (face.clockwise90DegreeRotationsFromUpright ?: 0).toFloat()
         if (rotateCanvasBy != 0f) {
             canvas.save()
             canvas.rotate(rotateCanvasBy, centerX, centerY )
