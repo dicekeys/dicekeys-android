@@ -17,4 +17,5 @@ add_library(
 target_link_libraries( jni-read-keysqr
     PRIVATE
     lib-read-keysqr
+    lib-keysqr
 )
