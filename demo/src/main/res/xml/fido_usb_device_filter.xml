@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+<!-- FIDO Keys -->
+    <!-- Solo keys: ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="8acf" -->
+    <usb-device vendor-id="10c4" product-id="8acf" />
+    <usb-device vendor-id="483" product-id="a2ca" />
+</resources>

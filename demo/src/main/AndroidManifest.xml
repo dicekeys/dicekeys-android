@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- for writing to USB FIDO keys -->
+    <uses-feature android:name="android.hardware.usb.host" />
+    <!-- end for writing to USB FIDO keys -->
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,6 +21,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- for writing to USB FIDO keys -->
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/fido_usb_device_filter" />
+            <!-- end for writing to USB FIDO keys -->
+
         </activity>
     </application>
 
