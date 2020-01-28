@@ -11,8 +11,9 @@ import android.hardware.usb.UsbConstants
 import android.util.Log
 import kotlin.random.Random
 
-// FIXME - should close connection on destruction
-
+class LoadKeyNotAuthorizedByUserException(
+    message: String? = "User failed to perform the authorization step to allow the key to be written"
+): Exception(message)
 
 open class UsbCtapHidConnection(usbManager: UsbManager,
                                 device: UsbDevice,
@@ -29,6 +30,10 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
             val CTAPHID_WINK: Byte = (0x08).toByte()
             val CTAPHID_ERROR: Byte = (0x3F).toByte()
             val CTAPHID_LOADKEY: Byte = (0x62).toByte()
+        }
+
+        protected object Errors {
+            val CTAP2_ERR_OPERATION_DENIED: Byte = (0x27).toByte()
         }
 
         protected object Defaults {
@@ -387,8 +392,11 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
         val response = sendCommand(Commands.CTAPHID_LOADKEY, loadKeySeedData, 14000)
         if (response.cmd != Commands.CTAPHID_LOADKEY) {
             val error: Byte = response.data[0]
-            throw java.io.IOException("Failed to write key, error = $error")
-            // FIXME -- detect case when user fails to press button
+            if (error == Errors.CTAP2_ERR_OPERATION_DENIED) {
+                throw LoadKeyNotAuthorizedByUserException()
+            } else {
+                throw java.io.IOException("Failed to write key due to unforeseen error # $error.")
+            }
         }
     }
 
