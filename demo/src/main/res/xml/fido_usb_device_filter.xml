@@ -2,7 +2,15 @@
 
 <resources>
 <!-- FIDO Keys -->
-    <!-- Solo keys: ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="8acf" -->
+    <!-- Solo keys: ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="8acf"
+    -->
     <usb-device vendor-id="10c4" product-id="8acf" />
-    <usb-device vendor-id="483" product-id="a2ca" />
+    <usb-device vendor-id="0483" product-id="a2ca" />
+    <!-- -->
+    <!-- We can get more picky later, but I worry we're missing device notifications
+         in debug mode.
+         For now, let's get notified on ANY usb device -->
+    <!--
+        <usb-device />
+     -->
 </resources>
