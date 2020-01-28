@@ -6,6 +6,7 @@
 
     <!-- for writing to USB FIDO keys -->
     <uses-feature android:name="android.hardware.usb.host" />
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
     <!-- end for writing to USB FIDO keys -->
 
     <application
@@ -18,7 +19,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
