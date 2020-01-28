@@ -259,6 +259,11 @@ class MainActivity : AppCompatActivity() {
         permissionIntent?.let {
             usbCtapHidConnection = UsbCtapHidConnection.find(usbManager, it)
         }
+        usbCtapHidConnection?.let {
+            var bogusKeySeed = ByteArray(96)
+            Random.Default.nextBytes(bogusKeySeed)
+            it.loadKeySeed(bogusKeySeed)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

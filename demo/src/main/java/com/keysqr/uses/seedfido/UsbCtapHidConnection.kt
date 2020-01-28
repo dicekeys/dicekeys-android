@@ -15,10 +15,10 @@ import kotlin.random.Random
 
 
 open class UsbCtapHidConnection(usbManager: UsbManager,
-                            device: UsbDevice,
-                            private val usbInterface: UsbInterface,
-                            private val inputEndpoint: UsbEndpoint,
-                            private val outputEndpoint: UsbEndpoint
+                                device: UsbDevice,
+                                private val usbInterface: UsbInterface,
+                                private val fromSecurityKeyEndpoint: UsbEndpoint,
+                                private val toSecurityKeyEndpoint: UsbEndpoint
 ) {
     private val BroadcastChannel: Int = (0xffffffff).toInt()
 
@@ -62,27 +62,31 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
         }
 
         fun find(usbManager: UsbManager, device: UsbDevice): UsbCtapHidConnection?  {
-            for (i in 0 until device?.interfaceCount) {
-                val usbInterface = device.getInterface(i)
-                val isHID = usbInterface.interfaceClass == Interface.Class
-                if (!isHID) {
-                    return null
-                }
-                var toSecurityToken: UsbEndpoint? = null
-                var fromSecurityToken: UsbEndpoint? = null
-                for (j in 0 until usbInterface.endpointCount) {
-                    val endpoint = usbInterface.getEndpoint(j)
-                    if (endpoint.address == Endpoints.ToSecurityToken.Address &&
-                            endpoint.direction == UsbConstants.USB_DIR_OUT) {
-                        toSecurityToken = endpoint
-                    } else if (endpoint.address == Endpoints.FromSecurityToken.Address &&
-                            endpoint.direction == UsbConstants.USB_DIR_IN) {
-                        fromSecurityToken = endpoint
+            try {
+                for (i in 0 until device?.interfaceCount) {
+                    val usbInterface = device.getInterface(i)
+                    val isHID = usbInterface.interfaceClass == Interface.Class
+                    if (!isHID) {
+                        return null
+                    }
+                    var toSecurityToken: UsbEndpoint? = null
+                    var fromSecurityToken: UsbEndpoint? = null
+                    for (j in 0 until usbInterface.endpointCount) {
+                        val endpoint = usbInterface.getEndpoint(j)
+                        if (endpoint.address == Endpoints.ToSecurityToken.Address &&
+                                endpoint.direction == UsbConstants.USB_DIR_OUT) {
+                            toSecurityToken = endpoint
+                        } else if (endpoint.address == Endpoints.FromSecurityToken.Address &&
+                                endpoint.direction == UsbConstants.USB_DIR_IN) {
+                            fromSecurityToken = endpoint
+                        }
+                    }
+                    if (toSecurityToken != null && fromSecurityToken != null) {
+                        return UsbCtapHidConnection(usbManager, device, usbInterface, fromSecurityToken, toSecurityToken)
                     }
                 }
-                if (toSecurityToken != null && fromSecurityToken != null) {
-                    return UsbCtapHidConnection(usbManager, device, usbInterface, toSecurityToken, fromSecurityToken)
-                }
+            } catch (e: Exception) {
+                Log.d("USB Fido Connect Failed", "${e.message} ${e.stackTrace}")
             }
             return null
         }
@@ -216,9 +220,9 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
 
         // Using the maxPacketSize, calculate the max number of bytes allowed in each packet type
         val initializationPacketMetaDataSize = 7 // channelId (4 bytes) + length (2 bytes) + command (1 byte)
-        val maxInitializationPacketDataSize = outputEndpoint.maxPacketSize - initializationPacketMetaDataSize
+        val maxInitializationPacketDataSize = toSecurityKeyEndpoint.maxPacketSize - initializationPacketMetaDataSize
         val continuationPacketMetaDataSize = 5 // channelId (4 bytes) + sequence number (1 byte)
-        val maxContinuationPacketDataSize = outputEndpoint.maxPacketSize - continuationPacketMetaDataSize
+        val maxContinuationPacketDataSize = toSecurityKeyEndpoint.maxPacketSize - continuationPacketMetaDataSize
 
         // Ensure the data being sent can be fit in the 129 packets
         if (data.size > (
@@ -235,7 +239,7 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
         //
 
         val initializationPacketDataSize = min(maxInitializationPacketDataSize, data.size)
-        val initializationPacket = java.nio.ByteBuffer.allocate(outputEndpoint.maxPacketSize)
+        val initializationPacket = java.nio.ByteBuffer.allocate(toSecurityKeyEndpoint.maxPacketSize)
                 // In this implementation we'll opt for the CID to be big endian.
                 // Since the only hard-coded value is 0xFFFFFFFF, which is the same in both endians,
                 // either convention should work so long as we stick to it.
@@ -264,7 +268,7 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
         while (bytesAlreadySent < data.size) {
             val bytesRemainingToSend = data.size - bytesAlreadySent
             val continuationPacketDataSize = min(maxContinuationPacketDataSize, bytesRemainingToSend)
-            val continuationPacket = java.nio.ByteBuffer.allocate(outputEndpoint.maxPacketSize)
+            val continuationPacket = java.nio.ByteBuffer.allocate(toSecurityKeyEndpoint.maxPacketSize)
                     // In this implementation we'll opt for the CID to be big endian.
                     // Since the only hard-coded value is 0xFFFFFFFF, which is the same in both endians,
                     // either convention should work so long as we stick to it.
@@ -292,7 +296,7 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
     private fun transmit(channel: Int, command: Byte, data: ByteArray) {
         val packets = createPackets(channel, command, data)
         for (packet in packets) {
-            connection.bulkTransfer(outputEndpoint, packet, packet.size, Defaults.TIMEOUT_MS)
+            connection.bulkTransfer(toSecurityKeyEndpoint, packet, packet.size, Defaults.TIMEOUT_MS)
             Log.d(
                 "Packet sent",
                 "[${packet.size}]=${packet.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }}"
@@ -326,17 +330,22 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
             retryTimeout: Int = Defaults.RETRY_TIMEOUT_MS
     ): HidResponseInitializationPacket {
         for (attempt in 0..retries) {
-            val readBuffer = ByteArray(inputEndpoint.maxPacketSize)
-            val bytesRead = connection.bulkTransfer(inputEndpoint, readBuffer, inputEndpoint.maxPacketSize,
-                    if (attempt == 0) timeout else retryTimeout)
-            if (bytesRead > 0)
+            val readBuffer = ByteArray(fromSecurityKeyEndpoint.maxPacketSize)
+            val bytesRead = connection.bulkTransfer(
+                    fromSecurityKeyEndpoint,
+                    readBuffer,
+                    fromSecurityKeyEndpoint.maxPacketSize,
+                    if (attempt == 0) timeout else retryTimeout
+            )
+            if (bytesRead > 0) {
                 Log.d(
                         "Packet received",
                         "[${readBuffer.size}]=${readBuffer.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }}"
                 )
-            val response = HidResponseInitializationPacket(readBuffer)
-            if (response.channel == channel) {
-                return HidResponseInitializationPacket(readBuffer)
+                val response = HidResponseInitializationPacket(readBuffer)
+                if (response.channel == channel) {
+                    return HidResponseInitializationPacket(readBuffer)
+                }
             }
         }
         throw java.io.IOException("Timeout or no data read")
@@ -375,7 +384,7 @@ open class UsbCtapHidConnection(usbManager: UsbManager,
                         // This version uses a 96-byte FIDO key seed
                         .put(keySeedAs96Bytes)
                         .array()
-        val response = sendCommand(Commands.CTAPHID_LOADKEY, loadKeySeedData)
+        val response = sendCommand(Commands.CTAPHID_LOADKEY, loadKeySeedData, 14000)
         if (response.cmd != Commands.CTAPHID_LOADKEY) {
             val error: Byte = response.data[0]
             throw java.io.IOException("Failed to write key, error = $error")
