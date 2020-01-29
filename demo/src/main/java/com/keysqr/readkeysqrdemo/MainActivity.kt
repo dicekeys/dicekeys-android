@@ -114,17 +114,18 @@ class MainActivity : AppCompatActivity() {
                     image.setImageDrawable(myDrawing)
                     image.contentDescription = humanReadableForm
 
-                    findViewById<TextView>(R.id.txt_json).text =
-                            "{\n\tdice: \"$humanReadableForm,\"\n\tpublicKey: 0x$publicKeyStr,\n\t,\n\tseed: 0x$seedStr\n}"
-
-
-                    // FIXME -- use C libraries to derive key
+                    var wroteToFidoKey = false
                     deviceList?.devices?.values?.firstOrNull()?.let {
                         val connection = deviceList?.connect(it)
-                        var bogusKeySeed = ByteArray(96)
-                        Random.Default.nextBytes(bogusKeySeed)
-                        connection?.loadKeySeed(bogusKeySeed)
+                        connection?.loadKeySeed(seed)
+                        wroteToFidoKey = true
                     }
+
+                    findViewById<TextView>(R.id.txt_json).text =
+                            "{wroteToFidoKey:${wroteToFidoKey},\ndice:\"$humanReadableForm,\"\npublicKey:0x$publicKeyStr,\n"+
+                            "seed:0x$seedStr}"
+
+
                     //val imageView = findViewById<KeySqrDrawable>(R.id.keysqr_canvas_container)
                 }
             }
