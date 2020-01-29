@@ -92,28 +92,28 @@ JNIEXPORT jstring Java_com_keysqr_readkeysqr_ReadKeySqr_jsonKeySqrRead(
 }
 
 
-JNIEXPORT jstring Java_com_keysqr_readkeysqr_ReadKeySqrKt_jsonGlobalPublicKey(
-		JNIEnv* env,
-		jobject  obj,
-		jstring keySqrInHumanReadableFormObj,
-		jstring KeyDerivationOptionsJsonObj
-)
-{
-	const std::string keySqrInHumanReadableForm(
-		env->GetStringUTFChars( keySqrInHumanReadableFormObj, NULL )
-	);
-	const std::string KeyDerivationOptionsJson(
-		env->GetStringUTFChars( KeyDerivationOptionsJsonObj, NULL )
-	);
-
-	const KeySqrFromString keySqrRead(keySqrInHumanReadableForm);
-	const GlobalPublicPrivateKeyPair gkp(
-			keySqrRead,
-			KeyDerivationOptionsJson
-	);
-	const std::string publicKeyJson = gkp.getPublicKey().toJson();
-	return env->NewStringUTF(publicKeyJson.c_str());
-}
+//JNIEXPORT jstring Java_com_keysqr_readkeysqr_ReadKeySqrKt_jsonGlobalPublicKey(
+//		JNIEnv* env,
+//		jobject  obj,
+//		jstring keySqrInHumanReadableFormObj,
+//		jstring KeyDerivationOptionsJsonObj
+//)
+//{
+//	const std::string keySqrInHumanReadableForm(
+//		env->GetStringUTFChars( keySqrInHumanReadableFormObj, NULL )
+//	);
+//	const std::string KeyDerivationOptionsJson(
+//		env->GetStringUTFChars( KeyDerivationOptionsJsonObj, NULL )
+//	);
+//
+//	const KeySqrFromString keySqrRead(keySqrInHumanReadableForm);
+//	const PublicPrivateKeyPair gkp(
+//			keySqrRead,
+//			KeyDerivationOptionsJson
+//	);
+//	const std::string publicKeyJson = gkp.getPublicKey().toJson();
+//	return env->NewStringUTF(publicKeyJson.c_str());
+//}
 
 JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_deleteKeySqrImageReader(
 		JNIEnv* env,

@@ -11,9 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.keysqr.readkeysqr.KeySqrDrawable
 import com.keysqr.readkeysqr.ReadKeySqrActivity
-import com.keysqr.readkeysqr.jsonGlobalPublicKey
-import com.keysqr.readkeysqr.keySqrFromJsonFacesRead
-import com.keysqr.uses.seedfido.UsbCtapHidConnection
+import com.keysqr.keySqrFromJsonFacesRead
 import com.keysqr.uses.seedfido.UsbCtapHidDeviceList
 import kotlin.random.Random
 
@@ -94,19 +92,31 @@ class MainActivity : AppCompatActivity() {
                 val keySqr = keySqrFromJsonFacesRead(keySqrAsJson)
                 if (keySqr != null) {
                     val humanReadableForm: String = keySqr.toCanonicalRotation().toHumanReadableForm(true)
-                    val publicKeyStr = jsonGlobalPublicKey(
-                            humanReadableForm,
-                            "{\"purpose\":\"ForPublicKeySealedMessagesWithRestrictionsEnforcedPostDecryption\"}"
+                    val publicKey: ByteArray = keySqr.getPublicKey(
+                            "{\"keyType\":\"Public\"}",
+                            ""
                     )
-                    findViewById<TextView>(R.id.txt_json).text = publicKeyStr
+                    val publicKeyStr = publicKey.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+
+                    val seed: ByteArray = keySqr.getSeed(
+                            "{" +
+                                "\"keyType\":\"Seed\"," +
+                                "\"keyLengthInBytes\":96," +
+                                "\"hashFunction\":{\"algorithm\":\"Argon2id\"}," +
+                                "\"restrictToClientApplicationsIdPrefixes\":[\"com.dicekeys.fido\"]" +
+                                "}",
+                            "com.dicekeys.fido"
+                    )
+                    val seedStr = seed.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
                     val myDrawing = KeySqrDrawable(this, keySqr)
                     val image: ImageView = findViewById(R.id.keysqr_view)
                     image.setImageDrawable(myDrawing)
                     image.contentDescription = humanReadableForm
 
-                    findViewById<TextView>(R.id.txt_json).text = "" +
-                            "${findViewById<TextView>(R.id.txt_json).text} ${humanReadableForm}$"
+                    findViewById<TextView>(R.id.txt_json).text =
+                            "{\n\tdice: \"$humanReadableForm,\"\n\tpublicKey: 0x$publicKeyStr,\n\t,\n\tseed: 0x$seedStr\n}"
+
 
                     // FIXME -- use C libraries to derive key
                     deviceList?.devices?.values?.firstOrNull()?.let {

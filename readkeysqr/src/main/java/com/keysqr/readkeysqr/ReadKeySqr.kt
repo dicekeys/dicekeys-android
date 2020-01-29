@@ -3,10 +3,10 @@ package com.keysqr.readkeysqr
 import android.util.Log
 import java.nio.ByteBuffer
 
-external fun jsonGlobalPublicKey(
-        keySqrInHumanReadableForm: String,
-        keyDerivationOptionsJson: String
-): String
+//external fun jsonGlobalPublicKey(4
+//        keySqrInHumanReadableForm: String,
+//        keyDerivationOptionsJson: String
+//): String
 
 class ReadKeySqr {
     init {

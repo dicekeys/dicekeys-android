@@ -1,6 +1,5 @@
-package com.keysqr.readkeysqr
-import android.graphics.Canvas
-import android.graphics.Paint
+package com.keysqr
+import com.keysqr.readkeysqr.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -79,6 +78,18 @@ interface Face<T: Face<T>> {
     }
 }
 
+external fun keySqrGetSeed(
+  keySqrInHumanReadableFormWithOrientations: String,
+  jsonKeyDerivationOptions: String,
+  clientsApplicationId: String
+): ByteArray
+
+external fun keySqrGetPublicKey(
+        keySqrInHumanReadableFormWithOrientations: String,
+        jsonKeyDerivationOptions: String,
+        clientsApplicationId: String
+): ByteArray
+
 class KeySqr<F: Face<F>>(val faces: List<F>) {
 
   fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
@@ -96,17 +107,16 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
     return if (clockwiseTurnsMod4 == 0)
         this@KeySqr
       else KeySqr(
-        rotationIndexes[clockwiseTurnsMod4]
-          .map<Byte, F>() { faces[it.toInt()] }
-          .map<F, F>() { it.rotate(clockwiseTurnsMod4) }
-      )
+            rotationIndexes[clockwiseTurnsMod4]
+                    .map<Byte, F>() { faces[it.toInt()] }
+                    .map<F, F>() { it.rotate(clockwiseTurnsMod4) }
+    )
   }
-
 
   fun toCanonicalRotation(
     includeFaceOrientations: Boolean = allOrientationsAreDefined
   ): KeySqr<F> {
-    var winningRotation: KeySqr<F> = this@KeySqr;
+    var winningRotation: KeySqr<F> = this@KeySqr
     var winningReadableForm = toHumanReadableForm(includeFaceOrientations)
     for (clockwiseTurns in 1..3) {
       val rotatedKey = rotate(clockwiseTurns)
@@ -118,6 +128,28 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
     }
     return winningRotation;
   }
+
+  fun getSeed(
+    jsonKeyDerivationOptions: String,
+    clientsApplicationId: String
+  ): ByteArray {
+    return keySqrGetSeed(
+      toCanonicalRotation().toHumanReadableForm(true),
+      jsonKeyDerivationOptions,
+      clientsApplicationId
+    )
+  }
+
+  fun getPublicKey(
+    jsonKeyDerivationOptions: String,
+    clientsApplicationId: String
+  ): ByteArray {
+    return keySqrGetPublicKey(
+      toCanonicalRotation().toHumanReadableForm(true),
+      jsonKeyDerivationOptions,
+      clientsApplicationId
+    )
+  }
 }
 
 @JsonClass(generateAdapter = true)
@@ -128,14 +160,14 @@ class Point(
 
 @JsonClass(generateAdapter = true)
 class Line(
-  val start: Point,
-  val end: Point
+        val start: Point,
+        val end: Point
 );
 
 @JsonClass(generateAdapter = true)
 class Undoverline(
-  val line: Line,
-  val code: Int
+        val line: Line,
+        val code: Int
 );
 
 fun majorityOfThree(a: Char, b: Char, c: Char): Char {
@@ -173,12 +205,12 @@ fun clockwise90DegreeRotationsFromUprightToTrbl(
 
 @JsonClass(generateAdapter = true)
 class FaceRead(
-  val underline: Undoverline?,
-  val overline: Undoverline?,
-  val orientationAsLowercaseLetterTRBL: String,
-  val ocrLetterCharsFromMostToLeastLikely: String,
-  val ocrDigitCharsFromMostToLeastLikely: String,
-  val center: Point
+        val underline: Undoverline?,
+        val overline: Undoverline?,
+        val orientationAsLowercaseLetterTRBL: String,
+        val ocrLetterCharsFromMostToLeastLikely: String,
+        val ocrDigitCharsFromMostToLeastLikely: String,
+        val center: Point
 ): Face<FaceRead> {
 
   override val clockwise90DegreeRotationsFromUpright: Byte? get() =
@@ -242,8 +274,8 @@ class FaceRead(
            underline,
            overline,
            clockwise90DegreeRotationsFromUprightToTrbl(
-             clockwise90DegreeRotationsFromUpright,
-             clockwise90DegreeRotations
+                   clockwise90DegreeRotationsFromUpright,
+                   clockwise90DegreeRotations
            ),
            ocrLetterCharsFromMostToLeastLikely,
            ocrDigitCharsFromMostToLeastLikely,

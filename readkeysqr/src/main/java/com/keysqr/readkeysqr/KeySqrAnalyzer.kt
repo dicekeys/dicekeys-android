@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import java.nio.ByteBuffer
-import com.keysqr.readkeysqr.keySqrFromJsonFacesRead
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
 

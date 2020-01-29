@@ -11,6 +11,7 @@ class LoadKeyNotAuthorizedByUserException(
     message: String? = "User failed to perform the authorization step to allow the key to be written"
 ): Exception(message)
 
+@Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
 open class UsbCtapHidConnection(// usbManager: UsbManager,
                                 // device: UsbDevice,
                                 private val connection: UsbDeviceConnection,
@@ -64,7 +65,7 @@ open class UsbCtapHidConnection(// usbManager: UsbManager,
 
         fun connect(usbManager: UsbManager, device: UsbDevice): UsbCtapHidConnection {
             try {
-                for (i in 0 until device?.interfaceCount) {
+                for (i in 0 until device.interfaceCount) {
                     val usbInterface = device.getInterface(i)
                     val isHID = usbInterface.interfaceClass == Interface.Class
                     if (!isHID) {
@@ -96,40 +97,6 @@ open class UsbCtapHidConnection(// usbManager: UsbManager,
         }
     }
 
-//        fun find(usbManager: UsbManager, permissionIntent: android.app.PendingIntent): UsbCtapHidConnection? {
-//            val deviceList: HashMap<String, UsbDevice> = usbManager.deviceList
-//
-//            Log.d("Hid Devices Detected", "${deviceList.size}")
-//
-//            for ( (name, device) in deviceList) {
-//                val supportsLoadKey: Boolean =
-//                        // SoloKeys
-//                        (device.productId == 0x8acf && device.vendorId == 0x10c4) ||
-//                                (device.productId == 0xa2ca && device.vendorId == 0x483)
-//
-//                Log.d("Device", "{name: \"$name\", deviceName:${device.deviceName}, " +
-//                        "productName: ${device.productName}, " +
-//                        "manufacturerName: \"${device.manufacturerName}, " +
-//                        "vendorId: ${device.vendorId.toString(16)}, " +
-//                        "productId: ${device.productId.toString(16)}, " +
-//                        "supportsLoadKey: ${(if (supportsLoadKey) "true" else "false")}"
-//                )
-//                if (!supportsLoadKey) {
-//                    continue
-//                }
-//                if (!usbManager.hasPermission(device)) {
-//                    Log.d("Need permission", "Security key that supports loadkey but need permission")
-//                    usbManager.requestPermission(device, permissionIntent)
-//                    continue
-//                }
-//                val usbCtapHidConnection: UsbCtapHidConnection? = connect(usbManager, device)
-//                if (usbCtapHidConnection != null) {
-//                    return usbCtapHidConnection
-//                }
-//            }
-//            return null
-//        }
-//    }
 
     private val channel: Int = establishChannel()
 
