@@ -48,6 +48,12 @@ val rotationIndexes = listOf<List<Byte>>(
 
 class InvalidKeySqrException(message: String) : Exception(message) {};
 
+class ClientNotAuthorizedException(message: String) : java.lang.Exception(message) {};
+class InvalidJsonKeyDerivationOptionsException(message: String) : java.lang.Exception(message) {};
+class InvalidKeyDerivationOptionValueException(message: String) : java.lang.Exception(message) {};
+class UnknownKeySqrApiException(message: String) : java.lang.Exception(message) {};
+
+
 
 interface Face<T: Face<T>> {
   val letter: Char  // 'A' - 'Z' except 'Q', or '?'
@@ -126,7 +132,7 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
         winningReadableForm = readableForm
       }
     }
-    return winningRotation;
+    return winningRotation
   }
 
   fun getSeed(
@@ -280,7 +286,7 @@ class FaceRead(
            ocrLetterCharsFromMostToLeastLikely,
            ocrDigitCharsFromMostToLeastLikely,
            center
-   );
+   )
   }
 }
 

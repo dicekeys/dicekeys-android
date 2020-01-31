@@ -3,15 +3,16 @@ package com.keysqr.readkeysqrdemo
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
-import android.hardware.usb.*
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.keysqr.keySqrFromJsonFacesRead
 import com.keysqr.readkeysqr.KeySqrDrawable
 import com.keysqr.readkeysqr.ReadKeySqrActivity
-import com.keysqr.keySqrFromJsonFacesRead
 import com.keysqr.uses.seedfido.UsbCtapHidDeviceList
 import kotlin.random.Random
 
@@ -86,51 +87,59 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_READ_KEYSQR && resultCode == Activity.RESULT_OK && data!=null) {
             val keySqrAsJson: String? = data.getStringExtra("keySqrAsJson")
-            if (keySqrAsJson != null && keySqrAsJson != "null") {
+            if (keySqrAsJson != null && keySqrAsJson != "null") try {
                 val keySqr = keySqrFromJsonFacesRead(keySqrAsJson)
-                if (keySqr != null) {
-                    val humanReadableForm: String = keySqr.toCanonicalRotation().toHumanReadableForm(true)
-                    val publicKey: ByteArray = keySqr.getPublicKey(
-                            "{\"keyType\":\"Public\"}",
-                            ""
-                    )
-                    val publicKeyStr = publicKey.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+                if (keySqr == null) {
+                    return
+                }
+                val humanReadableForm: String = keySqr.toCanonicalRotation().toHumanReadableForm(true)
+                val publicKey: ByteArray = keySqr.getPublicKey(
+                        "{\"keyType\":\"Public\"}",
+                        ""
+                )
+                val publicKeyStr = publicKey.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
-                    val seed: ByteArray = keySqr.getSeed(
-                            "{" +
+                val seed: ByteArray = keySqr.getSeed(
+                        "{" +
                                 "\"keyType\":\"Seed\"," +
                                 "\"keyLengthInBytes\":96," +
                                 "\"hashFunction\":{\"algorithm\":\"Argon2id\"}," +
                                 "\"restrictToClientApplicationsIdPrefixes\":[\"com.dicekeys.fido\"]" +
                                 "}",
-                            "com.dicekeys.fido"
-                    )
-                    val seedStr = seed.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+                        "com.dicekeys.fido"
+                )
+                val seedStr = seed.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
-                    val myDrawing = KeySqrDrawable(this, keySqr)
-                    val image: ImageView = findViewById(R.id.keysqr_view)
-                    image.setImageDrawable(myDrawing)
-                    image.contentDescription = humanReadableForm
+                val myDrawing = KeySqrDrawable(this, keySqr)
+                val image: ImageView = findViewById(R.id.keysqr_view)
+                image.setImageDrawable(myDrawing)
+                image.contentDescription = humanReadableForm
 
-                    var wroteToFidoKey = false
-                    deviceList?.devices?.values?.firstOrNull()?.let {
-                        val connection = deviceList?.connect(it)
-                        connection?.loadKeySeed(seed)
-                        wroteToFidoKey = true
-                    }
-
-                    findViewById<TextView>(R.id.txt_json).text =
-                            "{wroteToFidoKey:${wroteToFidoKey},\ndice:\"$humanReadableForm,\"\npublicKey:0x$publicKeyStr,\n"+
-                            "seed:0x$seedStr}"
-
-
-                    //val imageView = findViewById<KeySqrDrawable>(R.id.keysqr_canvas_container)
+                var wroteToFidoKey = false
+                deviceList?.devices?.values?.firstOrNull()?.let {
+                    val connection = deviceList?.connect(it)
+                    connection?.loadKeySeed(seed)
+                    wroteToFidoKey = true
                 }
+
+                findViewById<TextView>(R.id.txt_json).text =
+                        "{wroteToFidoKey:${wroteToFidoKey},\ndice:\"$humanReadableForm,\"\npublicKey:0x$publicKeyStr,\n" +
+                                "seed:0x$seedStr}"
+
+
+                //val imageView = findViewById<KeySqrDrawable>(R.id.keysqr_canvas_container)
+            } catch (e: Exception) {
+                val sw = java.io.StringWriter()
+                val pw = java.io.PrintWriter(sw)
+                e.printStackTrace(pw)
+                val stackTrace: String = sw.toString()
+                findViewById<TextView>(R.id.txt_json).text = stackTrace
+
             }
         }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
 

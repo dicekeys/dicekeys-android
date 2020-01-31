@@ -3,15 +3,24 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 29
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\stuar\\github\\read-keysqr-android\\keys\\key.jks')
+            storePassword 'thisispoorlydocumented'
+            keyPassword 'thisisevenmorepoorlydocumented'
+            keyAlias = 'dicekeys companion app key'
+        }
+    }
+    compileSdkVersion 28
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.keysqr.readkeysqrdemo"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.release
     }
     buildTypes {
         release {
