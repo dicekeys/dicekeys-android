@@ -3,6 +3,8 @@ package com.keysqr.readkeysqrdemo
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
@@ -96,11 +98,10 @@ class MainActivity : AppCompatActivity() {
                     return
                 }
                 val humanReadableForm: String = keySqr.toCanonicalRotation().toHumanReadableForm(true)
-                val publicKey: ByteArray = keySqr.getPublicKey(
+                val publicKey = keySqr.getPublicKey(
                         "{\"keyType\":\"Public\"}",
                         ""
                 )
-                val publicKeyStr = publicKey.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
                 val seed: ByteArray = keySqr.getSeed(
                         "{" +
@@ -125,10 +126,10 @@ class MainActivity : AppCompatActivity() {
                     wroteToFidoKey = true
                 }
 
-                findViewById<TextView>(R.id.txt_json).text =
-                        "{wroteToFidoKey:${wroteToFidoKey},\ndice:\"$humanReadableForm,\"\npublicKey:0x$publicKeyStr,\n" +
-                                "seed:0x$seedStr}"
 
+                findViewById<TextView>(R.id.txt_json).text =
+                        "{wroteToFidoKey:${wroteToFidoKey},\ndice:\"$humanReadableForm,\"\npublicKey:0x${publicKey.asHexDigits},\n" +
+                                "seed:0x$seedStr}"
 
                 //val imageView = findViewById<KeySqrDrawable>(R.id.keysqr_canvas_container)
             } catch (e: Exception) {

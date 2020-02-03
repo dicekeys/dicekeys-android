@@ -1,4 +1,6 @@
 package com.keysqr
+import android.graphics.Bitmap
+import android.graphics.Color
 import com.keysqr.readkeysqr.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -53,7 +55,43 @@ class InvalidJsonKeyDerivationOptionsException(message: String) : java.lang.Exce
 class InvalidKeyDerivationOptionValueException(message: String) : java.lang.Exception(message) {};
 class UnknownKeySqrApiException(message: String) : java.lang.Exception(message) {};
 
+class PublicKey(
+  public val jsonKeyDerivationOptions: String,
+  public val asByteArray: ByteArray
+) {
+  public val asHexDigits: String get() =
+    asByteArray.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+  public val asJson: String get() =
+    """{
+      |  "jsonKeyDerivationOptions": "${
+            jsonKeyDerivationOptions
+                    // Escape quotes and backslashes
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
+          }",
+      |  "asHexDigits": ${asHexDigits}
+      |}""".trimMargin()
 
+  public fun getJsonQrCode(
+    width: Int = 640,
+    height: Int = width
+  ): Bitmap {
+    val qrWriter = com.google.zxing.qrcode.QRCodeWriter()
+    val bitMatrix = qrWriter.encode(
+            "dicekeys-public-key:${asJson}",
+            com.google.zxing.BarcodeFormat.QR_CODE,
+            width,
+            height
+    )
+    val bmp: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+    for (x in 0 until width) {
+      for (y in 0 until height) {
+        bmp.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+      }
+    }
+    return bmp
+  }
+}
 
 interface Face<T: Face<T>> {
   val letter: Char  // 'A' - 'Z' except 'Q', or '?'
@@ -149,11 +187,14 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
   fun getPublicKey(
     jsonKeyDerivationOptions: String,
     clientsApplicationId: String
-  ): ByteArray {
-    return keySqrGetPublicKey(
-      toCanonicalRotation().toHumanReadableForm(true),
+  ): PublicKey {
+    return PublicKey(
       jsonKeyDerivationOptions,
-      clientsApplicationId
+      keySqrGetPublicKey(
+        toCanonicalRotation().toHumanReadableForm(true),
+        jsonKeyDerivationOptions,
+        clientsApplicationId
+      )
     )
   }
 }
