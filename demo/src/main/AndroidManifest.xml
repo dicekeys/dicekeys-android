@@ -10,6 +10,7 @@
     <!-- end for writing to USB FIDO keys -->
 
     <application
+        android:name=".DiceKeysApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

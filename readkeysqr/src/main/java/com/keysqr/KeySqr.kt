@@ -55,43 +55,6 @@ class InvalidJsonKeyDerivationOptionsException(message: String) : java.lang.Exce
 class InvalidKeyDerivationOptionValueException(message: String) : java.lang.Exception(message) {};
 class UnknownKeySqrApiException(message: String) : java.lang.Exception(message) {};
 
-class PublicKey(
-  public val jsonKeyDerivationOptions: String,
-  public val asByteArray: ByteArray
-) {
-  public val asHexDigits: String get() =
-    asByteArray.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
-  public val asJson: String get() =
-    """{
-      |  "jsonKeyDerivationOptions": "${
-            jsonKeyDerivationOptions
-                    // Escape quotes and backslashes
-                    .replace("\\", "\\\\")
-                    .replace("\"", "\\\"")
-          }",
-      |  "asHexDigits": ${asHexDigits}
-      |}""".trimMargin()
-
-  public fun getJsonQrCode(
-    width: Int = 640,
-    height: Int = width
-  ): Bitmap {
-    val qrWriter = com.google.zxing.qrcode.QRCodeWriter()
-    val bitMatrix = qrWriter.encode(
-            "dicekeys-public-key:${asJson}",
-            com.google.zxing.BarcodeFormat.QR_CODE,
-            width,
-            height
-    )
-    val bmp: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
-    for (x in 0 until width) {
-      for (y in 0 until height) {
-        bmp.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
-      }
-    }
-    return bmp
-  }
-}
 
 interface Face<T: Face<T>> {
   val letter: Char  // 'A' - 'Z' except 'Q', or '?'
@@ -133,6 +96,93 @@ external fun keySqrGetPublicKey(
         jsonKeyDerivationOptions: String,
         clientsApplicationId: String
 ): ByteArray
+
+external fun keySqrGetPublicPrivateKeyPairPtr(
+    keySqrInHumanReadableFormWithOrientations: String,
+    jsonKeyDerivationOptions: String,
+    clientsApplicationId: String
+): Long
+
+external fun keySqrDisposePublicPrivateKeyPairPtr(
+    publicPrivateKeyPairPtr: Long
+): Long
+
+external fun keySqrPublicPrivateKeyPairGetPublicKey(
+        publicPrivateKeyPairPtr: Long
+): ByteArray
+
+
+class PublicPrivateKeyPair(
+    public val keySqrInHumanReadableFormWithOrientations: String,
+    public val jsonKeyDerivationOptions: String,
+    public val clientsApplicationId: String
+) {
+  var disposed: Boolean = false
+  private val publicPrivateKeyPairPtr: Long = keySqrGetPublicPrivateKeyPairPtr(
+    keySqrInHumanReadableFormWithOrientations,
+    jsonKeyDerivationOptions,
+    clientsApplicationId
+  )
+
+  fun getPublicKey(): PublicKey {
+    return PublicKey(
+      jsonKeyDerivationOptions,
+      keySqrPublicPrivateKeyPairGetPublicKey(publicPrivateKeyPairPtr)
+    )
+  }
+
+  fun decrypt() {
+    //
+  }
+
+  fun erase() {
+    if (publicPrivateKeyPairPtr != 0L && !disposed) {
+      keySqrDisposePublicPrivateKeyPairPtr(publicPrivateKeyPairPtr)
+      disposed = true
+    }
+  }
+
+
+}
+
+class PublicKey(
+        public val jsonKeyDerivationOptions: String,
+        public val asByteArray: ByteArray
+) {
+  @ExperimentalUnsignedTypes
+  public val asHexDigits: String get() =
+    asByteArray.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+  public val asJson: String get() =
+    """{
+      |  "jsonKeyDerivationOptions": "${
+    jsonKeyDerivationOptions
+            // Escape quotes and backslashes
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+    }",
+      |  "asHexDigits": ${asHexDigits}
+      |}""".trimMargin()
+
+  public fun getJsonQrCode(
+          width: Int = 640,
+          height: Int = width
+  ): Bitmap {
+    val qrWriter = com.google.zxing.qrcode.QRCodeWriter()
+    val bitMatrix = qrWriter.encode(
+            "dicekeys-public-key:${asJson}",
+            com.google.zxing.BarcodeFormat.QR_CODE,
+            width,
+            height
+    )
+    val bmp: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+    for (x in 0 until width) {
+      for (y in 0 until height) {
+        bmp.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+      }
+    }
+    return bmp
+  }
+}
 
 class KeySqr<F: Face<F>>(val faces: List<F>) {
 
@@ -195,6 +245,17 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
         jsonKeyDerivationOptions,
         clientsApplicationId
       )
+    )
+  }
+
+  fun getPublicPrivateKeyPair(
+          jsonKeyDerivationOptions: String,
+          clientsApplicationId: String
+  ): PublicPrivateKeyPair {
+    return PublicPrivateKeyPair(
+        toCanonicalRotation().toHumanReadableForm(true),
+        jsonKeyDerivationOptions,
+        clientsApplicationId
     )
   }
 }

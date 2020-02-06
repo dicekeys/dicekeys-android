@@ -1,6 +1,5 @@
 package com.keysqr.readkeysqr
 
-import android.util.Log
 import java.nio.ByteBuffer
 
 //external fun jsonGlobalPublicKey(4

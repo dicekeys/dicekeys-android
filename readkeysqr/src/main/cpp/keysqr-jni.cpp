@@ -128,4 +128,92 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrGetPublicKey(
 }
 
 
+JNIEXPORT jlong JNICALL Java_com_keysqr_KeySqrKt_keySqrGetPublicPrivateKeyPairPtr(
+        JNIEnv* env,
+        jobject obj,
+        jstring keySqrInHumanReadableFormWithOrientationsObj,
+        jstring jsonKeyDerivationOptionsObj,
+        jstring clientsApplicationIdObj
+) {
+    try {
+        const std::string keySqrInHumanReadableFormWithOrientations(
+                env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
+        );
+        const std::string jsonKeyDerivationOptions(
+                env->GetStringUTFChars( jsonKeyDerivationOptionsObj, NULL )
+        );
+        const std::string clientsApplicationId(
+                env->GetStringUTFChars( clientsApplicationIdObj, NULL )
+        );
+        const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
+        PublicPrivateKeyPair *publicPrivateKeyPairPtr =
+            new PublicPrivateKeyPair(keySqr, jsonKeyDerivationOptions, clientsApplicationId);
+        jlong publicPrivateKeyPairPtrAsJavaLong = (long)publicPrivateKeyPairPtr;
+        return publicPrivateKeyPairPtrAsJavaLong;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return 0L;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_keysqr_KeySqrKt_keySqrDisposePublicPrivateKeyPairPtr(
+        JNIEnv* env,
+        jobject obj,
+        jlong publicPrivateKeyPair
+) {
+    try {
+        delete ((PublicPrivateKeyPair*)publicPrivateKeyPair);
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+    }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrPublicPrivateKeyPairGetPublicKey(
+        JNIEnv* env,
+        jobject obj,
+        jlong publicPrivateKeyPair
+) {
+    try {
+        const std::vector<unsigned char> publicKey =
+                ((PublicPrivateKeyPair*)publicPrivateKeyPair)->getPublicKey().getPublicKeyBytes();
+        jbyteArray ret = env->NewByteArray(publicKey.size());
+        env->SetByteArrayRegion(ret, 0, publicKey.size(), (jbyte*) publicKey.data());
+        return ret;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return NULL;
+    }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrPublicPrivateKeyPairUnseal(
+        JNIEnv* env,
+        jobject obj,
+        jlong publicPrivateKeyPair,
+        jbyteArray jciphertext,
+        jstring jpostDecryptionInstructionJson
+) {
+    try {
+        size_t ciphertextLength = (size_t) env->GetArrayLength(jciphertext);
+        const jbyte *ciphertext = env->GetByteArrayElements(jciphertext, 0);
+
+        const std::string postDecryptionInstructionJson(
+                env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
+        );
+
+        const Message message = ((PublicPrivateKeyPair*)publicPrivateKeyPair)->unseal(
+            (const unsigned char*) ciphertext,
+            ciphertextLength,
+            postDecryptionInstructionJson
+        );
+        jbyteArray ret = env->NewByteArray(message.contents.length);
+        // FIXME -- should also return post-decryption instructions
+        env->SetByteArrayRegion(ret, 0, message.contents.length, (jbyte*) message.contents.data);
+        return ret;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return NULL;
+    }
+}
+
+
 }
