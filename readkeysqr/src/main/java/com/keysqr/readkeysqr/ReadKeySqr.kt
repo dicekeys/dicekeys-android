@@ -2,77 +2,62 @@ package com.keysqr.readkeysqr
 
 import java.nio.ByteBuffer
 
-//external fun jsonGlobalPublicKey(4
-//        keySqrInHumanReadableForm: String,
-//        keyDerivationOptionsJson: String
-//): String
 
 class ReadKeySqr {
     init {
         System.loadLibrary("jni-read-keysqr")
     }
 
-    external fun HelloFromOpenCV(): String
-//    external fun ReadKeySqrJson(
-//            width: Int,
-//            height: Int,
-//            bytesPerRow: Int,
-//            byteBufferForGrayscaleChannel: ByteBuffer
-//    ): String
-
-    private external fun newKeySqrImageReader(): Long
-    private external fun processImage(
+    //
+    // JNI support functions
+    //
+    private external fun newKeySqrImageReaderJNI(): Long
+    private external fun processImageJNI(
             reader: Long,
             width: Int,
             height: Int,
             bytesPerRow: Int,
             byteBufferForGrayscaleChannel: ByteBuffer
     ): Boolean
-    private external fun renderAugmentationOverlay(
+    private external fun renderAugmentationOverlayJNI(
             reader: Long,
             width: Int,
             height: Int,
             byteBufferForOverlay: ByteBuffer
     )
-    private external fun deleteKeySqrImageReader(
+    private external fun deleteKeySqrImageReaderJNI(
             reader: Long
     )
-    private external fun jsonKeySqrRead(
+    private external fun jsonKeySqrReadJNI(
             reader: Long
     ): String
 
-    private var ptrToKeySqrImageReader: Long = 0
+    private var ptrToKeySqrImageReader: Long = newKeySqrImageReaderJNI()
 
-    constructor() {
-        ptrToKeySqrImageReader = newKeySqrImageReader()
-    }
-
-    fun ProcessImage(
+    fun processImage(
             width: Int,
             height: Int,
             bytesPerRow: Int,
             byteBufferForGrayscaleChannel: ByteBuffer
-    ): Boolean
-    {
-        return  processImage(ptrToKeySqrImageReader, width, height, bytesPerRow, byteBufferForGrayscaleChannel)
+    ): Boolean  {
+        return  processImageJNI(ptrToKeySqrImageReader, width, height, bytesPerRow, byteBufferForGrayscaleChannel)
     }
 
-    fun JsonKeySqrRead(): String
+    fun jsonKeySqrRead(): String
     {
-        return jsonKeySqrRead(ptrToKeySqrImageReader)
+        return jsonKeySqrReadJNI(ptrToKeySqrImageReader)
     }
 
-    fun RenderAugmentationOverlay(
+    fun renderAugmentationOverlay(
             width: Int,
             height: Int,
             byteBufferForOverlay: ByteBuffer
     )
     {
-        renderAugmentationOverlay(ptrToKeySqrImageReader, width, height, byteBufferForOverlay)
+        renderAugmentationOverlayJNI(ptrToKeySqrImageReader, width, height, byteBufferForOverlay)
     }
 
     fun finalize() {
-        deleteKeySqrImageReader(ptrToKeySqrImageReader)
-        ptrToKeySqrImageReader = 0
+        deleteKeySqrImageReaderJNI(ptrToKeySqrImageReader)
     }
 }

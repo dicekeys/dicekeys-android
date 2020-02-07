@@ -64,7 +64,7 @@ void throwCppExceptionAsJavaException(
 }
 
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrGetSeed(
+JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqr_getSeedJNI(
      JNIEnv* env,
      jobject obj,
      jstring keySqrInHumanReadableFormWithOrientationsObj,
@@ -93,42 +93,8 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrGetSeed(
     }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrGetPublicKey(
-		JNIEnv* env,
-		jobject  obj,
-		jstring keySqrInHumanReadableFormWithOrientationsObj,
-		jstring jsonKeyDerivationOptionsObj,
-		jstring clientsApplicationIdObj
-) {
-    try {
-        const std::string keySqrInHumanReadableFormWithOrientations(
-            env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
-        );
-        const std::string jsonKeyDerivationOptions(
-            env->GetStringUTFChars( jsonKeyDerivationOptionsObj, NULL )
-        );
-        const std::string clientsApplicationId(
-            env->GetStringUTFChars( clientsApplicationIdObj, NULL )
-        );
 
-        const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
-        const PublicPrivateKeyPair gkp(
-            keySqr,
-            jsonKeyDerivationOptions,
-            clientsApplicationId
-        );
-        const std::vector<unsigned char> publicKey = gkp.getPublicKey().getPublicKeyBytes();
-        jbyteArray ret = env->NewByteArray(publicKey.size());
-        env->SetByteArrayRegion(ret, 0, publicKey.size(), (jbyte*) publicKey.data());
-        return ret;
-    } catch (...) {
-        throwCppExceptionAsJavaException(env, std::current_exception());
-        return NULL; //env->NewByteArray(0);
-    }
-}
-
-
-JNIEXPORT jlong JNICALL Java_com_keysqr_KeySqrKt_keySqrGetPublicPrivateKeyPairPtr(
+JNIEXPORT jlong JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_constructJNI(
         JNIEnv* env,
         jobject obj,
         jstring keySqrInHumanReadableFormWithOrientationsObj,
@@ -156,7 +122,7 @@ JNIEXPORT jlong JNICALL Java_com_keysqr_KeySqrKt_keySqrGetPublicPrivateKeyPairPt
     }
 }
 
-JNIEXPORT void JNICALL Java_com_keysqr_KeySqrKt_keySqrDisposePublicPrivateKeyPairPtr(
+JNIEXPORT void JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_destroyJNI(
         JNIEnv* env,
         jobject obj,
         jlong publicPrivateKeyPair
@@ -168,7 +134,7 @@ JNIEXPORT void JNICALL Java_com_keysqr_KeySqrKt_keySqrDisposePublicPrivateKeyPai
     }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrPublicPrivateKeyPairGetPublicKey(
+JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_getPublicKeyBytesJNI(
         JNIEnv* env,
         jobject obj,
         jlong publicPrivateKeyPair
@@ -185,7 +151,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrPublicPrivateKeyPair
     }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqrKt_keySqrPublicPrivateKeyPairUnseal(
+JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_unsealJNI(
         JNIEnv* env,
         jobject obj,
         jlong publicPrivateKeyPair,
