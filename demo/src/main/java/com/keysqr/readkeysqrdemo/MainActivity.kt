@@ -29,18 +29,14 @@ class MainActivity : AppCompatActivity() {
     private val usbReceiver = object : android.content.BroadcastReceiver() {
 
         override fun onReceive(context: android.content.Context, intent: Intent) {
-            findViewById<TextView>(R.id.txt_json).text = "onReceive called"
-            findViewById<TextView>(R.id.txt_json).text = "onReceive called ${intent.action?.format("%d")}"
-
             if (INTENT_ACTION_USB_PERMISSION == intent.action ||
                 INTENT_ACTION_USB_ATTACHED == intent.action) {
                 synchronized(this) {
-                    findViewById<TextView>(R.id.txt_json).text = "onReceive called with permission intent"
-
                     val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         if (device != null) {
                             try {
+                                // FIXME -- don't load bogus key
                                 val connection = deviceList?.connect(device)
                                 var bogusKeySeed = ByteArray(96)
                                 Random.Default.nextBytes(bogusKeySeed)
@@ -96,6 +92,12 @@ class MainActivity : AppCompatActivity() {
                     return
                 }
                 val humanReadableForm: String = keySqr.toCanonicalRotation().toHumanReadableForm(true)
+                val myDrawing = KeySqrDrawable(this, keySqr)
+                val image: ImageView = findViewById(R.id.keysqr_view)
+                image.setImageDrawable(myDrawing)
+                image.contentDescription = humanReadableForm
+
+
                 val publicKey = keySqr.getPublicKey(
                         "{\"keyType\":\"Public\"}",
                         ""
@@ -112,10 +114,6 @@ class MainActivity : AppCompatActivity() {
                 )
                 val seedStr = seed.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
-                val myDrawing = KeySqrDrawable(this, keySqr)
-                val image: ImageView = findViewById(R.id.keysqr_view)
-                image.setImageDrawable(myDrawing)
-                image.contentDescription = humanReadableForm
 
                 var wroteToFidoKey = false
                 deviceList?.devices?.values?.firstOrNull()?.let {
@@ -126,8 +124,9 @@ class MainActivity : AppCompatActivity() {
 
 
                 findViewById<TextView>(R.id.txt_json).text =
-                        "{wroteToFidoKey:${wroteToFidoKey},\ndice:\"$humanReadableForm,\"\npublicKey:0x${publicKey.asHexDigits},\n" +
-                                "seed:0x$seedStr}"
+                        "{wroteToFidoKey:$wroteToFidoKey,\ndice:\"$humanReadableForm,\"\n" +
+                        "publicKey:0x${publicKey.asHexDigits},\n"+
+                        "seed:0x$seedStr}"
 
                 //val imageView = findViewById<KeySqrDrawable>(R.id.keysqr_canvas_container)
             } catch (e: Exception) {

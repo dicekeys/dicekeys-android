@@ -88,7 +88,7 @@ class ReadKeySqrActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        cameraProviderFuture?.addListener(Runnable {
+        cameraProviderFuture.addListener(Runnable {
             val cameraProvider = cameraProviderFuture.get()
             bindPreview(cameraProvider)
         }, ContextCompat.getMainExecutor(this))
@@ -152,8 +152,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
         analyzeKeySqr.onActionDone = fun(keySqrAsJson){
             var intent = Intent()
-            // FIXME - remove
-            intent.putExtra("result", "meh")
             intent.putExtra("keySqrAsJson", keySqrAsJson)
             setResult(RESULT_OK, intent)
             cameraProviderFuture.get().unbindAll()
