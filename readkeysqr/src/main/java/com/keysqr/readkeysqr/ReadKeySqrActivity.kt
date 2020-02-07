@@ -23,26 +23,20 @@ import java.util.concurrent.Executors
 
 
 class ReadKeySqrActivity : AppCompatActivity() {
-//        , CameraXConfig.Provider {
-//    override fun getCameraXConfig(): CameraXConfig {
-//        return Camera2Config.defaultConfig()
-//    }
+
     // This is an arbitrary number we are using to keep track of the permission
     // request. Where an app has multiple context for requesting permission,
     // this can help differentiate the different contexts.
-
     private val REQUEST_CODE_PERMISSIONS = 10
 
     // This is an array of all the permission specified in the manifest.
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
     // Add this after onCreate
-
     private val executor = Executors.newSingleThreadExecutor()
 
 
     private lateinit var cameraProviderFuture : ListenableFuture<ProcessCameraProvider>
-//    private lateinit var viewFinder: TextureView
     private lateinit var previewView: PreviewView
     private lateinit var panelButtons: LinearLayout
     private lateinit var imageView: ImageView
@@ -54,13 +48,11 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_read_key_sqr)
 
-//        viewFinder = findViewById(R.id.texture_view)
         imageView = findViewById(R.id.overlay_view)
         previewView = findViewById(R.id.preview_view)
 
         if(allPermissionsGranted()) {
             imageView.post{startCamera()}
-            // viewFinder.post{startCamera()}
         }
         else
         {
@@ -109,6 +101,7 @@ class ReadKeySqrActivity : AppCompatActivity() {
         //val previewSize = Size(viewFinder.width, viewFinder.height)
         val previewSize = Size(previewView.width, previewView.height)
 
+
         // Build the viewfinder use case
         val preview: Preview = Preview.Builder()
                 .setTargetResolution(previewSize)
@@ -116,12 +109,26 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
         preview.setPreviewSurfaceProvider(previewView.getPreviewSurfaceProvider())
 
+        val pWidth = previewView.width
+        val pHeight = previewView.height
+        val analyzerSize: Size =
+                if (pWidth * 9 > pHeight * 16)
+                // Wider than 16x9, so fix width=1920 and calculate a height which will be <= 1080
+                    Size(1920, (1920 * pHeight) / pWidth)
+                else if (pHeight * 16 > pWidth * 9)
+                // Taller than 16x9, so fix height=1920 and calculate a width which will be <= 1080
+                    Size((1920 * pWidth) / pHeight, 1920)
+                else if (pWidth > pHeight)
+                // Wider than 1x1 but less than 16x9, so fix height=1080 and calculate width <=1920
+                    Size((1080 * pWidth / pHeight), 1080)
+                else
+                // Taller than 1x1, or 1x1, so fix width at 1080 and calculate height 1080<=x<=1920
+                    Size(1080, (1080 * pHeight / pWidth) )
         val keySqrImageAnalyzerUseCase = ImageAnalysis.Builder()
                 // In our analysis, we care more about the latest image than
                 // analyzing *every* image
                 .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
-                // FIXME -- we want higher resolution if the screen is low-res.
-                .setTargetResolution(Size(1920, 1080))
+                .setTargetResolution(analyzerSize)
                 .build()
 
         var analyzeKeySqr = KeySqrAnalyzer(this)
@@ -157,7 +164,5 @@ class ReadKeySqrActivity : AppCompatActivity() {
         // to this activity class
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, keySqrImageAnalyzerUseCase)
     }
-
-
 
 }
