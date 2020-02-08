@@ -10,7 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.keysqr.keySqrFromJsonFacesRead
+import com.keysqr.FaceRead
 import com.keysqr.readkeysqr.KeySqrDrawable
 import com.keysqr.readkeysqr.ReadKeySqrActivity
 import com.keysqr.uses.seedfido.UsbCtapHidDeviceList
@@ -80,6 +80,13 @@ class MainActivity : AppCompatActivity() {
             Random.Default.nextBytes(bogusKeySeed)
             connection?.loadKeySeed(bogusKeySeed)
         }
+
+//
+//        findViewById<TextView>(R.id.txt_json).text =
+//            PostDecryptionInstructions.fromJsonReturningEmptyObjectIfInvalid(
+//                    "{\"clientApplicationIdMustHavePrefix\": [\"a.test.prefix\", \"b.test.prefix\"]}")
+//                    .clientApplicationIdMustHavePrefix
+//                    .toString()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -87,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == RC_READ_KEYSQR && resultCode == Activity.RESULT_OK && data!=null) {
             val keySqrAsJson: String? = data.getStringExtra("keySqrAsJson")
             if (keySqrAsJson != null && keySqrAsJson != "null") try {
-                val keySqr = keySqrFromJsonFacesRead(keySqrAsJson)
+                val keySqr = FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)
                 if (keySqr == null) {
                     return
                 }

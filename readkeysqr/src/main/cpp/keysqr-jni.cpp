@@ -93,13 +93,61 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqr_getSeedJNI(
     }
 }
 
+//
+// Public key operations
+//
+JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicKey_sealJNI(
+        JNIEnv* env,
+        jobject obj,
+        jbyteArray jpublicKeyBytes,
+        jstring jjsonKeyDerivationOptions,
+        jbyteArray jplaintext,
+        jstring jpostDecryptionInstructionJson
+) {
+    try {
+        size_t publicKeyBytesLength = (size_t) env->GetArrayLength(jpublicKeyBytes);
+        const unsigned char *publicKeyBytesArray =
+            (const unsigned char*)  env->GetByteArrayElements(jpublicKeyBytes, 0);
+        std::vector<unsigned char> publicKeyBytes(publicKeyBytesLength);
+        memcpy(publicKeyBytes.data(), publicKeyBytesArray, publicKeyBytesLength);
+        const std::string jsonKeyDerivationOptions(
+            env->GetStringUTFChars( jjsonKeyDerivationOptions, NULL )
+        );
+        size_t plaintextLength = (size_t) env->GetArrayLength(jplaintext);
+        const unsigned char* plaintext =
+            (unsigned char*) env->GetByteArrayElements(jplaintext, 0);
 
+        const std::string postDecryptionInstructionJson(
+                env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
+        );
+
+        const PublicKey publicKey(publicKeyBytes, jsonKeyDerivationOptions);
+
+        const SodiumBuffer ciphertext = publicKey.seal(
+                plaintext,
+                plaintextLength,
+                postDecryptionInstructionJson
+        );
+        jbyteArray ret = env->NewByteArray(ciphertext.length);
+        env->SetByteArrayRegion(ret, 0, ciphertext.length, (jbyte*) ciphertext.data);
+        return ret;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return NULL;
+    }
+}
+
+
+//
+// PublicPrivateKeyPair operations
+//
 JNIEXPORT jlong JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_constructJNI(
         JNIEnv* env,
         jobject obj,
         jstring keySqrInHumanReadableFormWithOrientationsObj,
         jstring jsonKeyDerivationOptionsObj,
-        jstring clientsApplicationIdObj
+        jstring clientsApplicationIdObj,
+        jboolean validateClientId // FIXME
 ) {
     try {
         const std::string keySqrInHumanReadableFormWithOrientations(
@@ -166,20 +214,125 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_unsealJNI
                 env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
         );
 
-        const Message message = ((PublicPrivateKeyPair*)publicPrivateKeyPair)->unseal(
+        const SodiumBuffer message = ((PublicPrivateKeyPair*)publicPrivateKeyPair)->unseal(
             (const unsigned char*) ciphertext,
             ciphertextLength,
             postDecryptionInstructionJson
         );
-        jbyteArray ret = env->NewByteArray(message.contents.length);
-        // FIXME -- should also return post-decryption instructions
-        env->SetByteArrayRegion(ret, 0, message.contents.length, (jbyte*) message.contents.data);
+        jbyteArray ret = env->NewByteArray(message.length);
+        env->SetByteArrayRegion(ret, 0, message.length, (jbyte*) message.data);
         return ret;
     } catch (...) {
         throwCppExceptionAsJavaException(env, std::current_exception());
         return NULL;
     }
 }
+
+//
+// Symmetric key operations
+//
+JNIEXPORT jlong JNICALL Java_com_keysqr_keys_SymmetricKey_constructJNI(
+        JNIEnv* env,
+        jobject obj,
+        jstring keySqrInHumanReadableFormWithOrientationsObj,
+        jstring jsonKeyDerivationOptionsObj,
+        jstring clientsApplicationIdObj,
+        jboolean validateClientId // FIXME
+) {
+    try {
+        const std::string keySqrInHumanReadableFormWithOrientations(
+                env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
+        );
+        const std::string jsonKeyDerivationOptions(
+                env->GetStringUTFChars( jsonKeyDerivationOptionsObj, NULL )
+        );
+        const std::string clientsApplicationId(
+                env->GetStringUTFChars( clientsApplicationIdObj, NULL )
+        );
+        const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
+        SymmetricKey* symmetricKeyPtr =
+                new SymmetricKey(keySqr, jsonKeyDerivationOptions, clientsApplicationId);
+        jlong symmetricKeyPtrAsJavaLong = (long)symmetricKeyPtr;
+        return symmetricKeyPtrAsJavaLong;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return 0L;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_keysqr_keys_SymmetricKey_destroyJNI(
+        JNIEnv* env,
+        jobject obj,
+        jlong symmetricKeyPtrAsJavaLong
+) {
+    try {
+        delete ((SymmetricKey*)symmetricKeyPtrAsJavaLong);
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+    }
+}
+
+
+JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_SymmetricKey_sealJNI(
+        JNIEnv* env,
+        jobject obj,
+        jlong symmetricKeyPtrAsJavaLong,
+        jbyteArray jplaintext,
+        jstring jpostDecryptionInstructionJson
+) {
+    try {
+        const SymmetricKey* symmetricKeyPtr = (SymmetricKey*)symmetricKeyPtrAsJavaLong;
+        size_t plaintextLength = (size_t) env->GetArrayLength(jplaintext);
+        const unsigned char* plaintext =
+                (unsigned char*) env->GetByteArrayElements(jplaintext, 0);
+        const std::string postDecryptionInstructionJson(
+                env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
+        );
+
+        const SodiumBuffer ciphertext = symmetricKeyPtr->seal(
+                plaintext,
+                plaintextLength,
+                postDecryptionInstructionJson
+        );
+        jbyteArray ret = env->NewByteArray(ciphertext.length);
+        env->SetByteArrayRegion(ret, 0, ciphertext.length, (jbyte*) ciphertext.data);
+        return ret;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return NULL;
+    }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_SymmetricKey_unsealJNI(
+        JNIEnv* env,
+        jobject obj,
+        jlong symmetricKeyPtrAsJavaLong,
+        jbyteArray jciphertext,
+        jstring jpostDecryptionInstructionJson
+) {
+    try {
+        const SymmetricKey* symmetricKeyPtr = (SymmetricKey*)symmetricKeyPtrAsJavaLong;
+        size_t ciphertextLength = (size_t) env->GetArrayLength(jciphertext);
+        const jbyte *ciphertext = env->GetByteArrayElements(jciphertext, 0);
+
+        const std::string postDecryptionInstructionJson(
+                env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
+        );
+
+        const SodiumBuffer message = symmetricKeyPtr->unseal(
+                (const unsigned char*) ciphertext,
+                ciphertextLength,
+                postDecryptionInstructionJson
+        );
+        jbyteArray ret = env->NewByteArray(message.length);
+        env->SetByteArrayRegion(ret, 0, message.length, (jbyte*) message.data);
+        return ret;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return NULL;
+    }
+}
+
 
 
 }

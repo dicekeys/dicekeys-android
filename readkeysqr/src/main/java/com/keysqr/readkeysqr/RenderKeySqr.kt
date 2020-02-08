@@ -5,6 +5,7 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
 import com.keysqr.Face
+import com.keysqr.FaceDimensionsFractional
 import com.keysqr.FaceRead
 import com.keysqr.KeySqr
 

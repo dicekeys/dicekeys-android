@@ -21,6 +21,20 @@ class PublicKey(
       |  "asHexDigits": ${asHexDigits}
       |}""".trimMargin()
 
+    private external fun sealJNI(
+        publicKeyBytes: ByteArray,
+        jsonKeyDerivationOptions: String,
+        plaintext: ByteArray,
+        postDecryptionInstructionJson: String = ""
+    ): ByteArray
+
+    public fun seal(
+        message: ByteArray,
+        postDecryptionInstructionJson: String = ""
+    ): ByteArray {
+        return sealJNI(asByteArray, jsonKeyDerivationOptions, message, postDecryptionInstructionJson)
+    }
+
     public fun getJsonQrCode(
             width: Int = 640,
             height: Int = width

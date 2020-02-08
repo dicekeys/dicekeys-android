@@ -1,7 +1,7 @@
 package com.keysqr.keys
 
 
-class PublicPrivateKeyPair(
+class SymmetricKey(
         public val keySqrInHumanReadableFormWithOrientations: String,
         public val jsonKeyDerivationOptions: String,
         public val clientsApplicationId: String
@@ -14,54 +14,56 @@ class PublicPrivateKeyPair(
     ): Long
 
     private external fun destroyJNI(
-            publicPrivateKeyPairPtr: Long
+            symmetricKeyPtr: Long
     ): Long
 
-    private external fun getPublicKeyBytesJNI(
-            publicPrivateKeyPairPtr: Long
+    private external fun sealJNI(
+            symmetricKeyPtr: Long,
+            plaintext: ByteArray,
+            postDecryptionInstructionJson: String
     ): ByteArray
 
     private external fun unsealJNI(
-        publicPrivateKeyPairPtr: Long,
-        ciphertext: ByteArray,
-        postDecryptionInstructionJson: String
+            symmetricKeyPtr: Long,
+            ciphertext: ByteArray,
+            postDecryptionInstructionJson: String
     ): ByteArray
 
-
     var disposed: Boolean = false
-    private fun throwIfDisposed() {
-        if (disposed) {
-            throw java.lang.IllegalAccessException("Attempt to use a key after its disposal")
-        }
-    }
-
-    private val publicPrivateKeyPairPtr: Long = constructJNI(
+    private val symmetricKeyPtr: Long = constructJNI(
             keySqrInHumanReadableFormWithOrientations,
             jsonKeyDerivationOptions,
             clientsApplicationId,
             false // FIXME
     )
 
-    fun getPublicKey(): PublicKey {
-        throwIfDisposed()
-        return PublicKey(
-                jsonKeyDerivationOptions,
-                getPublicKeyBytesJNI(publicPrivateKeyPairPtr)
-        )
-    }
-
-    fun unseal(
-            ciphertext: ByteArray,
+    fun seal(
+            plaintext: ByteArray,
             postDecryptionInstructionJson: String = ""
     ): ByteArray {
         throwIfDisposed()
-        return unsealJNI(publicPrivateKeyPairPtr, ciphertext, postDecryptionInstructionJson)
+        return sealJNI(symmetricKeyPtr, plaintext, postDecryptionInstructionJson)
+    }
+
+
+    fun unseal(
+        ciphertext: ByteArray,
+        postDecryptionInstructionJson: String = ""
+    ): ByteArray {
+        throwIfDisposed()
+        return unsealJNI(symmetricKeyPtr, ciphertext, postDecryptionInstructionJson)
+    }
+
+    private fun throwIfDisposed() {
+        if (disposed) {
+            throw java.lang.IllegalAccessException("Attempt to use a key after its disposal")
+        }
     }
 
     fun erase() {
         // Immediately dispose of the private key
-        if (publicPrivateKeyPairPtr != 0L && !disposed) {
-            destroyJNI(publicPrivateKeyPairPtr)
+        if (symmetricKeyPtr != 0L && !disposed) {
+            destroyJNI(symmetricKeyPtr)
             disposed = true
         }
     }
