@@ -147,6 +147,7 @@ class KeySqrRenderer(private val typeface: Typeface?) {
     }
 }
 
+
 class KeySqrDrawable(
     private val context: Context,
     private val keySqr: KeySqr<FaceRead>

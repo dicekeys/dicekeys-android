@@ -3,13 +3,15 @@ package com.keysqr
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 @JsonClass(generateAdapter = true)
 class PostDecryptionInstructions(
     val clientApplicationIdMustHavePrefix: List<String>? = null,
-    val userMustAcknowledgeThisMessage: String? = null
+    val userMustAcknowledgeThisMessage: String? = null,
+    val alsoPostToUrl: String? = null,
+    val onlyPostToUrl: String? = null,
+    val reEncryptWithPublicKey: String? = null // hex bytes
 ) {
     companion object {
         private val moshi = Moshi.Builder()

@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import com.keysqr.FaceRead
 import com.keysqr.readkeysqr.KeySqrDrawable
 import com.keysqr.readkeysqr.ReadKeySqrActivity
@@ -80,13 +81,6 @@ class MainActivity : AppCompatActivity() {
             Random.Default.nextBytes(bogusKeySeed)
             connection?.loadKeySeed(bogusKeySeed)
         }
-
-//
-//        findViewById<TextView>(R.id.txt_json).text =
-//            PostDecryptionInstructions.fromJsonReturningEmptyObjectIfInvalid(
-//                    "{\"clientApplicationIdMustHavePrefix\": [\"a.test.prefix\", \"b.test.prefix\"]}")
-//                    .clientApplicationIdMustHavePrefix
-//                    .toString()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -106,9 +100,10 @@ class MainActivity : AppCompatActivity() {
 
 
                 val publicKey = keySqr.getPublicKey(
-                        "{\"keyType\":\"Public\"}",
+                        """{"keyType":"Public"}""",
                         ""
                 )
+                image.setImageDrawable(publicKey.getJsonQrCode().toDrawable(resources))
 
                 val seed: ByteArray = keySqr.getSeed(
                         "{" +

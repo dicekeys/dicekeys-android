@@ -35,18 +35,19 @@ class FaceRead(
 ): Face<FaceRead> {
 
     companion object {
+        val moshi = Moshi.Builder()
+                .add(KotlinJsonAdapterFactory())
+                .build()
+        val faceReadJsonAdapter: JsonAdapter<List<FaceRead>> =
+                moshi.adapter(Types.newParameterizedType(List::class.java, FaceRead::class.java))
+
+
         fun keySqrFromListOfFacesRead(facesRead: List<FaceRead>): KeySqr<FaceRead> {
             return KeySqr(facesRead)
         }
 
         fun keySqrFromJsonFacesRead(json: String): KeySqr<FaceRead>? {
             try {
-                val moshi = Moshi.Builder()
-                        .add(KotlinJsonAdapterFactory())
-                        .build()
-
-                val faceReadJsonAdapter: JsonAdapter<List<FaceRead>> =
-                        moshi.adapter(Types.newParameterizedType(List::class.java, FaceRead::class.java))
 
                 if (json == "null" || json[0] != '[')
                     return null
