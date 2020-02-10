@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ReadKeySqrActivity">
-
-    <TextureView
-        android:id="@+id/texture_view"
+    <!-- This must appear before the overlay view if the
+         overlay is to appear above it.
+    -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/preview_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
-
+    />
     <ImageView
         android:id="@+id/overlay_view"
         android:layout_width="match_parent"

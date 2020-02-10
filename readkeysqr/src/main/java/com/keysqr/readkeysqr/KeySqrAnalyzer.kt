@@ -5,54 +5,77 @@ import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import java.nio.ByteBuffer
-import com.keysqr.readkeysqr.keySqrFromJsonFacesRead
 import java.lang.Exception
-import java.util.concurrent.TimeUnit
 
 class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer {
 
-    private var lastAnalyzedTimestamp = 0L
-
     var onActionOverlay = fun(overlay: Bitmap): Unit = null!!
     var onActionDone = fun(keySqrAsJson: String): Unit = null!!
+    var done: Boolean = false
 
     private val reader = ReadKeySqr()
 
-    override fun analyze(image: ImageProxy, rotationDegrees: Int) {
-        val currentTimestamp = System.currentTimeMillis()
-        if (currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(1)) {
-            try {
-                val buffer = image.planes[0].buffer
+    override fun analyze(image: ImageProxy) {
+        if (done) {
+            // Once we've successfully analyzed the image, don't do any more analysis
+            // (if we do, we may be in the middle of an analysis when this object is freed,
+            //  causing a seg fault.  we don't like those!)
+            return
+        }
+        var imageClosed = false
+        try {
 
-                val res = reader.ProcessImage(image.width, image.height, image.planes[0].rowStride, buffer)
-                if(res)
+            val buffer = image.planes[0].buffer
+            val width = image.width
+            val height = image.height
+            val res = reader.processImage(width, height, image.planes[0].rowStride, buffer)
+
+            // https://developer.android.com/jetpack/androidx/releases/camera (alpha 7 release notes)
+            // "Important: The ImageAnalysis Analyzer method implementation must call image.close() on
+            //  received images when finished using them. Otherwise, new images may not be received or
+            //  the camera may stall, depending on back pressure setting. Refer to the reference
+            //  docs for details."
+
+            // We've processed the image, so we can close it before we do anything else
+            // and allow more images to be processed
+            image.close()
+            imageClosed = true
+
+
+            var bufferOverlay = ByteBuffer.allocateDirect(4 * width * height)
+            reader.renderAugmentationOverlay(width, height, bufferOverlay)
+            bufferOverlay.rewind()
+
+//            if (bufferOverlay.hasArray())
+//                BitmapFactory.decodeByteArray(bufferOverlay.array(), 0, bufferOverlay.remaining(), BitmapFactory.Options(). )
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            bitmap.copyPixelsFromBuffer(bufferOverlay)
+
+            activity.runOnUiThread {
+                onActionOverlay(bitmap)
+            }
+
+            if(res)
+            {
+                val keySqrAsJson = reader.jsonKeySqrRead()
+                if (keySqrAsJson != "null")
                 {
-                    val keySqrAsJson = reader.JsonKeySqrRead()
-                    if (keySqrAsJson != "null")
-                    {
-                        activity.runOnUiThread{
-                            onActionDone(keySqrAsJson)
-                        }
+                    done = true
+                    activity.runOnUiThread{
+                        onActionDone(keySqrAsJson)
                     }
                 }
-
-                var bufferOverlay = ByteBuffer.allocateDirect(4 * image.width * image.height)
-                reader.RenderAugmentationOverlay(image.width, image.height, bufferOverlay)
-
-                bufferOverlay.rewind()
-                val bitmap = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
-                bitmap.copyPixelsFromBuffer(bufferOverlay)
-
-                activity.runOnUiThread{
-                    onActionOverlay(bitmap)
-                }
-            }
-            catch (ex: Exception)
-            {
-                Log.e("KeySqrAnalyzer", ex.message!!)
             }
 
-            lastAnalyzedTimestamp = currentTimestamp
         }
+        catch (ex: Exception)
+        {
+            Log.e("KeySqrAnalyzer", ex.message!!)
+            if (!imageClosed) {
+                image.close()
+            }
+            throw ex
+        }
+
     }
 }

@@ -8,44 +8,50 @@ import android.graphics.Matrix
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Size
-import android.view.TextureView
-import android.view.ViewGroup
 import android.widget.*
 import androidx.camera.core.*
+import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
+import androidx.camera.lifecycle.*
+import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.Executors
+
+
+// FIXME - resolve API update: Moved rotationDegrees from class Analyzer to ImageInfo.
+
 
 class ReadKeySqrActivity : AppCompatActivity() {
     // This is an arbitrary number we are using to keep track of the permission
     // request. Where an app has multiple context for requesting permission,
     // this can help differentiate the different contexts.
-
     private val REQUEST_CODE_PERMISSIONS = 10
 
     // This is an array of all the permission specified in the manifest.
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
     // Add this after onCreate
-
     private val executor = Executors.newSingleThreadExecutor()
 
-    private lateinit var viewFinder: TextureView
 
+    private lateinit var cameraProviderFuture : ListenableFuture<ProcessCameraProvider>
+    private lateinit var previewView: PreviewView
     private lateinit var panelButtons: LinearLayout
     private lateinit var imageView: ImageView
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
         setContentView(R.layout.activity_read_key_sqr)
 
-        viewFinder = findViewById(R.id.texture_view)
-
         imageView = findViewById(R.id.overlay_view)
+        previewView = findViewById(R.id.preview_view)
 
         if(allPermissionsGranted()) {
-            viewFinder.post{startCamera()}
-
+            imageView.post{startCamera()}
         }
         else
         {
@@ -61,7 +67,8 @@ class ReadKeySqrActivity : AppCompatActivity() {
     ) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
-                viewFinder.post { startCamera() }
+                // viewFinder.post { startCamera() }
+                imageView.post { startCamera() }
             } else {
                 Toast.makeText(this,
                         "Permissions not granted by the user.",
@@ -80,46 +87,60 @@ class ReadKeySqrActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        val screenSize = Size(viewFinder.width, viewFinder.height)
+        cameraProviderFuture.addListener(Runnable {
+            val cameraProvider = cameraProviderFuture.get()
+            bindPreview(cameraProvider)
+        }, ContextCompat.getMainExecutor(this))
+    }
 
-        // Create configuration object for the viewfinder use case
-        val previewConfig = PreviewConfig.Builder().apply {
-            setTargetResolution(screenSize)
-        }.build()
+    private fun bindPreview(cameraProvider : ProcessCameraProvider) {
+        var cameraSelector : CameraSelector = CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build()
+        //val previewSize = Size(viewFinder.width, viewFinder.height)
+        val previewSize = Size(previewView.width, previewView.height)
+
 
         // Build the viewfinder use case
-        val preview = Preview(previewConfig)
+        val preview: Preview = Preview.Builder()
+                .setTargetResolution(previewSize)
+                .build()
 
-        // Every time the viewfinder is updated, recompute layout
-        preview.setOnPreviewOutputUpdateListener {
-            updateCameraOutput(it)
-        }
+        preview.setPreviewSurfaceProvider(previewView.getPreviewSurfaceProvider())
 
-        // Setup image analysis pipeline that computes average pixel luminance
-        val analyzerConfig = ImageAnalysisConfig.Builder().apply {
-            // In our analysis, we care more about the latest image than
-            // analyzing *every* image
-            setTargetResolution(screenSize)
-            setImageReaderMode(
-                    ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
-        }.build()
+        val pWidth = previewView.width
+        val pHeight = previewView.height
+        val analyzerSize: Size =
+                if (pWidth * 9 > pHeight * 16)
+                // Wider than 16x9, so fix width=1920 and calculate a height which will be <= 1080
+                    Size(1920, (1920 * pHeight) / pWidth)
+                else if (pHeight * 16 > pWidth * 9)
+                // Taller than 16x9, so fix height=1920 and calculate a width which will be <= 1080
+                    Size((1920 * pWidth) / pHeight, 1920)
+                else if (pWidth > pHeight)
+                // Wider than 1x1 but less than 16x9, so fix height=1080 and calculate width <=1920
+                    Size((1080 * pWidth / pHeight), 1080)
+                else
+                // Taller than 1x1, or 1x1, so fix width at 1080 and calculate height 1080<=x<=1920
+                    Size(1080, (1080 * pHeight / pWidth) )
+        val keySqrImageAnalyzerUseCase = ImageAnalysis.Builder()
+                // In our analysis, we care more about the latest image than
+                // analyzing *every* image
+                .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
+                .setTargetResolution(analyzerSize)
+                .build()
 
-        var analyzerKeySqr = KeySqrAnalyzer(this)
+        var analyzeKeySqr = KeySqrAnalyzer(this)
+        keySqrImageAnalyzerUseCase.setAnalyzer(
+                // Stuart is guessing with this next parameter
+                executor, // ContextCompat.getMainExecutor(this),
+                analyzeKeySqr
+        )
+        // analyzerConfig.setTargetRotation()
 
-        // Build the image analysis use case and instantiate our analyzer
-        val analyzerUseCase = ImageAnalysis(analyzerConfig).apply {
-            setAnalyzer(executor, analyzerKeySqr)
-        }
-
-        // Bind use cases to lifecycle
-        // If Android Studio complains about "this" being not a LifecycleOwner
-        // try rebuilding the project or updating the appcompat dependency to
-        // version 1.1.0 or higher.
-        CameraX.bindToLifecycle(this, preview, analyzerUseCase)
-
-        analyzerKeySqr.onActionOverlay = fun(overlayBitmap){
+        analyzeKeySqr.onActionOverlay = fun(overlayBitmap){
             val matrix = Matrix()
-            // FIXME - not sure this will be correct is scanning in landscape.
+            // FIXME - not sure this will be correct if scanning in landscape.
             // I'd assume this angle should be derived/read from somewhere.
             // https://github.com/dicekeys/read-keysqr-android/issues/18
             matrix.postRotate(90f)
@@ -128,23 +149,17 @@ class ReadKeySqrActivity : AppCompatActivity() {
             imageView.setImageBitmap(rotatedBitmap)
         }
 
-        analyzerKeySqr.onActionDone = fun(keySqrAsJson){
-            CameraX.unbindAll()
-            var intent = Intent()
-            intent.putExtra("result", "meh")
-            intent.putExtra("keySqrAsJson", keySqrAsJson)
-            setResult(RESULT_OK, intent)
+        analyzeKeySqr.onActionDone = fun(keySqrAsJson){
+            var newIntent = Intent()
+            newIntent.putExtra("keySqrAsJson", keySqrAsJson)
+            setResult(RESULT_OK, newIntent)
+            cameraProviderFuture.get().unbindAll()
             finish()
         }
+
+        // Bind the camera selector use case, the preview, and the image analyzer use case
+        // to this activity class
+        cameraProvider.bindToLifecycle(this, cameraSelector, preview, keySqrImageAnalyzerUseCase)
     }
 
-    private fun updateCameraOutput(it: Preview.PreviewOutput)
-    {
-        // To update the SurfaceTexture, we have to remove it and re-add it
-        val parent = viewFinder.parent as ViewGroup
-        parent.removeView(viewFinder)
-        parent.addView(viewFinder, 0)
-
-        viewFinder.surfaceTexture = it.surfaceTexture
-    }
 }

@@ -4,7 +4,10 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
-import java.lang.Exception
+import com.keysqr.Face
+import com.keysqr.FaceDimensionsFractional
+import com.keysqr.FaceRead
+import com.keysqr.KeySqr
 
 
 class KeySqrRenderer(private val typeface: Typeface?) {
@@ -143,6 +146,7 @@ class KeySqrRenderer(private val typeface: Typeface?) {
         }
     }
 }
+
 
 class KeySqrDrawable(
     private val context: Context,
