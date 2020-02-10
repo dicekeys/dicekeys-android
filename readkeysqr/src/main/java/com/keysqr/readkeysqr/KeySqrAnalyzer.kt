@@ -11,10 +11,17 @@ class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer 
 
     var onActionOverlay = fun(overlay: Bitmap): Unit = null!!
     var onActionDone = fun(keySqrAsJson: String): Unit = null!!
+    var done: Boolean = false
 
     private val reader = ReadKeySqr()
 
-    override fun analyze(image: ImageProxy) { //     override fun analyze(image: ImageProxy) { //
+    override fun analyze(image: ImageProxy) {
+        if (done) {
+            // Once we've successfully analyzed the image, don't do any more analysis
+            // (if we do, we may be in the middle of an analysis when this object is freed,
+            //  causing a seg fault.  we don't like those!)
+            return
+        }
         var imageClosed = false
         try {
 
@@ -53,6 +60,7 @@ class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer 
                 val keySqrAsJson = reader.jsonKeySqrRead()
                 if (keySqrAsJson != "null")
                 {
+                    done = true
                     activity.runOnUiThread{
                         onActionDone(keySqrAsJson)
                     }
