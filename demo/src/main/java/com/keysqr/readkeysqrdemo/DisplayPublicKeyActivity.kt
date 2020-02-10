@@ -17,7 +17,6 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_display_public_key)
 
         findViewById<Button>(R.id.btn_back).setOnClickListener{
-            var intent = Intent()
             setResult(RESULT_OK, intent)
             finish()
         }
@@ -25,8 +24,7 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
     }
 
     private fun render() {
-        val alt = intent.getStringExtra("keySqrAsJson")
-        val keySqrAsJson = intent.extras.getString("keySqrAsJson")
+        val keySqrAsJson = intent.extras?.getString("keySqrAsJson")
 
         if (keySqrAsJson == null || keySqrAsJson == "null") {
             return

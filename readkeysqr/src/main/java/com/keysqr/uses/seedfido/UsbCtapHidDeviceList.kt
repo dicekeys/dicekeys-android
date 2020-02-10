@@ -47,4 +47,12 @@ class UsbCtapHidDeviceList(
     fun connect(device: UsbDevice): UsbCtapHidConnection {
         return UsbCtapHidConnection.connect(usbManager, device)
     }
+
+    fun hasPermission(device: UsbDevice): Boolean {
+        return usbManager.hasPermission(device)
+    }
+
+    fun requestPermission(device: UsbDevice) {
+        usbManager.requestPermission(device, permissionIntent)
+    }
 }
