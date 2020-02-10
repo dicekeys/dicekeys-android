@@ -94,7 +94,7 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
 
   fun getPublicKey(
     jsonKeyDerivationOptions: String,
-    clientsApplicationId: String
+    clientsApplicationId: String = ""
   ): PublicKey {
     return PublicPrivateKeyPair(
         toCanonicalRotation().toHumanReadableForm(true),

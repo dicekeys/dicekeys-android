@@ -23,7 +23,6 @@ import java.util.concurrent.Executors
 
 
 class ReadKeySqrActivity : AppCompatActivity() {
-
     // This is an arbitrary number we are using to keep track of the permission
     // request. Where an app has multiple context for requesting permission,
     // this can help differentiate the different contexts.
@@ -151,9 +150,9 @@ class ReadKeySqrActivity : AppCompatActivity() {
         }
 
         analyzeKeySqr.onActionDone = fun(keySqrAsJson){
-            var intent = Intent()
-            intent.putExtra("keySqrAsJson", keySqrAsJson)
-            setResult(RESULT_OK, intent)
+            var newIntent = Intent()
+            newIntent.putExtra("keySqrAsJson", keySqrAsJson)
+            setResult(RESULT_OK, newIntent)
             cameraProviderFuture.get().unbindAll()
             finish()
         }

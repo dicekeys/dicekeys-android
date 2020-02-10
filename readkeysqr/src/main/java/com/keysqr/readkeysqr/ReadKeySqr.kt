@@ -58,6 +58,6 @@ class ReadKeySqr {
     }
 
     fun finalize() {
-        deleteKeySqrImageReaderJNI(ptrToKeySqrImageReader)
+       deleteKeySqrImageReaderJNI(ptrToKeySqrImageReader)
     }
 }

@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".DisplayDiceActivity">
     <TextView
-        android:id="@+id/fixme_dead_txt_json"
+        android:id="@+id/txt_json"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="24dp"
@@ -16,24 +16,45 @@
         app:layout_constraintTop_toTopOf="parent"
     />
     <ImageView
-        android:id="@+id/fixme_dead_keysqr_view"
+        android:id="@+id/keysqr_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/fixme_dead_txt_json"
+        app:layout_constraintTop_toBottomOf="@id/txt_json"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_start"
+        app:layout_constraintBottom_toTopOf="@id/buttons"
     />
-    <Button
-        android:id="@+id/btn_start"
+    <RelativeLayout
+        android:id="@+id/buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Read my DiceKey"
+        android:layout_centerHorizontal="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="24dp"
-        />
+    >
+
+        <Button
+            android:id="@+id/btn_forget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Forget DiceKey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/btn_view_public_key"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_view_public_key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_toRightOf="@id/btn_forget"
+            app:layout_constraintLeft_toRightOf="@id/btn_forget"
+            android:text="View public key" />
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

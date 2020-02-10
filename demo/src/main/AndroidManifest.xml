@@ -33,6 +33,8 @@
             <!-- end for writing to USB FIDO keys -->
 
         </activity>
+        <activity android:name=".DisplayDiceActivity"></activity>
+        <activity android:name=".DisplayPublicKeyActivity"></activity>
     </application>
 
 </manifest>
