@@ -31,32 +31,38 @@ class DisplayDiceActivity : AppCompatActivity() {
     private lateinit var permissionIntent: android.app.PendingIntent
     private lateinit var deviceList: UsbCtapHidDeviceList
     private lateinit var writeButton: Button
+    private lateinit var forgetDiceKeyButton: Button
+    private lateinit var viewPublicKeyButton: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display_dice)
+        writeButton = findViewById(R.id.btn_write_to_fido)
+        forgetDiceKeyButton = findViewById(R.id.btn_forget)
+        viewPublicKeyButton = findViewById(R.id.btn_view_public_key)
+
         val keySqrAsJson = intent.extras?.getString("keySqrAsJson")
+
         permissionIntent = android.app.PendingIntent.getBroadcast(this, 0, Intent(INTENT_ACTION_USB_PERMISSION_EVENT), 0)
+
         deviceList = UsbCtapHidDeviceList(
-            getSystemService(android.content.Context.USB_SERVICE) as UsbManager,
-            permissionIntent
+                getSystemService(android.content.Context.USB_SERVICE) as UsbManager,
+                permissionIntent
         )
 
-        writeButton = findViewById<Button>(R.id.btn_write_to_fido)
-
-        findViewById<Button>(R.id.btn_forget).setOnClickListener{
+        forgetDiceKeyButton.setOnClickListener{
             setResult(RESULT_OK, intent)
             finish()
         }
 
-        findViewById<Button>(R.id.btn_view_public_key).setOnClickListener{
+        viewPublicKeyButton.setOnClickListener{
             val newIntent = Intent(this, DisplayPublicKeyActivity::class.java)
             newIntent.putExtra("keySqrAsJson", keySqrAsJson)
             startActivityForResult(newIntent, REQUEST_CODE_PUBLIC_KEY)
         }
 
-        findViewById<Button>(R.id.btn_write_to_fido).setOnClickListener{
+        writeButton.setOnClickListener{
             writeToCurrentFidoToken()
         }
 
@@ -78,11 +84,17 @@ class DisplayDiceActivity : AppCompatActivity() {
             // findViewById<TextView>(R.id.txt_json).text = stackTrace
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         val usbIntentFilter = IntentFilter()
         usbIntentFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
         usbIntentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         usbIntentFilter.addAction(INTENT_ACTION_USB_PERMISSION_EVENT)
         registerReceiver(usbReceiver, usbIntentFilter)
+
         renderButtonChanges()
     }
 
@@ -113,7 +125,7 @@ class DisplayDiceActivity : AppCompatActivity() {
 
 
     private fun getSeed(): ByteArray? {
-        // FIXME - calculate in background
+        // Should not be run on UI thread
         return keySqr?.getSeed(seedKeyDerivationOptions, "com.dicekeys.fido")
     }
 
@@ -124,13 +136,25 @@ class DisplayDiceActivity : AppCompatActivity() {
         }
     }
 
-    fun writeToFidoToken(device: UsbDevice) {
-        // FIXME -- execute in background
-        getSeed()?.let {
-            val seed = it
-            val connection = deviceList.connect(device)
-            connection.loadKeySeed(seed)
-        }
+    private fun writeToFidoToken(device: UsbDevice) {
+        Thread(Runnable {
+            getSeed()?.let {
+                val seed = it
+                try {
+                    synchronized(this) {
+                        val connection = deviceList.connect(device)
+                        val result = connection.loadKeySeed(seed)
+                    }
+                    runOnUiThread(Runnable {
+                        // FIXME -- report result
+                    })
+                } catch (e: java.lang.Exception) {
+                    runOnUiThread(Runnable {
+                        // FIXME -- report write failure
+                    })
+                }
+            }
+        }).start()
     }
 
 
