@@ -337,9 +337,9 @@ open class UsbCtapHidConnection(// usbManager: UsbManager,
                     ) / 10).toUInt(),
             commandVersion: UInt = 0u
     ) {
-        if (keySeedAs96Bytes.size != 96) {
+        if (keySeedAs96Bytes.size != 96)
             throw java.lang.IllegalArgumentException("Key seed must be 96 bytes")
-        }
+
         val loadKeySeedData: ByteArray =
                 java.nio.ByteBuffer.allocate(4 + 4 + keySeedAs96Bytes.size)
                         .order(java.nio.ByteOrder.BIG_ENDIAN)
@@ -351,13 +351,18 @@ open class UsbCtapHidConnection(// usbManager: UsbManager,
                         .put(keySeedAs96Bytes)
                         .array()
         val response = sendCommand(Commands.CTAPHID_LOADKEY, loadKeySeedData, 14000)
-        if (response.cmd != Commands.CTAPHID_LOADKEY) {
-            val error: Byte = response.data[0]
-            if (error == Errors.CTAP2_ERR_OPERATION_DENIED) {
-                throw LoadKeyNotAuthorizedByUserException()
-            } else {
-                throw java.io.IOException("Failed to write key due to unforeseen error # $error.")
-            }
+        if (response.cmd == Commands.CTAPHID_LOADKEY && response.dataLength == 0.toUShort()) {
+            // Success.
+            return
+        }
+        // Handle errors
+        if (response.cmd == Commands.CTAPHID_ERROR && response.data[0] == Errors.CTAP2_ERR_OPERATION_DENIED) {
+            throw LoadKeyNotAuthorizedByUserException()
+        } else {
+            var dataByteArray = ByteArray(response.dataLength.toInt())
+            response.data.get(dataByteArray)
+            val dataAsHex: String = dataByteArray.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+            throw java.io.IOException("Failed to write key due to unforeseen error: command=${response.cmd}, error=$dataAsHex")
         }
     }
 

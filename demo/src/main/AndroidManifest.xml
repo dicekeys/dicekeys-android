@@ -23,15 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- for writing to USB FIDO keys -->
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
-
-            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/fido_usb_device_filter" />
-            <!-- end for writing to USB FIDO keys -->
-
         </activity>
         <activity android:name=".DisplayDiceActivity"></activity>
         <activity android:name=".DisplayPublicKeyActivity"></activity>
