@@ -5,6 +5,8 @@ interface Face<T: Face<T>> {
     val digit: Char   // '0' - '6', or '?'
     val clockwise90DegreeRotationsFromUpright: Byte? // 0 - 3
 
+    val orientationAsLowercaseLetterTRBL: Char
+
     fun rotate(clockwise90DegreeRotations: Int): T
     fun toHumanReadableForm(includeFaceOrientations: Boolean): String
 
@@ -31,12 +33,12 @@ interface Face<T: Face<T>> {
 
 internal class FaceInternals {
     companion object {
-        fun trblToClockwise90DegreeRotationsFromUpright(trbl: String): Byte? {
+        fun trblToClockwise90DegreeRotationsFromUpright(trbl: Char): Byte? {
             return when (trbl) {
-                "t" -> 0
-                "r" -> 1
-                "b" -> 2
-                "l" -> 3
+                't' -> 0
+                'r' -> 1
+                'b' -> 2
+                'l' -> 3
                 else -> null
             }
         }
@@ -44,11 +46,11 @@ internal class FaceInternals {
         fun clockwise90DegreeRotationsFromUprightToTrbl(
                 clockwise90DegreeRotationsFromUpright: Byte?,
                 additionalClockwise90DegreeRotations: Int = 0
-        ): String {
+        ): Char {
             return if (clockwise90DegreeRotationsFromUpright == null)
-                "?"
+                '?'
             else
-                "" + FaceRotationLetters[
+                FaceRotationLetters[
                         (
                                 clockwise90DegreeRotationsFromUpright +
                                         additionalClockwise90DegreeRotations
