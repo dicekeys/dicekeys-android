@@ -1,9 +1,10 @@
 package com.keysqr
 import com.keysqr.keys.PublicKey
 import com.keysqr.keys.PublicPrivateKeyPair
+import com.keysqr.keys.SymmetricKey
 
 
-class KeySqr<F: Face<F>>(val faces: List<F>) {
+class KeySqr<F: Face>(val faces: List<F>) {
   companion object {
     const val NumberOfFacesInKey = 25
     val rotationIndexes = listOf<List<Byte>>(
@@ -54,21 +55,19 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
   val allLettersAndDigitsAreDefined: Boolean get() = allLettersAreDefined && allDigitsAreDefined
   val allLettersDigitsAndOrientationsAreDefined: Boolean get() = allLettersAndDigitsAreDefined && allOrientationsAreDefined
 
-  fun rotate(clockwise90DegreeRotations: Int): KeySqr<F> {
+  fun rotate(clockwise90DegreeRotations: Int): KeySqr<Face> {
     val clockwiseTurnsMod4 = clockwise90DegreeRotations % 4
-    return if (clockwiseTurnsMod4 == 0)
-        this@KeySqr
-      else KeySqr(
+    return KeySqr(
             rotationIndexes[clockwiseTurnsMod4]
                     .map<Byte, F>() { faces[it.toInt()] }
-                    .map<F, F>() { it.rotate(clockwiseTurnsMod4) }
+                    .map<F, Face>() { it.rotate(clockwiseTurnsMod4) }
     )
   }
 
   fun toCanonicalRotation(
     includeFaceOrientations: Boolean = allOrientationsAreDefined
-  ): KeySqr<F> {
-    var winningRotation: KeySqr<F> = this@KeySqr
+  ): KeySqr<Face> {
+    var winningRotation: KeySqr<Face> = rotate(0)
     var winningReadableForm = toHumanReadableForm(includeFaceOrientations)
     for (clockwiseTurns in 1..3) {
       val rotatedKey = rotate(clockwiseTurns)
@@ -89,6 +88,17 @@ class KeySqr<F: Face<F>>(val faces: List<F>) {
       toCanonicalRotation().toHumanReadableForm(true),
       jsonKeyDerivationOptions,
       clientsApplicationId
+    )
+  }
+
+  fun getSymmetricKey(
+          jsonKeyDerivationOptions: String,
+          clientsApplicationId: String = ""
+  ): SymmetricKey {
+    return SymmetricKey(
+            toCanonicalRotation().toHumanReadableForm(true),
+            jsonKeyDerivationOptions,
+            clientsApplicationId
     )
   }
 
