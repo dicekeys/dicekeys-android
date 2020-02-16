@@ -1,5 +1,5 @@
 
-# Android KeySqr Demo Module
+# Android KeySqr App
 
 ```
 git clone --recursive https://github.com/dicekeys/read-keysqr-android.git

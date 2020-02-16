@@ -1,2 +1,2 @@
-include ':demo', ':readkeysqr'
+include ':app', ':readkeysqr'
 rootProject.name='ReadKeySqr'

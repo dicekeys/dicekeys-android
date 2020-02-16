@@ -6,7 +6,7 @@
 
 extern "C" {
 
-//JNIEXPORT jstring JNICALL Java_com_keysqr_readkeysqr_ReadKeySqr_ReadKeySqrJson(
+//JNIEXPORT jstring JNICALL Java_org_dicekeys_readkeysqr_ReadKeySqr_ReadKeySqrJson(
 //     JNIEnv* env,
 //     jobject obj,
 //     jint width,
@@ -27,7 +27,7 @@ extern "C" {
 //}
 
 
-JNIEXPORT jlong Java_com_keysqr_readkeysqr_ReadKeySqr_newKeySqrImageReaderJNI(
+JNIEXPORT jlong Java_org_dicekeys_readkeysqr_ReadKeySqr_newKeySqrImageReaderJNI(
 		JNIEnv* env,
 		jobject obj
 		)
@@ -35,7 +35,7 @@ JNIEXPORT jlong Java_com_keysqr_readkeysqr_ReadKeySqr_newKeySqrImageReaderJNI(
 	return (long)(new KeySqrImageReader());
 }
 
-JNIEXPORT jboolean Java_com_keysqr_readkeysqr_ReadKeySqr_processImageJNI(
+JNIEXPORT jboolean Java_org_dicekeys_readkeysqr_ReadKeySqr_processImageJNI(
 		JNIEnv* env,
 		jobject obj,
 		jlong reader,
@@ -56,7 +56,7 @@ JNIEXPORT jboolean Java_com_keysqr_readkeysqr_ReadKeySqr_processImageJNI(
 	}
 }
 
-JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_renderAugmentationOverlayJNI(
+JNIEXPORT void Java_org_dicekeys_readkeysqr_ReadKeySqr_renderAugmentationOverlayJNI(
 		JNIEnv* env,
 		jobject  obj,
 		jlong reader,
@@ -74,7 +74,7 @@ JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_renderAugmentationOverlayJN
 	}
 }
 
-JNIEXPORT jstring Java_com_keysqr_readkeysqr_ReadKeySqr_jsonKeySqrReadJNI(
+JNIEXPORT jstring Java_org_dicekeys_readkeysqr_ReadKeySqr_jsonKeySqrReadJNI(
 		JNIEnv* env,
 		jobject  obj,
 		jlong reader
@@ -85,7 +85,7 @@ JNIEXPORT jstring Java_com_keysqr_readkeysqr_ReadKeySqr_jsonKeySqrReadJNI(
 	return env->NewStringUTF(json.c_str());
 }
 
-JNIEXPORT void Java_com_keysqr_readkeysqr_ReadKeySqr_deleteKeySqrImageReaderJNI(
+JNIEXPORT void Java_org_dicekeys_readkeysqr_ReadKeySqr_deleteKeySqrImageReaderJNI(
 		JNIEnv* env,
 		jobject  obj,
 		jlong reader

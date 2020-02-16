@@ -64,7 +64,7 @@ void throwCppExceptionAsJavaException(
 }
 
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqr_getSeedJNI(
+JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_KeySqr_getSeedJNI(
      JNIEnv* env,
      jobject obj,
      jstring keySqrInHumanReadableFormWithOrientationsObj,
@@ -96,7 +96,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_KeySqr_getSeedJNI(
 //
 // Public key operations
 //
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicKey_sealJNI(
+JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicKey_sealJNI(
         JNIEnv* env,
         jobject obj,
         jbyteArray jpublicKeyBytes,
@@ -141,7 +141,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicKey_sealJNI(
 //
 // PublicPrivateKeyPair operations
 //
-JNIEXPORT jlong JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_constructJNI(
+JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_constructJNI(
         JNIEnv* env,
         jobject obj,
         jstring keySqrInHumanReadableFormWithOrientationsObj,
@@ -170,7 +170,7 @@ JNIEXPORT jlong JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_constructJNI(
     }
 }
 
-JNIEXPORT void JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_destroyJNI(
+JNIEXPORT void JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_destroyJNI(
         JNIEnv* env,
         jobject obj,
         jlong publicPrivateKeyPair
@@ -182,7 +182,7 @@ JNIEXPORT void JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_destroyJNI(
     }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_getPublicKeyBytesJNI(
+JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_getPublicKeyBytesJNI(
         JNIEnv* env,
         jobject obj,
         jlong publicPrivateKeyPair
@@ -199,7 +199,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_getPublic
     }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_unsealJNI(
+JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_unsealJNI(
         JNIEnv* env,
         jobject obj,
         jlong publicPrivateKeyPair,
@@ -231,7 +231,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_PublicPrivateKeyPair_unsealJNI
 //
 // Symmetric key operations
 //
-JNIEXPORT jlong JNICALL Java_com_keysqr_keys_SymmetricKey_constructJNI(
+JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_SymmetricKey_constructJNI(
         JNIEnv* env,
         jobject obj,
         jstring keySqrInHumanReadableFormWithOrientationsObj,
@@ -260,7 +260,7 @@ JNIEXPORT jlong JNICALL Java_com_keysqr_keys_SymmetricKey_constructJNI(
     }
 }
 
-JNIEXPORT void JNICALL Java_com_keysqr_keys_SymmetricKey_destroyJNI(
+JNIEXPORT void JNICALL Java_org_dicekeys_keys_SymmetricKey_destroyJNI(
         JNIEnv* env,
         jobject obj,
         jlong symmetricKeyPtrAsJavaLong
@@ -273,7 +273,7 @@ JNIEXPORT void JNICALL Java_com_keysqr_keys_SymmetricKey_destroyJNI(
 }
 
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_SymmetricKey_sealJNI(
+JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_SymmetricKey_sealJNI(
         JNIEnv* env,
         jobject obj,
         jlong symmetricKeyPtrAsJavaLong,
@@ -303,7 +303,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_SymmetricKey_sealJNI(
     }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_keysqr_keys_SymmetricKey_unsealJNI(
+JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_SymmetricKey_unsealJNI(
         JNIEnv* env,
         jobject obj,
         jlong symmetricKeyPtrAsJavaLong,
