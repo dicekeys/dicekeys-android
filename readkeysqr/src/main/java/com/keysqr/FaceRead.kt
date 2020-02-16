@@ -28,11 +28,22 @@ class Undoverline(
 class FaceRead(
         val underline: Undoverline?,
         val overline: Undoverline?,
-        val orientationAsLowercaseLetterTRBL: String,
+        override val orientationAsLowercaseLetterTRBL: Char,
         val ocrLetterCharsFromMostToLeastLikely: String,
         val ocrDigitCharsFromMostToLeastLikely: String,
         val center: Point
-): Face<FaceRead> {
+): Face(
+        majorityOfThree(
+                underline?.let{decodeUndoverlineByte(false, it.code).letter} ?: '?' ,
+                overline?.let{decodeUndoverlineByte(true, it.code).letter} ?: '?' ,
+                 ocrLetterCharsFromMostToLeastLikely[0]),
+        majorityOfThree(
+                underline?.let{decodeUndoverlineByte(false, it.code).digit} ?: '?' ,
+                overline?.let{decodeUndoverlineByte(true, it.code).digit} ?: '?' ,
+                ocrDigitCharsFromMostToLeastLikely[0]),
+        orientationAsLowercaseLetterTRBL
+)
+ {
 
     companion object {
         val moshi = Moshi.Builder()
@@ -43,7 +54,7 @@ class FaceRead(
 
 
         fun keySqrFromListOfFacesRead(facesRead: List<FaceRead>): KeySqr<FaceRead> {
-            return KeySqr(facesRead)
+            return KeySqr<FaceRead>(facesRead)
         }
 
         fun keySqrFromJsonFacesRead(json: String): KeySqr<FaceRead>? {
@@ -67,9 +78,6 @@ class FaceRead(
             }
         }
     }
-
-    override val clockwise90DegreeRotationsFromUpright: Byte? get() =
-        FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTRBL)
 
     val underlineLetter: Char
         get() {
@@ -100,12 +108,6 @@ class FaceRead(
                 decodeUndoverlineByte(true, overline.code).digit
         }
 
-    override val letter: Char
-        get() = majorityOfThree(
-                underlineLetter, overlineLetter, ocrLetterCharsFromMostToLeastLikely[0])
-    override val digit: Char
-        get() = majorityOfThree(
-                underlineDigit, overlineDigit, ocrDigitCharsFromMostToLeastLikely[0])
     override val underlineCode: Short?
         get() {
             return underline?.code?.toShort()
@@ -114,27 +116,4 @@ class FaceRead(
         get() {
             return overline?.code?.toShort()
         }
-
-    override fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
-        return String(
-                if (includeFaceOrientations)
-                    charArrayOf(letter, digit, orientationAsLowercaseLetterTRBL[0])
-                else
-                    charArrayOf(letter, digit)
-        )
-    }
-
-    override fun rotate(clockwise90DegreeRotations: Int): FaceRead {
-        return FaceRead(
-                underline,
-                overline,
-                FaceInternals.clockwise90DegreeRotationsFromUprightToTrbl(
-                        clockwise90DegreeRotationsFromUpright,
-                        clockwise90DegreeRotations
-                ),
-                ocrLetterCharsFromMostToLeastLikely,
-                ocrDigitCharsFromMostToLeastLikely,
-                center
-        )
-    }
-}
+ }

@@ -24,8 +24,8 @@ class KeySqrRenderer(private val typeface: Typeface?) {
         return paint
     }
 
-    fun <T : Face<T>> renderFace(
-            face: Face<T>,
+    fun renderFace(
+            face: Face,
             canvas: Canvas,
             faceSize: Float = minOf(canvas.width, canvas.height).toFloat(),
             textPaint: Paint = textPaintForFaceSize(faceSize),
@@ -119,8 +119,8 @@ class KeySqrRenderer(private val typeface: Typeface?) {
 
     }
 
-    fun <T : Face<T>> renderKeySqr(
-            keySqr: KeySqr<T>,
+    fun renderKeySqr(
+            keySqr: KeySqr<Face>,
             canvas: Canvas,
             size: Float = minOf(canvas.width, canvas.height).toFloat(),
             x: Float = (canvas.width - size) / 2,

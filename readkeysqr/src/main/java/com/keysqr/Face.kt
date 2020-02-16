@@ -1,14 +1,69 @@
 package com.keysqr
 
-interface Face<T: Face<T>> {
-    val letter: Char  // 'A' - 'Z' except 'Q', or '?'
-    val digit: Char   // '0' - '6', or '?'
-    val clockwise90DegreeRotationsFromUpright: Byte? // 0 - 3
+import com.squareup.moshi.JsonClass
 
-    fun rotate(clockwise90DegreeRotations: Int): T
-    fun toHumanReadableForm(includeFaceOrientations: Boolean): String
 
-    private val undoverlineCodes: FaceWithUnderlineAndOverlineCode?
+@JsonClass(generateAdapter = true)
+open class Face(
+    open val letter: Char,
+    open val digit: Char,
+    open val orientationAsLowercaseLetterTRBL: Char
+) {
+    val clockwise90DegreeRotationsFromUpright: Byte? get()  =
+        FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTRBL)
+
+    companion object {
+        fun keySqrFromHumanReadableForm(hrf: String): KeySqr<Face>? {
+            try {
+                if (hrf.length == 75) {
+                    // Human readable form with orientations (letter + digit + orientation) x 25
+                    return KeySqr(
+                        (0..24).map{ k -> Face(hrf[k*3], hrf[k*3+1], hrf[k*3 + 2]) }
+                    )
+                } else if (hrf.length == 50) {
+                    // Human readable form without orientations (letter + digit) x 25
+                    return KeySqr(
+                            (0..24).map{ k -> Face(hrf[k*2], hrf[k*2+1], '?') }
+                    )
+                }
+                return null
+            } catch (e: Exception) {
+                return null
+            }
+        }
+
+
+        fun majorityOfThree(a: Char, b: Char, c: Char): Char {
+            return when {
+                (a == b || a == c) -> a
+                (b == c) -> b
+                else -> '?'
+            }
+        }
+    }
+
+
+    fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
+        return String(
+            if (includeFaceOrientations)
+                charArrayOf(letter, digit, orientationAsLowercaseLetterTRBL)
+            else
+                charArrayOf(letter, digit)
+        )
+    }
+
+    fun rotate(clockwise90DegreeRotations: Int): Face {
+        return Face(
+            letter,
+            digit,
+            FaceInternals.clockwise90DegreeRotationsFromUprightToTrbl(
+                    clockwise90DegreeRotationsFromUpright,
+                    clockwise90DegreeRotations
+            )
+        )
+    }
+
+    val undoverlineCodes: FaceWithUnderlineAndOverlineCode?
         get() {
             val letterIndex = FaceLetters.indexOf(letter)
             if (letterIndex < 0)
@@ -19,24 +74,27 @@ interface Face<T: Face<T>> {
             return letterIndexTimesSixPlusDigitIndexFaceWithUndoverlineCodes[letterIndex * 6 + digitIndex]
         }
 
-    val underlineCode: Short?
+    open val underlineCode: Short?
         get() {
             return undoverlineCodes?.underlineCode
         }
-    val overlineCode: Short?
+    open val overlineCode: Short?
         get() {
             return undoverlineCodes?.overlineCode
         }
+
 }
+
+
 
 internal class FaceInternals {
     companion object {
-        fun trblToClockwise90DegreeRotationsFromUpright(trbl: String): Byte? {
+        fun trblToClockwise90DegreeRotationsFromUpright(trbl: Char): Byte? {
             return when (trbl) {
-                "t" -> 0
-                "r" -> 1
-                "b" -> 2
-                "l" -> 3
+                't' -> 0
+                'r' -> 1
+                'b' -> 2
+                'l' -> 3
                 else -> null
             }
         }
@@ -44,11 +102,11 @@ internal class FaceInternals {
         fun clockwise90DegreeRotationsFromUprightToTrbl(
                 clockwise90DegreeRotationsFromUpright: Byte?,
                 additionalClockwise90DegreeRotations: Int = 0
-        ): String {
+        ): Char {
             return if (clockwise90DegreeRotationsFromUpright == null)
-                "?"
+                '?'
             else
-                "" + FaceRotationLetters[
+                FaceRotationLetters[
                         (
                                 clockwise90DegreeRotationsFromUpright +
                                         additionalClockwise90DegreeRotations
