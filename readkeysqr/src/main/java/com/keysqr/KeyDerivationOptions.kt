@@ -29,14 +29,34 @@ import com.squareup.moshi.ToJson
 @JsonClass(generateAdapter = true)
 class KeyDerivationOptions(
     //  "Seed", "Symmetric", "Public"
-    val keyType: String,
+    val keyType: String?,
+
     val keyLengthInBytes: Int?,
+
     //  "XSalsa20Poly1305", "X25519"
     val algorithm: String?,
+
     // "BLAKE2b", "SHA256", or a ParameterizedHashAlgorithm
 //    val hashAlgorithm: HashAlgorithm?,
+
     val includeOrientationOfFacesInKey: Boolean = false,
-    restictToClientApplicationsIdPrefixes: List<String>? = null
+    val restrictToClientApplicationsIdPrefixes: List<String>? = null
 ) {
+    companion object {
+        object KeyType {
+            const val Seed = "Seed"
+            const val Symmetric = "Symmetric"
+            const val Public = "Public"
+        }
+        object Algorithm {
+            const val XSalsa20Poly1305 = "XSalsa20Poly1305"
+            const val X25519 = "X25519"
+        }
+
+        fun fromJson(json: String): KeyDerivationOptions {
+            // FIXME
+            return KeyDerivationOptions(null, null, null, true, null)
+        }
+    }
 //
 }
