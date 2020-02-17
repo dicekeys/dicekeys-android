@@ -105,7 +105,7 @@ class ReadKeySqrActivity : AppCompatActivity() {
                 .setTargetResolution(previewSize)
                 .build()
 
-        preview.setSurfaceProvider(previewView.previewSurfaceProvider)
+        preview.previewSurfaceProvider = previewView.previewSurfaceProvider
 
         val pWidth = previewView.width
         val pHeight = previewView.height
