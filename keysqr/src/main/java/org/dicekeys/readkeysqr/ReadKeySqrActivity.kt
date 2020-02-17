@@ -17,7 +17,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.Executors
-import org.dicekeys.readkeysqr.R
 
 // FIXME - resolve API update: Moved rotationDegrees from class Analyzer to ImageInfo.
 
@@ -106,7 +105,7 @@ class ReadKeySqrActivity : AppCompatActivity() {
                 .setTargetResolution(previewSize)
                 .build()
 
-        preview.setPreviewSurfaceProvider(previewView.getPreviewSurfaceProvider())
+        preview.setSurfaceProvider(previewView.previewSurfaceProvider)
 
         val pWidth = previewView.width
         val pHeight = previewView.height
