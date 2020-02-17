@@ -19,3 +19,6 @@
 .project
 org.eclipse.buildship.core.prefs
 .idea/vcs.xml
+keystore.properties
+.keys
+keys.jks
