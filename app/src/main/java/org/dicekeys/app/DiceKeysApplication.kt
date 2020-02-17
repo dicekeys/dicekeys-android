@@ -4,12 +4,12 @@ import android.app.Application
 import androidx.camera.core.CameraXConfig
 import androidx.camera.camera2.Camera2Config
 
-class DiceKeysApplication : Application(),  CameraXConfig.Provider {
+class DiceKeysApplication : Application() { //,  CameraXConfig.Provider
 
-    override fun getCameraXConfig(): CameraXConfig {
-        return Camera2Config.defaultConfig()
-    }
-
+//
+// override fun getCameraXConfig(): CameraXConfig {
+//        return Camera2Config.defaultConfig()
+//    }
     // Called when the application is starting, before any other application objects have been created.
     // Overriding this method is totally optional!
 //    override fun onCreate() {
