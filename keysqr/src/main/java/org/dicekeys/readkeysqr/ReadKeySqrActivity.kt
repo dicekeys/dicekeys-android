@@ -36,7 +36,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
     private lateinit var cameraProviderFuture : ListenableFuture<ProcessCameraProvider>
     private lateinit var previewView: PreviewView
-    private lateinit var panelButtons: LinearLayout
     private lateinit var imageView: ImageView
 
 
@@ -105,7 +104,7 @@ class ReadKeySqrActivity : AppCompatActivity() {
                 .setTargetResolution(previewSize)
                 .build()
 
-        preview.previewSurfaceProvider = previewView.previewSurfaceProvider
+        preview.setSurfaceProvider(previewView.previewSurfaceProvider)
 
         val pWidth = previewView.width
         val pHeight = previewView.height

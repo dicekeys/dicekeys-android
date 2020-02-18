@@ -1,8 +1,6 @@
 package org.dicekeys.app
 
 import android.app.Application
-import androidx.camera.core.CameraXConfig
-import androidx.camera.camera2.Camera2Config
 
 class DiceKeysApplication : Application() { //,  CameraXConfig.Provider
 
