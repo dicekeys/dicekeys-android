@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.KeySqr
 import org.dicekeys.FaceRead
+import org.dicekeys.api.KeySqrState
 import org.dicekeys.readkeysqr.KeySqrDrawable
 import org.dicekeys.uses.seedfido.UsbCtapHidDeviceList
 
@@ -53,6 +54,7 @@ class DisplayDiceActivity : AppCompatActivity() {
         )
 
         forgetDiceKeyButton.setOnClickListener{
+            KeySqrState.clear()
             var newIntent = Intent()
             setResult(RESULT_OK, newIntent)
             unregisterReceiver(usbReceiver)

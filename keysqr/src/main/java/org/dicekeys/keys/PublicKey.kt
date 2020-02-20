@@ -22,8 +22,8 @@ class Base64Adapter {
 
 @JsonClass(generateAdapter = true)
 class PublicKey(
-    val jsonKeyDerivationOptions: String,
-    val asByteArray: ByteArray
+        val keyBytes: ByteArray,
+        val jsonKeyDerivationOptions: String = ""
 ) {
 
     companion object {
@@ -40,12 +40,16 @@ class PublicKey(
     }
 
 
-    fun toJson(): String { return jsonAdapter.toJson(this) }
+    fun toJson(): String { return jsonAdapter.toJson(this)
+        // If the key derivation options are empty, remove them
+        .replace("\"jsonKeyDerivationOptions\":\"\",","", false)
+        .replace(",\"jsonKeyDerivationOptions\":\"\"","", false)
+    }
     // public val asJson: String get() = jsonAdapter.toJson(this)
 
     @ExperimentalUnsignedTypes
     public val asHexDigits: String get() =
-        asByteArray.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+        keyBytes.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
     private external fun sealJNI(
         publicKeyBytes: ByteArray,
@@ -58,7 +62,7 @@ class PublicKey(
         message: ByteArray,
         postDecryptionInstructionJson: String = ""
     ): ByteArray {
-        return sealJNI(asByteArray, jsonKeyDerivationOptions, message, postDecryptionInstructionJson)
+        return sealJNI(keyBytes, jsonKeyDerivationOptions, message, postDecryptionInstructionJson)
     }
 
     // Version 40 QR code is (177×177)

@@ -44,7 +44,7 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
         keySqr?.let{ Thread(Runnable {
             try {
                 val publicKey = it.getPublicKey(
-                        """{"keyType":"Public"}"""
+                        ""//""""{"keyType":"Public"}"""
                 )
                 val publicKeyJson = publicKey.toJson()
                 runOnUiThread {

@@ -39,19 +39,19 @@ class SymmetricKey(
 
     fun seal(
             plaintext: ByteArray,
-            postDecryptionInstructionJson: String = ""
+            postDecryptionInstructionJson: String? = ""
     ): ByteArray {
         throwIfDisposed()
-        return sealJNI(symmetricKeyPtr, plaintext, postDecryptionInstructionJson)
+        return sealJNI(symmetricKeyPtr, plaintext, postDecryptionInstructionJson ?: "")
     }
 
 
     fun unseal(
         ciphertext: ByteArray,
-        postDecryptionInstructionJson: String = ""
+        postDecryptionInstructionJson: String? = ""
     ): ByteArray {
         throwIfDisposed()
-        return unsealJNI(symmetricKeyPtr, ciphertext, postDecryptionInstructionJson)
+        return unsealJNI(symmetricKeyPtr, ciphertext, postDecryptionInstructionJson ?: "")
     }
 
     private fun throwIfDisposed() {

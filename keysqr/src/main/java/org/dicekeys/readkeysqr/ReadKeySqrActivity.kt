@@ -16,12 +16,18 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
+import org.dicekeys.FaceRead
+import org.dicekeys.api.KeySqrState
 import java.util.concurrent.Executors
 
 // FIXME - resolve API update: Moved rotationDegrees from class Analyzer to ImageInfo.
 
 
 class ReadKeySqrActivity : AppCompatActivity() {
+    companion object {
+        const val RC_READ_KEYSQR = 1
+    }
+
     // This is an arbitrary number we are using to keep track of the permission
     // request. Where an app has multiple context for requesting permission,
     // this can help differentiate the different contexts.
@@ -148,6 +154,9 @@ class ReadKeySqrActivity : AppCompatActivity() {
         }
 
         analyzeKeySqr.onActionDone = fun(keySqrAsJson){
+            FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
+                KeySqrState.setKeySquareRead(keySqr)
+            }
             var newIntent = Intent()
             newIntent.putExtra("keySqrAsJson", keySqrAsJson)
             setResult(RESULT_OK, newIntent)

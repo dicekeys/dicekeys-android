@@ -52,6 +52,9 @@ class KeyDerivationOptions(
         }
 
         fun fromJson(json: String): KeyDerivationOptions {
+            if (json.length == 0) {
+                //FIXME
+            }
             // FIXME
             return KeyDerivationOptions(null, null, null, true, null)
         }

@@ -45,17 +45,17 @@ class PublicPrivateKeyPair(
     fun getPublicKey(): PublicKey {
         throwIfDisposed()
         return PublicKey(
-                jsonKeyDerivationOptions,
-                getPublicKeyBytesJNI(publicPrivateKeyPairPtr)
+                getPublicKeyBytesJNI(publicPrivateKeyPairPtr),
+                jsonKeyDerivationOptions
         )
     }
 
     fun unseal(
             ciphertext: ByteArray,
-            postDecryptionInstructionJson: String = ""
+            postDecryptionInstructionJson: String? = ""
     ): ByteArray {
         throwIfDisposed()
-        return unsealJNI(publicPrivateKeyPairPtr, ciphertext, postDecryptionInstructionJson)
+        return unsealJNI(publicPrivateKeyPairPtr, ciphertext, postDecryptionInstructionJson ?: "")
     }
 
     fun erase() {

@@ -81,45 +81,45 @@ class KeySqr<F: Face>(val faces: List<F>) {
   }
 
   fun getSeed(
-    jsonKeyDerivationOptions: String,
-    clientsApplicationId: String
+    jsonKeyDerivationOptions: String? = "",
+    clientsApplicationId: String = ""
   ): ByteArray {
     return getSeedJNI(
       toCanonicalRotation().toHumanReadableForm(true),
-      jsonKeyDerivationOptions,
+      jsonKeyDerivationOptions ?: "",
       clientsApplicationId
     )
   }
 
   fun getSymmetricKey(
-          jsonKeyDerivationOptions: String,
+          jsonKeyDerivationOptions: String? = "",
           clientsApplicationId: String = ""
   ): SymmetricKey {
     return SymmetricKey(
             toCanonicalRotation().toHumanReadableForm(true),
-            jsonKeyDerivationOptions,
+            jsonKeyDerivationOptions ?: "",
             clientsApplicationId
     )
   }
 
   fun getPublicKey(
-    jsonKeyDerivationOptions: String,
+    jsonKeyDerivationOptions: String? = "",
     clientsApplicationId: String = ""
   ): PublicKey {
     return PublicPrivateKeyPair(
         toCanonicalRotation().toHumanReadableForm(true),
-        jsonKeyDerivationOptions,
+        jsonKeyDerivationOptions ?: "",
         clientsApplicationId
       ).getPublicKey()
   }
 
   fun getPublicPrivateKeyPair(
-          jsonKeyDerivationOptions: String,
-          clientsApplicationId: String
+          jsonKeyDerivationOptions: String?= "",
+          clientsApplicationId: String = ""
   ): PublicPrivateKeyPair {
     return PublicPrivateKeyPair(
         toCanonicalRotation().toHumanReadableForm(true),
-        jsonKeyDerivationOptions,
+        jsonKeyDerivationOptions ?: "",
         clientsApplicationId
     )
   }

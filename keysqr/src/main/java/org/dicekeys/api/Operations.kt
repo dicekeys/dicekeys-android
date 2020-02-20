@@ -1,15 +1,25 @@
 package org.dicekeys.api
 
 import android.app.Activity
-import android.app.IntentService
 import android.content.Intent
-import android.os.Parcelable
+import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.parcel.Parcelize
 import org.dicekeys.KeyDerivationOptions
+import org.dicekeys.readkeysqr.ReadKeySqrActivity
 import java.lang.Exception
 
-object Actions {
+object Operations {
+    object ParameterNames {
+        const val ciphertext = "ciphertext"
+        const val keyDerivationOptionsJson = "keyDerivationOptionsJson"
+        const val plaintext = "plaintext"
+        const val postDecryptionInstructionsJson = "postDecryptionInstructionsJson"
+        const val publicKeyJson = "publicKeyJson"
+        const val seed = "seed"
+        const val exception = "exception"
+    }
+
     object Seed {
         const val get = "org.keysqr.api.actions.Seed.get"
     }
@@ -32,36 +42,6 @@ object Actions {
 }
 
 
-@Parcelize
-class ActionSeedGet(
-    val jsonKeyDerivationOptions: String
-): Parcelable
-
-@Parcelize
-class ActionSymmetricKeySeal(
-    val jsonKeyDerivationOptions: String,
-    val plaintext: ByteArray
-): Parcelable
-
-@Parcelize
-class ActionSymmetricKeyUnseal(
-    val jsonKeyDerivationOptions: String,
-    val ciphertext: ByteArray
-): Parcelable
-
-@Parcelize
-class ActionGetPublicKey(
-        val jsonKeyDerivationOptions: String,
-        val plaintext: ByteArray
-): Parcelable
-
-@Parcelize
-class ActionPubliczPrivateKeyUnseal(
-        val jsonKeyDerivationOptions: String,
-        val ciphertext: ByteArray
-): Parcelable
-
-
 class ClientNotAuthorizeException(
         clientApplicationId: String?,
         authorizedPrefixes: List<String>
@@ -69,105 +49,179 @@ class ClientNotAuthorizeException(
     authorizedPrefixes.joinToString(",", "'", "'" )
 }")
 
-class ApiActivity : AppCompatActivity() {
+class ExecuteApiCommandActivity : AppCompatActivity() {
+    companion object {
+        const val RC_READ_KEYSQR = 1
+    }
 
-    private val intentReceiver = object : android.content.BroadcastReceiver() {
-        override fun onReceive(context: android.content.Context, intent: Intent) {
-            val action = intent.action
+    private var keyDerivationOptionsJson: String? = null
+    private lateinit var keyDerivationOptions: KeyDerivationOptions
+    private var restrictToClientApplicationsIdPrefixes: List<String>? = null
+    private lateinit var clientsApplicationId: String
+    private var keySqrReadActivityStarted: Boolean = false
 
-            if (!org.dicekeys.api.Actions.All.contains((action))) {
-                // This is not an action handled by this API
-                return
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+
+        try {
+            // First check if the intended action is a valid command
+            if (!Operations.All.contains(intent.action)) {
+                throw IllegalArgumentException("Invalid command for DiceKeys API")
             }
 
-            // All calls to the API require key derivation options
-            val keyDerivationOptionsJson = intent.getStringExtra("keyDerivationOptionsJson")
-            val keyDerivationOptions = KeyDerivationOptions.fromJson(keyDerivationOptionsJson ?: "{}")
+            keyDerivationOptionsJson = intent.getStringExtra(Operations.ParameterNames.keyDerivationOptionsJson)
+            keyDerivationOptions = KeyDerivationOptions.fromJson(keyDerivationOptionsJson ?: "{}")
+            restrictToClientApplicationsIdPrefixes = keyDerivationOptions.restrictToClientApplicationsIdPrefixes
+            clientsApplicationId = callingActivity?.packageName ?: ""
 
-            // Enforce client restrictions
-            val restrictToClientApplicationsIdPrefixes = keyDerivationOptions?.restrictToClientApplicationsIdPrefixes
-            val clientsApplicationId: String = callingActivity?.packageName ?: ""
-            if (restrictToClientApplicationsIdPrefixes != null && restrictToClientApplicationsIdPrefixes?.size > 0) {
-                // The key derivation options require us to ensure that the client's application/package
-                // starts with one of the included prefixes.
+            // Next check if this command is permitted
+            throwUnlessIntentCommandIsPermitted()
 
-                val numberOfValidPrefixes = restrictToClientApplicationsIdPrefixes.count{
-                    p -> clientsApplicationId.startsWith(p)
-                }
-                if (numberOfValidPrefixes == 0) {
-                    // The client application id does not start with any of the specified prefixes
-                    throw ClientNotAuthorizeException(clientsApplicationId, restrictToClientApplicationsIdPrefixes)
-                }
+            tryToExecuteIntentsCommand()
+
+        } catch (e: Exception){
+            val newIntent = Intent()
+            newIntent.putExtra(Operations.ParameterNames.exception, e)
+            setResult(Activity.RESULT_CANCELED, newIntent)
+            finish()
+        }
+    }
+
+
+//    private fun isIntentAValidCommand(): Boolean {
+//        return org.dicekeys.api.Operations.All.contains(intent.action)
+//    }
+
+    private fun throwUnlessIntentCommandIsPermitted() {
+        val clientApplicationsIdPrefixes = restrictToClientApplicationsIdPrefixes
+        if (clientApplicationsIdPrefixes != null && clientApplicationsIdPrefixes.isNotEmpty()) {
+            // The key derivation options require us to ensure that the client's application/package
+            // starts with one of the included prefixes.
+
+            val clientsApplicationIdWithTrailingDot: String =
+                if (clientsApplicationId.isEmpty() || clientsApplicationId.lastOrNull() == '.')
+                    clientsApplicationId
+                else
+                    """$clientsApplicationId."""
+            val numberOfValidPrefixes = clientApplicationsIdPrefixes.count{ prefix ->
+                // FIXME - document that prefixes are assumed to end with "." even if none is provided
+                // protect against 'com.dicekeys' prefix being attacked by 'com.dicekeywithsuffixattached'
+                val prefixWithTrailingDot: String =
+                        if (prefix.isEmpty() || prefix.lastOrNull() == '.')
+                            prefix
+                        else
+                            """$prefix."""
+                // we'll append the a dot to the package name to ensure full matches work as well
+                return@count clientsApplicationIdWithTrailingDot.startsWith(prefixWithTrailingDot)
             }
+            if (numberOfValidPrefixes == 0) {
+                // The client application id does not start with any of the specified prefixes
+                // throw ClientNotAuthorizeException(clientsApplicationId, clientApplicationsIdPrefixes)
+                throw ClientNotAuthorizeException(clientsApplicationId, clientApplicationsIdPrefixes)
+            }
+        }
+    }
 
+
+    private var requiredUserActionsCompleted: Boolean = false
+    private fun triggerUserActionIfRequiredOrReturnTrueIffNoFurtherActionRequired(): Boolean {
+        requiredUserActionsCompleted = true
+        return requiredUserActionsCompleted
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_READ_KEYSQR) {
+            keySqrReadActivityStarted = false
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                tryToExecuteIntentsCommand()
+            }
+        }
+    }
+
+    private fun tryToExecuteIntentsCommand() {
+        try {
+
+            // Call this method each time we have a state update that might allow us to
+            // execute the command
+
+
+            // Next check to see if there is a keysqr available for the requested operation,
+            // and if not trigger a new action to get a keysqr
             if (KeySqrState.keySqr == null) {
                 // We need to first trigger an action to load the key square, then come back to this
                 // intent.
-                // FIXME
+                if (!keySqrReadActivityStarted) {
+                    keySqrReadActivityStarted = true
+                    val intent = Intent(this, ReadKeySqrActivity::class.java)
+                    startActivityForResult(intent, RC_READ_KEYSQR)
+                }
+                return
             }
 
-            val postDecryptionInstructionsJson = intent.getStringExtra("postDecryptionInstructionsJson")
-            try {
-                when (action) {
-                    org.dicekeys.api.Actions.Seed.get -> {
-                        // FIXME -- return number of errors in read or if key was manually entered.
-                        val seed =
-                                KeySqrState.keySqr?.getSeed(keyDerivationOptionsJson, clientsApplicationId)
-                        var newIntent = Intent()
-                        newIntent.putExtra("seed", seed)
-                        setResult(RESULT_OK, newIntent)
-                        finish()
-                    }
-                    org.dicekeys.api.Actions.SymmetricKey.seal -> {
-                        // FIXME -- validate key read without errors
-                        val plaintext = intent.getByteArrayExtra("plaintext")
-                        val ciphertext = KeySqrState.keySqr
-                                ?.getSymmetricKey(keyDerivationOptionsJson, clientsApplicationId)
-                                ?.seal(plaintext, postDecryptionInstructionsJson)
-                        var newIntent = Intent()
-                        newIntent.putExtra("ciphertext", ciphertext)
-                        setResult(RESULT_OK, newIntent)
-                        finish()
-                    }
-                    org.dicekeys.api.Actions.SymmetricKey.unseal -> {
-                        val ciphertext = intent.getByteArrayExtra("ciphertext")
-                        val plaintext = KeySqrState.keySqr
-                                ?.getSymmetricKey(keyDerivationOptionsJson, clientsApplicationId)
-                                ?.unseal(ciphertext, postDecryptionInstructionsJson)
-                        var newIntent = Intent()
-                        newIntent.putExtra("plaintext", plaintext)
-                        setResult(RESULT_OK, newIntent)
-                        finish()
-                    }
-                    org.dicekeys.api.Actions.PublicPrivateKeyPair.getPublic -> {
-                        // FIXME -- validate key read without errors
-                        val publicKeyJson = KeySqrState.keySqr
-                                ?.getPublicKey(keyDerivationOptionsJson, clientsApplicationId)
-                                ?.toJson()
-                        var newIntent = Intent()
-                        newIntent.putExtra("publicKeyJson", publicKeyJson)
-                        setResult(RESULT_OK, newIntent)
-                        finish()
-                    }
-                    org.dicekeys.api.Actions.PublicPrivateKeyPair.unseal -> {
-                        val ciphertext = intent.getByteArrayExtra("ciphertext")
-                        val plaintext = KeySqrState.keySqr
-                                ?.getPublicPrivateKeyPair(keyDerivationOptionsJson, clientsApplicationId)
-                                ?.unseal(ciphertext, postDecryptionInstructionsJson)
-                        var newIntent = Intent()
-                        newIntent.putExtra("plaintext", plaintext)
-                        setResult(RESULT_OK, newIntent)
-                        finish()
-                    }
-                }
-            } catch (e: Exception){
-                var newIntent = Intent()
-                newIntent.putExtra("exception", e)
-                setResult(Activity.RESULT_CANCELED, newIntent)
-                finish()
+            // Next check to see if there's any additional action required to get user consent
+            // for the operation
+            if (triggerUserActionIfRequiredOrReturnTrueIffNoFurtherActionRequired()) {
+                return
+            }
 
+            // If all the above checks have passed, we are allowed to execute the command.
+            executeIntentsCommand()
+
+        } catch (e: Exception){
+            val newIntent = Intent()
+            newIntent.putExtra(Operations.ParameterNames.exception, e)
+            setResult(Activity.RESULT_CANCELED, newIntent)
+            finish()
+        }
+    }
+
+
+    private fun executeIntentsCommand() {
+        val postDecryptionInstructionsJson = intent.getStringExtra(Operations.ParameterNames.postDecryptionInstructionsJson)
+        val resultIntent = Intent()
+        when (intent.action) {
+            Operations.Seed.get -> {
+                // FIXME -- return number of errors in read or if key was manually entered.
+                val seed = KeySqrState.keySqr?.getSeed(keyDerivationOptionsJson, clientsApplicationId)
+                resultIntent.putExtra(Operations.ParameterNames.seed, seed)
+                setResult(RESULT_OK, resultIntent)
+            }
+            Operations.SymmetricKey.seal -> {
+                // FIXME -- validate key read without errors
+                val plaintext = intent.getByteArrayExtra(Operations.ParameterNames.plaintext) ?:
+                    throw IllegalArgumentException("Seal operation must include plaintext byte array")
+                val ciphertext = KeySqrState.keySqr
+                        ?.getSymmetricKey(keyDerivationOptionsJson, clientsApplicationId)
+                        ?.seal(plaintext, postDecryptionInstructionsJson)
+                resultIntent.putExtra(Operations.ParameterNames.ciphertext, ciphertext)
+            }
+            Operations.SymmetricKey.unseal -> {
+                val ciphertext = intent.getByteArrayExtra(Operations.ParameterNames.ciphertext) ?:
+                        throw IllegalArgumentException("Seal operation must include ciphertext byte array")
+                val plaintext = KeySqrState.keySqr
+                        ?.getSymmetricKey(keyDerivationOptionsJson, clientsApplicationId)
+                        ?.unseal(ciphertext, postDecryptionInstructionsJson)
+                resultIntent.putExtra(Operations.ParameterNames.plaintext, plaintext)
+            }
+            Operations.PublicPrivateKeyPair.getPublic -> {
+                // FIXME -- validate key read without errors
+                val publicKeyJson = KeySqrState.keySqr
+                        ?.getPublicKey(keyDerivationOptionsJson, clientsApplicationId)
+                        ?.toJson()
+                resultIntent.putExtra(Operations.ParameterNames.publicKeyJson, publicKeyJson)
+            }
+            Operations.PublicPrivateKeyPair.unseal -> {
+                val ciphertext = intent.getByteArrayExtra(Operations.ParameterNames.ciphertext) ?:
+                    throw IllegalArgumentException("Seal operation must include ciphertext byte array")
+                val plaintext = KeySqrState.keySqr
+                        ?.getPublicPrivateKeyPair(keyDerivationOptionsJson, clientsApplicationId)
+                        ?.unseal(ciphertext, postDecryptionInstructionsJson)
+                resultIntent.putExtra(Operations.ParameterNames.plaintext, plaintext)
             }
         }
+        setResult(RESULT_OK, resultIntent)
+        finish()
     }
 
 }
