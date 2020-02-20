@@ -1,8 +1,11 @@
 package org.dicekeys.api
 
 import android.app.Activity
+import android.app.IntentService
 import android.content.Intent
+import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.parcel.Parcelize
 import org.dicekeys.KeyDerivationOptions
 import java.lang.Exception
 
@@ -27,6 +30,37 @@ object Actions {
         PublicPrivateKeyPair.unseal
     )
 }
+
+
+@Parcelize
+class ActionSeedGet(
+    val jsonKeyDerivationOptions: String
+): Parcelable
+
+@Parcelize
+class ActionSymmetricKeySeal(
+    val jsonKeyDerivationOptions: String,
+    val plaintext: ByteArray
+): Parcelable
+
+@Parcelize
+class ActionSymmetricKeyUnseal(
+    val jsonKeyDerivationOptions: String,
+    val ciphertext: ByteArray
+): Parcelable
+
+@Parcelize
+class ActionGetPublicKey(
+        val jsonKeyDerivationOptions: String,
+        val plaintext: ByteArray
+): Parcelable
+
+@Parcelize
+class ActionPubliczPrivateKeyUnseal(
+        val jsonKeyDerivationOptions: String,
+        val ciphertext: ByteArray
+): Parcelable
+
 
 class ClientNotAuthorizeException(
         clientApplicationId: String?,
