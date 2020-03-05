@@ -15,6 +15,8 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 
 android {
+    ndkVersion '21.0.6113669'
+
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -72,7 +74,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-
+    viewBinding.enabled = true
 }
 
 dependencies {
@@ -84,16 +86,15 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    def camerax_version = "1.0.0-alpha10"
-    implementation "androidx.camera:camera-core:${camerax_version}"
+    // CameraX core library using the camera2 implementation
+    def camerax_version = "1.0.0-beta01"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
-
+    // If you want to use the CameraX View class
+    implementation "androidx.camera:camera-view:1.0.0-alpha08"
+    // If you want to use the CameraX Extensions library
+    implementation "androidx.camera:camera-extensions:1.0.0-alpha08"
     // If you want to use the CameraX Lifecycle library
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
-    // If you want to use the CameraX View class
-    implementation "androidx.camera:camera-view:1.0.0-alpha07"
-    // If you want to use the CameraX Extensions library
-    implementation "androidx.camera:camera-extensions:1.0.0-alpha07"
 
 
     implementation 'com.google.zxing:core:3.4.0'

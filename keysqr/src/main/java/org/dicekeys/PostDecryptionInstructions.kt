@@ -31,10 +31,10 @@ class PostDecryptionInstructions(
             }
         }
         fun fromJsonReturningEmptyObjectIfInvalid(json: String): PostDecryptionInstructions {
-            try {
-                return jsonAdapter.fromJson(json) ?: PostDecryptionInstructions()
+            return try {
+                jsonAdapter.fromJson(json) ?: PostDecryptionInstructions()
             } catch (e: Exception) {
-                return PostDecryptionInstructions()
+                PostDecryptionInstructions()
             }
         }
 

@@ -1,4 +1,4 @@
-package org.dicekeys.api
+package org.dicekeys.state
 
 import org.dicekeys.Face
 import org.dicekeys.FaceRead

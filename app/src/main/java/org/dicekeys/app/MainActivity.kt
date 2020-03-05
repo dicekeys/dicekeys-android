@@ -21,24 +21,25 @@ class MainActivity : AppCompatActivity() {
         buttonStart = findViewById(R.id.btn_start)
 
         buttonStart.setOnClickListener{
-        val intent = Intent(this, ReadKeySqrActivity::class.java)
-        startActivityForResult(intent, RC_READ_KEYSQR)
+            org.dicekeys.Api.ensureKeyLoaded(this)
+//        val intent = Intent(this, ReadKeySqrActivity::class.java)
+//        startActivityForResult(intent, RC_READ_KEYSQR)
     }
 }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    if (requestCode == RC_READ_KEYSQR && resultCode == Activity.RESULT_OK && data!=null) {
-        // After a DiceKey has been returned by the ReadKeySqrActivity,
-        // launch the DisplayDiceKey activity to display it
-        val keySqrAsJson: String? = data.getStringExtra("keySqrAsJson")
-        if (keySqrAsJson != null && keySqrAsJson != "null") {
-            val intent = Intent(this, DisplayDiceActivity::class.java)
-            intent.putExtra("keySqrAsJson", keySqrAsJson)
-            startActivityForResult(intent, RC_DISPLAY_DICE)
-        }
-    }
+//    if (requestCode == RC_READ_KEYSQR && resultCode == Activity.RESULT_OK && data!=null) {
+//        // After a DiceKey has been returned by the ReadKeySqrActivity,
+//        // launch the DisplayDiceKey activity to display it
+//        val keySqrAsJson: String? = data.getStringExtra("keySqrAsJson")
+//        if (keySqrAsJson != null && keySqrAsJson != "null") {
+//            val intent = Intent(this, DisplayDiceActivity::class.java)
+//            intent.putExtra("keySqrAsJson", keySqrAsJson)
+//            startActivityForResult(intent, RC_DISPLAY_DICE)
+//        }
+//    }
 }
 
 

@@ -17,7 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
 import org.dicekeys.FaceRead
-import org.dicekeys.api.KeySqrState
+import org.dicekeys.state.KeySqrState
 import java.util.concurrent.Executors
 
 // FIXME - resolve API update: Moved rotationDegrees from class Analyzer to ImageInfo.
@@ -49,10 +49,10 @@ class ReadKeySqrActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
-        setContentView(R.layout.activity_read_key_sqr)
+        setContentView(org.dicekeys.R.layout.activity_read_key_sqr)
 
-        imageView = findViewById(R.id.overlay_view)
-        previewView = findViewById(R.id.preview_view)
+        imageView = findViewById(org.dicekeys.R.id.overlay_view)
+        previewView = findViewById(org.dicekeys.R.id.preview_view)
 
         if(allPermissionsGranted()) {
             imageView.post{startCamera()}

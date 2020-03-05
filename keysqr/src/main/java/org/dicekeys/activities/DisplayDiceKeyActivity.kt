@@ -1,4 +1,4 @@
-package org.dicekeys.app
+package org.dicekeys.activities
 
 import android.content.Intent
 import android.content.IntentFilter
@@ -11,12 +11,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.KeySqr
 import org.dicekeys.FaceRead
-import org.dicekeys.api.KeySqrState
+import org.dicekeys.state.KeySqrState
 import org.dicekeys.readkeysqr.KeySqrDrawable
 import org.dicekeys.uses.seedfido.UsbCtapHidDeviceList
+import org.dicekeys.R.id
 
 
-class DisplayDiceActivity : AppCompatActivity() {
+class DisplayDiceKeyActivity : AppCompatActivity() {
     private val INTENT_ACTION_USB_PERMISSION_EVENT = "org.dicekeys.intents.USB_PERMISSION_EVENT"
 
     private val seedKeyDerivationOptions : String = """{
@@ -28,8 +29,6 @@ class DisplayDiceActivity : AppCompatActivity() {
 
     private val REQUEST_CODE_PUBLIC_KEY = 3
 
-    private var keySqr: KeySqr<FaceRead>? = null
-
     private lateinit var permissionIntent: android.app.PendingIntent
     private lateinit var deviceList: UsbCtapHidDeviceList
     private lateinit var writeButton: Button
@@ -39,12 +38,10 @@ class DisplayDiceActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_display_dice)
-        writeButton = findViewById(R.id.btn_write_to_fido)
-        forgetDiceKeyButton = findViewById(R.id.btn_forget)
-        viewPublicKeyButton = findViewById(R.id.btn_view_public_key)
-
-        val keySqrAsJson = intent.extras?.getString("keySqrAsJson")
+        setContentView(org.dicekeys.R.layout.activity_display_dice_key)
+        writeButton = findViewById(id.btn_write_to_fido)
+        forgetDiceKeyButton = findViewById(id.btn_forget)
+        viewPublicKeyButton = findViewById(id.btn_view_public_key)
 
         permissionIntent = android.app.PendingIntent.getBroadcast(this, 0, Intent(INTENT_ACTION_USB_PERMISSION_EVENT), 0)
 
@@ -63,7 +60,6 @@ class DisplayDiceActivity : AppCompatActivity() {
 
         viewPublicKeyButton.setOnClickListener{
             val newIntent = Intent(this, DisplayPublicKeyActivity::class.java)
-            newIntent.putExtra("keySqrAsJson", keySqrAsJson)
             startActivityForResult(newIntent, REQUEST_CODE_PUBLIC_KEY)
         }
 
@@ -71,12 +67,15 @@ class DisplayDiceActivity : AppCompatActivity() {
             writeToCurrentFidoToken()
         }
 
-        if (keySqrAsJson != null && keySqrAsJson != "null") try {
-            keySqr = FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)
-            keySqr?.let {
+    }
+
+    private fun render() {
+
+        try {
+            KeySqrState.keySqr?.let {
                 val humanReadableForm: String = it.toCanonicalRotation().toHumanReadableForm(true)
                 val myDrawing = KeySqrDrawable(this, it)
-                val image: ImageView = findViewById(R.id.keysqr_view)
+                val image: ImageView = findViewById(id.keysqr_view)
                 image.setImageDrawable(myDrawing)
                 image.contentDescription = humanReadableForm
             }
@@ -88,7 +87,6 @@ class DisplayDiceActivity : AppCompatActivity() {
             android.util.Log.e("We caught exception", stackTrace)
             // findViewById<TextView>(R.id.txt_json).text = stackTrace
         }
-
     }
 
     override fun onResume() {
@@ -100,6 +98,7 @@ class DisplayDiceActivity : AppCompatActivity() {
         usbIntentFilter.addAction(INTENT_ACTION_USB_PERMISSION_EVENT)
         registerReceiver(usbReceiver, usbIntentFilter)
 
+        render()
         renderButtonChanges()
     }
 
@@ -131,7 +130,7 @@ class DisplayDiceActivity : AppCompatActivity() {
 
     private fun getSeed(): ByteArray? {
         // Should not be run on UI thread
-        return keySqr?.getSeed(seedKeyDerivationOptions, "org.dicekeys.fido")
+        return KeySqrState.keySqr?.getSeed(seedKeyDerivationOptions, "org.dicekeys.fido")
     }
 
 

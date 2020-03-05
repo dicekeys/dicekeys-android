@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.dicekeys.app.DisplayDiceActivity">
+    tools:context="org.dicekeys.activities.DisplayDiceKeyActivity">
     <!--    <TextView-->
     <!--        android:id="@+id/txt_json"-->
     <!--        android:layout_width="wrap_content"-->
