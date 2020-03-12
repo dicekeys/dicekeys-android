@@ -12,7 +12,7 @@ class KeyDerivationOptions(
     val restrictToClientApplicationsIdPrefixes: List<String>? = null
 ) {
     enum class KeyType {
-        Seed, Symmetric, Public;
+        Seed, Symmetric, Public, Signing;
 
         companion object {
             fun valueOfOrNull(name: String): KeyType? = try { valueOf(name) } catch (e: Exception) { null }
@@ -20,7 +20,7 @@ class KeyDerivationOptions(
     }
 
     enum class Algorithm {
-        XSalsa20Poly1305, X25519;
+        XSalsa20Poly1305, X25519, Ed25519;
 
         companion object {
             fun valueOfOrNull(name: String): Algorithm? = try { valueOf(name) } catch (e: Exception) { null }
@@ -52,6 +52,7 @@ class KeyDerivationOptions(
             val defaultAlgorithmName: String = when(keyType) {
                 KeyType.Public -> Algorithm.X25519.name
                 KeyType.Symmetric -> Algorithm.XSalsa20Poly1305.name
+                KeyType.Signing -> Algorithm.Ed25519.name
                 else -> ""
             }
             val algorithm: Algorithm? = Algorithm.valueOfOrNull(obj.optString(KeyDerivationOptions::algorithm.name, defaultAlgorithmName))
