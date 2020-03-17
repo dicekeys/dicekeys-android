@@ -9,8 +9,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import org.dicekeys.KeySqr
-import org.dicekeys.FaceRead
 import org.dicekeys.state.KeySqrState
 import org.dicekeys.readkeysqr.KeySqrDrawable
 import org.dicekeys.uses.seedfido.UsbCtapHidDeviceList

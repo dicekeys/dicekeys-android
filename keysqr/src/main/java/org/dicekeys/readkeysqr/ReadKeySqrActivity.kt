@@ -16,7 +16,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
-import org.dicekeys.FaceRead
+import org.dicekeys.faces.FaceRead
 import org.dicekeys.state.KeySqrState
 import java.util.concurrent.Executors
 

@@ -7,7 +7,7 @@ import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.Api
 import org.dicekeys.ClientNotAuthorizeException
-import org.dicekeys.Face
+import org.dicekeys.faces.Face
 import org.dicekeys.KeyDerivationOptions
 import org.dicekeys.KeySqr
 import org.dicekeys.state.KeySqrState
@@ -31,7 +31,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
                 throw IllegalArgumentException("Invalid command for DiceKeys API")
             }
 
-            keyDerivationOptionsJson = intent.getStringExtra(Api.ParameterNames.keyDerivationOptionsJson)
+            keyDerivationOptionsJson = intent.getStringExtra(Api.ParameterNames.keyDerivationOptionsJson.name)
             // Note, this will throw exceptions if the JSON is invalid
             clientsApplicationId = callingActivity?.packageName ?: ""
 
@@ -42,7 +42,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
 
         } catch (e: Exception){
             val newIntent = Intent()
-            newIntent.putExtra(Api.ParameterNames.exception, e)
+            newIntent.putExtra(Api.ParameterNames.exception.name, e)
             setResult(Activity.RESULT_CANCELED, newIntent)
             finish()
         }
@@ -140,7 +140,8 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
 
         } catch (e: Exception){
             val newIntent = Intent()
-            newIntent.putExtra(Api.ParameterNames.exception, e)
+            newIntent.putExtra(Api.ParameterNames.originalAction.name, intent.action)
+            newIntent.putExtra(Api.ParameterNames.exception.name, e)
             setResult(Activity.RESULT_CANCELED, newIntent)
             finish()
         }
@@ -148,8 +149,9 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
 
 
     private fun executeIntentsCommand(keySqr: KeySqr<Face>) {
-        val postDecryptionInstructionsJson = intent.getStringExtra(Api.ParameterNames.postDecryptionInstructionsJson)
+        val postDecryptionInstructionsJson = intent.getStringExtra(Api.ParameterNames.postDecryptionInstructionsJson.name)
         val resultIntent = Intent()
+        resultIntent.putExtra(Api.ParameterNames.originalAction.name, intent.action)
         when (intent.action) {
             Api.OperationNames.UI.ensureKeyLoaded -> {
                 val intent = Intent(this, DisplayDiceKeyActivity::class.java)
@@ -158,40 +160,56 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
             Api.OperationNames.Seed.get -> {
                 // FIXME -- return number of errors in read or if key was manually entered.
                 val seed = keySqr.getSeed(keyDerivationOptionsJson, clientsApplicationId)
-                resultIntent.putExtra(Api.ParameterNames.seed, seed)
+                resultIntent.putExtra(Api.ParameterNames.seed.name, seed)
                 setResult(RESULT_OK, resultIntent)
             }
             Api.OperationNames.SymmetricKey.seal -> {
                 // FIXME -- validate key read without errors
-                val plaintext = intent.getByteArrayExtra(Api.ParameterNames.plaintext) ?:
+                val plaintext = intent.getByteArrayExtra(Api.ParameterNames.plaintext.name) ?:
                     throw IllegalArgumentException("Seal operation must include plaintext byte array")
                 val ciphertext = keySqr
                         .getSymmetricKey(keyDerivationOptionsJson, clientsApplicationId)
                         .seal(plaintext, postDecryptionInstructionsJson)
-                resultIntent.putExtra(Api.ParameterNames.ciphertext, ciphertext)
+                resultIntent.putExtra(Api.ParameterNames.ciphertext.name, ciphertext)
             }
             Api.OperationNames.SymmetricKey.unseal -> {
-                val ciphertext = intent.getByteArrayExtra(Api.ParameterNames.ciphertext) ?:
+                val ciphertext = intent.getByteArrayExtra(Api.ParameterNames.ciphertext.name) ?:
                         throw IllegalArgumentException("Seal operation must include ciphertext byte array")
                 val plaintext = keySqr
                         .getSymmetricKey(keyDerivationOptionsJson, clientsApplicationId)
                         .unseal(ciphertext, postDecryptionInstructionsJson)
-                resultIntent.putExtra(Api.ParameterNames.plaintext, plaintext)
+                resultIntent.putExtra(Api.ParameterNames.plaintext.name, plaintext)
             }
             Api.OperationNames.PublicPrivateKeyPair.getPublic -> {
                 // FIXME -- validate key read without errors
                 val publicKeyJson = keySqr
                         .getPublicKey(keyDerivationOptionsJson, clientsApplicationId)
                         .toJson()
-                resultIntent.putExtra(Api.ParameterNames.publicKeyJson, publicKeyJson)
+                resultIntent.putExtra(Api.ParameterNames.publicKeyJson.name, publicKeyJson)
             }
             Api.OperationNames.PublicPrivateKeyPair.unseal -> {
-                val ciphertext = intent.getByteArrayExtra(Api.ParameterNames.ciphertext) ?:
+                val ciphertext = intent.getByteArrayExtra(Api.ParameterNames.ciphertext.name) ?:
                     throw IllegalArgumentException("Seal operation must include ciphertext byte array")
                 val plaintext = keySqr
                         .getPublicPrivateKeyPair(keyDerivationOptionsJson, clientsApplicationId)
                         .unseal(ciphertext, postDecryptionInstructionsJson)
-                resultIntent.putExtra(Api.ParameterNames.plaintext, plaintext)
+                resultIntent.putExtra(Api.ParameterNames.plaintext.name, plaintext)
+            }
+
+            Api.OperationNames.SigningKey.getSignatureVerificationKey -> {
+                val publicKeyJson = keySqr
+                        .getSignatureVerificationKey(keyDerivationOptionsJson, clientsApplicationId)
+                        .toJson()
+                resultIntent.putExtra(Api.ParameterNames.signatureVerificationKeyJson.name, publicKeyJson)
+            }
+
+            Api.OperationNames.SigningKey.generateSignature -> {
+                val message = intent.getByteArrayExtra(Api.ParameterNames.message.name) ?:
+                    throw IllegalArgumentException("Seal operation must include message  byte array")
+                var signature = keySqr
+                    .getSigningKey(keyDerivationOptionsJson, clientsApplicationId)
+                    .generateSignature(message)
+                resultIntent.putExtra(Api.ParameterNames.signature.name, signature)
             }
         }
         setResult(RESULT_OK, resultIntent)

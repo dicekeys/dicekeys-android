@@ -1,4 +1,5 @@
-package org.dicekeys
+package org.dicekeys.faces
+import org.dicekeys.KeySqr
 
 import com.squareup.moshi.JsonClass
 

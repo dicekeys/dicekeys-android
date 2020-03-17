@@ -229,6 +229,128 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_unsealJ
 }
 
 //
+// Signing key / verification key operations
+//
+
+JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_SigningKey_constructJNI(
+        JNIEnv* env,
+        jobject obj,
+        jstring keySqrInHumanReadableFormWithOrientationsObj,
+        jstring jsonKeyDerivationOptionsObj,
+        jstring clientsApplicationIdObj,
+        jboolean validateClientId // FIXME
+) {
+    try {
+        const std::string keySqrInHumanReadableFormWithOrientations(
+                env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
+        );
+        const std::string jsonKeyDerivationOptions(
+                env->GetStringUTFChars( jsonKeyDerivationOptionsObj, NULL )
+        );
+        const std::string clientsApplicationId(
+                env->GetStringUTFChars( clientsApplicationIdObj, NULL )
+        );
+        const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
+        SigningKey *signingKey =
+                new SigningKey(keySqr, jsonKeyDerivationOptions, clientsApplicationId);
+        jlong publicPrivateKeyPairPtrAsJavaLong = (long)signingKey;
+        return publicPrivateKeyPairPtrAsJavaLong;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return 0L;
+    }
+}
+
+JNIEXPORT void JNICALL Java_org_dicekeys_keys_SigningKey_destroyJNI(
+        JNIEnv* env,
+        jobject obj,
+        jlong signingKey
+) {
+    try {
+        delete ((SigningKey*)signingKey);
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+    }
+}
+
+JNIEXPORT jbyteArray Java_org_dicekeys_keys_SigningKey_generateSignatureJNI(
+        JNIEnv* env,
+        jobject obj,
+        jlong signingKeyPtrAsLong,
+        jbyteArray jmessage
+) {
+    try {
+        SigningKey *signingKey = (SigningKey*) signingKeyPtrAsLong;
+
+        const size_t messageLength = (size_t) env->GetArrayLength(jmessage);
+        const unsigned char *message =
+                (const unsigned char*)  env->GetByteArrayElements(jmessage, 0);
+
+        const auto signature = signingKey->generateSignature(message, messageLength);
+
+        jbyteArray signatureAsByteArray = env->NewByteArray(signature.size());
+        env->SetByteArrayRegion(signatureAsByteArray, 0, signature.size(), (jbyte*) signature.data());
+
+        return signatureAsByteArray;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return (jbyteArray) NULL;
+    }
+}
+
+JNIEXPORT jbyteArray Java_org_dicekeys_keys_SigningKey_getSignatureVerificationKeyBytesJNI(
+        JNIEnv* env,
+        jobject obj,
+        jlong signingKeyPtrAsLong
+) {
+    try {
+        SigningKey *signingKey = (SigningKey*) signingKeyPtrAsLong;
+
+        const auto keyBytes = signingKey->getSignatureVerificationKey().verificationKeyBytes;
+
+        jbyteArray keyBytesArray = env->NewByteArray(keyBytes.size());
+        env->SetByteArrayRegion(keyBytesArray, 0, keyBytes.size(), (jbyte*) keyBytes.data());
+
+        return keyBytesArray;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return (jbyteArray) NULL;
+    }
+}
+
+JNIEXPORT jboolean JNICALL Java_org_dicekeys_keys_SignatureVerificationKey_verifySignatureJNI(
+        JNIEnv* env,
+        jobject obj,
+        jbyteArray jmessage,
+        jbyteArray jsignature,
+        jbyteArray jsignatureVerificationKeyBytes
+) {
+    try {
+        const size_t messageLength = (size_t) env->GetArrayLength(jmessage);
+        const unsigned char *message =
+                (const unsigned char*)  env->GetByteArrayElements(jmessage, 0);
+        const size_t signatureLength = (size_t) env->GetArrayLength(jsignature);
+        const unsigned char *signature =
+                (const unsigned char*)  env->GetByteArrayElements(jsignature, 0);
+        const size_t signatureVerificationKeyBytesLength = (size_t) env->GetArrayLength(jsignatureVerificationKeyBytes);
+        const unsigned char *signatureVerificationKeyBytes =
+                (const unsigned char*)  env->GetByteArrayElements(jsignatureVerificationKeyBytes, 0);
+
+        jboolean result = SignatureVerificationKey::verify(
+            signatureVerificationKeyBytes, signatureVerificationKeyBytesLength,
+            message, messageLength,
+            signature, signatureLength
+        );
+
+        return result;
+    } catch (...) {
+        throwCppExceptionAsJavaException(env, std::current_exception());
+        return (jboolean) false;
+    }
+}
+
+
+//
 // Symmetric key operations
 //
 JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_SymmetricKey_constructJNI(

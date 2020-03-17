@@ -1,9 +1,8 @@
 package org.dicekeys.keys
 
-
-class PublicPrivateKeyPair(
-        public val keySqrInHumanReadableFormWithOrientations: String,
-        public val jsonKeyDerivationOptions: String,
+class SigningKey(
+        private val keySqrInHumanReadableFormWithOrientations: String,
+        val jsonKeyDerivationOptions: String,
         public val clientsApplicationId: String
 ) {
     private external fun constructJNI(
@@ -14,54 +13,52 @@ class PublicPrivateKeyPair(
     ): Long
 
     private external fun destroyJNI(
-            publicPrivateKeyPairPtr: Long
+        signingKeyPtr: Long
     ): Void
 
-    private external fun getPublicKeyBytesJNI(
-            publicPrivateKeyPairPtr: Long
+    private external fun getSignatureVerificationKeyBytesJNI(
+        signingKeyPtr: Long
     ): ByteArray
 
-    private external fun unsealJNI(
-        publicPrivateKeyPairPtr: Long,
-        ciphertext: ByteArray,
-        postDecryptionInstructionsJson: String
+    private external fun generateSignatureJNI(
+        signingKeyPtr: Long,
+        message: ByteArray
     ): ByteArray
 
 
     var disposed: Boolean = false
     private fun throwIfDisposed() {
         if (disposed) {
-            throw java.lang.IllegalAccessException("Attempt to use a key after its disposal")
+            throw IllegalAccessException("Attempt to use a key after its disposal")
         }
     }
 
-    private val publicPrivateKeyPairPtr: Long = constructJNI(
+    private val signingKeyPtr: Long = constructJNI(
             keySqrInHumanReadableFormWithOrientations,
             jsonKeyDerivationOptions,
             clientsApplicationId,
             false // FIXME
     )
 
-    fun getPublicKey(): PublicKey {
+    fun getSignatureVerificationKey(): SignatureVerificationKey {
         throwIfDisposed()
-        return PublicKey(
-                getPublicKeyBytesJNI(publicPrivateKeyPairPtr),
+        return SignatureVerificationKey(
+                getSignatureVerificationKeyBytesJNI(signingKeyPtr),
                 jsonKeyDerivationOptions
         )
     }
 
-    fun unseal(
-            ciphertext: ByteArray,
-            postDecryptionInstructionsJson: String? = ""
+    fun generateSignature(
+        message: ByteArray
     ): ByteArray {
         throwIfDisposed()
-        return unsealJNI(publicPrivateKeyPairPtr, ciphertext, postDecryptionInstructionsJson ?: "")
+        return generateSignatureJNI(signingKeyPtr, message);
     }
 
     fun erase() {
         // Immediately dispose of the private key
-        if (publicPrivateKeyPairPtr != 0L && !disposed) {
-            destroyJNI(publicPrivateKeyPairPtr)
+        if (signingKeyPtr != 0L && !disposed) {
+            destroyJNI(signingKeyPtr)
             disposed = true
         }
     }

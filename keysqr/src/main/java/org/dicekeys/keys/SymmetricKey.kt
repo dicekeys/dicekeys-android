@@ -20,13 +20,13 @@ class SymmetricKey(
     private external fun sealJNI(
             symmetricKeyPtr: Long,
             plaintext: ByteArray,
-            postDecryptionInstructionJson: String
+            postDecryptionInstructionsJson: String
     ): ByteArray
 
     private external fun unsealJNI(
             symmetricKeyPtr: Long,
             ciphertext: ByteArray,
-            postDecryptionInstructionJson: String
+            postDecryptionInstructionsJson: String
     ): ByteArray
 
     var disposed: Boolean = false
@@ -39,19 +39,19 @@ class SymmetricKey(
 
     fun seal(
             plaintext: ByteArray,
-            postDecryptionInstructionJson: String? = ""
+            postDecryptionInstructionsJson: String? = ""
     ): ByteArray {
         throwIfDisposed()
-        return sealJNI(symmetricKeyPtr, plaintext, postDecryptionInstructionJson ?: "")
+        return sealJNI(symmetricKeyPtr, plaintext, postDecryptionInstructionsJson ?: "")
     }
 
 
     fun unseal(
         ciphertext: ByteArray,
-        postDecryptionInstructionJson: String? = ""
+        postDecryptionInstructionsJson: String? = ""
     ): ByteArray {
         throwIfDisposed()
-        return unsealJNI(symmetricKeyPtr, ciphertext, postDecryptionInstructionJson ?: "")
+        return unsealJNI(symmetricKeyPtr, ciphertext, postDecryptionInstructionsJson ?: "")
     }
 
     private fun throwIfDisposed() {

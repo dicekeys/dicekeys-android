@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import org.dicekeys.readkeysqr.ReadKeySqrActivity
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -14,16 +14,16 @@ class MainActivity : AppCompatActivity() {
         const val RC_DISPLAY_DICE = 2
     }
     private lateinit var buttonStart: Button
+    private lateinit var basicApi: org.dicekeys.ActivityApi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        basicApi = org.dicekeys.ActivityApi(this)
         setContentView(R.layout.activity_main)
         buttonStart = findViewById(R.id.btn_start)
 
         buttonStart.setOnClickListener{
-            org.dicekeys.Api.ensureKeyLoaded(this)
-//        val intent = Intent(this, ReadKeySqrActivity::class.java)
-//        startActivityForResult(intent, RC_READ_KEYSQR)
+            basicApi.ensureKeyLoaded(this)
     }
 }
 

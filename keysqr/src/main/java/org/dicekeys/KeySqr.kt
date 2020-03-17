@@ -1,7 +1,6 @@
 package org.dicekeys
-import org.dicekeys.keys.PublicKey
-import org.dicekeys.keys.PublicPrivateKeyPair
-import org.dicekeys.keys.SymmetricKey
+import org.dicekeys.faces.Face
+import org.dicekeys.keys.*
 
 
 class KeySqr<F: Face>(val faces: List<F>) {
@@ -123,4 +122,28 @@ class KeySqr<F: Face>(val faces: List<F>) {
         clientsApplicationId
     )
   }
+
+  fun getSigningKey(
+          jsonKeyDerivationOptions: String? = "",
+          clientsApplicationId: String = ""
+  ): SigningKey {
+    return SigningKey(
+            toCanonicalRotation().toHumanReadableForm(true),
+            jsonKeyDerivationOptions ?: "",
+            clientsApplicationId
+    )
+  }
+
+  fun getSignatureVerificationKey(
+          jsonKeyDerivationOptions: String? = "",
+          clientsApplicationId: String = ""
+  ): SignatureVerificationKey {
+    return SigningKey(
+            toCanonicalRotation().toHumanReadableForm(true),
+            jsonKeyDerivationOptions ?: "",
+            clientsApplicationId
+    ).getSignatureVerificationKey()
+  }
+
+
 }

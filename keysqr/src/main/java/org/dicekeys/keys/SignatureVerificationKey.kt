@@ -1,26 +1,27 @@
 package org.dicekeys.keys
 
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.util.Base64
 import com.squareup.moshi.*
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.dicekeys.utilities.QrCodeBitmap
 import org.dicekeys.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
 @JsonClass(generateAdapter = true)
-class PublicKey(
+class SignatureVerificationKey(
         val keyBytes: ByteArray,
         val jsonKeyDerivationOptions: String = ""
 ) {
-
     companion object {
         internal val moshi = Moshi.Builder()
                 .add(KotlinJsonAdapterFactory())
                 .add(Base64Adapter())
                 .build()
-        val jsonAdapter: JsonAdapter<PublicKey> =
-            moshi.adapter<PublicKey>(PublicKey::class.java)
+        val jsonAdapter: JsonAdapter<SignatureVerificationKey> =
+            moshi.adapter<SignatureVerificationKey>(SignatureVerificationKey::class.java)
             .indent("")
-        fun fromJson(json: String): PublicKey? {
+        fun fromJson(json: String): SignatureVerificationKey? {
             return jsonAdapter.fromJson(json)
         }
     }
@@ -37,32 +38,33 @@ class PublicKey(
     public val asHexDigits: String get() =
         keyBytes.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
-    private external fun sealJNI(
-        publicKeyBytes: ByteArray,
-        jsonKeyDerivationOptions: String,
-        plaintext: ByteArray,
-        postDecryptionInstructionsJson: String = ""
-    ): ByteArray
+    private external fun verifySignatureJNI(
+        message: ByteArray,
+        signature: ByteArray,
+        signatureVerificationKeyBytes: ByteArray
+//        jsonKeyDerivationOptions: String,
+    ): Boolean
 
-    public fun seal(
+    public fun verifySignature(
             message: ByteArray,
-            postDecryptionInstructionsJson: String = ""
-    ): ByteArray {
-        return sealJNI(keyBytes, jsonKeyDerivationOptions, message, postDecryptionInstructionsJson)
+            signature: ByteArray
+//            postDecryptionInstructionsJson: String = ""
+    ): Boolean {
+        return verifySignatureJNI(message, signature, keyBytes)
     }
 
-
     fun getJsonQrCode(
-        maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2
+            maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2
     ): Bitmap = QrCodeBitmap(
-        "https://dicekeys.org/pk/",
-        toJson(),
-        maxEdgeLengthInDevicePixels
+            "https://dicekeys.org/svk/",
+            toJson(),
+            maxEdgeLengthInDevicePixels
     )
 
     fun getJsonQrCode(
             maxWidth: Int,
             maxHeight: Int
     ): Bitmap = getJsonQrCode(kotlin.math.min(maxWidth, maxHeight))
+
 
 }

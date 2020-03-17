@@ -1,7 +1,7 @@
 package org.dicekeys.state
 
-import org.dicekeys.Face
-import org.dicekeys.FaceRead
+import org.dicekeys.faces.Face
+import org.dicekeys.faces.FaceRead
 import org.dicekeys.KeySqr
 
 object KeySqrState {

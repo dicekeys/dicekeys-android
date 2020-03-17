@@ -1,10 +1,11 @@
-package org.dicekeys
+package org.dicekeys.faces
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import org.dicekeys.KeySqr
 
 @JsonClass(generateAdapter = true)
 class Point(

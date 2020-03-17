@@ -6,8 +6,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
-import org.dicekeys.KeySqr
-import org.dicekeys.FaceRead
 import org.dicekeys.R.id
 import org.dicekeys.state.KeySqrState
 

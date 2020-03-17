@@ -6,15 +6,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
-import org.dicekeys.KeySqr
-import org.dicekeys.FaceRead
-
 
 class DisplayPublicKeyActivity : AppCompatActivity() {
-    private var keySqr: KeySqr<FaceRead>? = null
     private lateinit var image: ImageView
     private lateinit var backButton: Button
     private lateinit var textView: TextView
+    private var publicKeyJson: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,27 +27,22 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
             // or if android can handle this safely
             finish()
         }
-        val keySqrAsJson = intent.extras?.getString("keySqrAsJson")
+        publicKeyJson = intent.extras?.getString("publicKeyJson")
+    }
 
-        if (keySqrAsJson != null && keySqrAsJson != "null") {
-            keySqr = FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)
-        }
-
-
+    override fun onResume() {
+        super.onResume()
         render()
     }
 
     private fun render() {
-        keySqr?.let{ Thread(Runnable {
+        publicKeyJson?.let{
             try {
-                val publicKey = it.getPublicKey(
-                        ""//""""{"keyType":"Public"}"""
-                )
-                val publicKeyJson = publicKey.toJson()
-                runOnUiThread {
+                val publicKeyJson = it
+                image.contentDescription = publicKeyJson
+                textView.text = publicKeyJson
+                org.dicekeys.keys.PublicKey.fromJson(publicKeyJson)?.let { publicKey ->
                     image.setImageDrawable(publicKey.getJsonQrCode().toDrawable(resources))
-                    image.contentDescription = publicKeyJson
-                    textView.text = publicKeyJson
                 }
             } catch (e: Exception) {
                 val sw = java.io.StringWriter()
@@ -63,7 +55,7 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
                     textView.text = stackTrace
                 }
             }
-        }).run()}
+        }
     }
 
 

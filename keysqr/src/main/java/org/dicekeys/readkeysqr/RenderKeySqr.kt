@@ -4,9 +4,8 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
-import org.dicekeys.Face
-import org.dicekeys.FaceDimensionsFractional
-import org.dicekeys.FaceRead
+import org.dicekeys.faces.Face
+import org.dicekeys.faces.FaceDimensionsFractional
 import org.dicekeys.KeySqr
 
 
