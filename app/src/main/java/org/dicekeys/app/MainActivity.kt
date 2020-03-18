@@ -23,8 +23,9 @@ class MainActivity : AppCompatActivity() {
         buttonStart = findViewById(R.id.btn_start)
 
         buttonStart.setOnClickListener{
-            basicApi.ensureKeyLoaded(this)
+            basicApi.ensureKeyLoaded()
     }
+
 }
 
 

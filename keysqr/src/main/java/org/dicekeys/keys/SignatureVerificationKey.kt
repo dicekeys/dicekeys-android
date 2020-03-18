@@ -18,12 +18,18 @@ class SignatureVerificationKey(
                 .add(KotlinJsonAdapterFactory())
                 .add(Base64Adapter())
                 .build()
-        val jsonAdapter: JsonAdapter<SignatureVerificationKey> =
-            moshi.adapter<SignatureVerificationKey>(SignatureVerificationKey::class.java)
-            .indent("")
+        private val jsonAdapter: JsonAdapter<SignatureVerificationKey> =
+                moshi.adapter<SignatureVerificationKey>(SignatureVerificationKey::class.java)
+                        .indent("")
+
         fun fromJson(json: String): SignatureVerificationKey? {
             return jsonAdapter.fromJson(json)
         }
+
+        fun fromJsonOrThrow(json: String?): SignatureVerificationKey =
+                jsonAdapter.fromJson(json
+                        ?: throw Exception("Missing signature verification key json"))
+                        ?: throw Exception("Failed to construct signature verification key")
     }
 
 

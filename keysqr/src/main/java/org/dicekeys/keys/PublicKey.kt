@@ -23,6 +23,9 @@ class PublicKey(
         fun fromJson(json: String): PublicKey? {
             return jsonAdapter.fromJson(json)
         }
+        fun fromJsonOrThrow(json: String?): PublicKey =
+            jsonAdapter.fromJson(json ?: throw Exception("Missing public key json"))
+                    ?: throw Exception("Failed to construct public key")
     }
 
 
