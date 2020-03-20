@@ -47,7 +47,7 @@ class KeyDerivationOptions(
     companion object {
 
         fun fromJson(json: String, defaultKeyType: KeyType? = null): KeyDerivationOptions {
-            val obj = JSONObject(json)
+            val obj = if (json.isNotEmpty()) JSONObject(json) else JSONObject()
             val keyType: KeyType? = KeyType.valueOfOrNull(obj.optString(KeyDerivationOptions::keyType.name, defaultKeyType?.name ?: ""))
             val defaultAlgorithmName: String = when(keyType) {
                 KeyType.Public -> Algorithm.X25519.name
