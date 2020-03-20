@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="org.dicekeys.app.MainActivity">
     <TextView
-        android:id="@+id/fixme_dead_txt_json"
+        android:id="@+id/result_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="24dp"
@@ -19,7 +19,7 @@
         android:id="@+id/fixme_dead_keysqr_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/fixme_dead_txt_json"
+        app:layout_constraintTop_toBottomOf="@id/result_text"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btn_start"

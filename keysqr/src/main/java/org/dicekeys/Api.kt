@@ -13,7 +13,7 @@ import kotlin.collections.HashMap
 
 open class ActivityApi(private val activity: android.app.Activity) : Api(activity) {
     protected override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
-        super.call(command, parameters, requestCode)?.also { intent->
+        super.call(command, parameters, requestCode).also { intent->
             activity.startActivityForResult(intent, requestCode)
         }
 }
@@ -22,7 +22,7 @@ class FragmentApi(private val fragment: Fragment) : Api(
     fragment.context ?: throw InvalidParameterException("Fragment must have context")
 ) {
     protected override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
-        super.call(command, parameters, requestCode)?.also { intent->
+        super.call(command, parameters, requestCode).also { intent->
             fragment.startActivityForResult(intent, requestCode)
         }
 }
@@ -44,7 +44,7 @@ open class Api(
             action = command
             val parametersWithRequestId = Bundle(parameters)
             parametersWithRequestId.putString(ParameterNames.Global.requestId, uniqueRequestIdForCommand(command))
-            putExtras(parameters)
+            putExtras(parametersWithRequestId)
         }
 
 
@@ -149,9 +149,10 @@ open class Api(
         map: HashMap<String, IntentAndCallback<T>>,
         intent: Intent,
         callback: T
-    ) {
-        map[intent.getStringExtra(ParameterNames.Global.requestId)] =
-            IntentAndCallback<T>(intent, callback)
+    ): Unit {
+        intent.getStringExtra(ParameterNames.Global.requestId)?.let { requestId ->
+            map[requestId] = IntentAndCallback<T>(intent, callback)
+        }
     }
 
 
@@ -361,88 +362,98 @@ open class Api(
     private fun <T: DiceKeysApiCallback>handleResult(
             intentAndCallbackMap: HashMap<String, IntentAndCallback<T>>,
             resultIntent: Intent,
-            failureHandler: (callback: T, originalIntent: Intent, e: Exception) -> Any,
-            successHandler: (callback: T, originalIntent: Intent) -> Any
+            failureHandler: (callback: T, originalIntent: Intent, e: Exception) -> Unit,
+            successHandler: (callback: T, originalIntent: Intent) -> Unit
     ) {
-        intentAndCallbackMap[resultIntent.getStringExtra((ParameterNames.Global.requestId))]?.run {
-            if (resultIntent.hasExtra(ParameterNames.Global.exception)) {
-                failureHandler(
-                        callback, originalIntent, resultIntent.getSerializableExtra(ParameterNames.Global.exception) as Exception
-                )
-            } else {
-                successHandler(callback, originalIntent)
+        resultIntent.getStringExtra(ParameterNames.Global.requestId)?.let{ requestId ->
+            intentAndCallbackMap[requestId]?.run {
+                if (resultIntent.hasExtra(ParameterNames.Global.exception)) {
+                    failureHandler(
+                            callback, originalIntent, resultIntent.getSerializableExtra(ParameterNames.Global.exception) as Exception
+                    )
+                } else {
+                    successHandler(callback, originalIntent)
+                }
             }
         }
     }
 
-    fun handleOnActivityResult(resultIntent: Intent) {
+    fun handleOnActivityResult(resultIntent: Intent?) {
+        if (resultIntent == null)
+            return
         if (!resultIntent.hasExtra(ParameterNames.Global.requestId))
             return
-        val requestId = resultIntent.getStringExtra((ParameterNames.Global.requestId))
-        when(requestIdToCommand((requestId))) {
+        resultIntent.getStringExtra(ParameterNames.Global.requestId)?.let{ requestId ->
+            when(requestIdToCommand(requestId)) {
 
-            OperationNames.Seed.get -> handleResult(getSeedCallbacks,  resultIntent,
-                    { callback, originalIntent, e -> callback.onGetSeedFail(e, originalIntent)},
-                    { callback, originalIntent -> callback.onGetSeedSuccess(
-                            resultIntent.getByteArrayExtra(ParameterNames.Seed.Get.seed),
-                            originalIntent
-                    )}
-            )
+                OperationNames.Seed.get -> handleResult(getSeedCallbacks, resultIntent,
+                        { callback, originalIntent, e -> callback.onGetSeedFail(e, originalIntent) },
+                        { callback, originalIntent ->
+                            resultIntent.getByteArrayExtra(ParameterNames.Seed.Get.seed)?.let{ seed ->
+                                callback.onGetSeedSuccess(seed, originalIntent)
+                            }
+                        }
+                )
 
-            OperationNames.PublicPrivateKeyPair.getPublic -> handleResult(getPublicKeyCallbacks, resultIntent,
-                    { callback, originalIntent, e -> callback.onGetPublicKeyFail(e, originalIntent)},
-                    { callback, originalIntent -> callback.onGetPublicKeySuccess(
-                        PublicKey.fromJsonOrThrow(
-                            resultIntent.getStringExtra(ParameterNames.PublicPrivateKeyPair.GetPublic.publicKeyJson)
-                        ),
-                        originalIntent
-                    )}
-            )
+                OperationNames.PublicPrivateKeyPair.getPublic -> handleResult(getPublicKeyCallbacks, resultIntent,
+                        { callback, originalIntent, e -> callback.onGetPublicKeyFail(e, originalIntent) },
+                        { callback, originalIntent ->
+                            resultIntent.getStringExtra(ParameterNames.PublicPrivateKeyPair.GetPublic.publicKeyJson)?.let { publicKeyJson ->
+                                val publicKey = PublicKey.fromJsonOrThrow(publicKeyJson)
+                                callback.onGetPublicKeySuccess(publicKey, originalIntent)
+                            }
+                        }
+                )
 
-            OperationNames.SymmetricKey.unseal -> handleResult(unsealSymmetricCallbacks, resultIntent,
-                    { callback, originalIntent, e -> callback.onUnsealSymmetricFail(e, originalIntent)},
-                    { callback, originalIntent -> callback.onUnsealSymmetricSuccess(
-                            resultIntent.getByteArrayExtra(ParameterNames.PublicPrivateKeyPair.Unseal.plaintext),
-                            originalIntent
-                    )}
-            )
+                OperationNames.SymmetricKey.unseal -> handleResult(unsealSymmetricCallbacks, resultIntent,
+                        { callback, originalIntent, e -> callback.onUnsealSymmetricFail(e, originalIntent) },
+                        { callback, originalIntent ->
+                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.plaintext)?.let { plaintext ->
+                                callback.onUnsealSymmetricSuccess(plaintext, originalIntent)
+                            }
+                        }
+                )
 
-            OperationNames.PublicPrivateKeyPair.unseal -> handleResult(unsealAsymmetricCallbacks, resultIntent,
-                    { callback, originalIntent, e -> callback.onUnsealAsymmetricFail(e, originalIntent)},
-                    { callback, originalIntent -> callback.onUnsealAsymmetricSuccess(
-                            resultIntent.getByteArrayExtra(ParameterNames.PublicPrivateKeyPair.Unseal.plaintext),
-                            originalIntent
-                    )}
-            )
+                OperationNames.PublicPrivateKeyPair.unseal -> handleResult(unsealAsymmetricCallbacks, resultIntent,
+                        { callback, originalIntent, e -> callback.onUnsealAsymmetricFail(e, originalIntent) },
+                        { callback, originalIntent ->
+                            resultIntent.getByteArrayExtra(ParameterNames.PublicPrivateKeyPair.Unseal.plaintext)?.let { plaintext ->
+                                callback.onUnsealAsymmetricSuccess(plaintext, originalIntent)
+                            }
+                        }
+                )
 
-            OperationNames.SymmetricKey.seal -> handleResult(sealCallbacks, resultIntent,
-                    { callback, originalIntent, e -> callback.onSealFail(e, originalIntent)},
-                    { callback, originalIntent -> callback.onSealSuccess(
-                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.ciphertext),
-                            originalIntent
-                    )}
-            )
+                OperationNames.SymmetricKey.seal -> handleResult(sealCallbacks, resultIntent,
+                        { callback, originalIntent, e -> callback.onSealFail(e, originalIntent) },
+                        { callback, originalIntent ->
+                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.ciphertext)?.let { ciphertext ->
+                                callback.onSealSuccess(ciphertext, originalIntent)
+                            }
+                        }
+                )
 
-            OperationNames.SigningKey.generateSignature -> handleResult(generateSignatureCallbacks, resultIntent,
-                    { callback, originalIntent, e -> callback.onGenerateSignatureCallbackFail(e, originalIntent)},
-                    { callback, originalIntent -> callback.onGenerateSignatureCallbackSuccess(
-                            resultIntent.getByteArrayExtra(ParameterNames.SigningKey.GenerateSignature.signature),
-                            originalIntent
-                    )}
-            )
+                OperationNames.SigningKey.generateSignature -> handleResult(generateSignatureCallbacks, resultIntent,
+                        { callback, originalIntent, e -> callback.onGenerateSignatureCallbackFail(e, originalIntent) },
+                        { callback, originalIntent ->
+                            resultIntent.getByteArrayExtra(ParameterNames.SigningKey.GenerateSignature.signature)?.let { signature ->
+                                callback.onGenerateSignatureCallbackSuccess(signature, originalIntent)
+                            }
+                        }
+                )
 
-            OperationNames.SigningKey.getSignatureVerificationKey -> handleResult(getSignatureVerificationKeyCallbacks, resultIntent,
-                    { callback, originalIntent, e -> callback.onGetSignatureVerificationKeyFail(e, originalIntent)},
-                    { callback, originalIntent -> callback.onGetSignatureVerificationKeySuccess(
-                            SignatureVerificationKey.fromJsonOrThrow(
-                                resultIntent.getStringExtra(ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeyJson)
-                            ),
-                            originalIntent
-                    )}
-            )
+                OperationNames.SigningKey.getSignatureVerificationKey -> handleResult(getSignatureVerificationKeyCallbacks, resultIntent,
+                        { callback, originalIntent, e -> callback.onGetSignatureVerificationKeyFail(e, originalIntent) },
+                        { callback, originalIntent ->
+                            resultIntent.getStringExtra(ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeyJson)?.let{ signatureVerificationKeyJson ->
+                                val signatureVerificationKey = SignatureVerificationKey.fromJsonOrThrow(signatureVerificationKeyJson)
+                                callback.onGetSignatureVerificationKeySuccess(signatureVerificationKey, originalIntent)
+                            }
+                        }
+                )
 
 
-            else -> {}
+                else -> {}
+            }
         }
     }
 }
