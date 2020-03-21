@@ -3,7 +3,6 @@ package org.dicekeys.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.Api
 import org.dicekeys.ClientNotAuthorizeException
@@ -209,19 +208,21 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
             }
 
             Api.OperationNames.SigningKey.getSignatureVerificationKey -> {
-                val publicKeyJson = keySqr
+                val signatureVerificationKeyJson = keySqr
                         .getSignatureVerificationKey(keyDerivationOptionsJson, clientsApplicationId)
                         .toJson()
-                resultIntent.putExtra(Api.ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeyJson, publicKeyJson)
+                resultIntent.putExtra(Api.ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeyJson, signatureVerificationKeyJson)
             }
 
             Api.OperationNames.SigningKey.generateSignature -> {
                 val message = intent.getByteArrayExtra(Api.ParameterNames.SigningKey.GenerateSignature.message) ?:
                     throw IllegalArgumentException("Seal operation must include message  byte array")
-                var signature = keySqr
-                    .getSigningKey(keyDerivationOptionsJson, clientsApplicationId)
-                    .generateSignature(message)
+                val signingKey = keySqr
+                        .getSigningKey(keyDerivationOptionsJson, clientsApplicationId)
+                val signature = signingKey.generateSignature(message)
+                val signatureVerificationKey = signingKey.getSignatureVerificationKey()
                 resultIntent.putExtra(Api.ParameterNames.SigningKey.GenerateSignature.signature, signature)
+                resultIntent.putExtra(Api.ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeyJson, signatureVerificationKey.toJson())
             }
         }
         setResult(RESULT_OK, resultIntent)

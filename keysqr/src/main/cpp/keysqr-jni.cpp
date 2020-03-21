@@ -12,15 +12,17 @@ void javaThrow(
      const char* message
 ) {
     env->ExceptionClear();
-    jclass exClass = env->FindClass( exceptionClassName);
+    const jclass noClassDefFoundExceptionClass = env->FindClass("java/lang/NoClassDefFoundError");
+    const jclass exClass = env->FindClass(exceptionClassName);
     if (exClass == NULL) {
-        env->ThrowNew(
-            env->FindClass( "java/lang/NoClassDefFoundError"),
-            (
+        std::string noClassMessage =
                 std::string("Exception class not found for exception") +
-                exceptionClassName +
-                " for message " + message
-            ).c_str()
+                std::string(exceptionClassName) +
+                std::string(" for message ") +
+                std::string(message);
+        env->ThrowNew(
+            noClassDefFoundExceptionClass,
+            noClassMessage.c_str()
         );
         return;
     } else {
@@ -33,34 +35,40 @@ void throwCppExceptionAsJavaException(
      const std::exception_ptr unknownException
 ) {
   if (unknownException == NULL) {
-    javaThrow(env, "com/keysqr/UnknownKeySqrApiException", "Unknown exception type");
+    javaThrow(env, "org/dicekeys/UnknownKeySqrApiException", "Unknown exception type");
     return;
   }
   try {
     std::rethrow_exception(unknownException);
   } catch (ClientNotAuthorizedException e) {
-    javaThrow(env, "com/keysqr/ClientNotAuthorizedException", e.what());
+    javaThrow(env, "org/dicekeys/ClientNotAuthorizedException", e.what());
     return;
   } catch (InvalidJsonKeyDerivationOptionsException e) {
-    javaThrow(env, "com/keysqr/InvalidJsonKeyDerivationOptionsException", e.what());
+    javaThrow(env, "org/dicekeys/InvalidJsonKeyDerivationOptionsException", e.what());
     return;
   } catch (InvalidKeyDerivationOptionValueException e) {
-    javaThrow(env, "com/keysqr/InvalidKeyDerivationOptionValueException", e.what());
+    javaThrow(env, "org/dicekeys/InvalidKeyDerivationOptionValueException", e.what());
+    return;
+  } catch (CryptographicVerificationFailure e) {
+    javaThrow(env, "org/dicekeys/CryptographicVerificationFailure", e.what());
     return;
   } catch (std::bad_alloc e) {
-    javaThrow(env, "java/lang/OutOfMemoryException", e.what());
-    return;
+      javaThrow(env, "java/lang/OutOfMemoryException", e.what());
+      return;
+  } catch (std::invalid_argument e) {
+      javaThrow(env, "org/dicekeys/InvalidArgumentException", e.what());
+      return;
   } catch (nlohmann::json::exception e) {
-    javaThrow(env, "com/keysqr/UnknownKeySqrApiException", e.what());
+    javaThrow(env, "org/dicekeys/UnknownKeySqrApiException", e.what());
     return;
   } catch (std::exception e) {
-    javaThrow(env, "com/keysqr/UnknownKeySqrApiException", e.what());
+    javaThrow(env, "org/dicekeys/UnknownKeySqrApiException", e.what());
     return;
   } catch (...) {
-    javaThrow(env, "com/keysqr/UnknownKeySqrApiException", "Unknown exception type");
+    javaThrow(env, "org/dicekeys/UnknownKeySqrApiException", "Unknown exception type");
     return;
   }
-  javaThrow(env, "com/keysqr/UnknownKeySqrApiException", "Unknown exception type");
+  javaThrow(env, "org/dicekeys/UnknownKeySqrApiException", "Unknown exception type");
 }
 
 
@@ -455,6 +463,4 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_SymmetricKey_unsealJNI(
     }
 }
 
-
-
-}
+} // extern "C"
