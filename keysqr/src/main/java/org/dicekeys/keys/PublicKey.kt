@@ -28,6 +28,10 @@ class PublicKey(
                     ?: throw Exception("Failed to construct public key")
     }
 
+    override fun equals(other: Any?): Boolean =
+            (other is PublicKey) &&
+            jsonKeyDerivationOptions == other.jsonKeyDerivationOptions &&
+            keyBytes.contentEquals(other.keyBytes)
 
     fun toJson(): String { return jsonAdapter.toJson(this)
         // If the key derivation options are empty, remove them
