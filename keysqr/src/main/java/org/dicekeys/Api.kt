@@ -11,55 +11,98 @@ import org.dicekeys.keys.SignatureVerificationKey
 import java.security.InvalidParameterException
 import kotlin.collections.HashMap
 
-open class ActivityApi(private val activity: android.app.Activity) : Api(activity) {
-    protected override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
-        super.call(command, parameters, requestCode).also { intent->
-            activity.startActivityForResult(intent, requestCode)
-        }
-}
-
-class FragmentApi(private val fragment: Fragment) : Api(
-    fragment.context ?: throw InvalidParameterException("Fragment must have context")
-) {
-    protected override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
-        super.call(command, parameters, requestCode).also { intent->
-            fragment.startActivityForResult(intent, requestCode)
-        }
-}
-
-open class Api(
+/**
+ * The DiceKeys [Api] allows client applications to access the DiceKeys app to perform
+ * cryptographic operations on their behalf.
+ *
+ * To use it, call [create] and be sure call [handleOnActivityResult] when you, the consumer,
+ * receive onActivityResult callbacks.
+ */
+abstract class Api(
     private val callingContext: Context
 ) {
+    companion object {
+        /**
+         * Instantiate the API for a use by an [activity].
+         *
+         * The calling [activity] will need to implement [android.app.Activity.onActivityResult]
+         * and have it call [handleOnActivityResult] so that the API can receive results passed
+         * back to the API through inter-process communication.
+         */
+        fun create(activity: android.app.Activity): Api = object: Api(activity) {
+            override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
+                createIntentForCall(command, parameters).also { intent->
+                    activity.startActivityForResult(intent, requestCode)
+            }
+        }
 
+        /**
+         * Instantiate the API for a use by a [fragment].
+         *
+         * The calling [fragment] will need to implement [android.app.Activity.onActivityResult]
+         * and have it call [handleOnActivityResult] so that the API can receive results passed
+         * back to the API through inter-process communication.
+         */
+        fun create(fragment: Fragment): Api = object: Api(fragment.context ?: throw InvalidParameterException("Fragment must have context")) {
+            override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
+                createIntentForCall(command, parameters).also { intent->
+                    fragment.startActivityForResult(intent, requestCode)
+            }
+        }
+    }
+
+    /**
+     * Generate unique request IDs fro each command by appending a random UUID to the command name.
+     */
     private fun uniqueRequestIdForCommand(command: String) = "$command:${java.util.UUID.randomUUID()}"
 
+    /**
+     * Pull out the command name from the unique ID
+     */
     private fun requestIdToCommand(requestId: String) =
         requestId.substringBefore(':', "")
 
-    private fun createIntentForCall(
+    /**
+     * Creates an intent used to call the DiceKeys API by referencing the DiceKeys API server
+     * class, which responds to API requests ([ExecuteApiCommandActivity]).
+     * The intent's action is set to the command name and the rest of the parameters
+     * are passed as a bundle, with a unique requestId added the parameter list.
+     */
+    protected fun createIntentForCall(
             command: String,
             parameters: Bundle = Bundle()
     ): Intent =
         Intent(callingContext, ExecuteApiCommandActivity::class.java).apply {
             action = command
             val parametersWithRequestId = Bundle(parameters)
-            parametersWithRequestId.putString(ParameterNames.Global.requestId, uniqueRequestIdForCommand(command))
+            parametersWithRequestId.putString(ParameterNames.Common.requestId, uniqueRequestIdForCommand(command))
             putExtras(parametersWithRequestId)
         }
 
-
-    protected open fun call(
+    /**
+     * Since call is handle differently for fragments and for activities, the method that actually
+     * triggers calling is abstracted and implemented in the [create] call.
+     */
+    protected abstract fun call(
         command: String,
         parameters: Bundle = Bundle(),
         requestCode: Int = 0
-    ): Intent =  createIntentForCall(command, parameters)
+    ): Intent
 
 
+    /**
+     * Abstracts away the names used to marshall parameters into bundles for requests and response.
+     */
     object ParameterNames {
+        internal object Reused {
+            const val postDecryptionInstructionsJson = "postDecryptionInstructionsJson"
+            const val plaintext = "plaintext"
+            const val ciphertext = "ciphertext"
+            const val signatureVerificationKeyJson = "signatureVerificationKeyJson"
 
-        internal const val _postDecryptionInstructionsJson = "postDecryptionInstructionsJson"
+        }
 
-        object Global {
+        object Common {
             const val requestId  = "requestId"
             const val keyDerivationOptionsJson = "keyDerivationOptionsJson "
             const val exception = "exception"
@@ -72,9 +115,17 @@ open class Api(
         }
 
         object SymmetricKey {
-            const val plaintext = "plaintext"
-            const val ciphertext = "ciphertext"
-            const val postDecryptionInstructionsJson = _postDecryptionInstructionsJson
+
+            object Seal {
+                const val plaintext = Reused.plaintext
+                const val ciphertext = Reused.ciphertext
+                const val postDecryptionInstructionsJson = Reused.postDecryptionInstructionsJson
+            }
+            object Unseal {
+                const val plaintext = Reused.plaintext
+                const val ciphertext = Reused.ciphertext
+                const val postDecryptionInstructionsJson = Reused.postDecryptionInstructionsJson
+            }
         }
 
         object PublicPrivateKeyPair {
@@ -83,22 +134,21 @@ open class Api(
             }
 
             object Unseal {
-                const val plaintext = "plaintext"
-                const val ciphertext = "ciphertext"
-                const val postDecryptionInstructionsJson = _postDecryptionInstructionsJson
+                const val plaintext = Reused.plaintext
+                const val ciphertext = Reused.ciphertext
+                const val postDecryptionInstructionsJson = Reused.postDecryptionInstructionsJson
             }
         }
 
         object SigningKey {
-            internal const val _signatureVerificationKeyJson = "signatureVerificationKeyJson"
             object GetSignatureVerificationKey {
-                const val signatureVerificationKeyJson = _signatureVerificationKeyJson
+                const val signatureVerificationKeyJson = Reused.signatureVerificationKeyJson
             }
 
             object GenerateSignature {
                 const val message = "message"
                 const val signature = "signature"
-                const val signatureVerificationKeyJson = _signatureVerificationKeyJson
+                const val signatureVerificationKeyJson = Reused.signatureVerificationKeyJson
             }
         }
 
@@ -140,24 +190,40 @@ open class Api(
         )
     }
 
-    interface DiceKeysApiCallback {
-    }
-    data class IntentAndCallback<T: DiceKeysApiCallback> (
-        val originalIntent: Intent,
-        val callback: T
+    /**
+     * Syntactic sugar so that all callbacks for DiceKeys API calls have the same ancestor
+     * and are easier to identify.
+     */
+    interface DiceKeysApiCallback {}
+
+    /**
+     * For each API call, we'll track a map of requestId to the intent used to make the
+     * request and to the callbacks the caller registered for the response.
+     */
+    internal data class RequestIntentAndCallback<T: DiceKeysApiCallback> (
+            val requestIntent: Intent,
+            val callback: T
     )
 
-    private fun <T: DiceKeysApiCallback>addCallback(
-        map: HashMap<String, IntentAndCallback<T>>,
-        intent: Intent,
-        callback: T
+    /**
+     * This helper function adds the intent and callbacks for a request
+     * to a map that can retrieve them based on the requestId.
+     */
+    private fun <T: DiceKeysApiCallback>addRequestAndCallback(
+            map: HashMap<String, RequestIntentAndCallback<T>>,
+            intent: Intent,
+            callback: T
     ): Unit {
-        intent.getStringExtra(ParameterNames.Global.requestId)?.let { requestId ->
-            map[requestId] = IntentAndCallback<T>(intent, callback)
+        intent.getStringExtra(ParameterNames.Common.requestId)?.let { requestId ->
+            map[requestId] = RequestIntentAndCallback<T>(intent, callback)
         }
     }
 
 
+    /**
+     * Open the DiceKeys app and do not return until the user has loaded in a DiceKey.
+     * (The DiceKey will NOT be returned.)
+     */
     fun ensureKeyLoaded() {
         call(OperationNames.UI.ensureKeyLoaded)
     }
@@ -171,16 +237,21 @@ open class Api(
             originalIntent: Intent
         ) {}
     }
-    private val getSeedCallbacks = HashMap<String, IntentAndCallback<GetSeedCallback>>()
+    private val getSeedCallbacks = HashMap<String, RequestIntentAndCallback<GetSeedCallback>>()
+
+    /**
+     * Derive a pseudo-random cryptographic seed from the user's DiceKey and
+     * the [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson].
+     */
     fun getSeed(
             keyDerivationOptionsJson: String,
             callback: GetSeedCallback? = null
     ): Intent =
         call(OperationNames.Seed.get,
             bundleOf(
-                ParameterNames.Global.keyDerivationOptionsJson to keyDerivationOptionsJson
+                ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
             )
-        ).also { intent -> callback?.let{ addCallback(getSeedCallbacks, intent, it) } }
+        ).also { intent -> callback?.let{ addRequestAndCallback(getSeedCallbacks, intent, it) } }
 
     interface GetPublicKeyCallback : DiceKeysApiCallback {
         fun onGetPublicKeySuccess(
@@ -192,31 +263,21 @@ open class Api(
                 originalIntent: Intent
         ) {}
     }
-    private val getPublicKeyCallbacks = HashMap<String, IntentAndCallback<GetPublicKeyCallback>>()
+    private val getPublicKeyCallbacks = HashMap<String, RequestIntentAndCallback<GetPublicKeyCallback>>()
+
+    /**
+     * Get a public key derived from the user's DiceKey and the [KeyDerivationOptions] specified
+     * in JSON format via [keyDerivationOptionsJson]
+     */
     fun getPublicKey(
             keyDerivationOptionsJson: String,
             callback: GetPublicKeyCallback? = null
     ): Intent =
         call(OperationNames.PublicPrivateKeyPair.getPublic,
             bundleOf(
-                ParameterNames.Global.keyDerivationOptionsJson to keyDerivationOptionsJson
+                ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
             )
-        ).also { intent -> callback?.let{ addCallback(getPublicKeyCallbacks, intent, it) } }
-
-    fun sealWithPublicKey(
-        plaintext: ByteArray,
-        publicKey: PublicKey,
-        postDecryptionInstructionsJson: String = ""
-    ): ByteArray {
-        return publicKey.seal(plaintext, postDecryptionInstructionsJson)
-    }
-
-    fun sealWithPublicKey(
-            plaintext: ByteArray,
-            publicKeyJson: String,
-            postDecryptionInstructionsJson: String = ""
-    ): ByteArray =
-        sealWithPublicKey(plaintext, PublicKey.fromJsonOrThrow(publicKeyJson), postDecryptionInstructionsJson)
+        ).also { intent -> callback?.let{ addRequestAndCallback(getPublicKeyCallbacks, intent, it) } }
 
     interface UnsealWithPrivateKeyCallback : DiceKeysApiCallback {
         fun onUnsealAsymmetricSuccess(
@@ -228,7 +289,17 @@ open class Api(
                 originalIntent: Intent
         ) {}
     }
-    private val unsealAsymmetricCallbacks = HashMap<String, IntentAndCallback<UnsealWithPrivateKeyCallback>>()
+    private val unsealAsymmetricCallbacks = HashMap<String, RequestIntentAndCallback<UnsealWithPrivateKeyCallback>>()
+    /**
+     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with a
+     * [PublicKey].
+     * The public/private key pair will be re-derived from the user's DiceKey, the
+     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
+     * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
+     *
+     * If any of those strings change, the wrong key will be derive and the message will
+     * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
+     */
     fun unsealWithPrivateKey(
             ciphertext: ByteArray,
             keyDerivationOptionsJson: String = "",
@@ -237,26 +308,28 @@ open class Api(
     ): Intent =
         call(OperationNames.PublicPrivateKeyPair.unseal,
                 bundleOf(
-                        ParameterNames.Global.keyDerivationOptionsJson to keyDerivationOptionsJson,
+                        ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson,
                         ParameterNames.PublicPrivateKeyPair.Unseal.postDecryptionInstructionsJson to postDecryptionInstructionsJson,
                         ParameterNames.PublicPrivateKeyPair.Unseal.ciphertext to ciphertext
                 )
-        ).also { intent -> callback?.let{ addCallback(unsealAsymmetricCallbacks, intent, it) } }
-
+        ).also { intent -> callback?.let{ addRequestAndCallback(unsealAsymmetricCallbacks, intent, it) } }
+    /**
+     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with
+     * [publicKey].
+     * The public/private key pair will be re-derived from the user's DiceKey, the
+     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson] in the
+     * [publicKey] object,
+     * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
+     *
+     * If any of those strings change, the wrong key will be derive and the message will
+     * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
+     */
     fun unsealWithPrivateKey(
             ciphertext: ByteArray,
             publicKey: PublicKey,
             postDecryptionInstructionsJson: String = "",
             callback: UnsealWithPrivateKeyCallback? = null
     ): Intent = unsealWithPrivateKey(ciphertext, publicKey.jsonKeyDerivationOptions, postDecryptionInstructionsJson, callback)
-
-    fun unsealWithPrivateKeyUsingPublicKeyJson(
-            ciphertext: ByteArray,
-            publicKeyJson: String,
-            postDecryptionInstructionsJson: String = "",
-            callback: UnsealWithPrivateKeyCallback? = null
-    ): Intent = unsealWithPrivateKey(
-            ciphertext, PublicKey.fromJsonOrThrow(publicKeyJson), postDecryptionInstructionsJson, callback)
 
     fun unsealWithPrivateKey(
             ciphertext: ByteArray,
@@ -288,7 +361,14 @@ open class Api(
             originalIntent: Intent
         ) {}
     }
-    private val sealWithSymmetricKeyCallbacks = HashMap<String, IntentAndCallback<SealWithSymmetricKeyCallback>>()
+    private val sealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<SealWithSymmetricKeyCallback>>()
+    /**
+     * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
+     * symmetric key derived from the user's DiceKey, the
+     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
+     * and [PostDecryptionInstructions] specified via a JSON string as
+     * [postDecryptionInstructionsJson].
+     */
     fun sealWithSymmetricKey(
             keyDerivationOptionsJson: String,
             plaintext: ByteArray,
@@ -297,11 +377,17 @@ open class Api(
     ): Intent =
         call(OperationNames.SymmetricKey.seal,
                 bundleOf(
-                        ParameterNames.Global.keyDerivationOptionsJson to keyDerivationOptionsJson,
-                        ParameterNames.SymmetricKey.plaintext to plaintext,
-                        ParameterNames.SymmetricKey.postDecryptionInstructionsJson to postDecryptionInstructionsJson
+                        ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson,
+                        ParameterNames.SymmetricKey.Seal.plaintext to plaintext,
+                        ParameterNames.SymmetricKey.Seal.postDecryptionInstructionsJson to postDecryptionInstructionsJson
                 )
-        ).also { intent -> callback?.let{ addCallback(sealWithSymmetricKeyCallbacks, intent, it) } }
+        ).also { intent -> callback?.let{ addRequestAndCallback(sealWithSymmetricKeyCallbacks, intent, it) } }
+    /**
+     * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
+     * symmetric key derived from the user's DiceKey, the
+     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
+     * but without any post-decryption instructions.
+     */
     fun sealWithSymmetricKey(
             keyDerivationOptionsJson: String,
             plaintext: ByteArray,
@@ -318,7 +404,16 @@ open class Api(
                 originalIntent: Intent
         ) {}
     }
-    private val unsealWithSymmetricKeyCallbacks = HashMap<String, IntentAndCallback<UnsealWithSymmetricKeyCallback>>()
+    private val unsealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<UnsealWithSymmetricKeyCallback>>()
+    /**
+     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with a
+     * symmetric key derived from the user's DiceKey, the
+     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
+     * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
+     *
+     * If any of those strings change, the wrong key will be derive and the message will
+     * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
+     */
     fun unsealWithSymmetricKey(
             keyDerivationOptionsJson: String,
             ciphertext: ByteArray,
@@ -327,11 +422,20 @@ open class Api(
     ): Intent =
         call(OperationNames.SymmetricKey.unseal,
                 bundleOf(
-                        ParameterNames.Global.keyDerivationOptionsJson to keyDerivationOptionsJson,
-                        ParameterNames.SymmetricKey.ciphertext to ciphertext,
-                        ParameterNames.SymmetricKey.postDecryptionInstructionsJson to postDecryptionInstructionsJson
+                        ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson,
+                        ParameterNames.SymmetricKey.Seal.ciphertext to ciphertext,
+                        ParameterNames.SymmetricKey.Seal.postDecryptionInstructionsJson to postDecryptionInstructionsJson
                 )
-        ).also { intent -> callback?.let{ addCallback(unsealWithSymmetricKeyCallbacks, intent, it) } }
+        ).also { intent -> callback?.let{ addRequestAndCallback(unsealWithSymmetricKeyCallbacks, intent, it) } }
+    /**
+     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with a
+     * symmetric key derived from the user's DiceKey, the
+     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
+     * and without any post-decryption instructions.
+     *
+     * If any of those strings change, the wrong key will be derive and the message will
+     * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
+     */
     fun unsealWithSymmetricKey(
             keyDerivationOptionsJson: String,
             ciphertext: ByteArray,
@@ -348,16 +452,21 @@ open class Api(
                 originalIntent: Intent
         ) {}
     }
-    private val getSignatureVerificationKeyCallbacks = HashMap<String, IntentAndCallback<GetSignatureVerificationKeyCallback>>()
+    private val getSignatureVerificationKeyCallbacks = HashMap<String, RequestIntentAndCallback<GetSignatureVerificationKeyCallback>>()
+
+    /**
+     * Get a public signature-verification key derived from the user's DiceKey and the
+     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson]
+     */
     fun getSignatureVerificationKey(
             keyDerivationOptionsJson: String,
             callback: GetSignatureVerificationKeyCallback? = null
     ): Intent =
             call(OperationNames.SigningKey.getSignatureVerificationKey,
                     bundleOf(
-                            ParameterNames.Global.keyDerivationOptionsJson to keyDerivationOptionsJson
+                            ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
                     )
-            ).also { intent -> callback?.let{ addCallback(getSignatureVerificationKeyCallbacks, intent, it) } }
+            ).also { intent -> callback?.let{ addRequestAndCallback(getSignatureVerificationKeyCallbacks, intent, it) } }
 
     interface GenerateSignatureCallback : DiceKeysApiCallback {
         fun onGenerateSignatureCallbackSuccess(
@@ -370,7 +479,12 @@ open class Api(
                 originalIntent: Intent
         ) {}
     }
-    private val generateSignatureCallbacks = HashMap<String, IntentAndCallback<GenerateSignatureCallback>>()
+    private val generateSignatureCallbacks = HashMap<String, RequestIntentAndCallback<GenerateSignatureCallback>>()
+    /**
+     * Sign a [message] using a public/private signing key pair derived
+     * from the user's DiceKey and the [KeyDerivationOptions] specified in JSON format via
+     * [keyDerivationOptionsJson].
+     */
     fun generateSignature(
             keyDerivationOptionsJson: String,
             message: ByteArray,
@@ -378,37 +492,44 @@ open class Api(
     ): Intent =
             call(OperationNames.SigningKey.generateSignature,
                     bundleOf(
-                            ParameterNames.Global.keyDerivationOptionsJson to keyDerivationOptionsJson,
+                            ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson,
                             ParameterNames.SigningKey.GenerateSignature.message to message
                     )
-            ).also { intent -> callback?.let{ addCallback(generateSignatureCallbacks, intent, it) } }
+            ).also { intent -> callback?.let{ addRequestAndCallback(generateSignatureCallbacks, intent, it) } }
 
 
     private fun <T: DiceKeysApiCallback>handleResult(
-            intentAndCallbackMap: HashMap<String, IntentAndCallback<T>>,
+            intentAndCallbackMap: HashMap<String, RequestIntentAndCallback<T>>,
             resultIntent: Intent,
             failureHandler: (callback: T, originalIntent: Intent, e: Exception) -> Unit,
             successHandler: (callback: T, originalIntent: Intent) -> Unit
     ) {
-        resultIntent.getStringExtra(ParameterNames.Global.requestId)?.let{ requestId ->
+        resultIntent.getStringExtra(ParameterNames.Common.requestId)?.let{ requestId ->
             intentAndCallbackMap[requestId]?.run {
-                if (resultIntent.hasExtra(ParameterNames.Global.exception)) {
+                if (resultIntent.hasExtra(ParameterNames.Common.exception)) {
                     failureHandler(
-                            callback, originalIntent, resultIntent.getSerializableExtra(ParameterNames.Global.exception) as Exception
+                            callback, requestIntent, resultIntent.getSerializableExtra(ParameterNames.Common.exception) as Exception
                     )
                 } else {
-                    successHandler(callback, originalIntent)
+                    successHandler(callback, requestIntent)
                 }
             }
         }
     }
 
+    /**
+     * Activities and Fragments that use this API should implement onActivityResult and
+     * and call handleOnActivityResult with the data/intent (third parameter) received.
+     * Doing so allows this class to process results returned to the activity/fragment
+     * and then call the appropriate callback functions when an API call has either
+     * succeeded or failed.
+     */
     fun handleOnActivityResult(resultIntent: Intent?) {
         if (resultIntent == null)
             return
-        if (!resultIntent.hasExtra(ParameterNames.Global.requestId))
+        if (!resultIntent.hasExtra(ParameterNames.Common.requestId))
             return
-        resultIntent.getStringExtra(ParameterNames.Global.requestId)?.let{ requestId ->
+        resultIntent.getStringExtra(ParameterNames.Common.requestId)?.let{ requestId ->
             when(requestIdToCommand(requestId)) {
 
                 OperationNames.Seed.get -> handleResult(getSeedCallbacks, resultIntent,
@@ -433,7 +554,7 @@ open class Api(
                 OperationNames.SymmetricKey.unseal -> handleResult(unsealWithSymmetricKeyCallbacks, resultIntent,
                         { callback, originalIntent, e -> callback.onUnsealSymmetricFail(e, originalIntent) },
                         { callback, originalIntent ->
-                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.plaintext)?.let { plaintext ->
+                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.Unseal.plaintext)?.let { plaintext ->
                                 callback.onUnsealSymmetricSuccess(plaintext, originalIntent)
                             }
                         }
@@ -451,7 +572,7 @@ open class Api(
                 OperationNames.SymmetricKey.seal -> handleResult(sealWithSymmetricKeyCallbacks, resultIntent,
                         { callback, originalIntent, e -> callback.onSealWithSymmetricKeyFail(e, originalIntent) },
                         { callback, originalIntent ->
-                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.ciphertext)?.let { ciphertext ->
+                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.Seal.ciphertext)?.let { ciphertext ->
                                 callback.onSealWithSymmetricKeySuccess(ciphertext, originalIntent)
                             }
                         }

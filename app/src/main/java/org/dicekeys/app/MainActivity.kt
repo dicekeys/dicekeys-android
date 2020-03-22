@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         const val RC_DISPLAY_DICE = 2
     }
     private lateinit var buttonStart: Button
-    private lateinit var basicApi: org.dicekeys.ActivityApi
+    private lateinit var basicApi: org.dicekeys.Api
     private lateinit var resultTextView: TextView
     val keyDerivationOptionsJson = "{}"
     val testMessage = "The secret ingredient is dihydrogen monoxide"
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        basicApi = org.dicekeys.ActivityApi(this)
+        basicApi = org.dicekeys.Api.create(this)
         setContentView(R.layout.activity_main)
         resultTextView = findViewById(R.id.result_text)
         buttonStart = findViewById(R.id.btn_start)
@@ -128,6 +128,7 @@ class MainActivity : AppCompatActivity() {
                 object : Api.UnsealWithPrivateKeyCallback {
                     override fun onUnsealAsymmetricSuccess(plaintext: ByteArray, originalIntent: Intent) {
                         resultTextView.text =
+
                                 "${resultTextView.text}\nUnsealed '${String(plaintext, Charsets.UTF_8)}'"
                     }
                     override fun onUnsealAsymmetricFail(exception: Exception, originalIntent: Intent) {
