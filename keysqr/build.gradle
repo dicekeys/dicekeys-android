@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.dokka'
 
 // Create a variable called keystorePropertiesFile, and initialize it to your
 // keystore.properties file, in the rootProject folder.
@@ -36,6 +37,11 @@ android {
     buildToolsVersion "29.0.2"
 
 
+    dokka {
+        outputFormat = 'html'
+        outputDirectory = "$buildDir/dokka"
+    }
+
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 29
@@ -50,6 +56,9 @@ android {
                 cppFlags "-std=c++11"
             }
         }
+        ndk{
+            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+        }
     }
 
     buildTypes {
@@ -59,6 +68,9 @@ android {
             signingConfig signingConfigs.release
         }
         debug {
+            debuggable true
+            initWith debug
+            jniDebuggable true
             signingConfig signingConfigs.debug
         }
     }
