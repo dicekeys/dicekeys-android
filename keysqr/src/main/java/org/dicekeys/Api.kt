@@ -316,9 +316,8 @@ abstract class Api(
     /**
      * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with
      * [publicKey].
-     * The public/private key pair will be re-derived from the user's DiceKey, the
-     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson] in the
-     * [publicKey] object,
+     * The public/private key pair will be re-derived from the user's DiceKey, the [publicKey]'s
+     * [PublicKey.jsonKeyDerivationOptions] field,
      * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
      *
      * If any of those strings change, the wrong key will be derive and the message will
