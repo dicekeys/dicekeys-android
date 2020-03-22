@@ -43,8 +43,8 @@ void throwCppExceptionAsJavaException(
   } catch (ClientNotAuthorizedException e) {
     javaThrow(env, "org/dicekeys/ClientNotAuthorizedException", e.what());
     return;
-  } catch (InvalidJsonKeyDerivationOptionsException e) {
-    javaThrow(env, "org/dicekeys/InvalidJsonKeyDerivationOptionsException", e.what());
+  } catch (InvalidKeyDerivationOptionsJsonException e) {
+    javaThrow(env, "org/dicekeys/InvalidKeyDerivationOptionsJsonException", e.what());
     return;
   } catch (InvalidKeyDerivationOptionValueException e) {
     javaThrow(env, "org/dicekeys/InvalidKeyDerivationOptionValueException", e.what());
@@ -76,21 +76,21 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_KeySqr_getSeedJNI(
      JNIEnv* env,
      jobject obj,
      jstring keySqrInHumanReadableFormWithOrientationsObj,
-     jstring jsonKeyDerivationOptionsObj,
+     jstring keyDerivationOptionsJsonObj,
      jstring clientsApplicationIdObj
  ) {
     try {
         const std::string keySqrInHumanReadableFormWithOrientations(
                 env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
         );
-        const std::string jsonKeyDerivationOptions(
-                env->GetStringUTFChars( jsonKeyDerivationOptionsObj, NULL )
+        const std::string keyDerivationOptionsJson(
+                env->GetStringUTFChars( keyDerivationOptionsJsonObj, NULL )
         );
         const std::string clientsApplicationId(
                 env->GetStringUTFChars( clientsApplicationIdObj, NULL )
         );
         const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
-        Seed seed(keySqr, jsonKeyDerivationOptions, clientsApplicationId);
+        Seed seed(keySqr, keyDerivationOptionsJson, clientsApplicationId);
         const auto seedBuffer = seed.reveal();
         jbyteArray ret = env->NewByteArray(seedBuffer.length);
         env->SetByteArrayRegion(ret, 0, seedBuffer.length, (jbyte*) seedBuffer.data);
@@ -108,7 +108,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicKey_sealJNI(
         JNIEnv* env,
         jobject obj,
         jbyteArray jpublicKeyBytes,
-        jstring jjsonKeyDerivationOptions,
+        jstring jkeyDerivationOptionsJson,
         jbyteArray jplaintext,
         jstring jpostDecryptionInstructionJson
 ) {
@@ -118,8 +118,8 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicKey_sealJNI(
             (const unsigned char*)  env->GetByteArrayElements(jpublicKeyBytes, 0);
         std::vector<unsigned char> publicKeyBytes(publicKeyBytesLength);
         memcpy(publicKeyBytes.data(), publicKeyBytesArray, publicKeyBytesLength);
-        const std::string jsonKeyDerivationOptions(
-            env->GetStringUTFChars( jjsonKeyDerivationOptions, NULL )
+        const std::string keyDerivationOptionsJson(
+            env->GetStringUTFChars( jkeyDerivationOptionsJson, NULL )
         );
         size_t plaintextLength = (size_t) env->GetArrayLength(jplaintext);
         const unsigned char* plaintext =
@@ -129,7 +129,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicKey_sealJNI(
                 env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
         );
 
-        const PublicKey publicKey(publicKeyBytes, jsonKeyDerivationOptions);
+        const PublicKey publicKey(publicKeyBytes, keyDerivationOptionsJson);
 
         const SodiumBuffer ciphertext = publicKey.seal(
                 plaintext,
@@ -153,7 +153,7 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_constructJNI
         JNIEnv* env,
         jobject obj,
         jstring keySqrInHumanReadableFormWithOrientationsObj,
-        jstring jsonKeyDerivationOptionsObj,
+        jstring keyDerivationOptionsJsonObj,
         jstring clientsApplicationIdObj,
         jboolean validateClientId // FIXME
 ) {
@@ -161,15 +161,15 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_constructJNI
         const std::string keySqrInHumanReadableFormWithOrientations(
                 env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
         );
-        const std::string jsonKeyDerivationOptions(
-                env->GetStringUTFChars( jsonKeyDerivationOptionsObj, NULL )
+        const std::string keyDerivationOptionsJson(
+                env->GetStringUTFChars( keyDerivationOptionsJsonObj, NULL )
         );
         const std::string clientsApplicationId(
                 env->GetStringUTFChars( clientsApplicationIdObj, NULL )
         );
         const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
         PublicPrivateKeyPair *publicPrivateKeyPairPtr =
-            new PublicPrivateKeyPair(keySqr, jsonKeyDerivationOptions, clientsApplicationId);
+            new PublicPrivateKeyPair(keySqr, keyDerivationOptionsJson, clientsApplicationId);
         jlong publicPrivateKeyPairPtrAsJavaLong = (long)publicPrivateKeyPairPtr;
         return publicPrivateKeyPairPtrAsJavaLong;
     } catch (...) {
@@ -244,7 +244,7 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_SigningKey_constructJNI(
         JNIEnv* env,
         jobject obj,
         jstring keySqrInHumanReadableFormWithOrientationsObj,
-        jstring jsonKeyDerivationOptionsObj,
+        jstring keyDerivationOptionsJsonObj,
         jstring clientsApplicationIdObj,
         jboolean validateClientId // FIXME
 ) {
@@ -252,15 +252,15 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_SigningKey_constructJNI(
         const std::string keySqrInHumanReadableFormWithOrientations(
                 env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
         );
-        const std::string jsonKeyDerivationOptions(
-                env->GetStringUTFChars( jsonKeyDerivationOptionsObj, NULL )
+        const std::string keyDerivationOptionsJson(
+                env->GetStringUTFChars( keyDerivationOptionsJsonObj, NULL )
         );
         const std::string clientsApplicationId(
                 env->GetStringUTFChars( clientsApplicationIdObj, NULL )
         );
         const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
         SigningKey *signingKey =
-                new SigningKey(keySqr, jsonKeyDerivationOptions, clientsApplicationId);
+                new SigningKey(keySqr, keyDerivationOptionsJson, clientsApplicationId);
         jlong publicPrivateKeyPairPtrAsJavaLong = (long)signingKey;
         return publicPrivateKeyPairPtrAsJavaLong;
     } catch (...) {
@@ -365,7 +365,7 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_SymmetricKey_constructJNI(
         JNIEnv* env,
         jobject obj,
         jstring keySqrInHumanReadableFormWithOrientationsObj,
-        jstring jsonKeyDerivationOptionsObj,
+        jstring keyDerivationOptionsJsonObj,
         jstring clientsApplicationIdObj,
         jboolean validateClientId // FIXME
 ) {
@@ -373,15 +373,15 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_SymmetricKey_constructJNI(
         const std::string keySqrInHumanReadableFormWithOrientations(
                 env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
         );
-        const std::string jsonKeyDerivationOptions(
-                env->GetStringUTFChars( jsonKeyDerivationOptionsObj, NULL )
+        const std::string keyDerivationOptionsJson(
+                env->GetStringUTFChars( keyDerivationOptionsJsonObj, NULL )
         );
         const std::string clientsApplicationId(
                 env->GetStringUTFChars( clientsApplicationIdObj, NULL )
         );
         const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
         SymmetricKey* symmetricKeyPtr =
-                new SymmetricKey(keySqr, jsonKeyDerivationOptions, clientsApplicationId);
+                new SymmetricKey(keySqr, keyDerivationOptionsJson, clientsApplicationId);
         jlong symmetricKeyPtrAsJavaLong = (long)symmetricKeyPtr;
         return symmetricKeyPtrAsJavaLong;
     } catch (...) {

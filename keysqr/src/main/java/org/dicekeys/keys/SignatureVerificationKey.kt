@@ -11,7 +11,7 @@ import org.dicekeys.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 @JsonClass(generateAdapter = true)
 class SignatureVerificationKey(
         val keyBytes: ByteArray,
-        val jsonKeyDerivationOptions: String = ""
+        val keyDerivationOptionsJson: String = ""
 ) {
     companion object {
         internal val moshi = Moshi.Builder()
@@ -34,13 +34,13 @@ class SignatureVerificationKey(
 
     override fun equals(other: Any?): Boolean =
         (other is SignatureVerificationKey) &&
-        jsonKeyDerivationOptions == other.jsonKeyDerivationOptions &&
+        keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
         keyBytes.contentEquals(other.keyBytes)
 
     fun toJson(): String { return jsonAdapter.toJson(this)
         // If the key derivation options are empty, remove them
-        .replace("\"jsonKeyDerivationOptions\":\"\",","", false)
-        .replace(",\"jsonKeyDerivationOptions\":\"\"","", false)
+        .replace("\"keyDerivationOptionsJson\":\"\",","", false)
+        .replace(",\"keyDerivationOptionsJson\":\"\"","", false)
     }
     // public val asJson: String get() = jsonAdapter.toJson(this)
 
@@ -52,7 +52,7 @@ class SignatureVerificationKey(
         message: ByteArray,
         signature: ByteArray,
         signatureVerificationKeyBytes: ByteArray
-//        jsonKeyDerivationOptions: String,
+//        keyDerivationOptionsJson: String,
     ): Boolean
 
     public fun verifySignature(

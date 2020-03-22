@@ -3,12 +3,12 @@ package org.dicekeys.keys
 
 class PublicPrivateKeyPair(
         public val keySqrInHumanReadableFormWithOrientations: String,
-        public val jsonKeyDerivationOptions: String,
+        public val keyDerivationOptionsJson: String,
         public val clientsApplicationId: String
 ) {
     private external fun constructJNI(
             keySqrInHumanReadableFormWithOrientations: String,
-            jsonKeyDerivationOptions: String,
+            keyDerivationOptionsJson: String,
             clientsApplicationId: String,
             validateClientId: Boolean
     ): Long
@@ -37,7 +37,7 @@ class PublicPrivateKeyPair(
 
     private val publicPrivateKeyPairPtr: Long = constructJNI(
             keySqrInHumanReadableFormWithOrientations,
-            jsonKeyDerivationOptions,
+            keyDerivationOptionsJson,
             clientsApplicationId,
             false // FIXME
     )
@@ -46,7 +46,7 @@ class PublicPrivateKeyPair(
         throwIfDisposed()
         return PublicKey(
                 getPublicKeyBytesJNI(publicPrivateKeyPairPtr),
-                jsonKeyDerivationOptions
+                keyDerivationOptionsJson
         )
     }
 

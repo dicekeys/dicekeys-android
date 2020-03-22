@@ -3,12 +3,12 @@ package org.dicekeys.keys
 
 class SymmetricKey(
         public val keySqrInHumanReadableFormWithOrientations: String,
-        public val jsonKeyDerivationOptions: String,
+        public val keyDerivationOptionsJson: String,
         public val clientsApplicationId: String
 ) {
     private external fun constructJNI(
             keySqrInHumanReadableFormWithOrientations: String,
-            jsonKeyDerivationOptions: String,
+            keyDerivationOptionsJson: String,
             clientsApplicationId: String,
             validateClientId: Boolean
     ): Long
@@ -32,7 +32,7 @@ class SymmetricKey(
     var disposed: Boolean = false
     private val symmetricKeyPtr: Long = constructJNI(
             keySqrInHumanReadableFormWithOrientations,
-            jsonKeyDerivationOptions,
+            keyDerivationOptionsJson,
             clientsApplicationId,
             false // FIXME
     )

@@ -40,7 +40,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
 
   external fun getSeedJNI(
     keySqrInHumanReadableFormWithOrientations: String,
-    jsonKeyDerivationOptions: String,
+    keyDerivationOptionsJson: String,
     clientsApplicationId: String
   ): ByteArray
 
@@ -80,67 +80,67 @@ class KeySqr<F: Face>(val faces: List<F>) {
   }
 
   fun getSeed(
-    jsonKeyDerivationOptions: String? = "",
+    keyDerivationOptionsJson: String? = "",
     clientsApplicationId: String = ""
   ): ByteArray {
     return getSeedJNI(
       toCanonicalRotation().toHumanReadableForm(true),
-      jsonKeyDerivationOptions ?: "",
+      keyDerivationOptionsJson ?: "",
       clientsApplicationId
     )
   }
 
   fun getSymmetricKey(
-          jsonKeyDerivationOptions: String? = "",
+          keyDerivationOptionsJson: String? = "",
           clientsApplicationId: String = ""
   ): SymmetricKey {
     return SymmetricKey(
             toCanonicalRotation().toHumanReadableForm(true),
-            jsonKeyDerivationOptions ?: "",
+            keyDerivationOptionsJson ?: "",
             clientsApplicationId
     )
   }
 
   fun getPublicKey(
-    jsonKeyDerivationOptions: String? = "",
+    keyDerivationOptionsJson: String? = "",
     clientsApplicationId: String = ""
   ): PublicKey {
     return PublicPrivateKeyPair(
         toCanonicalRotation().toHumanReadableForm(true),
-        jsonKeyDerivationOptions ?: "",
+        keyDerivationOptionsJson ?: "",
         clientsApplicationId
       ).getPublicKey()
   }
 
   fun getPublicPrivateKeyPair(
-          jsonKeyDerivationOptions: String?= "",
+          keyDerivationOptionsJson: String?= "",
           clientsApplicationId: String = ""
   ): PublicPrivateKeyPair {
     return PublicPrivateKeyPair(
         toCanonicalRotation().toHumanReadableForm(true),
-        jsonKeyDerivationOptions ?: "",
+        keyDerivationOptionsJson ?: "",
         clientsApplicationId
     )
   }
 
   fun getSigningKey(
-          jsonKeyDerivationOptions: String? = "",
+          keyDerivationOptionsJson: String? = "",
           clientsApplicationId: String = ""
   ): SigningKey {
     return SigningKey(
             toCanonicalRotation().toHumanReadableForm(true),
-            jsonKeyDerivationOptions ?: "",
+            keyDerivationOptionsJson ?: "",
             clientsApplicationId
     )
   }
 
   fun getSignatureVerificationKey(
-          jsonKeyDerivationOptions: String? = "",
+          keyDerivationOptionsJson: String? = "",
           clientsApplicationId: String = ""
   ): SignatureVerificationKey {
     return SigningKey(
             toCanonicalRotation().toHumanReadableForm(true),
-            jsonKeyDerivationOptions ?: "",
+            keyDerivationOptionsJson ?: "",
             clientsApplicationId
     ).getSignatureVerificationKey()
   }

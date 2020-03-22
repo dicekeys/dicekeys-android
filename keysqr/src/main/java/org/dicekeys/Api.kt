@@ -317,8 +317,10 @@ abstract class Api(
      * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with
      * [publicKey].
      * The public/private key pair will be re-derived from the user's DiceKey, the [publicKey]'s
-     * [PublicKey.jsonKeyDerivationOptions] field,
-     * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
+     * [PublicKey.keyDerivationOptionsJson] field.
+     *
+     * The message-specific key will also be seeded by any [PostDecryptionInstructions] optionally
+     * specified by [postDecryptionInstructionsJson].
      *
      * If any of those strings change, the wrong key will be derive and the message will
      * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
@@ -328,7 +330,7 @@ abstract class Api(
             publicKey: PublicKey,
             postDecryptionInstructionsJson: String = "",
             callback: UnsealWithPrivateKeyCallback? = null
-    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.jsonKeyDerivationOptions, postDecryptionInstructionsJson, callback)
+    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, postDecryptionInstructionsJson, callback)
 
     fun unsealWithPrivateKey(
             ciphertext: ByteArray,
@@ -340,7 +342,7 @@ abstract class Api(
             ciphertext: ByteArray,
             publicKey: PublicKey,
             callback: UnsealWithPrivateKeyCallback? = null
-    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.jsonKeyDerivationOptions, "", callback)
+    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, "", callback)
 
     fun unsealWithPrivateKeyUsingPubicKeyAsJson(
             ciphertext: ByteArray,

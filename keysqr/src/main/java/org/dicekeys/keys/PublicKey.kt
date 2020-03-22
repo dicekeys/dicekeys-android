@@ -9,7 +9,7 @@ import org.dicekeys.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 @JsonClass(generateAdapter = true)
 class PublicKey(
         val keyBytes: ByteArray,
-        val jsonKeyDerivationOptions: String = ""
+        val keyDerivationOptionsJson: String = ""
 ) {
 
     companion object {
@@ -30,13 +30,13 @@ class PublicKey(
 
     override fun equals(other: Any?): Boolean =
             (other is PublicKey) &&
-            jsonKeyDerivationOptions == other.jsonKeyDerivationOptions &&
+            keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
             keyBytes.contentEquals(other.keyBytes)
 
     fun toJson(): String { return jsonAdapter.toJson(this)
         // If the key derivation options are empty, remove them
-        .replace("\"jsonKeyDerivationOptions\":\"\",","", false)
-        .replace(",\"jsonKeyDerivationOptions\":\"\"","", false)
+        .replace("\"keyDerivationOptionsJson\":\"\",","", false)
+        .replace(",\"keyDerivationOptionsJson\":\"\"","", false)
     }
     // public val asJson: String get() = jsonAdapter.toJson(this)
 
@@ -46,7 +46,7 @@ class PublicKey(
 
     private external fun sealJNI(
         publicKeyBytes: ByteArray,
-        jsonKeyDerivationOptions: String,
+        keyDerivationOptionsJson: String,
         plaintext: ByteArray,
         postDecryptionInstructionsJson: String = ""
     ): ByteArray
@@ -55,7 +55,7 @@ class PublicKey(
             message: ByteArray,
             postDecryptionInstructionsJson: String = ""
     ): ByteArray {
-        return sealJNI(keyBytes, jsonKeyDerivationOptions, message, postDecryptionInstructionsJson)
+        return sealJNI(keyBytes, keyDerivationOptionsJson, message, postDecryptionInstructionsJson)
     }
 
 

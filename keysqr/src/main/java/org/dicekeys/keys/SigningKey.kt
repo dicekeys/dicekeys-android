@@ -2,12 +2,12 @@ package org.dicekeys.keys
 
 class SigningKey(
         private val keySqrInHumanReadableFormWithOrientations: String,
-        val jsonKeyDerivationOptions: String,
+        val keyDerivationOptionsJson: String,
         public val clientsApplicationId: String
 ) {
     private external fun constructJNI(
             keySqrInHumanReadableFormWithOrientations: String,
-            jsonKeyDerivationOptions: String,
+            keyDerivationOptionsJson: String,
             clientsApplicationId: String,
             validateClientId: Boolean
     ): Long
@@ -35,7 +35,7 @@ class SigningKey(
 
     private val signingKeyPtr: Long = constructJNI(
             keySqrInHumanReadableFormWithOrientations,
-            jsonKeyDerivationOptions,
+            keyDerivationOptionsJson,
             clientsApplicationId,
             false // FIXME
     )
@@ -44,7 +44,7 @@ class SigningKey(
         throwIfDisposed()
         return SignatureVerificationKey(
                 getSignatureVerificationKeyBytesJNI(signingKeyPtr),
-                jsonKeyDerivationOptions
+                keyDerivationOptionsJson
         )
     }
 
