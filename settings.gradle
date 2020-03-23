@@ -1,2 +1,3 @@
 include ':app', ':keysqr'
 rootProject.name='KeySqr'
+include ':fidowriter'

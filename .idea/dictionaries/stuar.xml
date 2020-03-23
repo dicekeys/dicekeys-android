@@ -2,6 +2,8 @@
   <dictionary name="stuar">
     <words>
       <w>ciphertext</w>
+      <w>dicekey</w>
+      <w>dicekeys</w>
     </words>
   </dictionary>
 </component>
