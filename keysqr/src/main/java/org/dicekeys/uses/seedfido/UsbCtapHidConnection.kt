@@ -11,7 +11,7 @@ class LoadKeyNotAuthorizedByUserException(
     message: String? = "User failed to perform the authorization step to allow the key to be written"
 ): Exception(message)
 
-@Suppress("EXPERIMENTAL_UNSIGNED_LITERALS")
+@Suppress("EXPERIMENTAL_UNSIGNED_LITERALS", "EXPERIMENTAL_UNSIGNED_TYPES")
 open class UsbCtapHidConnection(// usbManager: UsbManager,
                                 // device: UsbDevice,
                                 private val connection: UsbDeviceConnection,
@@ -104,6 +104,7 @@ open class UsbCtapHidConnection(// usbManager: UsbManager,
         connection.close()
     }
 
+    @ExperimentalUnsignedTypes
     open class HidResponseInitializationPacket (
             val hidResponsePacketBytes: ByteArray,
             cmdToValidate: Byte? = null,
