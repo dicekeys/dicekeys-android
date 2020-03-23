@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
             |"keyType":"Seed",
             |"keyLengthInBytes":96,
             |"hashFunction":{"algorithm":"Argon2id"},
-            |"restrictToClientApplicationsIdPrefixes":["org.dicekeys.fido"]
+            |"restrictToClientApplicationsIdPrefixes":["com.dicekeys.fidowriter."]
             |}""".trimMargin("|")
 
     private val REQUEST_CODE_PUBLIC_KEY = 3
@@ -66,10 +66,12 @@ class MainActivity : AppCompatActivity() {
             diceKeysApi.getSeed(seedKeyDerivationOptionsJson, object: Api.GetSeedCallback {
                 override fun onGetSeedSuccess(seed: ByteArray, originalIntent: Intent) {
                     edit_text_secret.text.clear()
-                    edit_text_secret.text.insert(0,seed.toString())
+                    edit_text_secret.text.insert(0,seed.joinToString(separator = ""){ String.format("%02x",(it.toInt() and 0xFF))})
+                    render()
                 }
                 override fun onGetSeedFail(exception: Exception, originalIntent: Intent) {
                     TODO("Not yet implemented")
+                    render()
                 }
             })
         }
@@ -111,6 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        diceKeysApi.handleOnActivityResult(data)
         render()
     }
 
