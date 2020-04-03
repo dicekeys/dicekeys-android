@@ -1,12 +1,11 @@
-package org.dicekeys.keys
+package org.dicekeys.api
 
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.util.Base64
 import com.squareup.moshi.*
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import org.dicekeys.utilities.QrCodeBitmap
-import org.dicekeys.utilities.qrCodeNativeSizeInQrCodeSquarePixels
+import org.dicekeys.api.utilities.QrCodeBitmap
+import org.dicekeys.api.utilities.qrCodeNativeSizeInQrCodeSquarePixels
+import org.dicekeys.api.utilities.Base64Adapter
 
 @JsonClass(generateAdapter = true)
 class SignatureVerificationKey(

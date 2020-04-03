@@ -1,9 +1,11 @@
 package org.dicekeys.keys
 
+import org.dicekeys.api.SignatureVerificationKey
+
 class SigningKey(
         private val keySqrInHumanReadableFormWithOrientations: String,
         val keyDerivationOptionsJson: String,
-        public val clientsApplicationId: String
+        val clientsApplicationId: String
 ) {
     private external fun constructJNI(
             keySqrInHumanReadableFormWithOrientations: String,
@@ -26,7 +28,7 @@ class SigningKey(
     ): ByteArray
 
 
-    var disposed: Boolean = false
+    private var disposed: Boolean = false
     private fun throwIfDisposed() {
         if (disposed) {
             throw IllegalAccessException("Attempt to use a key after its disposal")
@@ -52,7 +54,7 @@ class SigningKey(
         message: ByteArray
     ): ByteArray {
         throwIfDisposed()
-        return generateSignatureJNI(signingKeyPtr, message);
+        return generateSignatureJNI(signingKeyPtr, message)
     }
 
     fun erase() {

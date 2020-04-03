@@ -1,15 +1,15 @@
-package org.dicekeys
+package org.dicekeys.api
 import org.json.JSONObject
 import java.lang.Exception
 
 
 class KeyDerivationOptions(
-    val keyType: KeyType?,
-    val keyLengthInBytes: Int?,
-    val algorithm: Algorithm?,
-    val includeOrientationOfFacesInKey: Boolean = true,
-    val hashFunction: HashFunction? = null,
-    val restrictToClientApplicationsIdPrefixes: List<String>? = null
+        val keyType: KeyType?,
+        val keyLengthInBytes: Int?,
+        val algorithm: Algorithm?,
+        val includeOrientationOfFacesInKey: Boolean = true,
+        val hashFunction: HashFunction? = null,
+        val restrictToClientApplicationsIdPrefixes: List<String>? = null
 ) {
     enum class KeyType {
         Seed, Symmetric, Public, Signing;
@@ -48,7 +48,8 @@ class KeyDerivationOptions(
 
         fun fromJson(json: String, defaultKeyType: KeyType? = null): KeyDerivationOptions {
             val obj = if (json.isNotEmpty()) JSONObject(json) else JSONObject()
-            val keyType: KeyType? = KeyType.valueOfOrNull(obj.optString(KeyDerivationOptions::keyType.name, defaultKeyType?.name ?: ""))
+            val keyType: KeyType? = KeyType.valueOfOrNull(obj.optString(KeyDerivationOptions::keyType.name, defaultKeyType?.name
+                    ?: ""))
             val defaultAlgorithmName: String = when(keyType) {
                 KeyType.Public -> Algorithm.X25519.name
                 KeyType.Symmetric -> Algorithm.XSalsa20Poly1305.name
@@ -61,14 +62,14 @@ class KeyDerivationOptions(
                     null
                 else if (obj.optString(KeyDerivationOptions::hashFunction.name, "").isNotEmpty())
                     // Hash function specified as a string
-                    HashFunction(HashFunction.HashAlgorithm.valueOfOrNull(obj.getString(KeyDerivationOptions::hashFunction.name)))
+                HashFunction(HashFunction.HashAlgorithm.valueOfOrNull(obj.getString(KeyDerivationOptions::hashFunction.name)))
                 else obj.getJSONObject(KeyDerivationOptions::hashFunction.name).run {
                     // Hash function specified as a JSON object with "algorithm" field
-                    HashFunction(
-                            HashFunction.HashAlgorithm.valueOfOrNull(getString(HashFunction::algorithm.name)),
-                            if (has(HashFunction::memLimit.name)) getLong(HashFunction::memLimit.name) else null,
-                            if (has(HashFunction::opsLimit.name)) getInt(HashFunction::opsLimit.name) else null
-                    )
+                HashFunction(
+                        HashFunction.HashAlgorithm.valueOfOrNull(getString(HashFunction::algorithm.name)),
+                        if (has(HashFunction::memLimit.name)) getLong(HashFunction::memLimit.name) else null,
+                        if (has(HashFunction::opsLimit.name)) getInt(HashFunction::opsLimit.name) else null
+                )
                 }
             val includeOrientationOfFacesInKey = obj.optBoolean(KeyDerivationOptions::includeOrientationOfFacesInKey.name, true)
             val keyLengthInBytes: Int? = if (obj.has(KeyDerivationOptions::keyLengthInBytes.name))
@@ -90,7 +91,7 @@ class KeyDerivationOptions(
             return try {
                 fromJson(json, defaultKeyType)
             } catch (e: Exception) {
-                return KeyDerivationOptions(defaultKeyType, null, null, true, null, ArrayList<String>() )
+                return KeyDerivationOptions(defaultKeyType, null, null, true, null, ArrayList<String>())
             }
         }
     }

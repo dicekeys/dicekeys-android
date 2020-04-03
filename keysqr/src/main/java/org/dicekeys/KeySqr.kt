@@ -1,4 +1,5 @@
 package org.dicekeys
+import org.dicekeys.api.SignatureVerificationKey
 import org.dicekeys.faces.Face
 import org.dicekeys.keys.*
 
@@ -104,7 +105,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
   fun getPublicKey(
     keyDerivationOptionsJson: String? = "",
     clientsApplicationId: String = ""
-  ): PublicKey {
+  ): org.dicekeys.api.PublicKey {
     return PublicPrivateKeyPair(
         toCanonicalRotation().toHumanReadableForm(true),
         keyDerivationOptionsJson ?: "",

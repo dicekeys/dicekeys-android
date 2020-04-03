@@ -10,11 +10,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import org.dicekeys.Api
+import org.dicekeys.api.DiceKeysApi
 import org.dicekeys.uses.seedfido.UsbCtapHidDeviceList
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var diceKeysApi: org.dicekeys.Api
+    private lateinit var diceKeysApi: DiceKeysApi
 
 
     private val INTENT_ACTION_USB_PERMISSION_EVENT = "org.dicekeys.intents.USB_PERMISSION_EVENT"
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diceKeysApi = org.dicekeys.Api.create(this)
+        diceKeysApi = DiceKeysApi.create(this)
         setContentView(R.layout.activity_main)
         secretTextView = findViewById(R.id.edit_text_secret)
         buttonWriteSecretToFidoToken = findViewById(R.id.btn_write_secret_to_fido_token)
@@ -63,17 +63,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         btn_generate_secret_from_dicekey.setOnClickListener {
-            diceKeysApi.getSeed(seedKeyDerivationOptionsJson, object: Api.GetSeedCallback {
-                override fun onGetSeedSuccess(seed: ByteArray, originalIntent: Intent) {
-                    edit_text_secret.text.clear()
-                    edit_text_secret.text.insert(0,seed.joinToString(separator = ""){ String.format("%02x",(it.toInt() and 0xFF))})
-                    render()
-                }
-                override fun onGetSeedFail(exception: Exception, originalIntent: Intent) {
-                    TODO("Not yet implemented")
-                    render()
-                }
-            })
+            try {
+                diceKeysApi.getSeed(seedKeyDerivationOptionsJson, object : DiceKeysApi.GetSeedCallback {
+                    override fun onGetSeedSuccess(seed: ByteArray, originalIntent: Intent) {
+                        edit_text_secret.text.clear()
+                        edit_text_secret.text.insert(0, seed.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
+                        render()
+                    }
+
+                    override fun onGetSeedFail(exception: Exception, originalIntent: Intent) {
+                        render()
+                        TODO("Not yet implemented")
+                    }
+                })
+            } catch (e: java.lang.Exception) {
+                edit_text_secret.text.clear()
+                edit_text_secret.text.insert(0, e.toString())
+            }
         }
 
     }

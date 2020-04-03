@@ -2,3 +2,6 @@
 	path = keysqr/src/main/cpp/read-keysqr
 	url = https://github.com/dicekeys/read-keysqr.git
 	branch = master
+[submodule "seeded/src/main/cpp/seeded-crypto"]
+	path = seeded/src/main/cpp/seeded-crypto
+	url = https://github.com/dicekeys/seeded-crypto

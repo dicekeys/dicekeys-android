@@ -6,9 +6,8 @@ import android.util.Base64
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import org.dicekeys.Api
-import org.dicekeys.keys.PublicKey
-import org.dicekeys.keys.SignatureVerificationKey
+import org.dicekeys.api.DiceKeysApi
+import org.dicekeys.api.SignatureVerificationKey
 
 
 class MainActivity : AppCompatActivity() {
@@ -17,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         const val RC_DISPLAY_DICE = 2
     }
     private lateinit var buttonStart: Button
-    private lateinit var basicApi: org.dicekeys.Api
+    private lateinit var diceKeysApi: DiceKeysApi
     private lateinit var resultTextView: TextView
     val keyDerivationOptionsJson = "{}"
     val testMessage = "The secret ingredient is dihydrogen monoxide"
@@ -25,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        basicApi = org.dicekeys.Api.create(this)
+        diceKeysApi = DiceKeysApi.create(this)
         setContentView(R.layout.activity_main)
         resultTextView = findViewById(R.id.result_text)
         buttonStart = findViewById(R.id.btn_start)
@@ -34,9 +33,9 @@ class MainActivity : AppCompatActivity() {
 
         buttonStart.setOnClickListener{
             // basicApi.ensureKeyLoaded()
-            basicApi.getSeed(
+            diceKeysApi.getSeed(
                 keyDerivationOptionsJson,
-                object: Api.GetSeedCallback {
+                object: DiceKeysApi.GetSeedCallback {
                 override fun onGetSeedSuccess(seed: ByteArray, originalIntent: Intent) {
                     resultTextView.text = "Seed=${Base64.encodeToString(seed, Base64.DEFAULT)}"
                     encryptSymmetric()
@@ -46,10 +45,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun encryptSymmetric() {
-        basicApi.sealWithSymmetricKey(
+        diceKeysApi.sealWithSymmetricKey(
             keyDerivationOptionsJson,
             testMessageByteArray,
-            object: Api.SealWithSymmetricKeyCallback{
+            object: DiceKeysApi.SealWithSymmetricKeyCallback{
                 override fun onSealWithSymmetricKeySuccess(ciphertext: ByteArray, originalIntent: Intent) {
                     resultTextView.text = "${resultTextView.text}\nSymmetrically sealed message '${testMessage}' as ciphertext '${Base64.encodeToString(ciphertext, Base64.DEFAULT)}'"
                     decryptSymmetric(ciphertext)
@@ -62,10 +61,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun decryptSymmetric(ciphertext: ByteArray) {
-        basicApi.unsealWithSymmetricKey(
+        diceKeysApi.unsealWithSymmetricKey(
             keyDerivationOptionsJson,
             ciphertext,
-            object : Api.UnsealWithSymmetricKeyCallback {
+            object : DiceKeysApi.UnsealWithSymmetricKeyCallback {
                 override fun onUnsealSymmetricSuccess(plaintext: ByteArray, originalIntent: Intent) {
                     resultTextView.text =
                             "${resultTextView.text}\nUnsealed '${String(plaintext, Charsets.UTF_8)}'"
@@ -78,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sign() {
-        basicApi.generateSignature(keyDerivationOptionsJson, testMessageByteArray, object: Api.GenerateSignatureCallback {
+        diceKeysApi.generateSignature(keyDerivationOptionsJson, testMessageByteArray, object: DiceKeysApi.GenerateSignatureCallback {
             override fun onGenerateSignatureCallbackSuccess(signature: ByteArray, signatureVerificationKey: SignatureVerificationKey, originalIntent: Intent) {
                 resultTextView.text =
                         "${resultTextView.text}\nSigned test message '${Base64.encodeToString(signature, Base64.DEFAULT)}'"
@@ -90,9 +89,9 @@ class MainActivity : AppCompatActivity() {
         } )
     }
 
-    fun verifySignature(message: ByteArray, signature: ByteArray, claimedSignatureVerificationKey: SignatureVerificationKey) {
-        basicApi.getSignatureVerificationKey(keyDerivationOptionsJson, object: Api.GetSignatureVerificationKeyCallback{
-            override fun onGetSignatureVerificationKeySuccess(signatureVerificationKey: SignatureVerificationKey, originalIntent: Intent) {
+    fun verifySignature(message: ByteArray, signature: ByteArray, claimedSignatureVerificationKey: org.dicekeys.api.SignatureVerificationKey) {
+        diceKeysApi.getSignatureVerificationKey(keyDerivationOptionsJson, object: DiceKeysApi.GetSignatureVerificationKeyCallback{
+            override fun onGetSignatureVerificationKeySuccess(signatureVerificationKey: org.dicekeys.api.SignatureVerificationKey, originalIntent: Intent) {
                 val keysMatch = signatureVerificationKey == claimedSignatureVerificationKey
                 val verified = signatureVerificationKey.verifySignature(message, signature)
                 resultTextView.text =
@@ -107,10 +106,10 @@ class MainActivity : AppCompatActivity() {
 
 
     fun encryptPublic() {
-        basicApi.getPublicKey(
+        diceKeysApi.getPublicKey(
                 keyDerivationOptionsJson,
-                object: Api.GetPublicKeyCallback{
-                    override fun onGetPublicKeySuccess(publicKey: PublicKey, originalIntent: Intent) {
+                object: DiceKeysApi.GetPublicKeyCallback{
+                    override fun onGetPublicKeySuccess(publicKey: org.dicekeys.api.PublicKey, originalIntent: Intent) {
                         val ciphertext = publicKey.seal(testMessageByteArray)
                         resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(ciphertext, Base64.DEFAULT)}'"
                         decryptPrivate(ciphertext, publicKey)
@@ -121,11 +120,11 @@ class MainActivity : AppCompatActivity() {
                 })
     }
 
-    fun decryptPrivate(ciphertext: ByteArray, publicKey: PublicKey) {
-        basicApi.unsealWithPrivateKey(
+    fun decryptPrivate(ciphertext: ByteArray, publicKey: org.dicekeys.api.PublicKey) {
+        diceKeysApi.unsealWithPrivateKey(
                 ciphertext,
                 publicKey,
-                object : Api.UnsealWithPrivateKeyCallback {
+                object : DiceKeysApi.UnsealWithPrivateKeyCallback {
                     override fun onUnsealAsymmetricSuccess(plaintext: ByteArray, originalIntent: Intent) {
                         resultTextView.text =
 
@@ -140,7 +139,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        basicApi.handleOnActivityResult(data)
+        diceKeysApi.handleOnActivityResult(data)
 //    if (requestCode == RC_READ_KEYSQR && resultCode == Activity.RESULT_OK && data!=null) {
 //        // After a DiceKey has been returned by the ReadKeySqrActivity,
 //        // launch the DisplayDiceKey activity to display it

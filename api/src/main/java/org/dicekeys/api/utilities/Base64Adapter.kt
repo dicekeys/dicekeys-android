@@ -1,4 +1,4 @@
-package org.dicekeys.keys
+package org.dicekeys.api.utilities
 
 import android.util.Base64
 import com.squareup.moshi.*

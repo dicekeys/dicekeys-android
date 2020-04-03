@@ -1,4 +1,4 @@
-package org.dicekeys
+package org.dicekeys.api
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass

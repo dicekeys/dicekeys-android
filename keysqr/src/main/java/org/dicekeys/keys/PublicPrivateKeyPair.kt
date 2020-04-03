@@ -42,9 +42,9 @@ class PublicPrivateKeyPair(
             false // FIXME
     )
 
-    fun getPublicKey(): PublicKey {
+    fun getPublicKey(): org.dicekeys.api.PublicKey {
         throwIfDisposed()
-        return PublicKey(
+        return org.dicekeys.api.PublicKey(
                 getPublicKeyBytesJNI(publicPrivateKeyPairPtr),
                 keyDerivationOptionsJson
         )

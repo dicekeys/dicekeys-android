@@ -463,4 +463,4 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_SymmetricKey_unsealJNI(
     }
 }
 
-} // extern "C"
+} 

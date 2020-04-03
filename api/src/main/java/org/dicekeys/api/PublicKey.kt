@@ -1,10 +1,11 @@
-package org.dicekeys.keys
+package org.dicekeys.api
 
 import android.graphics.Bitmap
 import com.squareup.moshi.*
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import org.dicekeys.utilities.QrCodeBitmap
-import org.dicekeys.utilities.qrCodeNativeSizeInQrCodeSquarePixels
+import org.dicekeys.api.utilities.QrCodeBitmap
+import org.dicekeys.api.utilities.qrCodeNativeSizeInQrCodeSquarePixels
+import org.dicekeys.api.utilities.Base64Adapter
 
 @JsonClass(generateAdapter = true)
 class PublicKey(
@@ -38,7 +39,6 @@ class PublicKey(
         .replace("\"keyDerivationOptionsJson\":\"\",","", false)
         .replace(",\"keyDerivationOptionsJson\":\"\"","", false)
     }
-    // public val asJson: String get() = jsonAdapter.toJson(this)
 
     @ExperimentalUnsignedTypes
     public val asHexDigits: String get() =

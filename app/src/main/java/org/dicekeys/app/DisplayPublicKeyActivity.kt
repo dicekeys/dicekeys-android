@@ -41,7 +41,7 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
                 val publicKeyJson = it
                 image.contentDescription = publicKeyJson
                 textView.text = publicKeyJson
-                org.dicekeys.keys.PublicKey.fromJson(publicKeyJson)?.let { publicKey ->
+                org.dicekeys.api.PublicKey.fromJson(publicKeyJson)?.let { publicKey ->
                     image.setImageDrawable(publicKey.getJsonQrCode().toDrawable(resources))
                 }
             } catch (e: Exception) {
