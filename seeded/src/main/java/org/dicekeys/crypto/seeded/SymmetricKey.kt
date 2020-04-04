@@ -1,77 +1,65 @@
-package org.dicekeys.keys
+package org.dicekeys.crypto.seeded
 
+class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
 
-class SymmetricKey(
-        public val keySqrInHumanReadableFormWithOrientations: String,
-        public val keyDerivationOptionsJson: String,
-        public val clientsApplicationId: String
-) {
-    private external fun constructJNI(
-            keySqrInHumanReadableFormWithOrientations: String,
-            keyDerivationOptionsJson: String,
-            clientsApplicationId: String,
-            validateClientId: Boolean
-    ): Long
+    companion object {
+        init {
+            ensureJniLoaded()
+        }
 
-    private external fun destroyJNI(
-            symmetricKeyPtr: Long
-    ): Long
+        @JvmStatic external fun constructJNI(
+            keyBytes: ByteArray,
+            keyDerivationOptionsJson: String
+        ) : Long
+        @JvmStatic external fun constructJNI(
+            seedString: String,
+            keyDerivationOptionsJson: String
+        ) : Long
+        @JvmStatic external fun constructFromJsonJNI(
+            symmetricKeyJson: String
+        ) : Long
+    }
+
+    private external fun deleteNativeObjectPtrJNI()
+    private external fun keyBytesGetterJNI(): ByteArray
+    private external fun keyDerivationOptionsJsonGetterJNI(): String
+    external fun toJson(): String
+
+    val keyBytes: ByteArray get() = keyBytesGetterJNI()
+    val keyDerivationOptionsJson: String get() = keyDerivationOptionsJsonGetterJNI()
+
+    constructor(
+        keyBytes: ByteArray,
+        keyDerivationOptionsJson: String
+    ) : this( constructJNI(keyBytes, keyDerivationOptionsJson) )
+
+    // Create copy constructor to prevent copying of the native pointer, which would lead
+    // to a use-after-dereference pointer vulnerability
+    constructor(
+        other: SymmetricKey
+    ) : this(other.keyBytes, other.keyDerivationOptionsJson)
+
+    constructor(
+        seedString: String,
+        keyDerivationOptionsJson: String
+    ) : this(constructJNI(seedString, keyDerivationOptionsJson))
+
+    constructor(
+        symmetricKeyJson: String
+    ) : this(constructFromJsonJNI(symmetricKeyJson))
+    
+    protected fun finalize() {
+        deleteNativeObjectPtrJNI()
+    }
 
     private external fun sealJNI(
-            symmetricKeyPtr: Long,
-            plaintext: ByteArray,
-            postDecryptionInstructionsJson: String
+        plaintext: ByteArray,
+        postDecryptionInstructionsJson: String
     ): ByteArray
 
     private external fun unsealJNI(
-            symmetricKeyPtr: Long,
-            ciphertext: ByteArray,
-            postDecryptionInstructionsJson: String
-    ): ByteArray
-
-    var disposed: Boolean = false
-    private val symmetricKeyPtr: Long = constructJNI(
-            keySqrInHumanReadableFormWithOrientations,
-            keyDerivationOptionsJson,
-            clientsApplicationId,
-            false // FIXME
-    )
-
-    fun seal(
-            plaintext: ByteArray,
-            postDecryptionInstructionsJson: String? = ""
-    ): ByteArray {
-        throwIfDisposed()
-        return sealJNI(symmetricKeyPtr, plaintext, postDecryptionInstructionsJson ?: "")
-    }
-
-
-    fun unseal(
         ciphertext: ByteArray,
-        postDecryptionInstructionsJson: String? = ""
-    ): ByteArray {
-        throwIfDisposed()
-        return unsealJNI(symmetricKeyPtr, ciphertext, postDecryptionInstructionsJson ?: "")
-    }
-
-    private fun throwIfDisposed() {
-        if (disposed) {
-            throw java.lang.IllegalAccessException("Attempt to use a key after its disposal")
-        }
-    }
-
-    fun erase() {
-        // Immediately dispose of the private key
-        if (symmetricKeyPtr != 0L && !disposed) {
-            destroyJNI(symmetricKeyPtr)
-            disposed = true
-        }
-    }
-
-    protected fun finalize() {
-        // Ensure private keys are destroyed when this object is no longer needed
-        erase()
-    }
-
+        postDecryptionInstructionsJson: String
+    ): ByteArray
 
 }

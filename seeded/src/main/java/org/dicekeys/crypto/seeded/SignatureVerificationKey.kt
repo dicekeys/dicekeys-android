@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
-class SignatureVerificationKey private constructor(internal val nativeObjectPtr: Long) {
+class SignatureVerificationKey internal constructor(internal val nativeObjectPtr: Long) {
     companion object {
         init {
             ensureJniLoaded()
@@ -57,7 +57,7 @@ class SignatureVerificationKey private constructor(internal val nativeObjectPtr:
     public val asHexDigits: String get() =
         keyBytes.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
-    private external fun verifySignature(
+    external fun verifySignature(
         message: ByteArray,
         signature: ByteArray
     ): Boolean

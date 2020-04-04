@@ -1,5 +1,5 @@
-#include <string>
 #include <jni.h>
+#include <string>
 #include <exception>
 #include "native-object-jni.h"
 #include "java-throw-exception.h"

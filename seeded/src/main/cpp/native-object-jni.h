@@ -41,6 +41,16 @@ inline jbyteArray byteVectorToJbyteArray(
     return newJByteArray;
 }
 
+inline jbyteArray sodiumBufferToJbyteArray(
+  JNIEnv *env,
+  const SodiumBuffer &sodiumBuffer
+) {
+    jbyteArray newJByteArray = env->NewByteArray(sodiumBuffer.length);
+    env->SetByteArrayRegion(newJByteArray, 0, sodiumBuffer.length, (jbyte*) sodiumBuffer.data);
+    return newJByteArray;
+}
+
+
 inline jstring stringToJString(
   JNIEnv *env,
   const std::string str

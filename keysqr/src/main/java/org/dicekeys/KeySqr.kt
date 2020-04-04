@@ -1,7 +1,10 @@
 package org.dicekeys
-import org.dicekeys.api.SignatureVerificationKey
+import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.faces.Face
-import org.dicekeys.keys.*
+import org.dicekeys.crypto.seeded.SymmetricKey
+import org.dicekeys.crypto.seeded.*
+import org.dicekeys.crypto.seeded.PublicPrivateKeyPair
+import org.dicekeys.crypto.seeded.SigningKey
 
 
 class KeySqr<F: Face>(val faces: List<F>) {
@@ -105,11 +108,10 @@ class KeySqr<F: Face>(val faces: List<F>) {
   fun getPublicKey(
     keyDerivationOptionsJson: String? = "",
     clientsApplicationId: String = ""
-  ): org.dicekeys.api.PublicKey {
+  ): PublicKey {
     return PublicPrivateKeyPair(
         toCanonicalRotation().toHumanReadableForm(true),
-        keyDerivationOptionsJson ?: "",
-        clientsApplicationId
+        keyDerivationOptionsJson ?: ""
       ).getPublicKey()
   }
 
@@ -119,8 +121,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
   ): PublicPrivateKeyPair {
     return PublicPrivateKeyPair(
         toCanonicalRotation().toHumanReadableForm(true),
-        keyDerivationOptionsJson ?: "",
-        clientsApplicationId
+        keyDerivationOptionsJson ?: ""
     )
   }
 
@@ -130,8 +131,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
   ): SigningKey {
     return SigningKey(
             toCanonicalRotation().toHumanReadableForm(true),
-            keyDerivationOptionsJson ?: "",
-            clientsApplicationId
+            keyDerivationOptionsJson ?: ""
     )
   }
 
@@ -141,8 +141,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
   ): SignatureVerificationKey {
     return SigningKey(
             toCanonicalRotation().toHumanReadableForm(true),
-            keyDerivationOptionsJson ?: "",
-            clientsApplicationId
+            keyDerivationOptionsJson ?: ""
     ).getSignatureVerificationKey()
   }
 

@@ -14,6 +14,9 @@ add_library(
     java-throw-exception.cpp
     public-key-jni.cpp
     signature-verification-key-jni.cpp
+    public-private-key-pair-jni.cpp
+    signing-key-jni.cpp
+    symmetric-key-jni.cpp
 )
 
 target_include_directories(

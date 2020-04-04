@@ -7,10 +7,11 @@
 
 extern "C" {
 
-JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_constructFromJsonJNI(
-    JNIEnv* env,
-    jclass cls,
-    jstring signatureVerificationKeyAsJson
+JNIEXPORT jlong JNICALL
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_constructFromJsonJNI(
+  JNIEnv *env,
+  jclass cls,
+  jstring signatureVerificationKeyAsJson
 ) {
   try {
     return (jlong) new SignatureVerificationKey(
@@ -24,9 +25,9 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_SignatureVerificationKey
 
 JNIEXPORT jlong JNICALL
 Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_constructJNI(
-    JNIEnv *env, jclass clazz,
-    jbyteArray key_bytes,
-    jstring key_derivation_options_json
+  JNIEnv *env, jclass clazz,
+  jbyteArray key_bytes,
+  jstring key_derivation_options_json
 ) {
   try {
     return (jlong) new SignatureVerificationKey(
@@ -40,7 +41,9 @@ Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_constructJNI(
 }
 
 
-JNIEXPORT void  JNICALL Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_deleteNativeObjectPtrJNI(JNIEnv *env, jobject obj) {
+JNIEXPORT void  JNICALL
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_deleteNativeObjectPtrJNI(JNIEnv *env,
+                                                                                  jobject obj) {
   try {
     deleteNativeObjectPtr<SignatureVerificationKey>(env, obj);
   } catch (...) {
@@ -49,13 +52,15 @@ JNIEXPORT void  JNICALL Java_org_dicekeys_crypto_seeded_SignatureVerificationKey
 }
 
 
-JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_keyBytesGetterJNI(
-    JNIEnv* env,
-    jobject obj
+JNIEXPORT jbyteArray JNICALL
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_keyBytesGetterJNI(
+  JNIEnv *env,
+  jobject obj
 ) {
   try {
     return byteVectorToJbyteArray(env,
-      getNativeObjectPtr<SignatureVerificationKey>(env, obj)->getKeyBytes()
+                                  getNativeObjectPtr<SignatureVerificationKey>(env,
+                                                                               obj)->getKeyBytes()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -63,13 +68,15 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_crypto_seeded_SignatureVerificati
   }
 }
 
-JNIEXPORT jstring JNICALL Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_keyDerivationOptionsJsonGetterJNI(
-    JNIEnv* env,
-    jobject obj
+JNIEXPORT jstring JNICALL
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_keyDerivationOptionsJsonGetterJNI(
+  JNIEnv *env,
+  jobject obj
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<SignatureVerificationKey>(env, obj)->getKeyDerivationOptionsJson()
+                           getNativeObjectPtr<SignatureVerificationKey>(env,
+                                                                        obj)->getKeyDerivationOptionsJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -83,13 +90,13 @@ Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_verifySignature(
   jobject obj,
   jbyteArray message,
   jbyteArray signature
-  ) {
+) {
   try {
     return static_cast<jboolean>(
       getNativeObjectPtr<SignatureVerificationKey>(env, obj)->verify(
         jbyteArrayToSodiumBuffer(env, message),
         jbyteArrayToVector(env, signature)
-    ));
+      ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return false;
@@ -100,7 +107,7 @@ JNIEXPORT jstring JNICALL
 Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_toJson(JNIEnv *env, jobject obj) {
   try {
     return stringToJString(env,
-       getNativeObjectPtr<SignatureVerificationKey>(env, obj)->toJson()
+                           getNativeObjectPtr<SignatureVerificationKey>(env, obj)->toJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -108,4 +115,4 @@ Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_toJson(JNIEnv *env, job
   }
 }
 
-} // extern "C"
+}

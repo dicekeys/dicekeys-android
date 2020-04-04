@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
+import org.dicekeys.crypto.seeded.PublicKey
 
 class DisplayPublicKeyActivity : AppCompatActivity() {
     private lateinit var image: ImageView
@@ -41,7 +42,7 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
                 val publicKeyJson = it
                 image.contentDescription = publicKeyJson
                 textView.text = publicKeyJson
-                org.dicekeys.api.PublicKey.fromJson(publicKeyJson)?.let { publicKey ->
+                PublicKey(publicKeyJson)?.let { publicKey ->
                     image.setImageDrawable(publicKey.getJsonQrCode().toDrawable(resources))
                 }
             } catch (e: Exception) {

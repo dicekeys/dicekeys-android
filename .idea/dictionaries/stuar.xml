@@ -5,11 +5,13 @@
       <w>dereferenced</w>
       <w>dicekey</w>
       <w>dicekeys</w>
+      <w>generichash</w>
       <w>jbyte</w>
       <w>jstring</w>
       <w>moshi</w>
       <w>overline</w>
       <w>overlines</w>
+      <w>secretbox</w>
       <w>undoverline</w>
     </words>
   </dictionary>

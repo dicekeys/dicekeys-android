@@ -194,9 +194,9 @@ extern "C" {
 //                env->GetStringUTFChars( clientsApplicationIdObj, NULL )
 //        );
 //        const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
-//        SigningKey *signingKey =
+//        SigningKey *signingKeyBytes =
 //                new SigningKey(keySqr, keyDerivationOptionsJson, clientsApplicationId);
-//        jlong publicPrivateKeyPairPtrAsJavaLong = (long)signingKey;
+//        jlong publicPrivateKeyPairPtrAsJavaLong = (long)signingKeyBytes;
 //        return publicPrivateKeyPairPtrAsJavaLong;
 //    } catch (...) {
 //        throwCppExceptionAsJavaException(env, std::current_exception());
@@ -207,10 +207,10 @@ extern "C" {
 //JNIEXPORT void JNICALL Java_org_dicekeys_keys_SigningKey_destroyJNI(
 //        JNIEnv* env,
 //        jobject obj,
-//        jlong signingKey
+//        jlong signingKeyBytes
 //) {
 //    try {
-//        delete ((SigningKey*)signingKey);
+//        delete ((SigningKey*)signingKeyBytes);
 //    } catch (...) {
 //        throwCppExceptionAsJavaException(env, std::current_exception());
 //    }
@@ -223,13 +223,13 @@ extern "C" {
 //        jbyteArray jmessage
 //) {
 //    try {
-//        SigningKey *signingKey = (SigningKey*) signingKeyPtrAsLong;
+//        SigningKey *signingKeyBytes = (SigningKey*) signingKeyPtrAsLong;
 //
 //        const size_t messageLength = (size_t) env->GetArrayLength(jmessage);
 //        const unsigned char *message =
 //                (const unsigned char*)  env->GetByteArrayElements(jmessage, 0);
 //
-//        const auto signature = signingKey->generateSignature(message, messageLength);
+//        const auto signature = signingKeyBytes->generateSignature(message, messageLength);
 //
 //        jbyteArray signatureAsByteArray = env->NewByteArray(signature.size());
 //        env->SetByteArrayRegion(signatureAsByteArray, 0, signature.size(), (jbyte*) signature.data());
@@ -247,9 +247,9 @@ extern "C" {
 //        jlong signingKeyPtrAsLong
 //) {
 //    try {
-//        SigningKey *signingKey = (SigningKey*) signingKeyPtrAsLong;
+//        SigningKey *signingKeyBytes = (SigningKey*) signingKeyPtrAsLong;
 //
-//        const auto keyBytes = signingKey->getSignatureVerificationKey().verificationKeyBytes;
+//        const auto keyBytes = signingKeyBytes->getSignatureVerificationKey().verificationKeyBytes;
 //
 //        jbyteArray keyBytesArray = env->NewByteArray(keyBytes.size());
 //        env->SetByteArrayRegion(keyBytesArray, 0, keyBytes.size(), (jbyte*) keyBytes.data());

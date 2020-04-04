@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
-class PublicKey private constructor(internal val nativeObjectPtr: Long) {
+class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
     companion object {
         init {
             ensureJniLoaded()
@@ -58,15 +58,9 @@ class PublicKey private constructor(internal val nativeObjectPtr: Long) {
             keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
             keyBytes.contentEquals(other.keyBytes)
 
-//    fun toJson(): String { return jsonAdapter.toJson(this)
-//        // If the key derivation options are empty, remove them
-//        .replace("\"keyDerivationOptionsJson\":\"\",","", false)
-//        .replace(",\"keyDerivationOptionsJson\":\"\"","", false)
-//    }
-
-    @ExperimentalUnsignedTypes
-    public val asHexDigits: String get() =
-        keyBytes.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+//    @ExperimentalUnsignedTypes
+//    public val asHexDigits: String get() =
+//        keyBytes.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
     fun getJsonQrCode(
         maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2

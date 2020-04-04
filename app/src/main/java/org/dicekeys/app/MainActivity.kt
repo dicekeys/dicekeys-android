@@ -7,8 +7,8 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.api.DiceKeysApi
-import org.dicekeys.api.SignatureVerificationKey
-
+import org.dicekeys.crypto.seeded.SignatureVerificationKey
+import org.dicekeys.crypto.seeded.PublicKey
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -89,9 +89,9 @@ class MainActivity : AppCompatActivity() {
         } )
     }
 
-    fun verifySignature(message: ByteArray, signature: ByteArray, claimedSignatureVerificationKey: org.dicekeys.api.SignatureVerificationKey) {
+    fun verifySignature(message: ByteArray, signature: ByteArray, claimedSignatureVerificationKey: SignatureVerificationKey) {
         diceKeysApi.getSignatureVerificationKey(keyDerivationOptionsJson, object: DiceKeysApi.GetSignatureVerificationKeyCallback{
-            override fun onGetSignatureVerificationKeySuccess(signatureVerificationKey: org.dicekeys.api.SignatureVerificationKey, originalIntent: Intent) {
+            override fun onGetSignatureVerificationKeySuccess(signatureVerificationKey: SignatureVerificationKey, originalIntent: Intent) {
                 val keysMatch = signatureVerificationKey == claimedSignatureVerificationKey
                 val verified = signatureVerificationKey.verifySignature(message, signature)
                 resultTextView.text =
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         diceKeysApi.getPublicKey(
                 keyDerivationOptionsJson,
                 object: DiceKeysApi.GetPublicKeyCallback{
-                    override fun onGetPublicKeySuccess(publicKey: org.dicekeys.api.PublicKey, originalIntent: Intent) {
+                    override fun onGetPublicKeySuccess(publicKey: PublicKey, originalIntent: Intent) {
                         val ciphertext = publicKey.seal(testMessageByteArray)
                         resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(ciphertext, Base64.DEFAULT)}'"
                         decryptPrivate(ciphertext, publicKey)
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
                 })
     }
 
-    fun decryptPrivate(ciphertext: ByteArray, publicKey: org.dicekeys.api.PublicKey) {
+    fun decryptPrivate(ciphertext: ByteArray, publicKey: PublicKey) {
         diceKeysApi.unsealWithPrivateKey(
                 ciphertext,
                 publicKey,

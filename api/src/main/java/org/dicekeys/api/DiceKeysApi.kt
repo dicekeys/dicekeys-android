@@ -5,7 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import org.dicekeys.api.SignatureVerificationKey
+import org.dicekeys.crypto.seeded.SignatureVerificationKey
+import org.dicekeys.crypto.seeded.PublicKey
 import java.security.InvalidParameterException
 import kotlin.collections.HashMap
 
@@ -330,7 +331,7 @@ abstract class DiceKeysApi(
      */
     fun unsealWithPrivateKey(
             ciphertext: ByteArray,
-            publicKey: org.dicekeys.api.PublicKey,
+            publicKey: PublicKey,
             postDecryptionInstructionsJson: String = "",
             callback: UnsealWithPrivateKeyCallback? = null
     ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, postDecryptionInstructionsJson, callback)
@@ -343,7 +344,7 @@ abstract class DiceKeysApi(
 
     fun unsealWithPrivateKey(
             ciphertext: ByteArray,
-            publicKey: org.dicekeys.api.PublicKey,
+            publicKey: PublicKey,
             callback: UnsealWithPrivateKeyCallback? = null
     ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, "", callback)
 
@@ -352,7 +353,7 @@ abstract class DiceKeysApi(
             publicKeyJson: String,
             callback: UnsealWithPrivateKeyCallback? = null
     ): Intent =
-            unsealWithPrivateKey(ciphertext, PublicKey.fromJsonOrThrow(publicKeyJson), "", callback)
+            unsealWithPrivateKey(ciphertext, PublicKey(publicKeyJson), "", callback)
 
 
     interface SealWithSymmetricKeyCallback : DiceKeysApiCallback {
@@ -549,7 +550,7 @@ abstract class DiceKeysApi(
                         { callback, originalIntent, e -> callback.onGetPublicKeyFail(e, originalIntent) },
                         { callback, originalIntent ->
                             resultIntent.getStringExtra(ParameterNames.PublicPrivateKeyPair.GetPublic.publicKeyJson)?.let { publicKeyJson ->
-                                val publicKey = PublicKey.fromJsonOrThrow(publicKeyJson)
+                                val publicKey = PublicKey(publicKeyJson)
                                 callback.onGetPublicKeySuccess(publicKey, originalIntent)
                             }
                         }
@@ -588,7 +589,7 @@ abstract class DiceKeysApi(
                             resultIntent.getByteArrayExtra(ParameterNames.SigningKey.GenerateSignature.signature)?.let { signature ->
                                 callback.onGenerateSignatureCallbackSuccess(
                                         signature,
-                                        SignatureVerificationKey.fromJsonOrThrow(resultIntent.getStringExtra(ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeyJson)),
+                                        SignatureVerificationKey(resultIntent.getStringExtra(ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeyJson)),
                                         originalIntent)
                             }
                         }
@@ -598,7 +599,7 @@ abstract class DiceKeysApi(
                         { callback, originalIntent, e -> callback.onGetSignatureVerificationKeyFail(e, originalIntent) },
                         { callback, originalIntent ->
                             resultIntent.getStringExtra(ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeyJson)?.let{ signatureVerificationKeyJson ->
-                                val signatureVerificationKey = SignatureVerificationKey.fromJsonOrThrow(signatureVerificationKeyJson)
+                                val signatureVerificationKey = SignatureVerificationKey(signatureVerificationKeyJson)
                                 callback.onGetSignatureVerificationKeySuccess(signatureVerificationKey, originalIntent)
                             }
                         }
