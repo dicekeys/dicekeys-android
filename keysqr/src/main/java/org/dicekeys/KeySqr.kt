@@ -42,12 +42,6 @@ class KeySqr<F: Face>(val faces: List<F>) {
     )
   }
 
-  external fun getSeedJNI(
-    keySqrInHumanReadableFormWithOrientations: String,
-    keyDerivationOptionsJson: String,
-    clientsApplicationId: String
-  ): ByteArray
-
   fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
     return faces.joinToString(separator = "") {it.toHumanReadableForm((includeFaceOrientations))}
   }
@@ -83,14 +77,23 @@ class KeySqr<F: Face>(val faces: List<F>) {
     return winningRotation
   }
 
+  fun toKeySeed(
+          keyDerivationOptionsJson: String? = "",
+          clientsApplicationId: String = ""
+  ) : String {
+    // FIXME -- get keyDerivationOptions to check client id, determine if using face orientations
+    val canonicalRotations = toCanonicalRotation();
+    val fixmeShouldUseFaceOrientations = true
+    return toHumanReadableForm(fixmeShouldUseFaceOrientations)
+  }
+
   fun getSeed(
     keyDerivationOptionsJson: String? = "",
     clientsApplicationId: String = ""
-  ): ByteArray {
-    return getSeedJNI(
-      toCanonicalRotation().toHumanReadableForm(true),
-      keyDerivationOptionsJson ?: "",
-      clientsApplicationId
+  ): Seed {
+    return Seed(
+      toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+      keyDerivationOptionsJson ?: ""
     )
   }
 
@@ -99,9 +102,8 @@ class KeySqr<F: Face>(val faces: List<F>) {
           clientsApplicationId: String = ""
   ): SymmetricKey {
     return SymmetricKey(
-            toCanonicalRotation().toHumanReadableForm(true),
-            keyDerivationOptionsJson ?: "",
-            clientsApplicationId
+          toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+          keyDerivationOptionsJson ?: ""
     )
   }
 
@@ -110,17 +112,17 @@ class KeySqr<F: Face>(val faces: List<F>) {
     clientsApplicationId: String = ""
   ): PublicKey {
     return PublicPrivateKeyPair(
-        toCanonicalRotation().toHumanReadableForm(true),
-        keyDerivationOptionsJson ?: ""
-      ).getPublicKey()
+      toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+      keyDerivationOptionsJson ?: ""
+    ).getPublicKey()
   }
 
   fun getPublicPrivateKeyPair(
-          keyDerivationOptionsJson: String?= "",
-          clientsApplicationId: String = ""
+        keyDerivationOptionsJson: String?= "",
+        clientsApplicationId: String = ""
   ): PublicPrivateKeyPair {
     return PublicPrivateKeyPair(
-        toCanonicalRotation().toHumanReadableForm(true),
+        toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
         keyDerivationOptionsJson ?: ""
     )
   }
@@ -130,7 +132,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           clientsApplicationId: String = ""
   ): SigningKey {
     return SigningKey(
-            toCanonicalRotation().toHumanReadableForm(true),
+            toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
             keyDerivationOptionsJson ?: ""
     )
   }
@@ -140,7 +142,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           clientsApplicationId: String = ""
   ): SignatureVerificationKey {
     return SigningKey(
-            toCanonicalRotation().toHumanReadableForm(true),
+            toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
             keyDerivationOptionsJson ?: ""
     ).getSignatureVerificationKey()
   }

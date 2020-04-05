@@ -3,6 +3,7 @@ package org.dicekeys.crypto.seeded
 import android.graphics.Bitmap
 import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
+import java.nio.charset.StandardCharsets
 
 class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
     companion object {
@@ -52,6 +53,11 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
             message: ByteArray,
             postDecryptionInstructionsJson: String = ""
     ): ByteArray
+
+    fun seal(
+            message: String,
+            postDecryptionInstructionsJson: String = ""
+    ): ByteArray = seal( message.toByteArray(StandardCharsets.UTF_8), postDecryptionInstructionsJson )
 
     override fun equals(other: Any?): Boolean =
             (other is PublicKey) &&

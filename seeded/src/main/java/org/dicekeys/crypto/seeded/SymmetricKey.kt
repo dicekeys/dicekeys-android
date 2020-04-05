@@ -52,14 +52,19 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
         deleteNativeObjectPtrJNI()
     }
 
-    private external fun sealJNI(
+    public external fun seal(
         plaintext: ByteArray,
-        postDecryptionInstructionsJson: String
+        postDecryptionInstructionsJson: String = ""
     ): ByteArray
 
-    private external fun unsealJNI(
+    public external fun unseal(
         ciphertext: ByteArray,
-        postDecryptionInstructionsJson: String
+        postDecryptionInstructionsJson: String = ""
     ): ByteArray
+
+    fun seal(
+        plaintext: String,
+        postDecryptionInstructionsJson: String = ""
+    ): ByteArray = seal( plaintext.toByteArray(), postDecryptionInstructionsJson)
 
 }

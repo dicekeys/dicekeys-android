@@ -165,7 +165,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
             DiceKeysApi.OperationNames.Seed.get -> {
                 // FIXME -- return number of errors in read or if key was manually entered.
                 val seed = keySqr.getSeed(keyDerivationOptionsJson, clientsApplicationId)
-                resultIntent.putExtra(DiceKeysApi.ParameterNames.Seed.Get.seed, seed)
+                resultIntent.putExtra(DiceKeysApi.ParameterNames.Seed.Get.seed, seed.seedBytes)
                 setResult(RESULT_OK, resultIntent)
             }
             DiceKeysApi.OperationNames.SymmetricKey.seal -> {

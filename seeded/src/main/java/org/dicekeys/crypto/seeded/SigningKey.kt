@@ -55,6 +55,10 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
             = true
     ): String
 
+    fun generateSignature(
+        message: String
+    ): ByteArray = generateSignature(message.toByteArray())
+
     fun getSignatureVerificationKey(): SignatureVerificationKey =
         SignatureVerificationKey(getSignatureVerificationKeyJNI())
     val signingKeyBytes get() = signingKeyBytesGetterJNI()

@@ -98,7 +98,7 @@ Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_verifySignature(
         jbyteArrayToVector(env, signature)
       ));
   } catch (...) {
-    throwCppExceptionAsJavaException(env, std::current_exception());
+    // throwCppExceptionAsJavaException(env, std::current_exception());
     return false;
   }
 }

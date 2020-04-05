@@ -15,6 +15,7 @@ add_library(
     public-key-jni.cpp
     signature-verification-key-jni.cpp
     public-private-key-pair-jni.cpp
+    seed-jni.cpp
     signing-key-jni.cpp
     symmetric-key-jni.cpp
 )

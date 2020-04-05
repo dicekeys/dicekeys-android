@@ -50,6 +50,9 @@ void throwCppExceptionAsJavaException(
   } catch (InvalidKeyDerivationOptionValueException e) {
     javaThrow(env, "org/dicekeys/crypto/seeded/InvalidKeyDerivationOptionValueException", e.what());
     return;
+  } catch (KeyLengthException e) {
+    javaThrow(env, "org/dicekeys/crypto/seeded/KeyLengthException", e.what());
+    return;
   } catch (CryptographicVerificationFailure e) {
     javaThrow(env, "org/dicekeys/crypto/seeded/CryptographicVerificationFailure", e.what());
     return;

@@ -9,7 +9,7 @@ extern "C" {
 
 
 JNIEXPORT jbyteArray JNICALL
-Java_org_dicekeys_crypto_seeded_SymmetricKey_unsealJNI___3BLjava_lang_String_2(
+Java_org_dicekeys_crypto_seeded_SymmetricKey_unseal(
   JNIEnv *env,
   jobject thiz,
   jbyteArray ciphertext,
@@ -30,7 +30,7 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_unsealJNI___3BLjava_lang_String_2(
 }
 
 JNIEXPORT jbyteArray JNICALL
-Java_org_dicekeys_crypto_seeded_SymmetricKey_sealJNI___3BLjava_lang_String_2(
+Java_org_dicekeys_crypto_seeded_SymmetricKey_seal(
   JNIEnv *env,
   jobject thiz,
   jbyteArray plaintext,
@@ -154,105 +154,4 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_constructJNI___3BLjava_lang_String_
   }
 }
 
-//JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_SymmetricKey_constructJNI(
-//  JNIEnv* env,
-//  jobject obj,
-//  jstring keySqrInHumanReadableFormWithOrientationsObj,
-//  jstring keyDerivationOptionsJsonObj,
-//  jstring clientsApplicationIdObj,
-//  jboolean validateClientId // FIXME
-//) {
-//  try {
-//    const std::string keySqrInHumanReadableFormWithOrientations(
-//      env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientationsObj, NULL )
-//    );
-//    const std::string keyDerivationOptionsJson(
-//      env->GetStringUTFChars( keyDerivationOptionsJsonObj, NULL )
-//    );
-//    const std::string clientsApplicationId(
-//      env->GetStringUTFChars( clientsApplicationIdObj, NULL )
-//    );
-//    SymmetricKey* symmetricKeyPtr =
-//      new SymmetricKey(env->GetStringUTFChars( keySqrInHumanReadableFormWithOrientations, NULL ), keyDerivationOptionsJson, clientsApplicationId);
-//    jlong symmetricKeyPtrAsJavaLong = (long)symmetricKeyPtr;
-//    return symmetricKeyPtrAsJavaLong;
-//  } catch (...) {
-//    throwCppExceptionAsJavaException(env, std::current_exception());
-//    return 0L;
-//  }
-//}
-//
-//JNIEXPORT void JNICALL Java_org_dicekeys_keys_SymmetricKey_destroyJNI(
-//  JNIEnv* env,
-//jobject obj,
-//  jlong symmetricKeyPtrAsJavaLong
-//) {
-//try {
-//delete ((SymmetricKey*)symmetricKeyPtrAsJavaLong);
-//} catch (...) {
-//throwCppExceptionAsJavaException(env, std::current_exception());
-//}
-//}
-//
-//
-//JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_SymmetricKey_sealJNI(
-//  JNIEnv* env,
-//  jobject obj,
-//jlong symmetricKeyPtrAsJavaLong,
-//  jbyteArray jplaintext,
-//jstring jpostDecryptionInstructionJson
-//) {
-//try {
-//const SymmetricKey* symmetricKeyPtr = (SymmetricKey*)symmetricKeyPtrAsJavaLong;
-//size_t plaintextLength = (size_t) env->GetArrayLength(jplaintext);
-//const unsigned char* plaintext =
-//  (unsigned char*) env->GetByteArrayElements(jplaintext, 0);
-//const std::string postDecryptionInstructionJson(
-//  env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
-//);
-//
-//const SodiumBuffer ciphertext = symmetricKeyPtr->seal(
-//  plaintext,
-//  plaintextLength,
-//  postDecryptionInstructionJson
-//);
-//jbyteArray ret = env->NewByteArray(ciphertext.length);
-//env->SetByteArrayRegion(ret, 0, ciphertext.length, (jbyte*) ciphertext.data);
-//return ret;
-//} catch (...) {
-//throwCppExceptionAsJavaException(env, std::current_exception());
-//return NULL;
-//}
-//}
-//
-//JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_SymmetricKey_unsealJNI(
-//  JNIEnv* env,
-//  jobject obj,
-//jlong symmetricKeyPtrAsJavaLong,
-//  jbyteArray jciphertext,
-//jstring jpostDecryptionInstructionJson
-//) {
-//try {
-//const SymmetricKey* symmetricKeyPtr = (SymmetricKey*)symmetricKeyPtrAsJavaLong;
-//size_t ciphertextLength = (size_t) env->GetArrayLength(jciphertext);
-//const jbyte *ciphertext = env->GetByteArrayElements(jciphertext, 0);
-//
-//const std::string postDecryptionInstructionJson(
-//  env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
-//);
-//
-//const SodiumBuffer message = symmetricKeyPtr->unseal(
-//  (const unsigned char*) ciphertext,
-//  ciphertextLength,
-//  postDecryptionInstructionJson
-//);
-//jbyteArray ret = env->NewByteArray(message.length);
-//env->SetByteArrayRegion(ret, 0, message.length, (jbyte*) message.data);
-//return ret;
-//} catch (...) {
-//throwCppExceptionAsJavaException(env, std::current_exception());
-//return NULL;
-//}
-//}
-
-} // 
+} // extern "C"

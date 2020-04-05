@@ -128,7 +128,7 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
 
     private fun getSeed(): ByteArray? {
         // Should not be run on UI thread
-        return KeySqrState.keySqr?.getSeed(seedKeyDerivationOptions, "org.dicekeys.fido")
+        return KeySqrState.keySqr?.getSeed(seedKeyDerivationOptions, "org.dicekeys.fido")?.seedBytes
     }
 
 

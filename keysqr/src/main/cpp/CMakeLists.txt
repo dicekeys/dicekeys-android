@@ -11,7 +11,6 @@ add_subdirectory("read-keysqr")
 add_library(
     jni-read-keysqr
     SHARED
-    "keysqr-jni.cpp"
     "read-keysqr-jni.cpp"
 )
 

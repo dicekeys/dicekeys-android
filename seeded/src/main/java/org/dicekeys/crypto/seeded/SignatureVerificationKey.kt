@@ -3,6 +3,7 @@ package org.dicekeys.crypto.seeded
 import android.graphics.Bitmap
 import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
+import kotlin.math.sign
 
 class SignatureVerificationKey internal constructor(internal val nativeObjectPtr: Long) {
     companion object {
@@ -61,6 +62,11 @@ class SignatureVerificationKey internal constructor(internal val nativeObjectPtr
         message: ByteArray,
         signature: ByteArray
     ): Boolean
+
+    fun verifySignature(
+        message: String,
+        signature: ByteArray
+    ) : Boolean = verifySignature( message.toByteArray(), signature)
 
     fun getJsonQrCode(
             maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2

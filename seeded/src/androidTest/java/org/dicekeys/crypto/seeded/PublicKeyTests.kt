@@ -41,8 +41,22 @@ class PublicKeyTests {
         assertEquals(pk, copyOfPk)
     }
 
+    val seed = "some seedy value to test with"
+
     @Test
-    fun shouldThrowJsonParsingException() {
+    fun testPublicPrivateKeyPairs() {
+        val keyDerivationOptionsJson = """{"keyType": "Public"}"""
+        val sk = PublicPrivateKeyPair(seed, keyDerivationOptionsJson)
+        val pk = sk.getPublicKey()
+        val testMessage = "some message to test"
+        val ciphertext = pk.seal( testMessage );
+        val decryptedBytes = sk.unseal( ciphertext )
+        val decryptedMessage = String(decryptedBytes)
+        assertEquals(testMessage, decryptedMessage)
+    }
+
+    @Test
+    fun shouldThrowInvalidKeyDerivationOptionValueException() {
         val keyDerivationOptionsJson = """{}"""
         val publicKeyJson = """{
             "ErrorInsteadOfKeyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
@@ -51,11 +65,25 @@ class PublicKeyTests {
         try {
             val pk = PublicKey(publicKeyJson)
             fail()
+        } catch (e: InvalidKeyDerivationOptionValueException) {
+        } catch (other: Exception) {
+            fail()
+        }
+    }
+
+    @Test
+    fun shouldThrowJsonParsingException() {
+        val keyDerivationOptionsJson = """{}"""
+        val publicKeyJson = """{
+            withoutQuotesBeforeAColon: This$ - is not ! valid JSON
+        }"""
+        try {
+            val pk = PublicKey(publicKeyJson)
+            fail()
         } catch (e: JsonParsingException) {
         } catch (other: Exception) {
             fail()
         }
-
     }
 
     @Test
@@ -71,4 +99,44 @@ class PublicKeyTests {
         val copyOfSvk = SignatureVerificationKey(svk.keyBytes, svk.keyDerivationOptionsJson)
         assertEquals(svk, copyOfSvk)
     }
+
+    @Test
+    fun testSigningAndVerificationPairs() {
+        val keyDerivationOptionsJson = """{"keyType": "Signing"}"""
+        val sk = SigningKey(seed, keyDerivationOptionsJson)
+        val vk = sk.getSignatureVerificationKey()
+        val testMessage = "some message to test"
+        val signature = sk.generateSignature( testMessage );
+        val isValid = vk.verifySignature(testMessage, signature)
+        assertTrue(isValid)
+        // Create an invalid signature by copying a valid signature and then
+        // incrementing the first byte.
+        var invalidSignature: ByteArray = signature
+        invalidSignature[0]++
+        val invalidSignatureResult = vk.verifySignature(testMessage, invalidSignature)
+        assertFalse(invalidSignatureResult)
+        val invalidMessageResult = vk.verifySignature(testMessage + "invalid modification", signature)
+        assertFalse(invalidSignatureResult)
+    }
+
+
+    @Test
+    fun testSymmetricKey() {
+        val keyDerivationOptionsJson = """{"keyType": "Symmetric"}"""
+        val sk = SymmetricKey(seed, keyDerivationOptionsJson)
+        val testMessage = "some message to test"
+        val ciphertext = sk.seal( testMessage)
+        val decryptedBytes = sk.unseal(ciphertext)
+        val decryptedMessage = String(decryptedBytes)
+        assertEquals(testMessage, decryptedMessage)
+    }
+
+    @Test
+    fun testSeed() {
+        val keyDerivationOptionsJson = """{"keyType": "Seed", "keyLengthInBytes": 48}"""
+        val s = Seed(seed, keyDerivationOptionsJson)
+        assertEquals(s.seedBytes.size, 48)
+    }
+
+
 }
