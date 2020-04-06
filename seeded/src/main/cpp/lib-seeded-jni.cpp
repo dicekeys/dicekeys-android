@@ -82,9 +82,9 @@ extern "C" {
 //
 //
 ////
-//// PublicPrivateKeyPair operations
+//// PrivateKey operations
 ////
-//JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_constructJNI(
+//JNIEXPORT jlong JNICALL Java_org_dicekeys_keys_PrivateKey_constructJNI(
 //        JNIEnv* env,
 //        jobject obj,
 //        jstring keySqrInHumanReadableFormWithOrientationsObj,
@@ -103,36 +103,36 @@ extern "C" {
 //                env->GetStringUTFChars( clientsApplicationIdObj, NULL )
 //        );
 //        const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
-//        PublicPrivateKeyPair *publicPrivateKeyPairPtr =
-//            new PublicPrivateKeyPair(keySqr, keyDerivationOptionsJson, clientsApplicationId);
-//        jlong publicPrivateKeyPairPtrAsJavaLong = (long)publicPrivateKeyPairPtr;
-//        return publicPrivateKeyPairPtrAsJavaLong;
+//        PrivateKey *PrivateKeyPtr =
+//            new PrivateKey(keySqr, keyDerivationOptionsJson, clientsApplicationId);
+//        jlong PrivateKeyPtrAsJavaLong = (long)PrivateKeyPtr;
+//        return PrivateKeyPtrAsJavaLong;
 //    } catch (...) {
 //        throwCppExceptionAsJavaException(env, std::current_exception());
 //        return 0L;
 //    }
 //}
 //
-//JNIEXPORT void JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_destroyJNI(
+//JNIEXPORT void JNICALL Java_org_dicekeys_keys_PrivateKey_destroyJNI(
 //        JNIEnv* env,
 //        jobject obj,
-//        jlong publicPrivateKeyPair
+//        jlong PrivateKey
 //) {
 //    try {
-//        delete ((PublicPrivateKeyPair*)publicPrivateKeyPair);
+//        delete ((PrivateKey*)PrivateKey);
 //    } catch (...) {
 //        throwCppExceptionAsJavaException(env, std::current_exception());
 //    }
 //}
 //
-//JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_getPublicKeyBytesJNI(
+//JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PrivateKey_getPublicKeyBytesJNI(
 //        JNIEnv* env,
 //        jobject obj,
-//        jlong publicPrivateKeyPair
+//        jlong PrivateKey
 //) {
 //    try {
 //        const std::vector<unsigned char> publicKey =
-//                ((PublicPrivateKeyPair*)publicPrivateKeyPair)->getPublicKey().getPublicKeyBytes();
+//                ((PrivateKey*)PrivateKey)->getPublicKey().getPublicKeyBytes();
 //        jbyteArray ret = env->NewByteArray(publicKey.size());
 //        env->SetByteArrayRegion(ret, 0, publicKey.size(), (jbyte*) publicKey.data());
 //        return ret;
@@ -142,10 +142,10 @@ extern "C" {
 //    }
 //}
 //
-//JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PublicPrivateKeyPair_unsealJNI(
+//JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_keys_PrivateKey_unsealJNI(
 //        JNIEnv* env,
 //        jobject obj,
-//        jlong publicPrivateKeyPair,
+//        jlong PrivateKey,
 //        jbyteArray jciphertext,
 //        jstring jpostDecryptionInstructionJson
 //) {
@@ -157,7 +157,7 @@ extern "C" {
 //                env->GetStringUTFChars( jpostDecryptionInstructionJson, NULL )
 //        );
 //
-//        const SodiumBuffer message = ((PublicPrivateKeyPair*)publicPrivateKeyPair)->unseal(
+//        const SodiumBuffer message = ((PrivateKey*)PrivateKey)->unseal(
 //            (const unsigned char*) ciphertext,
 //            ciphertextLength,
 //            postDecryptionInstructionJson
@@ -196,8 +196,8 @@ extern "C" {
 //        const KeySqrFromString keySqr(keySqrInHumanReadableFormWithOrientations);
 //        SigningKey *signingKeyBytes =
 //                new SigningKey(keySqr, keyDerivationOptionsJson, clientsApplicationId);
-//        jlong publicPrivateKeyPairPtrAsJavaLong = (long)signingKeyBytes;
-//        return publicPrivateKeyPairPtrAsJavaLong;
+//        jlong PrivateKeyPtrAsJavaLong = (long)signingKeyBytes;
+//        return PrivateKeyPtrAsJavaLong;
 //    } catch (...) {
 //        throwCppExceptionAsJavaException(env, std::current_exception());
 //        return 0L;

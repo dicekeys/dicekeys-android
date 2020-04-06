@@ -13,9 +13,9 @@ add_library(
     SHARED
     java-throw-exception.cpp
     public-key-jni.cpp
-    signature-verification-key-jni.cpp
-    public-private-key-pair-jni.cpp
+    private-key-jni.cpp
     seed-jni.cpp
+    signature-verification-key-jni.cpp
     signing-key-jni.cpp
     symmetric-key-jni.cpp
 )

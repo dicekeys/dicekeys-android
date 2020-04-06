@@ -8,13 +8,13 @@
 extern "C" {
 
 JNIEXPORT jbyteArray JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_unseal(
+Java_org_dicekeys_crypto_seeded_PrivateKey_unseal(
   JNIEnv *env, jobject thiz,
   jbyteArray ciphertext,
   jstring post_decryption_instructions_json) {
   try {
     return sodiumBufferToJbyteArray(env,
-      getNativeObjectPtr<PublicPrivateKeyPair>(env, thiz)->unseal(
+      getNativeObjectPtr<PrivateKey>(env, thiz)->unseal(
           jbyteArrayToVector(env, ciphertext),
           jstringToString(env, post_decryption_instructions_json)
       )
@@ -26,13 +26,13 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_unseal(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_toJson(
+Java_org_dicekeys_crypto_seeded_PrivateKey_toJson(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PublicPrivateKeyPair>(env, thiz)->toJson()
+      getNativeObjectPtr<PrivateKey>(env, thiz)->toJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -41,13 +41,13 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_toJson(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_keyDerivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_PrivateKey_keyDerivationOptionsJsonGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PublicPrivateKeyPair>(env, thiz)->keyDerivationOptionsJson
+      getNativeObjectPtr<PrivateKey>(env, thiz)->keyDerivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -56,13 +56,13 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_keyDerivationOptionsJsonGet
 }
 
 JNIEXPORT jbyteArray JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_publicKeyBytesGetterJNI(
+Java_org_dicekeys_crypto_seeded_PrivateKey_publicKeyBytesGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return byteVectorToJbyteArray(env,
-       getNativeObjectPtr<PublicPrivateKeyPair>(env, thiz)->publicKeyBytes
+       getNativeObjectPtr<PrivateKey>(env, thiz)->publicKeyBytes
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -71,13 +71,13 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_publicKeyBytesGetterJNI(
 }
 
 JNIEXPORT jbyteArray JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_secretKeyBytesGetterJNI(
+Java_org_dicekeys_crypto_seeded_PrivateKey_privateKeyBytesGetterJNI(
   JNIEnv *env,
   jobject thiz
   ) {
   try {
     return sodiumBufferToJbyteArray(env,
-      getNativeObjectPtr<PublicPrivateKeyPair>(env, thiz)->secretKey
+      getNativeObjectPtr<PrivateKey>(env, thiz)->privateKeyBytes
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -86,26 +86,26 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_secretKeyBytesGetterJNI(
 }
 
 JNIEXPORT void JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_deleteNativeObjectPtrJNI(
+Java_org_dicekeys_crypto_seeded_PrivateKey_deleteNativeObjectPtrJNI(
   JNIEnv *env,
   jobject thiz) {
   try {
-    delete getNativeObjectPtr<PublicPrivateKeyPair>(env, thiz);
+    delete getNativeObjectPtr<PrivateKey>(env, thiz);
   } catch (...) {
   throwCppExceptionAsJavaException(env, std::current_exception());
   }
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_getPublicKeyPtrJNI(
+Java_org_dicekeys_crypto_seeded_PrivateKey_getPublicKeyPtrJNI(
     JNIEnv *env,
     jobject thiz) {
   try {
-    const PublicPrivateKeyPair *publicPrivateKeyPairPtr =
-      getNativeObjectPtr<PublicPrivateKeyPair>(env, thiz);
+    const PrivateKey *PrivateKeyPtr =
+      getNativeObjectPtr<PrivateKey>(env, thiz);
     return (jlong) new PublicKey(
-      publicPrivateKeyPairPtr->publicKeyBytes,
-      publicPrivateKeyPairPtr->keyDerivationOptionsJson
+      PrivateKeyPtr->publicKeyBytes,
+      PrivateKeyPtr->keyDerivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -114,13 +114,13 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_getPublicKeyPtrJNI(
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_constructFromJsonJNI(
+Java_org_dicekeys_crypto_seeded_PrivateKey_constructFromJsonJNI(
   JNIEnv *env,
   jclass clazz,
   jstring json
 ) {
   try {
-    return (jlong) new PublicPrivateKeyPair(
+    return (jlong) new PrivateKey(
       jstringToString(env, json)
     );
   } catch (...) {
@@ -130,13 +130,13 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_constructFromJsonJNI(
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_constructJNI__Ljava_lang_String_2Ljava_lang_String_2(
+Java_org_dicekeys_crypto_seeded_PrivateKey_constructJNI__Ljava_lang_String_2Ljava_lang_String_2(
   JNIEnv *env,
   jclass clazz,
   jstring seed_string,
   jstring key_derivation_options_json) {
   try {
-    return (jlong) new PublicPrivateKeyPair(
+    return (jlong) new PrivateKey(
       jstringToString(env, seed_string),
       jstringToString(env, key_derivation_options_json)
     );
@@ -147,7 +147,7 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_constructJNI__Ljava_lang_St
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_constructJNI___3B_3BLjava_lang_String_2(
+Java_org_dicekeys_crypto_seeded_PrivateKey_constructJNI___3B_3BLjava_lang_String_2(
   JNIEnv *env,
   jclass clazz,
   jbyteArray secret_key_bytes,
@@ -155,7 +155,7 @@ Java_org_dicekeys_crypto_seeded_PublicPrivateKeyPair_constructJNI___3B_3BLjava_l
   jstring key_derivation_options_json
 ) {
   try {
-    return (jlong) new PublicPrivateKeyPair(
+    return (jlong) new PrivateKey(
       jbyteArrayToSodiumBuffer(env, secret_key_bytes),
       jbyteArrayToVector(env, public_key_bytes),
       jstringToString(env, key_derivation_options_json)

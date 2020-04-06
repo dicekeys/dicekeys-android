@@ -66,9 +66,9 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
     val keyDerivationOptionsJson get() = keyDerivationOptionsJsonGetterJNI()
 
     override fun equals(other: Any?): Boolean =
-            (other is PublicPrivateKeyPair) &&
+            (other is PrivateKey) &&
                     keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
-                    signingKeyBytes.contentEquals(other.secretKeyBytes) &&
+                    signingKeyBytes.contentEquals(other.privateKeyBytes) &&
                     signatureVerificationKeyBytes.contentEquals(other.publicKeyBytes)
 
 }

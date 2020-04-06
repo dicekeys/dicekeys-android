@@ -4,14 +4,14 @@ import android.graphics.Bitmap
 import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
-class PublicPrivateKeyPair private constructor(internal val nativeObjectPtr: Long) {
+class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     companion object {
         init {
             ensureJniLoaded()
         }
 
         @JvmStatic external fun constructJNI(
-            secretKeyBytes: ByteArray,
+            privateKeyBytes: ByteArray,
             publicKeyBytes: ByteArray,
             keyDerivationOptionsJson: String
         ) : Long
@@ -24,7 +24,7 @@ class PublicPrivateKeyPair private constructor(internal val nativeObjectPtr: Lon
     }
     private external fun getPublicKeyPtrJNI(): Long
     private external fun deleteNativeObjectPtrJNI()
-    private external fun secretKeyBytesGetterJNI(): ByteArray
+    private external fun privateKeyBytesGetterJNI(): ByteArray
     private external fun publicKeyBytesGetterJNI(): ByteArray
     private external fun keyDerivationOptionsJsonGetterJNI(): String
     external fun toJson(): String
@@ -32,14 +32,14 @@ class PublicPrivateKeyPair private constructor(internal val nativeObjectPtr: Lon
     // Create copy constructor to prevent copying of the native pointer, which would lead
     // to a use-after-dereference pointer vulnerability
     constructor(
-        other: PublicPrivateKeyPair
-    ) : this(other.secretKeyBytes, other.publicKeyBytes, other.keyDerivationOptionsJson)
+        other: PrivateKey
+    ) : this(other.privateKeyBytes, other.publicKeyBytes, other.keyDerivationOptionsJson)
 
     constructor(
-        secretKeyBytes: ByteArray,
+        privateKeyBytes: ByteArray,
         publicKeyBytes: ByteArray,
         keyDerivationOptionsJson: String
-    ) : this( constructJNI(secretKeyBytes, publicKeyBytes, keyDerivationOptionsJson))
+    ) : this( constructJNI(privateKeyBytes, publicKeyBytes, keyDerivationOptionsJson))
 
     constructor(
         seedString: String,
@@ -55,14 +55,14 @@ class PublicPrivateKeyPair private constructor(internal val nativeObjectPtr: Lon
     }
 
 
-    val secretKeyBytes get() = secretKeyBytesGetterJNI()
+    val privateKeyBytes get() = privateKeyBytesGetterJNI()
     val publicKeyBytes get() = publicKeyBytesGetterJNI()
     val keyDerivationOptionsJson get() = keyDerivationOptionsJsonGetterJNI()
 
     override fun equals(other: Any?): Boolean =
-            (other is PublicPrivateKeyPair) &&
+            (other is PrivateKey) &&
                     keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
-                    secretKeyBytes.contentEquals(other.secretKeyBytes) &&
+                    privateKeyBytes.contentEquals(other.privateKeyBytes) &&
                     publicKeyBytes.contentEquals(other.publicKeyBytes)
 
     external fun unseal(

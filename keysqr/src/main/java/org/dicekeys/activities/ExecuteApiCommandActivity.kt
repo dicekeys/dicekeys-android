@@ -188,22 +188,22 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
                         .unseal(ciphertext, postDecryptionInstructionsJson)
                 resultIntent.putExtra(DiceKeysApi.ParameterNames.SymmetricKey.Unseal.plaintext, plaintext)
             }
-            DiceKeysApi.OperationNames.PublicPrivateKeyPair.getPublic -> {
+            DiceKeysApi.OperationNames.PrivateKey.getPublic -> {
                 // FIXME -- validate key read without errors
                 val publicKeyJson = keySqr
                         .getPublicKey(keyDerivationOptionsJson, clientsApplicationId)
                         .toJson()
-                resultIntent.putExtra(DiceKeysApi.ParameterNames.PublicPrivateKeyPair.GetPublic.publicKeyJson, publicKeyJson)
+                resultIntent.putExtra(DiceKeysApi.ParameterNames.PrivateKey.GetPublic.publicKeyJson, publicKeyJson)
             }
-            DiceKeysApi.OperationNames.PublicPrivateKeyPair.unseal -> {
-                val ciphertext = intent.getByteArrayExtra(DiceKeysApi.ParameterNames.PublicPrivateKeyPair.Unseal.ciphertext) ?:
+            DiceKeysApi.OperationNames.PrivateKey.unseal -> {
+                val ciphertext = intent.getByteArrayExtra(DiceKeysApi.ParameterNames.PrivateKey.Unseal.ciphertext) ?:
                     throw IllegalArgumentException("Seal operation must include ciphertext byte array")
-                val postDecryptionInstructionsJson = intent.getStringExtra(DiceKeysApi.ParameterNames.PublicPrivateKeyPair.Unseal.postDecryptionInstructionsJson) ?: ""
+                val postDecryptionInstructionsJson = intent.getStringExtra(DiceKeysApi.ParameterNames.PrivateKey.Unseal.postDecryptionInstructionsJson) ?: ""
 
                 val plaintext = keySqr
-                        .getPublicPrivateKeyPair(keyDerivationOptionsJson, clientsApplicationId)
+                        .getPrivateKey(keyDerivationOptionsJson, clientsApplicationId)
                         .unseal(ciphertext, postDecryptionInstructionsJson)
-                resultIntent.putExtra(DiceKeysApi.ParameterNames.PublicPrivateKeyPair.Unseal.plaintext, plaintext)
+                resultIntent.putExtra(DiceKeysApi.ParameterNames.PrivateKey.Unseal.plaintext, plaintext)
             }
 
             DiceKeysApi.OperationNames.SigningKey.getSignatureVerificationKey -> {

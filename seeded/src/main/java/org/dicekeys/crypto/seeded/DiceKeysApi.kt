@@ -131,7 +131,7 @@ abstract class DiceKeysApi(
             }
         }
 
-        object PublicPrivateKeyPair {
+        object PrivateKey {
             object GetPublic {
                 const val publicKeyJson = "publicKeyJson"
             }
@@ -171,9 +171,9 @@ abstract class DiceKeysApi(
             const val unseal = "org.dicekeys.crypto.seeded.actions.SymmetricKey.unseal"
         }
 
-        object PublicPrivateKeyPair {
-            const val getPublic = "org.dicekeys.crypto.seeded.actions.PublicPrivateKeyPair.getPublic"
-            const val unseal = "org.dicekeys.crypto.seeded.actions.PublicPrivateKeyPair.unseal"
+        object PrivateKey {
+            const val getPublic = "org.dicekeys.crypto.seeded.actions.PrivateKey.getPublic"
+            const val unseal = "org.dicekeys.crypto.seeded.actions.PrivateKey.unseal"
         }
 
         object SigningKey {
@@ -186,8 +186,8 @@ abstract class DiceKeysApi(
                 Seed.get,
                 SymmetricKey.seal,
                 SymmetricKey.unseal,
-                PublicPrivateKeyPair.getPublic,
-                PublicPrivateKeyPair.unseal,
+                PrivateKey.getPublic,
+                PrivateKey.unseal,
                 SigningKey.generateSignature,
                 SigningKey.getSignatureVerificationKey
         )
@@ -276,7 +276,7 @@ abstract class DiceKeysApi(
             keyDerivationOptionsJson: String,
             callback: GetPublicKeyCallback? = null
     ): Intent =
-            call(OperationNames.PublicPrivateKeyPair.getPublic,
+            call(OperationNames.PrivateKey.getPublic,
                     bundleOf(
                             ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
                     )
@@ -301,7 +301,7 @@ abstract class DiceKeysApi(
      * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
      *
      * If any of those strings change, the wrong key will be derive and the message will
-     * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
+     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
      */
     fun unsealWithPrivateKey(
             ciphertext: ByteArray,
@@ -309,11 +309,11 @@ abstract class DiceKeysApi(
             postDecryptionInstructionsJson: String = "",
             callback: UnsealWithPrivateKeyCallback? = null
     ): Intent =
-            call(OperationNames.PublicPrivateKeyPair.unseal,
+            call(OperationNames.PrivateKey.unseal,
                     bundleOf(
                             ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson,
-                            ParameterNames.PublicPrivateKeyPair.Unseal.postDecryptionInstructionsJson to postDecryptionInstructionsJson,
-                            ParameterNames.PublicPrivateKeyPair.Unseal.ciphertext to ciphertext
+                            ParameterNames.PrivateKey.Unseal.postDecryptionInstructionsJson to postDecryptionInstructionsJson,
+                            ParameterNames.PrivateKey.Unseal.ciphertext to ciphertext
                     )
             ).also { intent -> callback?.let{ addRequestAndCallback(unsealAsymmetricCallbacks, intent, it) } }
     /**
@@ -326,7 +326,7 @@ abstract class DiceKeysApi(
      * specified by [postDecryptionInstructionsJson].
      *
      * If any of those strings change, the wrong key will be derive and the message will
-     * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
+     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
      */
     fun unsealWithPrivateKey(
             ciphertext: ByteArray,
@@ -416,7 +416,7 @@ abstract class DiceKeysApi(
      * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
      *
      * If any of those strings change, the wrong key will be derive and the message will
-     * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
+     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
      */
     fun unsealWithSymmetricKey(
             keyDerivationOptionsJson: String,
@@ -438,7 +438,7 @@ abstract class DiceKeysApi(
      * and without any post-decryption instructions.
      *
      * If any of those strings change, the wrong key will be derive and the message will
-     * not be successfully unsealed, yielding a [CryptographicVerificationFailure] exception.
+     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
      */
     fun unsealWithSymmetricKey(
             keyDerivationOptionsJson: String,
@@ -545,10 +545,10 @@ abstract class DiceKeysApi(
                         }
                 )
 
-                OperationNames.PublicPrivateKeyPair.getPublic -> handleResult(getPublicKeyCallbacks, resultIntent,
+                OperationNames.PrivateKey.getPublic -> handleResult(getPublicKeyCallbacks, resultIntent,
                         { callback, originalIntent, e -> callback.onGetPublicKeyFail(e, originalIntent) },
                         { callback, originalIntent ->
-                            resultIntent.getStringExtra(ParameterNames.PublicPrivateKeyPair.GetPublic.publicKeyJson)?.let { publicKeyJson ->
+                            resultIntent.getStringExtra(ParameterNames.PrivateKey.GetPublic.publicKeyJson)?.let { publicKeyJson ->
                                 val publicKey = PublicKey(publicKeyJson)
                                 callback.onGetPublicKeySuccess(publicKey, originalIntent)
                             }
@@ -564,10 +564,10 @@ abstract class DiceKeysApi(
                         }
                 )
 
-                OperationNames.PublicPrivateKeyPair.unseal -> handleResult(unsealAsymmetricCallbacks, resultIntent,
+                OperationNames.PrivateKey.unseal -> handleResult(unsealAsymmetricCallbacks, resultIntent,
                         { callback, originalIntent, e -> callback.onUnsealAsymmetricFail(e, originalIntent) },
                         { callback, originalIntent ->
-                            resultIntent.getByteArrayExtra(ParameterNames.PublicPrivateKeyPair.Unseal.plaintext)?.let { plaintext ->
+                            resultIntent.getByteArrayExtra(ParameterNames.PrivateKey.Unseal.plaintext)?.let { plaintext ->
                                 callback.onUnsealAsymmetricSuccess(plaintext, originalIntent)
                             }
                         }

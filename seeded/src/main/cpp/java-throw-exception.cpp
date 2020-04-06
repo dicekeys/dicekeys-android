@@ -41,9 +41,6 @@ void throwCppExceptionAsJavaException(
     javaThrow(env, "org/dicekeys/crypto/seeded/JsonParsingException", e.what());
     return;
 
-  } catch (ClientNotAuthorizedException e) {
-    javaThrow(env, "org/dicekeys/crypto/seeded/ClientNotAuthorizedException", e.what());
-    return;
   } catch (InvalidKeyDerivationOptionsJsonException e) {
     javaThrow(env, "org/dicekeys/crypto/seeded/InvalidKeyDerivationOptionsJsonException", e.what());
     return;
@@ -53,8 +50,8 @@ void throwCppExceptionAsJavaException(
   } catch (KeyLengthException e) {
     javaThrow(env, "org/dicekeys/crypto/seeded/KeyLengthException", e.what());
     return;
-  } catch (CryptographicVerificationFailure e) {
-    javaThrow(env, "org/dicekeys/crypto/seeded/CryptographicVerificationFailure", e.what());
+  } catch (CryptographicVerificationFailureException e) {
+    javaThrow(env, "org/dicekeys/crypto/seeded/CryptographicVerificationFailureException", e.what());
     return;
   } catch (std::bad_alloc e) {
     javaThrow(env, "java/lang/OutOfMemoryException", e.what());

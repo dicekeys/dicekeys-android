@@ -44,9 +44,9 @@ class PublicKeyTests {
     val seed = "some seedy value to test with"
 
     @Test
-    fun testPublicPrivateKeyPairs() {
+    fun testPrivateKeys() {
         val keyDerivationOptionsJson = """{"keyType": "Public"}"""
-        val sk = PublicPrivateKeyPair(seed, keyDerivationOptionsJson)
+        val sk = PrivateKey(seed, keyDerivationOptionsJson)
         val pk = sk.getPublicKey()
         val testMessage = "some message to test"
         val ciphertext = pk.seal( testMessage );

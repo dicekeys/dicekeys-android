@@ -3,7 +3,7 @@ import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.faces.Face
 import org.dicekeys.crypto.seeded.SymmetricKey
 import org.dicekeys.crypto.seeded.*
-import org.dicekeys.crypto.seeded.PublicPrivateKeyPair
+import org.dicekeys.crypto.seeded.PrivateKey
 import org.dicekeys.crypto.seeded.SigningKey
 
 
@@ -84,7 +84,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
     // FIXME -- get keyDerivationOptions to check client id, determine if using face orientations
     val canonicalRotations = toCanonicalRotation();
     val fixmeShouldUseFaceOrientations = true
-    return toHumanReadableForm(fixmeShouldUseFaceOrientations)
+    return canonicalRotations.toHumanReadableForm(fixmeShouldUseFaceOrientations)
   }
 
   fun getSeed(
@@ -111,17 +111,17 @@ class KeySqr<F: Face>(val faces: List<F>) {
     keyDerivationOptionsJson: String? = "",
     clientsApplicationId: String = ""
   ): PublicKey {
-    return PublicPrivateKeyPair(
+    return PrivateKey(
       toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
       keyDerivationOptionsJson ?: ""
     ).getPublicKey()
   }
 
-  fun getPublicPrivateKeyPair(
+  fun getPrivateKey(
         keyDerivationOptionsJson: String?= "",
         clientsApplicationId: String = ""
-  ): PublicPrivateKeyPair {
-    return PublicPrivateKeyPair(
+  ): PrivateKey {
+    return PrivateKey(
         toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
         keyDerivationOptionsJson ?: ""
     )

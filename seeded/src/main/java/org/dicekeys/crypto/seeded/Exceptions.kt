@@ -3,7 +3,7 @@ package org.dicekeys.crypto.seeded
 class UnknownException(message: String) : java.lang.Exception(message)
 
 class ClientNotAuthorizedException(message: String) : java.lang.Exception(message)
-class CryptographicVerificationFailure(message: String) : java.lang.Exception(message)
+class CryptographicVerificationFailureException(message: String) : java.lang.Exception(message)
 class InvalidKeyDerivationOptionsJsonException(message: String) : java.lang.Exception(message)
 class InvalidKeyDerivationOptionValueException(message: String) : java.lang.Exception(message)
 class InvalidArgumentException(message: String) : java.lang.Exception(message)
