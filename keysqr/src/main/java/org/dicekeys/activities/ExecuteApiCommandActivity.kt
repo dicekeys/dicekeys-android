@@ -92,7 +92,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
             if (numberOfValidPrefixes == 0) {
                 // The client application id does not start with any of the specified prefixes
                 // throw ClientNotAuthorizeException(clientsApplicationId, clientApplicationsIdPrefixes)
-                throw org.dicekeys.api.CliendPackagetNotAuthorizedException(clientsApplicationId, clientApplicationsIdPrefixes)
+                throw org.dicekeys.api.ClientPackageNotAuthorizedException(clientsApplicationId, clientApplicationsIdPrefixes)
             }
         }
     }

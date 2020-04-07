@@ -81,7 +81,13 @@ class KeySqr<F: Face>(val faces: List<F>) {
           keyDerivationOptionsJson: String? = "",
           clientsApplicationId: String = ""
   ) : String {
-    // FIXME -- get keyDerivationOptions to check client id, determine if using face orientations
+    val kdo = KeyDerivationOptions.fromJson(keyDerivationOptionsJson)
+    if (kdo.restrictions != null && kdo.restrictions.androidPackagePrefixesAllowed != null) {
+        // FIXME validate prefixes
+    }
+    if (kdo.excludeOrientationOfFaces) {
+        // FIXME
+    }
     val canonicalRotations = toCanonicalRotation();
     val fixmeShouldUseFaceOrientations = true
     return canonicalRotations.toHumanReadableForm(fixmeShouldUseFaceOrientations)

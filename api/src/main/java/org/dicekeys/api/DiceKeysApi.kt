@@ -587,11 +587,12 @@ abstract class DiceKeysApi(
                         { callback, originalIntent, e -> callback.onGenerateSignatureCallbackFail(e, originalIntent) },
                         { callback, originalIntent ->
                             resultIntent.getByteArrayExtra(ParameterNames.SigningKey.GenerateSignature.signature)?.let { signature ->
+                            resultIntent.getByteArrayExtra(ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeyJson)?.let { signatureVerificationKeyJson ->
                                 callback.onGenerateSignatureCallbackSuccess(
                                         signature,
-                                        SignatureVerificationKey(resultIntent.getStringExtra(ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeyJson)),
+                                        SignatureVerificationKey(signatureVerificationKeyJson),
                                         originalIntent)
-                            }
+                            }}
                         }
                 )
 
