@@ -5,6 +5,7 @@
       <w>dereferenced</w>
       <w>dicekey</w>
       <w>dicekeys</w>
+      <w>fidowriter</w>
       <w>generichash</w>
       <w>jbyte</w>
       <w>jstring</w>
@@ -12,6 +13,7 @@
       <w>overline</w>
       <w>overlines</w>
       <w>secretbox</w>
+      <w>thiz</w>
       <w>undoverline</w>
     </words>
   </dictionary>
