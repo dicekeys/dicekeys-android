@@ -43,7 +43,7 @@ inline jbyteArray byteVectorToJbyteArray(
 
 inline jbyteArray sodiumBufferToJbyteArray(
   JNIEnv *env,
-  const SodiumBuffer &sodiumBuffer
+  const SodiumBuffer& sodiumBuffer
 ) {
     jbyteArray newJByteArray = env->NewByteArray(sodiumBuffer.length);
     env->SetByteArrayRegion(newJByteArray, 0, sodiumBuffer.length, (jbyte*) sodiumBuffer.data);

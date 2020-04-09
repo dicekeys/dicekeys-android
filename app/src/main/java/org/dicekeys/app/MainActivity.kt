@@ -7,8 +7,10 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.api.DiceKeysApi
+import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.crypto.seeded.PublicKey
+import org.dicekeys.crypto.seeded.Seed
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -36,8 +38,8 @@ class MainActivity : AppCompatActivity() {
             diceKeysApi.getSeed(
                 keyDerivationOptionsJson,
                 object: DiceKeysApi.GetSeedCallback {
-                override fun onGetSeedSuccess(seed: ByteArray, originalIntent: Intent) {
-                    resultTextView.text = "Seed=${Base64.encodeToString(seed, Base64.DEFAULT)}"
+                override fun onGetSeedSuccess(seed: Seed, originalIntent: Intent) {
+                    resultTextView.text = "Seed=${Base64.encodeToString(seed.seedBytes, Base64.DEFAULT)}"
                     encryptSymmetric()
                 }
             })
@@ -49,9 +51,9 @@ class MainActivity : AppCompatActivity() {
             keyDerivationOptionsJson,
             testMessageByteArray,
             object: DiceKeysApi.SealWithSymmetricKeyCallback{
-                override fun onSealWithSymmetricKeySuccess(ciphertext: ByteArray, originalIntent: Intent) {
-                    resultTextView.text = "${resultTextView.text}\nSymmetrically sealed message '${testMessage}' as ciphertext '${Base64.encodeToString(ciphertext, Base64.DEFAULT)}'"
-                    decryptSymmetric(ciphertext)
+                override fun onSealWithSymmetricKeySuccess(packagedSealedMessage: PackagedSealedMessage, originalIntent: Intent) {
+                    resultTextView.text = "${resultTextView.text}\nSymmetrically sealed message '${testMessage}' as ciphertext '${Base64.encodeToString(packagedSealedMessage.ciphertext, Base64.DEFAULT)}'"
+                    decryptSymmetric(packagedSealedMessage)
                 }
 
                 override fun onSealWithSymmetricKeyFail(exception: Exception, originalIntent: Intent) {
@@ -60,10 +62,9 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun decryptSymmetric(ciphertext: ByteArray) {
+    fun decryptSymmetric(packagedSealedMessage: PackagedSealedMessage) {
         diceKeysApi.unsealWithSymmetricKey(
-            keyDerivationOptionsJson,
-            ciphertext,
+            packagedSealedMessage,
             object : DiceKeysApi.UnsealWithSymmetricKeyCallback {
                 override fun onUnsealSymmetricSuccess(plaintext: ByteArray, originalIntent: Intent) {
                     resultTextView.text =
@@ -110,9 +111,9 @@ class MainActivity : AppCompatActivity() {
                 keyDerivationOptionsJson,
                 object: DiceKeysApi.GetPublicKeyCallback{
                     override fun onGetPublicKeySuccess(publicKey: PublicKey, originalIntent: Intent) {
-                        val ciphertext = publicKey.seal(testMessageByteArray)
-                        resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(ciphertext, Base64.DEFAULT)}'"
-                        decryptPrivate(ciphertext, publicKey)
+                        val packagedSealedMessage = publicKey.seal(testMessageByteArray)
+                        resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedMessage.ciphertext, Base64.DEFAULT)}'"
+                        decryptPrivate(packagedSealedMessage)
                     }
                     override fun onGetPublicKeyFail(exception: Exception, originalIntent: Intent) {
                         resultTextView.text = "getPublicKey failed:\n${exception.toString()}"
@@ -120,10 +121,9 @@ class MainActivity : AppCompatActivity() {
                 })
     }
 
-    fun decryptPrivate(ciphertext: ByteArray, publicKey: PublicKey) {
+    fun decryptPrivate(packagedSealedMessage: PackagedSealedMessage) {
         diceKeysApi.unsealWithPrivateKey(
-                ciphertext,
-                publicKey,
+                packagedSealedMessage,
                 object : DiceKeysApi.UnsealWithPrivateKeyCallback {
                     override fun onUnsealAsymmetricSuccess(plaintext: ByteArray, originalIntent: Intent) {
                         resultTextView.text =

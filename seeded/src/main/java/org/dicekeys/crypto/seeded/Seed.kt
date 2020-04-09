@@ -20,21 +20,39 @@ class Seed private constructor(internal val nativeObjectPtr: Long) {
             ensureJniLoaded()
         }
 
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
                 seedBytes: ByteArray,
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
                 seedString: String,
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic internal external fun constructFromJsonJNI(
+        @JvmStatic private external fun constructFromJsonJNI(
                 seedJson: String
         ) : Long
 
+        @JvmStatic private external fun fromSerializedBinaryFormJNI(
+                asSerializedBinaryForm: ByteArray
+        ) : Long
+
+        /**
+         * Reconstruct this object from serialized binary form using a
+         * ByteArray that was constructed via [toSerializedBinaryForm].
+         */
+        @JvmStatic fun fromSerializedBinaryForm(
+                asSerializedBinaryForm: ByteArray
+        ) : Seed = Seed(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
+
     }
+
+    /**
+     * Convert this object to serialized binary form so that this object
+     * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
+     */
+    external fun toSerializedBinaryForm(): ByteArray
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun seedBytesGetterJNI(): ByteArray
@@ -74,10 +92,9 @@ class Seed private constructor(internal val nativeObjectPtr: Long) {
     ) : this(other.seedBytes, other.keyDerivationOptionsJson)
 
     /**
-     * Derive this seed from [seedBytes] and key-derivation options specified as
-     * [keyDerivationOptionsJson].
+     * Construct this object from its member values
      */
-    constructor(
+    internal constructor(
             seedBytes: ByteArray,
             keyDerivationOptionsJson: String
     ) : this( constructJNI(seedBytes, keyDerivationOptionsJson) )
@@ -94,7 +111,7 @@ class Seed private constructor(internal val nativeObjectPtr: Long) {
     /**
      * Reconstitute this [Seed] from JSON format
      */
-    internal constructor(
+    constructor(
             seedJson: String
     ) : this(constructFromJsonJNI(seedJson))
 

@@ -33,18 +33,48 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
             ensureJniLoaded()
         }
 
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
             keyBytes: ByteArray,
             keyDerivationOptionsJson: String
         ) : Long
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
             seedString: String,
             keyDerivationOptionsJson: String
         ) : Long
-        @JvmStatic internal external fun constructFromJsonJNI(
+        @JvmStatic private external fun constructFromJsonJNI(
             symmetricKeyJson: String
         ) : Long
+
+        @JvmStatic private external fun fromSerializedBinaryFormJNI(
+            asSerializedBinaryForm: ByteArray
+        ) : Long
+
+        /**
+         * Reconstruct this object from serialized binary form using a
+         * ByteArray that was constructed via [toSerializedBinaryForm].
+         */
+        @JvmStatic fun fromSerializedBinaryForm(
+            asSerializedBinaryForm: ByteArray
+        ) : SymmetricKey = SymmetricKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
+
+        @JvmStatic fun unseal(
+            seedString: String,
+            packagedSealedMessage: PackagedSealedMessage
+        ) : ByteArray {
+            return SymmetricKey(
+                seedString, packagedSealedMessage.keyDerivationOptionsJson
+            ).unseal(
+                packagedSealedMessage.ciphertext,
+                packagedSealedMessage.postDecryptionInstructionsJson
+            )
+        }
     }
+
+    /**
+     * Convert this object to serialized binary form so that this object
+     * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
+     */
+    external fun toSerializedBinaryForm(): ByteArray
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun keyBytesGetterJNI(): ByteArray
@@ -126,10 +156,25 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
         postDecryptionInstructionsJson: String = ""
     ): ByteArray
 
-    fun seal(
+    private external fun sealAndPackageJNI(
+        plaintext: ByteArray,
+        postDecryptionInstructionsJson: String
+    ): Long
+
+    fun sealAndPackage(
+        plaintext: ByteArray,
+        postDecryptionInstructionsJson: String = ""
+    ): PackagedSealedMessage = PackagedSealedMessage(
+        sealAndPackageJNI( plaintext, postDecryptionInstructionsJson)
+    )
+
+    fun sealAndPackage(
         plaintext: String,
         postDecryptionInstructionsJson: String = ""
-    ): ByteArray = seal( plaintext.toByteArray(), postDecryptionInstructionsJson)
+    ): PackagedSealedMessage = sealAndPackage(
+        plaintext.toByteArray(),
+        postDecryptionInstructionsJson
+    )
 
     /**
      * Decrypt and authenticate a message which had been sealed by [seal].

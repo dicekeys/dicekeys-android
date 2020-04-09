@@ -12,6 +12,7 @@ add_library(
     jni-seeded-crypto
     SHARED
     java-throw-exception.cpp
+    packaged-sealed-message-jni.cpp
     public-key-jni.cpp
     private-key-jni.cpp
     seed-jni.cpp

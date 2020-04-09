@@ -120,9 +120,9 @@ Java_org_dicekeys_crypto_seeded_PrivateKey_constructFromJsonJNI(
   jstring json
 ) {
   try {
-    return (jlong) new PrivateKey(
+    return (jlong) new PrivateKey(PrivateKey::fromJson(
       jstringToString(env, json)
-    );
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;
@@ -160,6 +160,38 @@ Java_org_dicekeys_crypto_seeded_PrivateKey_constructJNI___3B_3BLjava_lang_String
       jbyteArrayToVector(env, public_key_bytes),
       jstringToString(env, key_derivation_options_json)
     );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return 0L;
+  }
+}
+
+
+JNIEXPORT jbyteArray JNICALL
+Java_org_dicekeys_crypto_seeded_PrivateKey_toSerializedBinaryForm(
+  JNIEnv *env,
+  jobject thiz
+) {
+  try {
+    return sodiumBufferToJbyteArray(
+      env,
+      getNativeObjectPtr<PrivateKey>(env, thiz)->toSerializedBinaryForm()
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return NULL;
+  }
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_dicekeys_crypto_seeded_PrivateKey_fromSerializedBinaryFormJNI(
+  JNIEnv *env,
+  jclass clazz,
+  jbyteArray as_serialized_binary_form) {
+  try {
+    return (jlong) new PrivateKey(PrivateKey::fromSerializedBinaryForm(
+      jbyteArrayToSodiumBuffer(env, as_serialized_binary_form)
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;

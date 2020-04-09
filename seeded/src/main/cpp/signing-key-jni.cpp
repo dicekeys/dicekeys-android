@@ -122,9 +122,9 @@ Java_org_dicekeys_crypto_seeded_SigningKey_constructFromJsonJNI(
    jstring json
  ) {
   try {
-    return (jlong) new SigningKey(
+    return (jlong) new SigningKey(SigningKey::fromJson(
       jstringToString(env, json)
-    );
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;
@@ -179,6 +179,37 @@ Java_org_dicekeys_crypto_seeded_SigningKey_constructJNI___3BLjava_lang_String_2(
       jbyteArrayToSodiumBuffer(env, signing_key_bytes),
       jstringToString(env, key_derivation_options_json)
     );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return 0L;
+  }
+}
+
+JNIEXPORT jbyteArray JNICALL
+Java_org_dicekeys_crypto_seeded_SigningKey_toSerializedBinaryForm(
+  JNIEnv *env,
+  jobject thiz
+) {
+  try {
+    return sodiumBufferToJbyteArray(
+      env,
+      getNativeObjectPtr<SigningKey>(env, thiz)->toSerializedBinaryForm()
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return NULL;
+  }
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_dicekeys_crypto_seeded_SigningKey_fromSerializedBinaryFormJNI(
+  JNIEnv *env,
+  jclass clazz,
+  jbyteArray as_serialized_binary_form) {
+  try {
+    return (jlong) new SigningKey(SigningKey::fromSerializedBinaryForm(
+      jbyteArrayToSodiumBuffer(env, as_serialized_binary_form)
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;

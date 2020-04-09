@@ -20,24 +20,43 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
         init {
             ensureJniLoaded()
         }
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
                 signingKeyBytes: ByteArray,
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
                 signingKeyBytes: ByteArray,
                 signatureVerificationKeyBytes: ByteArray,
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
                 seedString: String,
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic internal external fun constructFromJsonJNI(signingKeyAsJson: String) : Long
+        @JvmStatic private external fun constructFromJsonJNI(signingKeyAsJson: String) : Long
+
+        @JvmStatic private external fun fromSerializedBinaryFormJNI(
+                asSerializedBinaryForm: ByteArray
+        ) : Long
+
+        /**
+         * Reconstruct this object from serialized binary form using a
+         * ByteArray that was constructed via [toSerializedBinaryForm].
+         */
+        @JvmStatic fun fromSerializedBinaryForm(
+                asSerializedBinaryForm: ByteArray
+        ) : SigningKey = SigningKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
+
     }
+
+    /**
+     * Convert this object to serialized binary form so that this object
+     * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
+     */
+    external fun toSerializedBinaryForm(): ByteArray
 
     /**
      * This constructor ensures copying does not copy the underlying pointer, which could

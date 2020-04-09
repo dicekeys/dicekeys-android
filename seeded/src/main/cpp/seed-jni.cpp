@@ -73,9 +73,9 @@ JNIEXPORT jlong JNICALL
   jstring seed_json
 ) {
   try {
-    return (jlong) new Seed(
+    return (jlong) new Seed(Seed::fromJson(
       jstringToString(env, seed_json)
-    );
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;
@@ -112,6 +112,37 @@ JNIEXPORT jlong JNICALL
       jbyteArrayToVector(env, seed_bytes),
       jstringToString(env, key_derivation_options_json)
     );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return 0L;
+  }
+}
+
+JNIEXPORT jbyteArray JNICALL
+Java_org_dicekeys_crypto_seeded_Seed_toSerializedBinaryForm(
+  JNIEnv *env,
+  jobject thiz
+) {
+  try {
+    return sodiumBufferToJbyteArray(
+      env,
+      getNativeObjectPtr<Seed>(env, thiz)->toSerializedBinaryForm()
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return NULL;
+  }
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_dicekeys_crypto_seeded_Seed_fromSerializedBinaryFormJNI(
+  JNIEnv *env,
+  jclass clazz,
+  jbyteArray as_serialized_binary_form) {
+  try {
+    return (jlong) new Seed(Seed::fromSerializedBinaryForm(
+      jbyteArrayToSodiumBuffer(env, as_serialized_binary_form)
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;

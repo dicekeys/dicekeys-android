@@ -1,9 +1,8 @@
 package org.dicekeys.crypto.seeded
 
 import android.graphics.Bitmap
-import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
+import org.dicekeys.crypto.seeded.utilities.qrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
-import java.nio.charset.StandardCharsets
 
 /**
  * A wrapper for the native c++ PublicKey class from the DiceKeys seeded cryptography library.
@@ -38,12 +37,31 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
             ensureJniLoaded()
         }
 
-        @JvmStatic internal external fun constructFromJsonJNI(json: String) : Long
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructFromJsonJNI(_publicKeyAsJson: String) : Long
+        @JvmStatic private external fun constructJNI(
                 keyBytes: ByteArray,
                 keyDerivationOptionsJson: String = ""
         ) : Long
+
+        @JvmStatic private external fun fromSerializedBinaryFormJNI(
+                asSerializedBinaryForm: ByteArray
+        ) : Long
+
+        /**
+         * Reconstruct this object from serialized binary form using a
+         * ByteArray that was constructed via [toSerializedBinaryForm].
+         */
+        @JvmStatic fun fromSerializedBinaryForm(
+                asSerializedBinaryForm: ByteArray
+        ) : PublicKey = PublicKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
+
     }
+
+    /**
+     * Convert this object to serialized binary form so that this object
+     * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
+     */
+    external fun toSerializedBinaryForm(): ByteArray
 
     /**
      * This constructor ensures copying does not copy the underlying pointer, which could
@@ -103,13 +121,26 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
 
     /**
      * Seal a plaintext message to create a ciphertext which can only be unsealed
-     * using the corresponding [PrivateKey].
+     * using the corresponding [PrivateKey]. The [message] string will be converted
+     * to UTF8 binary format before it is sealed.
+     *
+     * If a [postDecryptionInstructionsJson] string is passed,
+     * the exact same string must also be passed as [postDecryptionInstructionsJson]
+     * to [PrivateKey.unseal] the message with the corresponding [PrivateKey].
+     * This allows the sealer to specify a public-set of instructions that the party
+     * unsealing must be aware of before the message can be unsealed.
      */
-    external fun seal(
+    external fun sealJNI(
             message: ByteArray,
             postDecryptionInstructionsJson: String = ""
-    ): ByteArray
+    ): Long
 
+    fun seal(
+        message: ByteArray,
+        postDecryptionInstructionsJson: String = ""
+    ) : PackagedSealedMessage = PackagedSealedMessage(
+        sealJNI(message, postDecryptionInstructionsJson)
+    )
 
     /**
      * Seal a plaintext message to create a ciphertext which can only be unsealed
@@ -125,7 +156,7 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
     fun seal(
             message: String,
             postDecryptionInstructionsJson: String = ""
-    ): ByteArray = seal( message.toByteArray(StandardCharsets.UTF_8), postDecryptionInstructionsJson )
+    ): PackagedSealedMessage = seal( message.toByteArray(), postDecryptionInstructionsJson )
 
     override fun equals(other: Any?): Boolean =
             (other is PublicKey) &&
@@ -137,7 +168,7 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
      */
     fun getJsonQrCode(
         maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2
-    ): Bitmap = QrCodeBitmap(
+    ): Bitmap = qrCodeBitmap(
         "https://dicekeys.org/pk/",
         toJson(),
         maxEdgeLengthInDevicePixels

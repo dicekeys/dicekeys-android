@@ -49,6 +49,26 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_seal(
     return NULL;
   }}
 
+JNIEXPORT jlong JNICALL
+Java_org_dicekeys_crypto_seeded_SymmetricKey_sealAndPackageJNI(
+  JNIEnv *env,
+  jobject thiz,
+  jbyteArray plaintext,
+  jstring post_decryption_instructions_json
+) {
+  try {
+    return (jlong) new PackagedSealedMessage(
+      getNativeObjectPtr<SymmetricKey>(env, thiz)->sealAndPackage(
+        jbyteArrayToSodiumBuffer(env, plaintext),
+        jstringToString(env, post_decryption_instructions_json)
+      )
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return 0L;
+  }}
+
+
 JNIEXPORT jstring JNICALL
 Java_org_dicekeys_crypto_seeded_SymmetricKey_toJson(
   JNIEnv *env,
@@ -111,9 +131,9 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_constructFromJsonJNI(
   jstring symmetric_key_json
 ) {
   try {
-    return (jlong) new SymmetricKey(
+    return (jlong) new SymmetricKey(SymmetricKey::fromJson(
       jstringToString(env, symmetric_key_json)
-    );
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;
@@ -148,6 +168,37 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_constructJNI___3BLjava_lang_String_
       jbyteArrayToVector(env, key_bytes),
       jstringToString(env, key_derivation_options_json)
     );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return 0L;
+  }
+}
+
+JNIEXPORT jbyteArray JNICALL
+Java_org_dicekeys_crypto_seeded_SymmetricKey_toSerializedBinaryForm(
+  JNIEnv *env,
+  jobject thiz
+) {
+  try {
+    return sodiumBufferToJbyteArray(
+      env,
+      getNativeObjectPtr<SymmetricKey>(env, thiz)->toSerializedBinaryForm()
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return NULL;
+  }
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_dicekeys_crypto_seeded_SymmetricKey_fromSerializedBinaryFormJNI(
+  JNIEnv *env,
+  jclass clazz,
+  jbyteArray as_serialized_binary_form) {
+  try {
+    return (jlong) new SymmetricKey(SymmetricKey::fromSerializedBinaryForm(
+      jbyteArrayToSodiumBuffer(env, as_serialized_binary_form)
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;

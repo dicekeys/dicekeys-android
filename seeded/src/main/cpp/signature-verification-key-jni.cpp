@@ -14,9 +14,9 @@ Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_constructFromJsonJNI(
   jstring signatureVerificationKeyAsJson
 ) {
   try {
-    return (jlong) new SignatureVerificationKey(
+    return (jlong) new SignatureVerificationKey(SignatureVerificationKey::fromJson(
       jstringToString(env, signatureVerificationKeyAsJson)
-    );
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;
@@ -42,8 +42,10 @@ Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_constructJNI(
 
 
 JNIEXPORT void  JNICALL
-Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_deleteNativeObjectPtrJNI(JNIEnv *env,
-                                                                                  jobject obj) {
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_deleteNativeObjectPtrJNI(
+  JNIEnv *env,
+  jobject obj
+) {
   try {
     deleteNativeObjectPtr<SignatureVerificationKey>(env, obj);
   } catch (...) {
@@ -115,4 +117,36 @@ Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_toJson(JNIEnv *env, job
   }
 }
 
+
+JNIEXPORT jbyteArray JNICALL
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_toSerializedBinaryForm(
+  JNIEnv *env,
+  jobject thiz
+) {
+  try {
+    return sodiumBufferToJbyteArray(
+      env,
+      getNativeObjectPtr<SignatureVerificationKey>(env, thiz)->toSerializedBinaryForm()
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return NULL;
+  }
 }
+
+JNIEXPORT jlong JNICALL
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_fromSerializedBinaryFormJNI(
+  JNIEnv *env,
+  jclass clazz,
+  jbyteArray as_serialized_binary_form) {
+  try {
+    return (jlong) new SignatureVerificationKey(SignatureVerificationKey::fromSerializedBinaryForm(
+      jbyteArrayToSodiumBuffer(env, as_serialized_binary_form)
+    ));
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return 0L;
+  }
+}
+
+} // extern c

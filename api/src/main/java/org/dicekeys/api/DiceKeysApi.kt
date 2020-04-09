@@ -7,6 +7,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.crypto.seeded.PublicKey
+import org.dicekeys.crypto.seeded.Seed
+import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import java.security.InvalidParameterException
 import kotlin.collections.HashMap
 
@@ -101,7 +103,7 @@ abstract class DiceKeysApi(
         internal object Reused {
             const val postDecryptionInstructionsJson = "postDecryptionInstructionsJson"
             const val plaintext = "plaintext"
-            const val ciphertext = "ciphertext"
+            const val packagedSealedMessageSerializedToBinary = "packagedSealedMessageSerializedToBinary"
             const val signatureVerificationKeyJson = "signatureVerificationKeyJson"
 
         }
@@ -114,7 +116,7 @@ abstract class DiceKeysApi(
 
         object Seed {
             object Get {
-                const val seed = "seed"
+                const val seedJson = "seedJson"
             }
         }
 
@@ -122,13 +124,12 @@ abstract class DiceKeysApi(
 
             object Seal {
                 const val plaintext = Reused.plaintext
-                const val ciphertext = Reused.ciphertext
                 const val postDecryptionInstructionsJson = Reused.postDecryptionInstructionsJson
+                const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
             }
             object Unseal {
+                const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
                 const val plaintext = Reused.plaintext
-                const val ciphertext = Reused.ciphertext
-                const val postDecryptionInstructionsJson = Reused.postDecryptionInstructionsJson
             }
         }
 
@@ -138,9 +139,8 @@ abstract class DiceKeysApi(
             }
 
             object Unseal {
+                const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
                 const val plaintext = Reused.plaintext
-                const val ciphertext = Reused.ciphertext
-                const val postDecryptionInstructionsJson = Reused.postDecryptionInstructionsJson
             }
         }
 
@@ -233,7 +233,7 @@ abstract class DiceKeysApi(
     }
     interface GetSeedCallback : DiceKeysApiCallback {
         fun onGetSeedSuccess(
-                seed: ByteArray,
+                seed: Seed,
                 originalIntent: Intent
         )
         fun onGetSeedFail(
@@ -295,70 +295,64 @@ abstract class DiceKeysApi(
     }
     private val unsealAsymmetricCallbacks = HashMap<String, RequestIntentAndCallback<UnsealWithPrivateKeyCallback>>()
     /**
-     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with a
-     * [PublicKey].
-     * The public/private key pair will be re-derived from the user's DiceKey, the
-     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
-     * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
-     *
-     * If any of those strings change, the wrong key will be derive and the message will
-     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
+     * Unseal (decrypt & authenticate) a message that was previously sealed with a
+     * [PublicKey] to construct a [PackagedSealedMessage].
+     * The public/private key pair will be re-derived from the user's seed (DiceKey) and the
+     * key-derivation options packaged with the message.  It will also ensure that the
+     * post-decryption instructions have not changed since the message was packaged.
      */
     fun unsealWithPrivateKey(
-            ciphertext: ByteArray,
-            keyDerivationOptionsJson: String = "",
-            postDecryptionInstructionsJson: String = "",
+            packagedSealedMessage: PackagedSealedMessage,
             callback: UnsealWithPrivateKeyCallback? = null
     ): Intent =
             call(OperationNames.PrivateKey.unseal,
                     bundleOf(
-                            ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson,
-                            ParameterNames.PrivateKey.Unseal.postDecryptionInstructionsJson to postDecryptionInstructionsJson,
-                            ParameterNames.PrivateKey.Unseal.ciphertext to ciphertext
+                            ParameterNames.PrivateKey.Unseal.packagedSealedMessageSerializedToBinary to packagedSealedMessage.toSerializedBinaryForm()
                     )
             ).also { intent -> callback?.let{ addRequestAndCallback(unsealAsymmetricCallbacks, intent, it) } }
-    /**
-     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with
-     * [publicKey].
-     * The public/private key pair will be re-derived from the user's DiceKey, the [publicKey]'s
-     * [PublicKey.keyDerivationOptionsJson] field.
-     *
-     * The message-specific key will also be seeded by any [PostDecryptionInstructions] optionally
-     * specified by [postDecryptionInstructionsJson].
-     *
-     * If any of those strings change, the wrong key will be derive and the message will
-     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
-     */
-    fun unsealWithPrivateKey(
-            ciphertext: ByteArray,
-            publicKey: PublicKey,
-            postDecryptionInstructionsJson: String = "",
-            callback: UnsealWithPrivateKeyCallback? = null
-    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, postDecryptionInstructionsJson, callback)
 
-    fun unsealWithPrivateKey(
-            ciphertext: ByteArray,
-            keyDerivationOptionsJson: String = "",
-            callback: UnsealWithPrivateKeyCallback? = null
-    ): Intent = unsealWithPrivateKey(ciphertext, keyDerivationOptionsJson, "", callback)
-
-    fun unsealWithPrivateKey(
-            ciphertext: ByteArray,
-            publicKey: PublicKey,
-            callback: UnsealWithPrivateKeyCallback? = null
-    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, "", callback)
-
-    fun unsealWithPrivateKeyUsingPubicKeyAsJson(
-            ciphertext: ByteArray,
-            publicKeyJson: String,
-            callback: UnsealWithPrivateKeyCallback? = null
-    ): Intent =
-            unsealWithPrivateKey(ciphertext, PublicKey(publicKeyJson), "", callback)
+//    /**
+//     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with
+//     * [publicKey].
+//     * The public/private key pair will be re-derived from the user's DiceKey, the [publicKey]'s
+//     * [PublicKey.keyDerivationOptionsJson] field.
+//     *
+//     * The message-specific key will also be seeded by any [PostDecryptionInstructions] optionally
+//     * specified by [postDecryptionInstructionsJson].
+//     *
+//     * If any of those strings change, the wrong key will be derive and the message will
+//     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
+//     */
+//    fun unsealWithPrivateKey(
+//            ciphertext: ByteArray,
+//            publicKey: PublicKey,
+//            postDecryptionInstructionsJson: String = "",
+//            callback: UnsealWithPrivateKeyCallback? = null
+//    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, postDecryptionInstructionsJson, callback)
+//
+//    fun unsealWithPrivateKey(
+//            ciphertext: ByteArray,
+//            keyDerivationOptionsJson: String = "",
+//            callback: UnsealWithPrivateKeyCallback? = null
+//    ): Intent = unsealWithPrivateKey(ciphertext, keyDerivationOptionsJson, "", callback)
+//
+//    fun unsealWithPrivateKey(
+//            ciphertext: ByteArray,
+//            publicKey: PublicKey,
+//            callback: UnsealWithPrivateKeyCallback? = null
+//    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, "", callback)
+//
+//    fun unsealWithPrivateKeyUsingPubicKeyAsJson(
+//            ciphertext: ByteArray,
+//            publicKeyJson: String,
+//            callback: UnsealWithPrivateKeyCallback? = null
+//    ): Intent =
+//            unsealWithPrivateKey(ciphertext, PublicKey(publicKeyJson), "", callback)
 
 
     interface SealWithSymmetricKeyCallback : DiceKeysApiCallback {
         fun onSealWithSymmetricKeySuccess(
-                ciphertext: ByteArray,
+                packagedSealedMessage: PackagedSealedMessage,
                 originalIntent: Intent
         )
         fun onSealWithSymmetricKeyFail(
@@ -420,32 +414,14 @@ abstract class DiceKeysApi(
      * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
      */
     fun unsealWithSymmetricKey(
-            keyDerivationOptionsJson: String,
-            ciphertext: ByteArray,
-            postDecryptionInstructionsJson: String = "",
+            packagedSealedMessage: PackagedSealedMessage,
             callback: UnsealWithSymmetricKeyCallback? = null
     ): Intent =
             call(OperationNames.SymmetricKey.unseal,
                     bundleOf(
-                            ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson,
-                            ParameterNames.SymmetricKey.Seal.ciphertext to ciphertext,
-                            ParameterNames.SymmetricKey.Seal.postDecryptionInstructionsJson to postDecryptionInstructionsJson
+                            ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary to packagedSealedMessage.toSerializedBinaryForm()
                     )
             ).also { intent -> callback?.let{ addRequestAndCallback(unsealWithSymmetricKeyCallbacks, intent, it) } }
-    /**
-     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with a
-     * symmetric key derived from the user's DiceKey, the
-     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
-     * and without any post-decryption instructions.
-     *
-     * If any of those strings change, the wrong key will be derive and the message will
-     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
-     */
-    fun unsealWithSymmetricKey(
-            keyDerivationOptionsJson: String,
-            ciphertext: ByteArray,
-            callback: UnsealWithSymmetricKeyCallback? = null
-    ): Intent = unsealWithSymmetricKey(keyDerivationOptionsJson, ciphertext, "", callback)
 
     interface GetSignatureVerificationKeyCallback : DiceKeysApiCallback {
         fun onGetSignatureVerificationKeySuccess(
@@ -540,8 +516,8 @@ abstract class DiceKeysApi(
                 OperationNames.Seed.get -> handleResult(getSeedCallbacks, resultIntent,
                         { callback, originalIntent, e -> callback.onGetSeedFail(e, originalIntent) },
                         { callback, originalIntent ->
-                            resultIntent.getByteArrayExtra(ParameterNames.Seed.Get.seed)?.let{ seed ->
-                                callback.onGetSeedSuccess(seed, originalIntent)
+                            resultIntent.getStringExtra(ParameterNames.Seed.Get.seedJson)?.let{ seedJson ->
+                                callback.onGetSeedSuccess(Seed(seedJson), originalIntent)
                             }
                         }
                 )
@@ -577,8 +553,8 @@ abstract class DiceKeysApi(
                 OperationNames.SymmetricKey.seal -> handleResult(sealWithSymmetricKeyCallbacks, resultIntent,
                         { callback, originalIntent, e -> callback.onSealWithSymmetricKeyFail(e, originalIntent) },
                         { callback, originalIntent ->
-                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.Seal.ciphertext)?.let { ciphertext ->
-                                callback.onSealWithSymmetricKeySuccess(ciphertext, originalIntent)
+                            resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary)?.let { sealedMessageJson ->
+                                callback.onSealWithSymmetricKeySuccess(PackagedSealedMessage.fromSerializedBinaryForm(sealedMessageJson), originalIntent)
                             }
                         }
                 )

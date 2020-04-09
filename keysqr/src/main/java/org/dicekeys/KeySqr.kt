@@ -1,10 +1,12 @@
 package org.dicekeys
-import org.dicekeys.crypto.seeded.SignatureVerificationKey
-import org.dicekeys.faces.Face
-import org.dicekeys.crypto.seeded.SymmetricKey
-import org.dicekeys.crypto.seeded.*
+import org.dicekeys.crypto.seeded.KeyDerivationOptions
 import org.dicekeys.crypto.seeded.PrivateKey
+import org.dicekeys.crypto.seeded.PublicKey
+import org.dicekeys.crypto.seeded.Seed
+import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.crypto.seeded.SigningKey
+import org.dicekeys.crypto.seeded.SymmetricKey
+import org.dicekeys.faces.Face
 
 
 class KeySqr<F: Face>(val faces: List<F>) {
@@ -78,12 +80,38 @@ class KeySqr<F: Face>(val faces: List<F>) {
   }
 
   fun toKeySeed(
-          keyDerivationOptionsJson: String? = "",
-          clientsApplicationId: String = ""
+          keyDerivationOptionsJson: String,
+          clientsApplicationId: String
   ) : String {
-    val kdo = KeyDerivationOptions.fromJson(keyDerivationOptionsJson)
-    if (kdo.restrictions != null && kdo.restrictions.androidPackagePrefixesAllowed != null) {
-        // FIXME validate prefixes
+    val kdo: KeyDerivationOptions = KeyDerivationOptions.fromJson(keyDerivationOptionsJson)
+    val restrictions = kdo.restrictions
+    restrictions?.androidPackagePrefixesAllowed?.let { androidPackagePrefixesAllowed ->
+      if (androidPackagePrefixesAllowed.isEmpty()) {
+         return@let
+      }
+      // The key derivation options require us to ensure that the client's application/package
+      // starts with one of the included prefixes.
+      val clientsApplicationIdWithTrailingDot: String =
+            if (clientsApplicationId.isEmpty() || clientsApplicationId.lastOrNull() == '.')
+              clientsApplicationId
+            else
+              """$clientsApplicationId."""
+      val numberOfValidPrefixes = androidPackagePrefixesAllowed.count{ prefix ->
+        // FIXME - document that prefixes are assumed to end with "." even if none is provided
+        // protect against 'com.dicekeys' prefix being attacked by 'com.dicekeywithsuffixattached'
+        val prefixWithTrailingDot: String =
+                if (prefix.isEmpty() || prefix.lastOrNull() == '.')
+                  prefix
+                else
+                  """$prefix."""
+        // we'll append the a dot to the package name to ensure full matches work as well
+        return@count clientsApplicationIdWithTrailingDot.startsWith(prefixWithTrailingDot)
+      }
+      if (numberOfValidPrefixes == 0) {
+        // The client application id does not start with any of the specified prefixes
+        // throw ClientNotAuthorizeException(clientsApplicationId, clientApplicationsIdPrefixes)
+        throw org.dicekeys.api.ClientPackageNotAuthorizedException(clientsApplicationId, androidPackagePrefixesAllowed)
+      }
     }
     if (kdo.excludeOrientationOfFaces) {
         // FIXME
@@ -98,7 +126,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
     clientsApplicationId: String = ""
   ): Seed {
     return Seed(
-      toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+      toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
       keyDerivationOptionsJson ?: ""
     )
   }
@@ -108,7 +136,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           clientsApplicationId: String = ""
   ): SymmetricKey {
     return SymmetricKey(
-          toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+          toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
           keyDerivationOptionsJson ?: ""
     )
   }
@@ -118,7 +146,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
     clientsApplicationId: String = ""
   ): PublicKey {
     return PrivateKey(
-      toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+      toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
       keyDerivationOptionsJson ?: ""
     ).getPublicKey()
   }
@@ -128,7 +156,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
         clientsApplicationId: String = ""
   ): PrivateKey {
     return PrivateKey(
-        toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+        toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
         keyDerivationOptionsJson ?: ""
     )
   }
@@ -138,7 +166,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           clientsApplicationId: String = ""
   ): SigningKey {
     return SigningKey(
-            toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+            toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
             keyDerivationOptionsJson ?: ""
     )
   }
@@ -148,7 +176,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           clientsApplicationId: String = ""
   ): SignatureVerificationKey {
     return SigningKey(
-            toKeySeed(keyDerivationOptionsJson, clientsApplicationId),
+            toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
             keyDerivationOptionsJson ?: ""
     ).getSignatureVerificationKey()
   }

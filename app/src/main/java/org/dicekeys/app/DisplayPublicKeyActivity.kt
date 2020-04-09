@@ -42,9 +42,7 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
                 val publicKeyJson = it
                 image.contentDescription = publicKeyJson
                 textView.text = publicKeyJson
-                PublicKey(publicKeyJson)?.let { publicKey ->
-                    image.setImageDrawable(publicKey.getJsonQrCode().toDrawable(resources))
-                }
+                image.setImageDrawable(PublicKey(publicKeyJson).getJsonQrCode().toDrawable(resources))
             } catch (e: Exception) {
                 val sw = java.io.StringWriter()
                 val pw = java.io.PrintWriter(sw)

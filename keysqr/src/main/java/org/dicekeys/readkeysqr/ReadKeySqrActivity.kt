@@ -15,6 +15,7 @@ import androidx.camera.lifecycle.*
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import org.dicekeys.faces.FaceRead
 import org.dicekeys.state.KeySqrState
@@ -110,8 +111,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
                 .setTargetResolution(previewSize)
                 .build()
 
-        preview.setSurfaceProvider(previewView.previewSurfaceProvider)
-
         val pWidth = previewView.width
         val pHeight = previewView.height
         val analyzerSize: Size =
@@ -166,7 +165,11 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
         // Bind the camera selector use case, the preview, and the image analyzer use case
         // to this activity class
-        cameraProvider.bindToLifecycle(this, cameraSelector, preview, keySqrImageAnalyzerUseCase)
+        var camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, keySqrImageAnalyzerUseCase)
+//        var camera = cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview)
+
+        preview.setSurfaceProvider(previewView.createSurfaceProvider(camera.cameraInfo))
+
     }
 
 }

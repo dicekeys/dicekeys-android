@@ -1,6 +1,4 @@
-include ':app', ':keysqr'
-include ':fidowriter'
+include ':app', ':keysqr', ':fidowriter'
+include ':seeded'
 include ':api'
 rootProject.name='DiceKeys'
-include ':json-seededcryptography'
-include ':seeded'

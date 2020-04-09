@@ -19,7 +19,7 @@ android {
     ndkVersion '21.0.6113669'
 
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    buildToolsVersion "29.0.2"
 
     signingConfigs {
         release {
@@ -53,6 +53,7 @@ android {
         }
     }
 
+
     dokka {
         outputFormat = 'html'
         outputDirectory = "$buildDir/dokka"
@@ -64,11 +65,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            debuggable = false
         }
         debug {
             debuggable true
             initWith debug
-            jniDebuggable true
+            jniDebuggable false
             signingConfig signingConfigs.debug
         }
     }
@@ -89,8 +91,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
-
-    viewBinding.enabled = true
 }
 
 dependencies {
@@ -98,7 +98,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.2.0'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 

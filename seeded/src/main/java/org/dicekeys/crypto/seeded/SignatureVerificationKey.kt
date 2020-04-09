@@ -1,9 +1,8 @@
 package org.dicekeys.crypto.seeded
 
 import android.graphics.Bitmap
-import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
+import org.dicekeys.crypto.seeded.utilities.qrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
-import kotlin.math.sign
 
 /**
  * A wrapper for the native c++ SignatureVerificationKey class from the DiceKeys seeded cryptography library.
@@ -26,14 +25,34 @@ import kotlin.math.sign
             ensureJniLoaded()
         }
 
-        @JvmStatic internal external fun constructFromJsonJNI(json: String) : Long
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructFromJsonJNI(json: String) : Long
+        @JvmStatic private external fun constructJNI(
                 keyBytes: ByteArray,
                 keyDerivationOptionsJson: String
         ) : Long
+
+       @JvmStatic private external fun fromSerializedBinaryFormJNI(
+               asSerializedBinaryForm: ByteArray
+       ) : Long
+
+       /**
+        * Reconstruct this object from serialized binary form using a
+        * ByteArray that was constructed via [toSerializedBinaryForm].
+        */
+       @JvmStatic fun fromSerializedBinaryForm(
+               asSerializedBinaryForm: ByteArray
+       ) : SignatureVerificationKey = SignatureVerificationKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
+
     }
 
-    /**
+   /**
+    * Convert this object to serialized binary form so that this object
+    * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
+    */
+   external fun toSerializedBinaryForm(): ByteArray
+
+
+   /**
      * This constructor ensures copying does not copy the underlying pointer, which could
      * lead to a use-after-free vulnerability or an exception on the second deletion.
      */
@@ -116,7 +135,7 @@ import kotlin.math.sign
      */
     fun getJsonQrCode(
             maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2
-    ): Bitmap = QrCodeBitmap(
+    ): Bitmap = qrCodeBitmap(
             "https://dicekeys.org/svk/",
             toJson(),
             maxEdgeLengthInDevicePixels

@@ -1,8 +1,7 @@
 package org.dicekeys.crypto.seeded
 
-import android.graphics.Bitmap
-import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
-import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
+//import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
+//import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
 /**
  * A wrapper for the native c++ PrivateKey class from the DiceKeys seeded cryptography library.
@@ -22,18 +21,50 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
             ensureJniLoaded()
         }
 
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
             privateKeyBytes: ByteArray,
             publicKeyBytes: ByteArray,
             keyDerivationOptionsJson: String
         ) : Long
-        @JvmStatic internal external fun constructJNI(
+        @JvmStatic private external fun constructJNI(
             seedString: String,
             keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic internal external fun constructFromJsonJNI(json: String) : Long
+        @JvmStatic private external fun constructFromJsonJNI(json: String) : Long
+
+        @JvmStatic private external fun fromSerializedBinaryFormJNI(
+                asSerializedBinaryForm: ByteArray
+        ) : Long
+
+        /**
+         * Reconstruct this object from serialized binary form using a
+         * ByteArray that was constructed via [toSerializedBinaryForm].
+         */
+        fun fromSerializedBinaryForm(
+                asSerializedBinaryForm: ByteArray
+        ) : PrivateKey = PrivateKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
+
+        fun unseal(
+                seedString: String,
+                packagedSealedMessage: PackagedSealedMessage
+        ) : ByteArray {
+            return PrivateKey(
+                seedString, packagedSealedMessage.keyDerivationOptionsJson
+            ).unseal(
+                packagedSealedMessage.ciphertext,
+                packagedSealedMessage.postDecryptionInstructionsJson
+            )
+        }
+
     }
+
+    /**
+     * Convert this object to serialized binary form so that this object
+     * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
+     */
+    external fun toSerializedBinaryForm(): ByteArray
+
     private external fun getPublicKeyPtrJNI(): Long
     private external fun deleteNativeObjectPtrJNI()
     private external fun privateKeyBytesGetterJNI(): ByteArray

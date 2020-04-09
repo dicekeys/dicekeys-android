@@ -12,6 +12,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import org.dicekeys.api.DiceKeysApi
 import org.dicekeys.uses.seedfido.UsbCtapHidDeviceList
+import org.dicekeys.crypto.seeded.Seed
 
 class MainActivity : AppCompatActivity() {
     private lateinit var diceKeysApi: DiceKeysApi
@@ -65,9 +66,9 @@ class MainActivity : AppCompatActivity() {
         btn_generate_secret_from_dicekey.setOnClickListener {
             try {
                 diceKeysApi.getSeed(seedKeyDerivationOptionsJson, object : DiceKeysApi.GetSeedCallback {
-                    override fun onGetSeedSuccess(seed: ByteArray, originalIntent: Intent) {
+                    override fun onGetSeedSuccess(seed: Seed, originalIntent: Intent) {
                         edit_text_secret.text.clear()
-                        edit_text_secret.text.insert(0, seed.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
+                        edit_text_secret.text.insert(0, seed.seedBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
                         render()
                     }
 
@@ -158,8 +159,6 @@ class MainActivity : AppCompatActivity() {
                     instructionToast.cancel()
                     val successMessageToast = Toast.makeText(applicationContext,
                             "FIDO token successfully written.",
-                            // Integrate this into the above string to see what's written:
-                            //   ${seed.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') } }
                             Toast.LENGTH_SHORT
                     )
                     successMessageToast.show()
