@@ -69,7 +69,7 @@ abstract class DiceKeysApi(
      * The intent's action is set to the command name and the rest of the parameters
      * are passed as a bundle, with a unique requestId added the parameter list.
      */
-    protected fun createIntentForCall(
+    internal fun createIntentForCall(
             command: String,
             parameters: Bundle = Bundle()
     ): Intent =
@@ -89,7 +89,7 @@ abstract class DiceKeysApi(
      * Since call is handle differently for fragments and for activities, the method that actually
      * triggers calling is abstracted and implemented in the [create] call.
      */
-    protected abstract fun call(
+    internal abstract fun call(
             command: String,
             parameters: Bundle = Bundle(),
             requestCode: Int = 0
@@ -159,9 +159,6 @@ abstract class DiceKeysApi(
     }
 
     object OperationNames {
-        object UI {
-            const val ensureKeyLoaded = "org.dicekeys.api.actions.UI.ensureKeyLoaded"
-        }
 
         object Seed {
             const val get = "org.dicekeys.api.actions.Seed.get"
@@ -183,7 +180,6 @@ abstract class DiceKeysApi(
         }
 
         val All = setOf(
-                UI.ensureKeyLoaded,
                 Seed.get,
                 SymmetricKey.seal,
                 SymmetricKey.unseal,
@@ -224,13 +220,6 @@ abstract class DiceKeysApi(
     }
 
 
-    /**
-     * Open the DiceKeys app and do not return until the user has loaded in a DiceKey.
-     * (The DiceKey will NOT be returned.)
-     */
-    fun ensureKeyLoaded() {
-        call(OperationNames.UI.ensureKeyLoaded)
-    }
     interface GetSeedCallback : DiceKeysApiCallback {
         fun onGetSeedSuccess(
                 seed: Seed,
@@ -245,7 +234,7 @@ abstract class DiceKeysApi(
 
     /**
      * Derive a pseudo-random cryptographic seed from the user's DiceKey and
-     * the [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson].
+     * the key-derivation options passed as [keyDerivationOptionsJson].
      */
     fun getSeed(
             keyDerivationOptionsJson: String,

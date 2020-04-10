@@ -23,8 +23,10 @@ class MainActivity : AppCompatActivity() {
     private val seedKeyDerivationOptionsJson : String = """{
             |"keyType":"Seed",
             |"keyLengthInBytes":96,
-            |"hashFunction":{"algorithm":"Argon2id"},
-            |"restrictToClientApplicationsIdPrefixes":["com.dicekeys.fidowriter."]
+            |"hashFunction": "Argon2id",
+            |"restrictions": {
+            |       "androidPackagePrefixesAllowed":["com.dicekeys.fidowriter."]
+            |  }
             |}""".trimMargin("|")
 
     private val REQUEST_CODE_PUBLIC_KEY = 3

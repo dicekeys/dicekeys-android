@@ -1,19 +1,20 @@
 package org.dicekeys.crypto.seeded
 
 /**
- * A wrapper for the native c++ SigningKey class from the DiceKeys seeded cryptography library.
- *
-  *SigningKeys generate _signatures_ of messages which can then be
- * used by the corresponding SignatureVerificationKey to verify that a message
+ * [SigningKey]s generate _signatures_ of messages which can then be
+ * used by the corresponding [SignatureVerificationKey] to verify that a message
  * was signed by  can confirm that the message was indeed signed by the
  * SigningKey and has not since been tampered with.
  *
  * The corresponding SignatureVerificationKey can be obtained by calling
  * [getSignatureVerificationKey].
  * 
- * The key pair of the SigningKey and SignatureVerificationKey is generated
- * from a seed and a set of key-derivation specified options in
- *  @ref key_derivation_options_format.
+ * The key pair of the [SigningKey] and [SignatureVerificationKey] is generated
+ * from a seed and a set of key-derivation specified options in [keyDerivationOptionsJson]
+ *
+ * This class wraps the native c++ SigningKey class from the
+ * DiceKeys seeded cryptography library.
+
  */
 class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
     companion object {

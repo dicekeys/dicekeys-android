@@ -145,7 +145,7 @@ class PublicKeyTests {
         val sk = SymmetricKey.deriveFromSeed(seed, keyDerivationOptionsJson)
         val testMessage = "some message to test"
         val packagedSealedMessage = sk.seal(testMessage)
-        val decryptedBytes = SymmetricKey.unseal(seed, packagedSealedMessage)
+        val decryptedBytes = SymmetricKey.unseal(packagedSealedMessage, seed)
         val decryptedMessage = String(decryptedBytes)
         assertEquals(testMessage, decryptedMessage)
 

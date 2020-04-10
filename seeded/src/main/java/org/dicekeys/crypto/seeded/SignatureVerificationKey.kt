@@ -5,8 +5,6 @@ import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
 /**
- * A wrapper for the native c++ SignatureVerificationKey class from the DiceKeys seeded cryptography library.
- *
  * A [SignatureVerificationKey] is used to verify that messages were
  * signed by its corresponding [SigningKey].
  * [SigningKey]s generate _signatures_, and by verifying a message/signature
@@ -14,10 +12,12 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * indeed signed using the [SigningKey].
  * The key pair of the [SigningKey] and SignatureVerificationKey is generated
  * from a seed and a set of key-derivation specified options in
- *  @ref key_derivation_options_format.
- * 
+ *
  * To derive a [SignatureVerificationKey] from a seed, first derive the
  * corresponding SigningKey and then call [SigningKey.getSignatureVerificationKey].
+ *
+ * This class wraps the native c++ SignatureVerificationKey class from the
+ * DiceKeys seeded cryptography library.
  */
  class SignatureVerificationKey internal constructor(internal val nativeObjectPtr: Long) {
     companion object {
@@ -91,7 +91,8 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
     private external fun keyDerivationOptionsJsonGetterJNI(): String
 
     /**
-     * Serialize the object to JSON format
+     * Serialize the object to JSON format so that it can later be
+     * reconstituted via a call to [fromJson],
      */
     external fun toJson(): String
 

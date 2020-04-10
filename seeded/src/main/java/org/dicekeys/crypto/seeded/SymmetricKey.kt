@@ -1,8 +1,6 @@
 package org.dicekeys.crypto.seeded
 
 /**
- * A wrapper for the native c++ SymmetricKey class from the DiceKeys seeded cryptography library.
- *
  * A SymmetricKey can be used to seal and unseal messages.
  * This SymmetricKey class can be (re) derived from a seed using
  * set of key-derivation options specified in @ref key_derivation_options_format.
@@ -18,13 +16,16 @@ package org.dicekeys.crypto.seeded
  * message from being unsealed if it is modified.
  * We use the verbs seal and unseal, rather than encrypt and decrypt,
  * because the encrypting alone does not confer that the message includes
- * an integrity (message authentica
- * Supports authenticated encryption and decryption via the [sealToCiphertextOnly] and [unseal] methods.
+ * an integrity (message authentication) check.
+ *
+ * Supports authenticated encryption and decryption via the [seal] and [unseal] methods.
  *
  * Can be serialized into JSON format via the [toJson] method and restored from JSON
  * by calling the constructor with a JSON string.
  *
- * This class wraps the native c++ class SymmetricKey class from DiceKeys seeded crypto library.
+ * This class wraps the native c++ SymmetricKey class from the
+ * DiceKeys seeded cryptography library.
+
  */
 class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
 
@@ -81,11 +82,15 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
             asSerializedBinaryForm: ByteArray
         ) : SymmetricKey = SymmetricKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
 
+        /**
+         * Unseal a [PackagedSealedMessage] by first re-deriving the [SymmetricKey]
+         * from a [seedString].
+         */
         @JvmStatic fun unseal(
-            seedString: String,
-            packagedSealedMessage: PackagedSealedMessage
+            packagedSealedMessage: PackagedSealedMessage,
+            seedString: String
         ) : ByteArray {
-            return SymmetricKey.deriveFromSeed(
+            return deriveFromSeed(
                 seedString, packagedSealedMessage.keyDerivationOptionsJson
             ).unseal(
                 packagedSealedMessage.ciphertext,
@@ -106,7 +111,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
 
     /**
      * Convert this symmetric key to JSON-format string so that it can be later reconstituted
-     * by passing the string to the constructor.
+     * by passing the string to [fromJson].
      */
     external fun toJson(): String
 
@@ -156,16 +161,41 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      * This allows the sealer to specify a public-set of instructions that the the party
      * unsealing must be aware of before the message can be unsealed.
      */
-    public external fun sealToCiphertextOnly(
+    external fun sealToCiphertextOnly(
         plaintext: ByteArray,
         postDecryptionInstructionsJson: String = ""
     ): ByteArray
+
+    /**
+     * Seals a string message by first converting it to UTF8 format.
+     */
+    fun sealToCiphertextOnly(
+        plaintext: String,
+        postDecryptionInstructionsJson: String = ""
+    ): ByteArray = sealToCiphertextOnly(plaintext.toByteArray(), postDecryptionInstructionsJson)
 
     private external fun sealJNI(
         plaintext: ByteArray,
         postDecryptionInstructionsJson: String
     ): Long
 
+    /**
+     * Use authenticated encryption to seal a [plaintext] message for secure storage or
+     * transmission, so that it can later be decrypted and authenticated by calling
+     * [unseal] with the same [SymmetricKey] (or a copy of the key).
+     *
+     * If a [postDecryptionInstructionsJson] string is passed,
+     * the exact same string must also be passed as [postDecryptionInstructionsJson]
+     * to [PrivateKey.unseal] the message with the corresponding [PrivateKey].
+     * This allows the sealer to specify a public-set of instructions that the the party
+     * unsealing must be aware of before the message can be unsealed.
+     *
+     * Returns a [PackagedSealedMessage] containing not only the ciphertext, but the
+     * plaintext [postDecryptionInstructionsJson] the message was sealed with, which
+     * are required for unsealing, as well as the [keyDerivationOptionsJson] used to
+     * construct this [SymmetricKey] in case it needs to be re-derived from the
+     * original secret seed.
+     */
     fun seal(
         plaintext: ByteArray,
         postDecryptionInstructionsJson: String = ""
@@ -173,6 +203,9 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
         sealJNI( plaintext, postDecryptionInstructionsJson)
     )
 
+    /**
+     * Seals a string message by first converting it to UTF8 format.
+     */
     fun seal(
         plaintext: String,
         postDecryptionInstructionsJson: String = ""
@@ -188,12 +221,22 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      * the exact same string must also be passed as [postDecryptionInstructionsJson] here.
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.
-
      */
     public external fun unseal(
         ciphertext: ByteArray,
         postDecryptionInstructionsJson: String = ""
     ): ByteArray
+
+
+    /**
+     * Unseal a [PackagedSealedMessage] that was sealed with this [SymmetricKey].
+     */
+    public fun unseal(
+        packagedSealedMessage: PackagedSealedMessage
+    ): ByteArray = unseal(
+        packagedSealedMessage.ciphertext,
+        packagedSealedMessage.postDecryptionInstructionsJson
+    )
 
 
 }

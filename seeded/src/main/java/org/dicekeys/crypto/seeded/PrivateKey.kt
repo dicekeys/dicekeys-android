@@ -4,8 +4,6 @@ package org.dicekeys.crypto.seeded
 //import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
 /**
- * A wrapper for the native c++ PrivateKey class from the DiceKeys seeded cryptography library.
- *
  * A [PrivateKey] is used to _unseal_ messages sealed with its
  * corresponding [PublicKey].
  * The [PrivateKey] and [PublicKey] are generated
@@ -14,6 +12,9 @@ package org.dicekeys.crypto.seeded
  *
  * The [PrivateKey] includes a copy of the public key in binary format, which can be
  * reconstituted as a [PublicKey] object via the [getPublicKey] method.
+ *
+ * This class wraps the native c++ PrivateKey class from the
+ * DiceKeys seeded cryptography library.
  */
 class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     companion object {
@@ -68,11 +69,18 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
                 asSerializedBinaryForm: ByteArray
         ) : PrivateKey = PrivateKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
 
+        /**
+         * Unseal a message by re-deriving the [PrivateKey] from the secret [seedString]
+         * used to originally derive it.  The [PackagedSealedMessage.keyDerivationOptionsJson]
+         * needed to derive it is in the [packagedSealedMessage], as are the
+         * [PackagedSealedMessage.ciphertext] and
+         * [PackagedSealedMessage.postDecryptionInstructionsJson].
+         */
         fun unseal(
                 seedString: String,
                 packagedSealedMessage: PackagedSealedMessage
         ) : ByteArray {
-            return PrivateKey.deriveFromSeed(
+            return deriveFromSeed(
                 seedString, packagedSealedMessage.keyDerivationOptionsJson
             ).unseal(
                 packagedSealedMessage.ciphertext,
@@ -162,6 +170,18 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
         ciphertext: ByteArray,
         postDecryptionInstructionsJson: String = ""
     ): ByteArray
+
+    /**
+     * Unseal a [PackagedSealedMessage] that was sealed with the [PublicKey]
+     * corresponding to this [PrivateKey].
+     */
+    public fun unseal(
+        packagedSealedMessage: PackagedSealedMessage
+    ): ByteArray = unseal(
+        packagedSealedMessage.ciphertext,
+        packagedSealedMessage.postDecryptionInstructionsJson
+    )
+
 
 //    fun getJsonQrCode(
 //        maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2

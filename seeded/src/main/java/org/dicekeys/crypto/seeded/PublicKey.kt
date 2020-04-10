@@ -5,8 +5,6 @@ import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
 /**
- * A wrapper for the native c++ PublicKey class from the DiceKeys seeded cryptography library.
- *
  * A [PublicKey] is used to _seal_ messages, in combination with a
  * [PrivateKey] which can _unseal_ them.
  * The key pair of this [PublicKey] and the matching [PrivateKey] are generated
@@ -30,6 +28,10 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * (ciphertext) in transit with another validly-sealed message. A SigningKey
  * can be used to sign messages that another party can verify that the
  * message has not been forged or modified since the signer approved it.
+ *
+ * This class wraps the native c++ PublicKey class from the
+ * DiceKeys seeded cryptography library.
+
  */
 class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
     companion object {
@@ -102,8 +104,8 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
     private external fun keyDerivationOptionsJsonGetterJNI(): String
 
     /**
-     * Convert this object into a JSON format, From which a copy of this [PublicKey]
-     * can be constructed.
+     * Serialize the object to JSON format so that it can later be
+     * reconstituted via a call to [fromJson].
      */
     external fun toJson(): String
 

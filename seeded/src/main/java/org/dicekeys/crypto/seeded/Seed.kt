@@ -1,8 +1,6 @@
 package org.dicekeys.crypto.seeded
 
 /**
- * A wrapper for the native c++ Seed class from the DiceKeys seeded cryptography library.
- *
  * This class represents seed/secret, which is itself (re)derived from another
  * secret seed and set of key-derivation specified options in
  * @ref key_derivation_options_format.
@@ -12,6 +10,8 @@ package org.dicekeys.crypto.seeded
  * It can then be used and, if lost, re-derived from the original seed and
  * [keyDerivationOptionsJson] that were first used to derive it.
  *
+ * This class wraps the native c++ Seed class from the
+ * DiceKeys seeded cryptography library.
  */
 class Seed private constructor(internal val nativeObjectPtr: Long) {
 
@@ -101,7 +101,7 @@ class Seed private constructor(internal val nativeObjectPtr: Long) {
 
     /**
      * The options that guided the derivation of this key from the raw seed that was
-     * passed to the constructor of this object.
+     * passed to [fromJson].
      */
     val keyDerivationOptionsJson: String get() = keyDerivationOptionsJsonGetterJNI()
 

@@ -1,17 +1,13 @@
 package org.dicekeys.crypto.seeded
 
 /**
- * A wrapper for the native c++ PackagedSealedMessage class from the DiceKeys
- * seeded cryptography library.
+ * This class stores everything needed to unseal a message
+ * sealed with a [SymmetricKey] or [PublicKey], so long as you have either the seed from which
+ * that key was derived from _or_ the key itself:
  *
- * This class stores everything needed to instruct the DiceKeys app to unseal a message
- * sealed with a [SymmetricKey] or [PublicKey] using only the seed (DiceKey):
- *   * the [ciphertext] that encodes the sealed message,
- *   * the [keyDerivationOptionsJson] that specifies how to re-generate the key, and
- *   * the [postDecryptionInstructionsJson] that provides any public information that the
- *     sealer might want the app unsealing the message to be aware of before unsealing
- *     or releasing unsealed data.
- *
+ * This class wraps the native c++ PackagedSealedMessage class from the
+ * DiceKeys seeded cryptography library.
+
  */
 class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: Long) {
 
@@ -62,10 +58,9 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
     external fun toSerializedBinaryForm(): ByteArray
 
     /**
-     * Serialize the object to a JSON format that stores both the [seedBytes]
-     * and the [keyDerivationOptionsJson] used to generate it.
-     * (The secret seed string used to generate it is not stored, as it is
-     * not kept after the object is constructed.)
+     * Serialize the object to a JSON format that stores the [ciphertext],
+     * [keyDerivationOptionsJson], and [postDecryptionInstructionsJson].
+     * It can then be reconstructed via a call to [fromJson].
      */
     external fun toJson(): String
 

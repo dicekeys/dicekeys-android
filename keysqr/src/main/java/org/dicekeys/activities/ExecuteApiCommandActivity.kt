@@ -154,10 +154,6 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
         val resultIntent = Intent()
         resultIntent.putExtra(DiceKeysApi.ParameterNames.Common.requestId, requestId)
         when (intent.action) {
-            DiceKeysApi.OperationNames.UI.ensureKeyLoaded -> {
-                val intent = Intent(this, DisplayDiceKeyActivity::class.java)
-                startActivity(intent)
-            }
             DiceKeysApi.OperationNames.Seed.get -> {
                 // FIXME -- return number of errors in read or if key was manually entered.
                 val keyDerivationOptionsJson: String = intent.getStringExtra(DiceKeysApi.ParameterNames.Common.keyDerivationOptionsJson) ?: "{}"
@@ -186,8 +182,8 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
                         throw IllegalArgumentException("Unseal operation must include packagedSealedMessageSerializedToBinary")
                 )
                 val plaintext: ByteArray = SymmetricKey.unseal(
-                    keySqr.toKeySeed(packagedSealedMessage.keyDerivationOptionsJson, clientsApplicationId),
-                    packagedSealedMessage
+                    packagedSealedMessage,
+                    keySqr.toKeySeed(packagedSealedMessage.keyDerivationOptionsJson, clientsApplicationId)
                 )
                 resultIntent.putExtra(DiceKeysApi.ParameterNames.SymmetricKey.Unseal.plaintext, plaintext)
             }
