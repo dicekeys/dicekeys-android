@@ -114,7 +114,7 @@ Java_org_dicekeys_crypto_seeded_PrivateKey_getPublicKeyPtrJNI(
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_PrivateKey_constructFromJsonJNI(
+Java_org_dicekeys_crypto_seeded_PrivateKey_fromJsonJNI(
   JNIEnv *env,
   jclass clazz,
   jstring json

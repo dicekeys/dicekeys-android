@@ -34,7 +34,7 @@ class PublicKeyTests {
             "keyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
             "keyDerivationOptionsJson": "$keyDerivationOptionsJson"
         }"""
-        val pk = PublicKey(publicKeyJson)
+        val pk = PublicKey.fromJson(publicKeyJson)
         assertEquals(0x0f, pk.keyBytes[31].toInt())
         assertEquals(keyDerivationOptionsJson, pk.keyDerivationOptionsJson)
         val copyOfPk = PublicKey(pk.keyBytes, pk.keyDerivationOptionsJson)
@@ -73,7 +73,7 @@ class PublicKeyTests {
             "keyDerivationOptionsJson": "$keyDerivationOptionsJson"
         }"""
         try {
-            PublicKey(publicKeyJson)
+            PublicKey.fromJson(publicKeyJson)
             fail()
         } catch (e: InvalidKeyDerivationOptionValueException) {
         } catch (e: JsonParsingException) {
@@ -88,7 +88,7 @@ class PublicKeyTests {
             withoutQuotesBeforeAColon: This$ - is not ! valid JSON
         }"""
         try {
-            PublicKey(publicKeyJson)
+            PublicKey.fromJson(publicKeyJson)
             fail()
         } catch (e: JsonParsingException) {
         } catch (other: Exception) {
@@ -103,7 +103,7 @@ class PublicKeyTests {
             "keyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
             "keyDerivationOptionsJson": "$keyDerivationOptionsJson"
         }"""
-        val svk = SignatureVerificationKey(signatureVerificationKeyJson)
+        val svk = SignatureVerificationKey.fromJson(signatureVerificationKeyJson)
         assertEquals(0x0f, svk.keyBytes[31].toInt())
         assertEquals(keyDerivationOptionsJson, svk.keyDerivationOptionsJson)
         val copyOfSvk = SignatureVerificationKey(svk.keyBytes, svk.keyDerivationOptionsJson)

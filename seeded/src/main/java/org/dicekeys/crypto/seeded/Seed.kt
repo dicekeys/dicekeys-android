@@ -30,9 +30,20 @@ class Seed private constructor(internal val nativeObjectPtr: Long) {
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic private external fun constructFromJsonJNI(
+        @JvmStatic private external fun fromJsonJNI(
                 seedJson: String
         ) : Long
+
+        /**
+         * Construct a [Seed] from a JSON format string,
+         * replicating the [Seed] on which [toJson]
+         * was called to generate [seedAsJson]
+         */
+        @JvmStatic fun fromJson(
+            seedAsJson: String
+        ): Seed =
+            Seed(fromJsonJNI(seedAsJson)
+        )
 
         @JvmStatic private external fun fromSerializedBinaryFormJNI(
                 asSerializedBinaryForm: ByteArray
@@ -107,13 +118,6 @@ class Seed private constructor(internal val nativeObjectPtr: Long) {
             seedString: String,
             keyDerivationOptionsJson: String
     ) : this(constructJNI(seedString, keyDerivationOptionsJson))
-
-    /**
-     * Reconstitute this [Seed] from JSON format
-     */
-    constructor(
-            seedJson: String
-    ) : this(constructFromJsonJNI(seedJson))
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()

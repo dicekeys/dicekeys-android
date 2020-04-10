@@ -39,7 +39,7 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_seal(
   try {
     return byteVectorToJbyteArray(
       env,
-      getNativeObjectPtr<SymmetricKey>(env, thiz)->seal(
+      getNativeObjectPtr<SymmetricKey>(env, thiz)->sealToCiphertextOnly(
         jbyteArrayToSodiumBuffer(env, plaintext),
         jstringToString(env, post_decryption_instructions_json)
       )
@@ -58,7 +58,7 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_sealAndPackageJNI(
 ) {
   try {
     return (jlong) new PackagedSealedMessage(
-      getNativeObjectPtr<SymmetricKey>(env, thiz)->sealAndPackage(
+      getNativeObjectPtr<SymmetricKey>(env, thiz)->seal(
         jbyteArrayToSodiumBuffer(env, plaintext),
         jstringToString(env, post_decryption_instructions_json)
       )
@@ -125,7 +125,7 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_deleteNativeObjectPtrJNI(
     throwCppExceptionAsJavaException(env, std::current_exception());
   }}
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_SymmetricKey_constructFromJsonJNI(
+Java_org_dicekeys_crypto_seeded_SymmetricKey_fromJsonJNI(
   JNIEnv *env,
   jclass clazz,
   jstring symmetric_key_json

@@ -1,7 +1,7 @@
 package org.dicekeys.crypto.seeded
 
 import android.graphics.Bitmap
-import org.dicekeys.crypto.seeded.utilities.qrCodeBitmap
+import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
 /**
@@ -25,7 +25,18 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
             ensureJniLoaded()
         }
 
-        @JvmStatic private external fun constructFromJsonJNI(json: String) : Long
+        @JvmStatic private external fun fromJsonJNI(json: String) : Long
+
+        /**
+         * Construct a [SignatureVerificationKey] from a JSON format string,
+         * replicating the [SignatureVerificationKey] on which [toJson]
+         * was called to generate [signatureVerificationKeyAsJson]
+         */
+        @JvmStatic fun fromJson(
+            signatureVerificationKeyAsJson: String
+        ): SignatureVerificationKey =
+            SignatureVerificationKey(fromJsonJNI(signatureVerificationKeyAsJson))
+
         @JvmStatic private external fun constructJNI(
                 keyBytes: ByteArray,
                 keyDerivationOptionsJson: String
@@ -60,14 +71,6 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
             other: PublicKey
     ) : this(other.keyBytes, other.keyDerivationOptionsJson)
 
-    /**
-     * Reconstitute the [PublicKey] from its JSON representation
-     */
-    constructor(
-            publicKeyInJsonFormat: String
-    ) : this ( constructFromJsonJNI(
-            publicKeyInJsonFormat
-    ) )
 
     /**
      * Construct by passing the classes' members
@@ -135,7 +138,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
      */
     fun getJsonQrCode(
             maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2
-    ): Bitmap = qrCodeBitmap(
+    ): Bitmap = QrCodeBitmap(
             "https://dicekeys.org/svk/",
             toJson(),
             maxEdgeLengthInDevicePixels

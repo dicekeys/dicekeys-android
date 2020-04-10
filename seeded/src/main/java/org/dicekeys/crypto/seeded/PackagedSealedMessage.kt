@@ -35,13 +35,14 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
         ) : Long
 
         /**
-         * Reconstruct this object from JSON which was generated via
-         * a call to [toJson].
+         * Construct a [PackagedSealedMessage] from a JSON format string,
+         * replicating the [PackagedSealedMessage] on which [toJson]
+         * was called to generate [packagedSealedMessageAsJson]
          */
         fun fromJson(
-                packagedSealedMessageInJsonFormat: ByteArray
+                packagedSealedMessageAsJson: ByteArray
         ) : PackagedSealedMessage = PackagedSealedMessage(
-                fromSerializedBinaryFormJNI(packagedSealedMessageInJsonFormat)
+                fromSerializedBinaryFormJNI(packagedSealedMessageAsJson)
         )
 
         /**
@@ -107,13 +108,6 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
             keyDerivationOptionsJson: String,
             postDecryptionInstructionsJson: String
     ) : this( constructJNI(ciphertext, keyDerivationOptionsJson, postDecryptionInstructionsJson) )
-
-    /**
-     * Reconstitute this object from JSON format
-     */
-    constructor(
-            seedJson: String
-    ) : this(fromJsonJNI(seedJson))
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()

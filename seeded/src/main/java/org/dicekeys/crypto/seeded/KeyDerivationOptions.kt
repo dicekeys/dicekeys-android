@@ -84,7 +84,7 @@ class KeyDerivationOptions(
                         defaultKeyType
                 )
 
-        fun fromJsonObject(obj: JSONObject, defaultKeyType: KeyType? = null): KeyDerivationOptions {
+        private fun fromJsonObject(obj: JSONObject, defaultKeyType: KeyType? = null): KeyDerivationOptions {
             val keyType: KeyType? = KeyType.valueOfOrNull(obj.optString(KeyDerivationOptions::keyType.name, defaultKeyType?.name
                     ?: ""))
             val defaultAlgorithmName: String = when(keyType) {

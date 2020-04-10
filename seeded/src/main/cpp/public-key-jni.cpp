@@ -7,7 +7,7 @@
 
 extern "C" {
 
-JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_constructFromJsonJNI(
+JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_fromJsonJNI(
     JNIEnv* env,
     jclass cls,
     jstring _publicKeyAsJson
@@ -27,7 +27,7 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_constructFromJ
   jclass cls,
   jstring _publicKeyAsJson
 ) {
-  return Java_org_dicekeys_crypto_seeded_PublicKey_constructFromJsonJNI(env, cls, _publicKeyAsJson);
+  return Java_org_dicekeys_crypto_seeded_PublicKey_fromJsonJNI(env, cls, _publicKeyAsJson);
 }
 
 JNIEXPORT jlong JNICALL
@@ -95,7 +95,7 @@ Java_org_dicekeys_crypto_seeded_PublicKey_sealJNI(
 ) {
   try {
     return (jlong) new PackagedSealedMessage(
-      getNativeObjectPtr<PublicKey>(env, obj)->sealAndPackage(
+      getNativeObjectPtr<PublicKey>(env, obj)->seal(
         jbyteArrayToSodiumBuffer(env, message),
         jstringToString(env, post_decryption_instructions_json)
       )

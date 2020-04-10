@@ -31,7 +31,19 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
             keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic private external fun constructFromJsonJNI(json: String) : Long
+        @JvmStatic private external fun fromJsonJNI(json: String) : Long
+
+        /**
+         * Construct a [PrivateKey] from a JSON format string,
+         * replicating the [PrivateKey] on which [toJson]
+         * was called to generate [privateKeyAsJson]
+         */
+        @JvmStatic fun fromJson(
+                privateKeyAsJson: String
+        ): PrivateKey =
+            PrivateKey(fromJsonJNI(privateKeyAsJson)
+        )
+
 
         @JvmStatic private external fun fromSerializedBinaryFormJNI(
                 asSerializedBinaryForm: ByteArray

@@ -116,7 +116,7 @@ Java_org_dicekeys_crypto_seeded_SigningKey_deleteNativeObjectPtrJNI(
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_SigningKey_constructFromJsonJNI(
+Java_org_dicekeys_crypto_seeded_SigningKey_fromJsonJNI(
   JNIEnv *env,
   jclass clazz,
    jstring json

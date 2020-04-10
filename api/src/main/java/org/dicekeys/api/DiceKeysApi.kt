@@ -517,7 +517,7 @@ abstract class DiceKeysApi(
                         { callback, originalIntent, e -> callback.onGetSeedFail(e, originalIntent) },
                         { callback, originalIntent ->
                             resultIntent.getStringExtra(ParameterNames.Seed.Get.seedJson)?.let{ seedJson ->
-                                callback.onGetSeedSuccess(Seed(seedJson), originalIntent)
+                                callback.onGetSeedSuccess(Seed.fromJson(seedJson), originalIntent)
                             }
                         }
                 )
@@ -526,7 +526,7 @@ abstract class DiceKeysApi(
                         { callback, originalIntent, e -> callback.onGetPublicKeyFail(e, originalIntent) },
                         { callback, originalIntent ->
                             resultIntent.getStringExtra(ParameterNames.PrivateKey.GetPublic.publicKeyJson)?.let { publicKeyJson ->
-                                val publicKey = PublicKey(publicKeyJson)
+                                val publicKey = PublicKey.fromJson(publicKeyJson)
                                 callback.onGetPublicKeySuccess(publicKey, originalIntent)
                             }
                         }
@@ -576,7 +576,7 @@ abstract class DiceKeysApi(
                         { callback, originalIntent, e -> callback.onGetSignatureVerificationKeyFail(e, originalIntent) },
                         { callback, originalIntent ->
                             resultIntent.getStringExtra(ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeyJson)?.let{ signatureVerificationKeyJson ->
-                                val signatureVerificationKey = SignatureVerificationKey(signatureVerificationKeyJson)
+                                val signatureVerificationKey = SignatureVerificationKey.fromJson(signatureVerificationKeyJson)
                                 callback.onGetSignatureVerificationKeySuccess(signatureVerificationKey, originalIntent)
                             }
                         }

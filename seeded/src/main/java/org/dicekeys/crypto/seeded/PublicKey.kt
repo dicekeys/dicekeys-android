@@ -1,7 +1,7 @@
 package org.dicekeys.crypto.seeded
 
 import android.graphics.Bitmap
-import org.dicekeys.crypto.seeded.utilities.qrCodeBitmap
+import org.dicekeys.crypto.seeded.utilities.QrCodeBitmap
 import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
 /**
@@ -37,7 +37,19 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
             ensureJniLoaded()
         }
 
-        @JvmStatic private external fun constructFromJsonJNI(_publicKeyAsJson: String) : Long
+        @JvmStatic private external fun fromJsonJNI(_publicKeyAsJson: String) : Long
+
+        /**
+         * Construct a [PublicKey] from a JSON format string,
+         * replicating the [PublicKey] on which [toJson]
+         * was called to generate [publicKeyAsJson]
+         */
+        @JvmStatic fun fromJson(
+                publicKeyAsJson: String
+        ): PublicKey =
+            PublicKey(fromJsonJNI(publicKeyAsJson)
+        )
+
         @JvmStatic private external fun constructJNI(
                 keyBytes: ByteArray,
                 keyDerivationOptionsJson: String = ""
@@ -70,15 +82,6 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
     constructor(
         other: PublicKey
     ) : this(other.keyBytes, other.keyDerivationOptionsJson)
-
-    /**
-     * Reconstitute a [PublicKey] from its JSON-serialized format.
-     */
-    constructor(
-            publicKeyInJsonFormat: String
-    ) : this ( constructFromJsonJNI(
-            publicKeyInJsonFormat
-    ) )
 
     /**
      * Construct by specifying the value of each member
@@ -168,7 +171,7 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
      */
     fun getJsonQrCode(
         maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2
-    ): Bitmap = qrCodeBitmap(
+    ): Bitmap = QrCodeBitmap(
         "https://dicekeys.org/pk/",
         toJson(),
         maxEdgeLengthInDevicePixels

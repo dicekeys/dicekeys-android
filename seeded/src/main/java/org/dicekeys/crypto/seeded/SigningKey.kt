@@ -36,7 +36,18 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic private external fun constructFromJsonJNI(signingKeyAsJson: String) : Long
+        @JvmStatic private external fun fromJsonJNI(signingKeyAsJson: String) : Long
+
+        /**
+         * Construct a [SigningKey] from a JSON format string,
+         * replicating the [SigningKey] on which [toJson]
+         * was called to generate [signingKeyAsJson]
+         */
+        @JvmStatic fun fromJson(
+            signingKeyAsJson: String
+        ): SigningKey =
+            SigningKey(fromJsonJNI(signingKeyAsJson)
+        )
 
         @JvmStatic private external fun fromSerializedBinaryFormJNI(
                 asSerializedBinaryForm: ByteArray
@@ -93,13 +104,6 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
             signingKeyBytes: ByteArray,
             keyDerivationOptionsJson: String
     ) : this(constructJNI(signingKeyBytes, keyDerivationOptionsJson))
-
-    /**
-     * Construct from JSON format
-     */
-    constructor(
-        signingKeyAsJson: String
-    ) : this(constructFromJsonJNI(signingKeyAsJson))
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun getSignatureVerificationKeyJNI() : Long

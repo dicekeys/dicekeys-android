@@ -67,7 +67,7 @@ jobject thiz
 }
 
 JNIEXPORT jlong JNICALL
-  Java_org_dicekeys_crypto_seeded_Seed_constructFromJsonJNI(
+  Java_org_dicekeys_crypto_seeded_Seed_fromJsonJNI(
   JNIEnv *env,
   jclass clazz,
   jstring seed_json

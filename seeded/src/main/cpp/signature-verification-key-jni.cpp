@@ -8,7 +8,7 @@
 extern "C" {
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_constructFromJsonJNI(
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_fromJsonJNI(
   JNIEnv *env,
   jclass cls,
   jstring signatureVerificationKeyAsJson
