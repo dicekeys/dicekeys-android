@@ -46,7 +46,7 @@ class PublicKeyTests {
     @Test
     fun testPrivateKeys() {
         val keyDerivationOptionsJson = """{"keyType": "Public"}"""
-        val sk = PrivateKey(seed, keyDerivationOptionsJson)
+        val sk = PrivateKey.deriveFromSeed(seed, keyDerivationOptionsJson)
         val pk = sk.getPublicKey()
         val testMessage = "some message to test"
         val packagedSealedMessage = pk.seal( testMessage );
@@ -117,7 +117,7 @@ class PublicKeyTests {
     @Test
     fun testSigningAndVerificationPairs() {
         val keyDerivationOptionsJson = """{"keyType": "Signing"}"""
-        val sk = SigningKey(seed, keyDerivationOptionsJson)
+        val sk = SigningKey.deriveFromSeed(seed, keyDerivationOptionsJson)
         val vk = sk.getSignatureVerificationKey()
         val testMessage = "some message to test"
         val signature = sk.generateSignature( testMessage )
@@ -142,9 +142,9 @@ class PublicKeyTests {
     @Test
     fun testSymmetricKey() {
         val keyDerivationOptionsJson = """{"keyType": "Symmetric"}"""
-        val sk = SymmetricKey(seed, keyDerivationOptionsJson)
+        val sk = SymmetricKey.deriveFromSeed(seed, keyDerivationOptionsJson)
         val testMessage = "some message to test"
-        val packagedSealedMessage = sk.sealAndPackage(testMessage)
+        val packagedSealedMessage = sk.seal(testMessage)
         val decryptedBytes = SymmetricKey.unseal(seed, packagedSealedMessage)
         val decryptedMessage = String(decryptedBytes)
         assertEquals(testMessage, decryptedMessage)
@@ -159,7 +159,7 @@ class PublicKeyTests {
     @Test
     fun testSeed() {
         val keyDerivationOptionsJson = """{"keyType": "Seed", "keyLengthInBytes": 48}"""
-        val s = Seed(seed, keyDerivationOptionsJson)
+        val s = Seed.deriveFromSeed(seed, keyDerivationOptionsJson)
         assertEquals(s.seedBytes.size, 48)
 
         val binaryCopy = s.toSerializedBinaryForm()

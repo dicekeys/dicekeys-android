@@ -25,10 +25,21 @@ class Seed private constructor(internal val nativeObjectPtr: Long) {
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic private external fun constructJNI(
+        @JvmStatic private external fun deriveFromSeedJNI(
                 seedString: String,
                 keyDerivationOptionsJson: String
         ) : Long
+
+        /**
+         * Derive a new [Seed] from a secret seed string and a
+         * set of key-derivation options specified in JSON format.
+         */
+        fun deriveFromSeed(
+                seedString: String,
+                keyDerivationOptionsJson: String
+        ) = Seed(deriveFromSeedJNI(seedString, keyDerivationOptionsJson))
+
+
 
         @JvmStatic private external fun fromJsonJNI(
                 seedJson: String
@@ -109,15 +120,6 @@ class Seed private constructor(internal val nativeObjectPtr: Long) {
             seedBytes: ByteArray,
             keyDerivationOptionsJson: String
     ) : this( constructJNI(seedBytes, keyDerivationOptionsJson) )
-
-    /**
-     * Derive this seed from [seedBytes] and key-derivation options specified as
-     * [keyDerivationOptionsJson].
-     */
-    constructor(
-            seedString: String,
-            keyDerivationOptionsJson: String
-    ) : this(constructJNI(seedString, keyDerivationOptionsJson))
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()

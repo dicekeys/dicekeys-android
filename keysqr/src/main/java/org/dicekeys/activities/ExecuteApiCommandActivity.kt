@@ -177,7 +177,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
 
                 val sealedMessagePackage = keySqr
                     .getSymmetricKey(keyDerivationOptionsJson, clientsApplicationId)
-                    .sealAndPackage(plaintext, postDecryptionInstructionsJson)
+                    .seal(plaintext, postDecryptionInstructionsJson)
                 resultIntent.putExtra(DiceKeysApi.ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary, sealedMessagePackage.toSerializedBinaryForm())
             }
             DiceKeysApi.OperationNames.SymmetricKey.unseal -> {

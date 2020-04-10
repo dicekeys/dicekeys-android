@@ -26,10 +26,21 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
             publicKeyBytes: ByteArray,
             keyDerivationOptionsJson: String
         ) : Long
-        @JvmStatic private external fun constructJNI(
+        @JvmStatic private external fun deriveFromSeedJNI(
             seedString: String,
             keyDerivationOptionsJson: String
         ) : Long
+
+        /**
+         * Derive a public/private key pair from a seed and a
+         * set of key-derivation options specified in JSON format.
+         */
+        fun deriveFromSeed(
+                seedString: String,
+                keyDerivationOptionsJson: String
+        ) = PrivateKey(deriveFromSeedJNI(seedString, keyDerivationOptionsJson))
+
+
 
         @JvmStatic private external fun fromJsonJNI(json: String) : Long
 
@@ -61,7 +72,7 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
                 seedString: String,
                 packagedSealedMessage: PackagedSealedMessage
         ) : ByteArray {
-            return PrivateKey(
+            return PrivateKey.deriveFromSeed(
                 seedString, packagedSealedMessage.keyDerivationOptionsJson
             ).unseal(
                 packagedSealedMessage.ciphertext,
@@ -97,15 +108,6 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
         publicKeyBytes: ByteArray,
         keyDerivationOptionsJson: String
     ) : this( constructJNI(privateKeyBytes, publicKeyBytes, keyDerivationOptionsJson))
-
-    /**
-     * Derive a public/private key pair from a seed and a set of key-derivation options
-     * specified in JSON format.
-     */
-    constructor(
-        seedString: String,
-        keyDerivationOptionsJson: String = ""
-    ) : this ( constructJNI( seedString, keyDerivationOptionsJson ) )
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()

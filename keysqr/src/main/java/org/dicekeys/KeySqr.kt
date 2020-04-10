@@ -125,7 +125,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
     keyDerivationOptionsJson: String? = "",
     clientsApplicationId: String = ""
   ): Seed {
-    return Seed(
+    return Seed.deriveFromSeed(
       toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
       keyDerivationOptionsJson ?: ""
     )
@@ -135,7 +135,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           keyDerivationOptionsJson: String? = "",
           clientsApplicationId: String = ""
   ): SymmetricKey {
-    return SymmetricKey(
+    return SymmetricKey.deriveFromSeed(
           toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
           keyDerivationOptionsJson ?: ""
     )
@@ -145,7 +145,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
     keyDerivationOptionsJson: String? = "",
     clientsApplicationId: String = ""
   ): PublicKey {
-    return PrivateKey(
+    return PrivateKey.deriveFromSeed(
       toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
       keyDerivationOptionsJson ?: ""
     ).getPublicKey()
@@ -155,7 +155,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
         keyDerivationOptionsJson: String?= "",
         clientsApplicationId: String = ""
   ): PrivateKey {
-    return PrivateKey(
+    return PrivateKey.deriveFromSeed(
         toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
         keyDerivationOptionsJson ?: ""
     )
@@ -165,7 +165,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           keyDerivationOptionsJson: String? = "",
           clientsApplicationId: String = ""
   ): SigningKey {
-    return SigningKey(
+    return SigningKey.deriveFromSeed(
             toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
             keyDerivationOptionsJson ?: ""
     )
@@ -175,7 +175,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           keyDerivationOptionsJson: String? = "",
           clientsApplicationId: String = ""
   ): SignatureVerificationKey {
-    return SigningKey(
+    return SigningKey.deriveFromSeed(
             toKeySeed(keyDerivationOptionsJson ?: "", clientsApplicationId),
             keyDerivationOptionsJson ?: ""
     ).getSignatureVerificationKey()

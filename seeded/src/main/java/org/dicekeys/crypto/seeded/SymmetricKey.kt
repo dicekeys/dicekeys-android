@@ -19,7 +19,7 @@ package org.dicekeys.crypto.seeded
  * We use the verbs seal and unseal, rather than encrypt and decrypt,
  * because the encrypting alone does not confer that the message includes
  * an integrity (message authentica
- * Supports authenticated encryption and decryption via the [seal] and [unseal] methods.
+ * Supports authenticated encryption and decryption via the [sealToCiphertextOnly] and [unseal] methods.
  *
  * Can be serialized into JSON format via the [toJson] method and restored from JSON
  * by calling the constructor with a JSON string.
@@ -37,10 +37,22 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
             keyBytes: ByteArray,
             keyDerivationOptionsJson: String
         ) : Long
-        @JvmStatic private external fun constructJNI(
+        @JvmStatic private external fun deriveFromSeedJNI(
             seedString: String,
             keyDerivationOptionsJson: String
         ) : Long
+
+        /**
+         * Construct a symmetric key from a secret [seedString], which should have enough
+         * entropy to make it hard to guess (e.g. 128+ bits) and a set of public (non-secret)
+         * key-derivation options ([keyDerivationOptionsJson]).
+         */
+        @JvmStatic fun deriveFromSeed(
+            seedString: String,
+            keyDerivationOptionsJson: String
+        ) : SymmetricKey = SymmetricKey(deriveFromSeedJNI(seedString, keyDerivationOptionsJson))
+
+
         @JvmStatic private external fun fromJsonJNI(
             symmetricKeyAsJson: String
         ) : Long
@@ -73,7 +85,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
             seedString: String,
             packagedSealedMessage: PackagedSealedMessage
         ) : ByteArray {
-            return SymmetricKey(
+            return SymmetricKey.deriveFromSeed(
                 seedString, packagedSealedMessage.keyDerivationOptionsJson
             ).unseal(
                 packagedSealedMessage.ciphertext,
@@ -129,16 +141,6 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
         other: SymmetricKey
     ) : this(other.keyBytes, other.keyDerivationOptionsJson)
 
-    /**
-     * Construct a symmetric key from a secret [seedString], which should have enough
-     * entropy to make it hard to guess (e.g. 128+ bits) and a set of public (non-secret)
-     * key-derivation options ([keyDerivationOptionsJson]).
-     */
-    constructor(
-        seedString: String,
-        keyDerivationOptionsJson: String
-    ) : this(constructJNI(seedString, keyDerivationOptionsJson))
-
     protected fun finalize() {
         deleteNativeObjectPtrJNI()
     }
@@ -154,33 +156,33 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      * This allows the sealer to specify a public-set of instructions that the the party
      * unsealing must be aware of before the message can be unsealed.
      */
-    public external fun seal(
+    public external fun sealToCiphertextOnly(
         plaintext: ByteArray,
         postDecryptionInstructionsJson: String = ""
     ): ByteArray
 
-    private external fun sealAndPackageJNI(
+    private external fun sealJNI(
         plaintext: ByteArray,
         postDecryptionInstructionsJson: String
     ): Long
 
-    fun sealAndPackage(
+    fun seal(
         plaintext: ByteArray,
         postDecryptionInstructionsJson: String = ""
     ): PackagedSealedMessage = PackagedSealedMessage(
-        sealAndPackageJNI( plaintext, postDecryptionInstructionsJson)
+        sealJNI( plaintext, postDecryptionInstructionsJson)
     )
 
-    fun sealAndPackage(
+    fun seal(
         plaintext: String,
         postDecryptionInstructionsJson: String = ""
-    ): PackagedSealedMessage = sealAndPackage(
+    ): PackagedSealedMessage = seal(
         plaintext.toByteArray(),
         postDecryptionInstructionsJson
     )
 
     /**
-     * Decrypt and authenticate a message which had been sealed by [seal].
+     * Decrypt and authenticate a message which had been sealed by [sealToCiphertextOnly].
      *
      * If a [postDecryptionInstructionsJson] was passed to the [PublicKey.seal] operation,
      * the exact same string must also be passed as [postDecryptionInstructionsJson] here.

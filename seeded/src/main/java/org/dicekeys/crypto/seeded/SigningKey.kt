@@ -31,10 +31,20 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
                 keyDerivationOptionsJson: String
         ) : Long
 
-        @JvmStatic private external fun constructJNI(
+        @JvmStatic private external fun deriveFromSeedJNI(
                 seedString: String,
                 keyDerivationOptionsJson: String
         ) : Long
+
+        /**
+         * Derive a signing/signature-verification key pair from a seed and a
+         * set of key-derivation options specified in JSON format.
+         */
+        fun deriveFromSeed(
+                seedString: String,
+                keyDerivationOptionsJson: String
+        ) = SigningKey (deriveFromSeedJNI(seedString, keyDerivationOptionsJson))
+
 
         @JvmStatic private external fun fromJsonJNI(signingKeyAsJson: String) : Long
 
@@ -77,15 +87,6 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
             other.signingKeyBytes,
             other.signatureVerificationKeyBytes,
             other.keyDerivationOptionsJson)
-
-    /**
-     * Derive a signing/signature-verification key pair from a seed and a
-     * set of key-derivation options specified in JSON format.
-     */
-    constructor(
-        seedString: String,
-        keyDerivationOptionsJson: String
-    ) : this(constructJNI(seedString, keyDerivationOptionsJson))
 
     /**
      * Construct by reconstituting its members (including [signatureVerificationKeyBytes])

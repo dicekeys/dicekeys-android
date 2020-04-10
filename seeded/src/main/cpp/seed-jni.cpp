@@ -83,7 +83,7 @@ JNIEXPORT jlong JNICALL
 }
 
 JNIEXPORT jlong JNICALL
-  Java_org_dicekeys_crypto_seeded_Seed_constructJNI__Ljava_lang_String_2Ljava_lang_String_2(
+  Java_org_dicekeys_crypto_seeded_Seed_deriveFromSeedJNI__Ljava_lang_String_2Ljava_lang_String_2(
   JNIEnv *env,
   jclass clazz,
   jstring seed_string,
