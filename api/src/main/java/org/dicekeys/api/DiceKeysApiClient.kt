@@ -5,19 +5,35 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.crypto.seeded.PublicKey
+import org.dicekeys.crypto.seeded.PrivateKey
 import org.dicekeys.crypto.seeded.Seed
+import org.dicekeys.crypto.seeded.SignatureVerificationKey
+import org.dicekeys.crypto.seeded.SigningKey
+import org.dicekeys.crypto.seeded.SymmetricKey
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import java.security.InvalidParameterException
 import kotlin.collections.HashMap
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
- * The DiceKeys [DiceKeysApi] allows client applications to access the DiceKeys app to perform
+ * The [DiceKeysApi] gives client applications access to the DiceKeys app to perform
  * cryptographic operations on their behalf.
  *
- * To use it, call [create] and be sure call [handleOnActivityResult] when you, the consumer,
- * receive onActivityResult callbacks.
+ * **IMPORTANT**
+ *
+ * **To use this API, you must:**
+ * 1. Call [create] to instantiate an API for your activity or fragment, which you can use
+ * to make API calls/
+ * 2. Implement _onActivityResult_ for your activity or fragment, and pass the
+ * intent you receive to your API object's [handleOnActivityResult] function. This allows the
+ * API to receive responses to API requests, process them, and return them to you.
+ *
+ * If you forget the second step, your API calls will never return—a class of bug first
+ * documented in ([Steiner and Hawes, 1949](https://en.wikipedia.org/wiki/M.T.A._(song))).
+ *
  */
 abstract class DiceKeysApi(
         private val callingContext: Context
@@ -30,6 +46,7 @@ abstract class DiceKeysApi(
          * and have it call [handleOnActivityResult] so that the API can receive results passed
          * back to the API through inter-process communication.
          */
+        @JvmStatic
         fun create(activity: android.app.Activity): DiceKeysApi = object: DiceKeysApi(activity) {
             override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
                     createIntentForCall(command, parameters).also { intent->
@@ -44,6 +61,7 @@ abstract class DiceKeysApi(
          * and have it call [handleOnActivityResult] so that the API can receive results passed
          * back to the API through inter-process communication.
          */
+        @JvmStatic
         fun create(fragment: Fragment): DiceKeysApi = object: DiceKeysApi(fragment.context ?: throw InvalidParameterException("Fragment must have context")) {
             override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
                     createIntentForCall(command, parameters).also { intent->
@@ -97,14 +115,18 @@ abstract class DiceKeysApi(
 
 
     /**
-     * Abstracts away the names used to marshall parameters into bundles for requests and response.
+     * The names used to marshall parameters into bundles for requests and response.
      */
     object ParameterNames {
         internal object Reused {
             const val postDecryptionInstructionsJson = "postDecryptionInstructionsJson"
             const val plaintext = "plaintext"
             const val packagedSealedMessageSerializedToBinary = "packagedSealedMessageSerializedToBinary"
-            const val signatureVerificationKeyJson = "signatureVerificationKeyJson"
+            const val signatureVerificationKeySerializedToBinary = "signatureVerificationKeySerializedToBinary"
+            const val signingKeySerializedToBinary = "signingKeySerializedToBinary"
+            const val privateKeySerializedToBinary = "privateKeySerializedToBinary"
+            const val publicKeySerializedToBinary = "publicKeySerializedToBinary"
+            const val symmetricKeySerializedToBinary = "symmetricKeySerializedToBinary"
 
         }
 
@@ -121,6 +143,9 @@ abstract class DiceKeysApi(
         }
 
         object SymmetricKey {
+            object GetKey {
+                const val symmetricKeySerializedToBinary = Reused.symmetricKeySerializedToBinary
+            }
 
             object Seal {
                 const val plaintext = Reused.plaintext
@@ -134,8 +159,12 @@ abstract class DiceKeysApi(
         }
 
         object PrivateKey {
+            object GetPrivate {
+                const val privateKeySerializedToBinary = Reused.privateKeySerializedToBinary
+            }
+
             object GetPublic {
-                const val publicKeyJson = "publicKeyJson"
+                const val publicKeySerializedToBinary = Reused.publicKeySerializedToBinary
             }
 
             object Unseal {
@@ -145,19 +174,27 @@ abstract class DiceKeysApi(
         }
 
         object SigningKey {
+            object GetSigningKey {
+                const val signingKeySerializedToBinary = Reused.signingKeySerializedToBinary
+            }
+
             object GetSignatureVerificationKey {
-                const val signatureVerificationKeyJson = Reused.signatureVerificationKeyJson
+                const val signatureVerificationKeySerializedToBinary = Reused.signatureVerificationKeySerializedToBinary
             }
 
             object GenerateSignature {
                 const val message = "message"
                 const val signature = "signature"
-                const val signatureVerificationKeyJson = Reused.signatureVerificationKeyJson
+                const val signatureVerificationKeySerializedToBinary = Reused.signatureVerificationKeySerializedToBinary
             }
         }
 
     }
 
+    /**
+     * When an API call is made, an intent is sent with an actual equal to one of these
+     * operation names, each of which represents a different API function (operation).
+     */
     object OperationNames {
 
         object Seed {
@@ -165,16 +202,19 @@ abstract class DiceKeysApi(
         }
 
         object SymmetricKey {
+            const val getKey = "org.dicekeys.api.actions.SymmetricKey.getKey"
             const val seal = "org.dicekeys.api.actions.SymmetricKey.seal"
             const val unseal = "org.dicekeys.api.actions.SymmetricKey.unseal"
         }
 
         object PrivateKey {
-            const val getPublic = "org.dicekeys.api.actions.PrivateKey.getPublic"
+            const val getPrivate = "org.dicekeys.api.actions.PrivateKey.getPrivateKey"
+            const val getPublic = "org.dicekeys.api.actions.PrivateKey.getPublicKey"
             const val unseal = "org.dicekeys.api.actions.PrivateKey.unseal"
         }
 
         object SigningKey {
+            const val getSigningKey = "org.dicekeys.api.actions.SigningKey.getSigningKey"
             const val getSignatureVerificationKey = "org.dicekeys.api.actions.SigningKey.getSignatureVerificationKey"
             const val generateSignature = "org.dicekeys.api.actions.SigningKey.generateSignature"
         }
@@ -191,46 +231,59 @@ abstract class DiceKeysApi(
     }
 
     /**
-     * Syntactic sugar so that all callbacks for DiceKeys API calls have the same ancestor
-     * and are easier to identify.
+     * The generic wrapper for all callback classes used to get asynchronous
+     * responses. (Kotlin users can avoid using callbacks by using the suspendable
+     * APi calls.)
      */
-    interface DiceKeysApiCallback {}
+    interface Callback<T> {
+        fun onComplete(result: T)
+        fun onException(e: Exception?)
+    }
+
+    /***********************************************************************************
+     * API construction helper functions
+     */
+
 
     /**
      * For each API call, we'll track a map of requestId to the intent used to make the
      * request and to the callbacks the caller registered for the response.
      */
-    internal data class RequestIntentAndCallback<T: DiceKeysApiCallback> (
+    internal data class RequestIntentAndCallback<T> (
             val requestIntent: Intent,
-            val callback: T
+            val callback: Callback<T>
     )
 
     /**
      * This helper function adds the intent and callbacks for a request
      * to a map that can retrieve them based on the requestId.
      */
-    private fun <T: DiceKeysApiCallback>addRequestAndCallback(
+    private fun <T>addRequestAndCallback(
             map: HashMap<String, RequestIntentAndCallback<T>>,
             intent: Intent,
-            callback: T
+            callback: Callback<T>
     ): Unit {
         intent.getStringExtra(ParameterNames.Common.requestId)?.let { requestId ->
             map[requestId] = RequestIntentAndCallback<T>(intent, callback)
         }
     }
 
+    suspend fun <T> awaitCallback(block: (Callback<T>) -> Unit) : T =
+        suspendCoroutine { cont ->
+            block(object : Callback<T> {
+                override fun onComplete(result: T) = cont.resume(result)
+                override fun onException(e: Exception?) {
+                    e?.let { cont.resumeWithException(it) }
+                }
+            })
+        }
 
-    interface GetSeedCallback : DiceKeysApiCallback {
-        fun onGetSeedSuccess(
-                seed: Seed,
-                originalIntent: Intent
-        )
-        fun onGetSeedFail(
-                exception: Exception,
-                originalIntent: Intent
-        ) {}
-    }
-    private val getSeedCallbacks = HashMap<String, RequestIntentAndCallback<GetSeedCallback>>()
+    private val getSeedCallbacks = HashMap<String, RequestIntentAndCallback<Seed>>()
+
+    /*****************************************************************************
+     * The API itself
+     */
+
 
     /**
      * Derive a pseudo-random cryptographic seed from the user's DiceKey and
@@ -238,51 +291,127 @@ abstract class DiceKeysApi(
      */
     fun getSeed(
             keyDerivationOptionsJson: String,
-            callback: GetSeedCallback? = null
+            callback: Callback<Seed>? = null
     ): Intent =
             call(OperationNames.Seed.get,
                     bundleOf(
                             ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
                     )
-            ).also { intent -> callback?.let{ addRequestAndCallback(getSeedCallbacks, intent, it) } }
+            ).also { intent -> callback?.let{
+                addRequestAndCallback(getSeedCallbacks, intent, it)
+            } }
+    /**
+     * getSeed (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun getSeed(
+            keyDerivationOptionsJson: String
+    ): Seed = awaitCallback{ getSeed(
+            keyDerivationOptionsJson, it
+    ) }
 
-    interface GetPublicKeyCallback : DiceKeysApiCallback {
-        fun onGetPublicKeySuccess(
-                publicKey: PublicKey,
-                originalIntent: Intent
-        )
-        fun onGetPublicKeyFail(
-                exception: Exception,
-                originalIntent: Intent
-        ) {}
-    }
-    private val getPublicKeyCallbacks = HashMap<String, RequestIntentAndCallback<GetPublicKeyCallback>>()
+
+    private val getPrivateKeyCallbacks = HashMap<String, RequestIntentAndCallback<PrivateKey>>()
+    /**
+     * Get a [PrivateKey] derived from the user's DiceKey (the seed) and the key-derivation options
+     * specified via [keyDerivationOptionsJson], which must specify
+     *  `"clientMayRetrieveKey": true`.
+     */
+    fun getPrivateKey(
+            keyDerivationOptionsJson: String,
+            callback: Callback<PrivateKey>? = null
+    ): Intent =
+            call(OperationNames.PrivateKey.getPrivate,
+                    bundleOf(
+                            ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
+                    )
+            ).also { intent -> callback?.let{ addRequestAndCallback(getPrivateKeyCallbacks, intent, it) } }
+    /**
+     * getPrivateKey (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun getPrivateKey(
+            keyDerivationOptionsJson: String
+    ): PrivateKey = awaitCallback{ getPrivateKey(
+            keyDerivationOptionsJson, it
+    ) }
+
+    private val getSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<SymmetricKey>>()
+    /**
+     * Get a [SymmericKey] derived from the user's DiceKey (the seed) and the key-derivation options
+     * specified via [keyDerivationOptionsJson], which must specify
+     *  `"clientMayRetrieveKey": true`.
+     */
+    fun getSymmetricKey(
+            keyDerivationOptionsJson: String,
+            callback: Callback<SymmetricKey>? = null
+    ): Intent =
+            call(OperationNames.SymmetricKey.getKey,
+                    bundleOf(
+                            ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
+                    )
+            ).also { intent -> callback?.let{ addRequestAndCallback(getSymmetricKeyCallbacks, intent, it) } }
+    /**
+     * getSymmetricKey (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun getSymmetricKey(
+            keyDerivationOptionsJson: String
+    ): SymmetricKey = awaitCallback{ getSymmetricKey(
+            keyDerivationOptionsJson, it
+    ) }
+
+    private val getSigningKeyCallbacks = HashMap<String, RequestIntentAndCallback<SigningKey>>()
+    /**
+     * Get a [SigningKey] derived from the user's DiceKey (the seed) and the key-derivation options
+     * specified via [keyDerivationOptionsJson], which must specify
+     *  `"clientMayRetrieveKey": true`.
+     */
+    fun getSigningKey(
+            keyDerivationOptionsJson: String,
+            callback: Callback<SigningKey>? = null
+    ): Intent =
+            call(OperationNames.SigningKey.getSigningKey,
+                    bundleOf(
+                            ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
+                    )
+            ).also { intent -> callback?.let{ addRequestAndCallback(getSigningKeyCallbacks, intent, it) } }
+    /**
+     * getSigningKey (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun getSigningKey(
+            keyDerivationOptionsJson: String
+    ): SigningKey = awaitCallback{ getSigningKey(
+            keyDerivationOptionsJson, it
+    ) }
+
 
     /**
-     * Get a public key derived from the user's DiceKey and the [KeyDerivationOptions] specified
+     * Get a public key derived from the user's DiceKey and the [ApiKeyDerivationOptions] specified
      * in JSON format via [keyDerivationOptionsJson]
      */
+    private val getPublicKeyCallbacks = HashMap<String, RequestIntentAndCallback<PublicKey>>()
     fun getPublicKey(
             keyDerivationOptionsJson: String,
-            callback: GetPublicKeyCallback? = null
+            callback: Callback<PublicKey>? = null
     ): Intent =
             call(OperationNames.PrivateKey.getPublic,
                     bundleOf(
                             ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
                     )
             ).also { intent -> callback?.let{ addRequestAndCallback(getPublicKeyCallbacks, intent, it) } }
+    /**
+     * getPublicKey (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun getPublicKey(
+            keyDerivationOptionsJson: String
+    ): PublicKey = awaitCallback{ getPublicKey(
+            keyDerivationOptionsJson, it
+    ) }
 
-    interface UnsealWithPrivateKeyCallback : DiceKeysApiCallback {
-        fun onUnsealAsymmetricSuccess(
-                plaintext: ByteArray,
-                originalIntent: Intent
-        )
-        fun onUnsealAsymmetricFail(
-                exception: Exception,
-                originalIntent: Intent
-        ) {}
-    }
-    private val unsealAsymmetricCallbacks = HashMap<String, RequestIntentAndCallback<UnsealWithPrivateKeyCallback>>()
+    private val unsealAsymmetricCallbacks = HashMap<String, RequestIntentAndCallback<ByteArray>>()
     /**
      * Unseal (decrypt & authenticate) a message that was previously sealed with a
      * [PublicKey] to construct a [PackagedSealedMessage].
@@ -292,14 +421,22 @@ abstract class DiceKeysApi(
      */
     fun unsealWithPrivateKey(
             packagedSealedMessage: PackagedSealedMessage,
-            callback: UnsealWithPrivateKeyCallback? = null
+            callback: Callback<ByteArray>? = null
     ): Intent =
             call(OperationNames.PrivateKey.unseal,
                     bundleOf(
                             ParameterNames.PrivateKey.Unseal.packagedSealedMessageSerializedToBinary to packagedSealedMessage.toSerializedBinaryForm()
                     )
             ).also { intent -> callback?.let{ addRequestAndCallback(unsealAsymmetricCallbacks, intent, it) } }
-
+    /**
+     * unsealWithPrivateKey (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun unsealWithPrivateKey(
+            packagedSealedMessage: PackagedSealedMessage
+    ): ByteArray = awaitCallback{ unsealWithPrivateKey(
+            packagedSealedMessage, it
+    ) }
 //    /**
 //     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with
 //     * [publicKey].
@@ -339,21 +476,11 @@ abstract class DiceKeysApi(
 //            unsealWithPrivateKey(ciphertext, PublicKey(publicKeyJson), "", callback)
 
 
-    interface SealWithSymmetricKeyCallback : DiceKeysApiCallback {
-        fun onSealWithSymmetricKeySuccess(
-                packagedSealedMessage: PackagedSealedMessage,
-                originalIntent: Intent
-        )
-        fun onSealWithSymmetricKeyFail(
-                exception: Exception,
-                originalIntent: Intent
-        ) {}
-    }
-    private val sealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<SealWithSymmetricKeyCallback>>()
+    private val sealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<PackagedSealedMessage>>()
     /**
      * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
      * symmetric key derived from the user's DiceKey, the
-     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
+     * key-derivation options specified in JSON format via [keyDerivationOptionsJson],
      * and [PostDecryptionInstructions] specified via a JSON string as
      * [postDecryptionInstructionsJson].
      */
@@ -361,7 +488,7 @@ abstract class DiceKeysApi(
             keyDerivationOptionsJson: String,
             plaintext: ByteArray,
             postDecryptionInstructionsJson: String = "",
-            callback: SealWithSymmetricKeyCallback? = null
+            callback: Callback<PackagedSealedMessage>
     ): Intent =
             call(OperationNames.SymmetricKey.seal,
                     bundleOf(
@@ -369,34 +496,27 @@ abstract class DiceKeysApi(
                             ParameterNames.SymmetricKey.Seal.plaintext to plaintext,
                             ParameterNames.SymmetricKey.Seal.postDecryptionInstructionsJson to postDecryptionInstructionsJson
                     )
-            ).also { intent -> callback?.let{ addRequestAndCallback(sealWithSymmetricKeyCallbacks, intent, it) } }
-    /**
-     * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
-     * symmetric key derived from the user's DiceKey, the
-     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
-     * but without any post-decryption instructions.
-     */
-    fun sealWithSymmetricKey(
-            keyDerivationOptionsJson: String,
-            plaintext: ByteArray,
-            callback: SealWithSymmetricKeyCallback? = null
-    ): Intent = sealWithSymmetricKey(keyDerivationOptionsJson, plaintext, "", callback)
+            ).also { intent ->
+                addRequestAndCallback(sealWithSymmetricKeyCallbacks, intent, callback)
+            }
 
-    interface UnsealWithSymmetricKeyCallback : DiceKeysApiCallback {
-        fun onUnsealSymmetricSuccess(
-                plaintext: ByteArray,
-                originalIntent: Intent
-        )
-        fun onUnsealSymmetricFail(
-                exception: Exception,
-                originalIntent: Intent
-        ) {}
-    }
-    private val unsealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<UnsealWithSymmetricKeyCallback>>()
+    /**
+     * Seal (same as above) implemented as a Kotlin suspend function in place of callbacks.
+     */
+    suspend fun sealWithSymmetricKey(
+        keyDerivationOptionsJson: String,
+        plaintext: ByteArray,
+        postDecryptionInstructionsJson: String
+    ): PackagedSealedMessage = awaitCallback{ sealWithSymmetricKey(
+            keyDerivationOptionsJson, plaintext, postDecryptionInstructionsJson, it
+    ) }
+
+
+    private val unsealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<ByteArray>>()
     /**
      * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with a
      * symmetric key derived from the user's DiceKey, the
-     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
+     * [ApiKeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
      * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
      *
      * If any of those strings change, the wrong key will be derive and the message will
@@ -404,7 +524,7 @@ abstract class DiceKeysApi(
      */
     fun unsealWithSymmetricKey(
             packagedSealedMessage: PackagedSealedMessage,
-            callback: UnsealWithSymmetricKeyCallback? = null
+            callback: Callback<ByteArray>? = null
     ): Intent =
             call(OperationNames.SymmetricKey.unseal,
                     bundleOf(
@@ -412,53 +532,54 @@ abstract class DiceKeysApi(
                     )
             ).also { intent -> callback?.let{ addRequestAndCallback(unsealWithSymmetricKeyCallbacks, intent, it) } }
 
-    interface GetSignatureVerificationKeyCallback : DiceKeysApiCallback {
-        fun onGetSignatureVerificationKeySuccess(
-                signatureVerificationKey: SignatureVerificationKey,
-                originalIntent: Intent
-        )
-        fun onGetSignatureVerificationKeyFail(
-                exception: Exception,
-                originalIntent: Intent
-        ) {}
-    }
-    private val getSignatureVerificationKeyCallbacks = HashMap<String, RequestIntentAndCallback<GetSignatureVerificationKeyCallback>>()
+    private val getSignatureVerificationKeyCallbacks = HashMap<String, RequestIntentAndCallback<SignatureVerificationKey>>()
+    /**
+     * unsealWithSymmetricKey (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun unsealWithSymmetricKey(
+            packagedSealedMessage: PackagedSealedMessage
+    ): ByteArray = awaitCallback{ unsealWithSymmetricKey(
+            packagedSealedMessage, it
+    ) }
 
     /**
      * Get a public signature-verification key derived from the user's DiceKey and the
-     * [KeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson]
+     * [ApiKeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson]
      */
     fun getSignatureVerificationKey(
             keyDerivationOptionsJson: String,
-            callback: GetSignatureVerificationKeyCallback? = null
+            callback: Callback<SignatureVerificationKey>? = null
     ): Intent =
             call(OperationNames.SigningKey.getSignatureVerificationKey,
                     bundleOf(
                             ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
                     )
             ).also { intent -> callback?.let{ addRequestAndCallback(getSignatureVerificationKeyCallbacks, intent, it) } }
+    /**
+     * getSignatureVerificationKey (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun getSignatureVerificationKey(
+            keyDerivationOptionsJson: String
+    ): SignatureVerificationKey = awaitCallback{ getSignatureVerificationKey(
+            keyDerivationOptionsJson, it
+    ) }
 
-    interface GenerateSignatureCallback : DiceKeysApiCallback {
-        fun onGenerateSignatureCallbackSuccess(
-                signature: ByteArray,
-                signatureVerificationKey: SignatureVerificationKey,
-                originalIntent: Intent
-        )
-        fun onGenerateSignatureCallbackFail(
-                exception: Exception,
-                originalIntent: Intent
-        ) {}
+    interface GenerateSignatureResult {
+        val signature: ByteArray
+        val signatureVerificationKey: SignatureVerificationKey
     }
-    private val generateSignatureCallbacks = HashMap<String, RequestIntentAndCallback<GenerateSignatureCallback>>()
+    private val generateSignatureCallbacks = HashMap<String, RequestIntentAndCallback<GenerateSignatureResult>>()
     /**
      * Sign a [message] using a public/private signing key pair derived
-     * from the user's DiceKey and the [KeyDerivationOptions] specified in JSON format via
+     * from the user's DiceKey and the [ApiKeyDerivationOptions] specified in JSON format via
      * [keyDerivationOptionsJson].
      */
     fun generateSignature(
             keyDerivationOptionsJson: String,
             message: ByteArray,
-            callback: GenerateSignatureCallback? = null
+            callback: Callback<GenerateSignatureResult>? = null
     ): Intent =
             call(OperationNames.SigningKey.generateSignature,
                     bundleOf(
@@ -466,13 +587,22 @@ abstract class DiceKeysApi(
                             ParameterNames.SigningKey.GenerateSignature.message to message
                     )
             ).also { intent -> callback?.let{ addRequestAndCallback(generateSignatureCallbacks, intent, it) } }
+    /**
+     * generateSignature (same as above) implemented as a Kotlin suspend function
+     * in place of callbacks.
+     */
+    suspend fun generateSignature(
+        keyDerivationOptionsJson: String,
+        message: ByteArray
+    ): GenerateSignatureResult = awaitCallback{ generateSignature(
+        keyDerivationOptionsJson, message, it
+    ) }
 
-
-    private fun <T: DiceKeysApiCallback>handleResult(
+    private fun <T>handleResult(
             intentAndCallbackMap: HashMap<String, RequestIntentAndCallback<T>>,
             resultIntent: Intent,
-            failureHandler: (callback: T, originalIntent: Intent, e: Exception) -> Unit,
-            successHandler: (callback: T, originalIntent: Intent) -> Unit
+            failureHandler: (callback: Callback<T>, originalIntent: Intent, e: Exception) -> Unit,
+            successHandler: (callback: Callback<T>, originalIntent: Intent) -> Unit
     ) {
         resultIntent.getStringExtra(ParameterNames.Common.requestId)?.let{ requestId ->
             intentAndCallbackMap[requestId]?.run {
@@ -503,77 +633,111 @@ abstract class DiceKeysApi(
             when(requestIdToCommand(requestId)) {
 
                 OperationNames.Seed.get -> handleResult(getSeedCallbacks, resultIntent,
-                        { callback, originalIntent, e -> callback.onGetSeedFail(e, originalIntent) },
-                        { callback, originalIntent ->
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
                             resultIntent.getStringExtra(ParameterNames.Seed.Get.seedJson)?.let{ seedJson ->
-                                callback.onGetSeedSuccess(Seed.fromJson(seedJson), originalIntent)
+                                callback.onComplete(Seed.fromJson(seedJson))
                             }
                         }
                 )
 
                 OperationNames.PrivateKey.getPublic -> handleResult(getPublicKeyCallbacks, resultIntent,
-                        { callback, originalIntent, e -> callback.onGetPublicKeyFail(e, originalIntent) },
-                        { callback, originalIntent ->
-                            resultIntent.getStringExtra(ParameterNames.PrivateKey.GetPublic.publicKeyJson)?.let { publicKeyJson ->
-                                val publicKey = PublicKey.fromJson(publicKeyJson)
-                                callback.onGetPublicKeySuccess(publicKey, originalIntent)
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
+                            resultIntent.getByteArrayExtra(ParameterNames.PrivateKey.GetPublic.publicKeySerializedToBinary)?.let {
+                                callback.onComplete(PublicKey.fromSerializedBinaryForm(it))
                             }
                         }
                 )
 
                 OperationNames.SymmetricKey.unseal -> handleResult(unsealWithSymmetricKeyCallbacks, resultIntent,
-                        { callback, originalIntent, e -> callback.onUnsealSymmetricFail(e, originalIntent) },
-                        { callback, originalIntent ->
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
                             resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.Unseal.plaintext)?.let { plaintext ->
-                                callback.onUnsealSymmetricSuccess(plaintext, originalIntent)
+                                callback.onComplete(plaintext)
                             }
                         }
                 )
 
                 OperationNames.PrivateKey.unseal -> handleResult(unsealAsymmetricCallbacks, resultIntent,
-                        { callback, originalIntent, e -> callback.onUnsealAsymmetricFail(e, originalIntent) },
-                        { callback, originalIntent ->
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
                             resultIntent.getByteArrayExtra(ParameterNames.PrivateKey.Unseal.plaintext)?.let { plaintext ->
-                                callback.onUnsealAsymmetricSuccess(plaintext, originalIntent)
+                                callback.onComplete(plaintext)
                             }
                         }
                 )
 
                 OperationNames.SymmetricKey.seal -> handleResult(sealWithSymmetricKeyCallbacks, resultIntent,
-                        { callback, originalIntent, e -> callback.onSealWithSymmetricKeyFail(e, originalIntent) },
-                        { callback, originalIntent ->
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
                             resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary)?.let { sealedMessageJson ->
-                                callback.onSealWithSymmetricKeySuccess(PackagedSealedMessage.fromSerializedBinaryForm(sealedMessageJson), originalIntent)
+                                callback.onComplete(PackagedSealedMessage.fromSerializedBinaryForm(sealedMessageJson))
                             }
                         }
                 )
 
                 OperationNames.SigningKey.generateSignature -> handleResult(generateSignatureCallbacks, resultIntent,
-                        { callback, originalIntent, e -> callback.onGenerateSignatureCallbackFail(e, originalIntent) },
-                        { callback, originalIntent ->
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
                             resultIntent.getByteArrayExtra(ParameterNames.SigningKey.GenerateSignature.signature)?.let { signature ->
-                            resultIntent.getByteArrayExtra(ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeyJson)?.let { signatureVerificationKeyJson ->
-                                callback.onGenerateSignatureCallbackSuccess(
-                                        signature,
-                                        SignatureVerificationKey(signatureVerificationKeyJson),
-                                        originalIntent)
+                            resultIntent.getByteArrayExtra(ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeySerializedToBinary)?.let { signatureVerificationKeySerializedToBinary ->
+                                callback.onComplete(object: GenerateSignatureResult {
+                                    override val signature = signature
+                                    override val signatureVerificationKey =
+                                            SignatureVerificationKey.fromSerializedBinaryForm(signatureVerificationKeySerializedToBinary)
+                                })
                             }}
                         }
                 )
 
                 OperationNames.SigningKey.getSignatureVerificationKey -> handleResult(getSignatureVerificationKeyCallbacks, resultIntent,
-                        { callback, originalIntent, e -> callback.onGetSignatureVerificationKeyFail(e, originalIntent) },
-                        { callback, originalIntent ->
-                            resultIntent.getStringExtra(ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeyJson)?.let{ signatureVerificationKeyJson ->
-                                val signatureVerificationKey = SignatureVerificationKey.fromJson(signatureVerificationKeyJson)
-                                callback.onGetSignatureVerificationKeySuccess(signatureVerificationKey, originalIntent)
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
+                            resultIntent.getByteArrayExtra(
+                                    ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeySerializedToBinary
+                            )?.let{
+                                callback.onComplete(SignatureVerificationKey.fromSerializedBinaryForm(it))
                             }
                         }
                 )
 
+                OperationNames.SigningKey.getSigningKey -> handleResult(getSigningKeyCallbacks, resultIntent,
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
+                            resultIntent.getByteArrayExtra(
+                                    ParameterNames.SigningKey.GetSigningKey.signingKeySerializedToBinary
+                            )?.let{
+                                callback.onComplete(SigningKey.fromSerializedBinaryForm(it))
+                            }
+                        }
+                )
+
+                OperationNames.PrivateKey.getPrivate -> handleResult(getPrivateKeyCallbacks, resultIntent,
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
+                            resultIntent.getByteArrayExtra(
+                                    ParameterNames.PrivateKey.GetPrivate.privateKeySerializedToBinary
+                            )?.let{
+                                callback.onComplete(PrivateKey.fromSerializedBinaryForm(it))
+                            }
+                        }
+                )
+
+                OperationNames.SymmetricKey.getKey -> handleResult(getSymmetricKeyCallbacks, resultIntent,
+                        { callback, _, e -> callback.onException(e) },
+                        { callback, _ ->
+                            resultIntent.getByteArrayExtra(
+                                    ParameterNames.SymmetricKey.GetKey.symmetricKeySerializedToBinary
+                            )?.let{
+                                callback.onComplete(SymmetricKey.fromSerializedBinaryForm(it))
+                            }
+                        }
+                )
 
                 else -> {}
             }
         }
     }
 }
+
