@@ -19,7 +19,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 /**
- * The [DiceKeysApi] gives client applications access to the DiceKeys app to perform
+ * The [DiceKeysApiClient] gives client applications access to the DiceKeys app to perform
  * cryptographic operations on their behalf.
  *
  * **IMPORTANT**
@@ -35,7 +35,7 @@ import kotlin.coroutines.suspendCoroutine
  * documented in ([Steiner and Hawes, 1949](https://en.wikipedia.org/wiki/M.T.A._(song))).
  *
  */
-abstract class DiceKeysApi(
+abstract class DiceKeysApiClient(
         private val callingContext: Context
 ) {
     companion object {
@@ -47,7 +47,7 @@ abstract class DiceKeysApi(
          * back to the API through inter-process communication.
          */
         @JvmStatic
-        fun create(activity: android.app.Activity): DiceKeysApi = object: DiceKeysApi(activity) {
+        fun create(activity: android.app.Activity): DiceKeysApiClient = object: DiceKeysApiClient(activity) {
             override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
                     createIntentForCall(command, parameters).also { intent->
                         activity.startActivityForResult(intent, requestCode)
@@ -62,7 +62,7 @@ abstract class DiceKeysApi(
          * back to the API through inter-process communication.
          */
         @JvmStatic
-        fun create(fragment: Fragment): DiceKeysApi = object: DiceKeysApi(fragment.context ?: throw InvalidParameterException("Fragment must have context")) {
+        fun create(fragment: Fragment): DiceKeysApiClient = object: DiceKeysApiClient(fragment.context ?: throw InvalidParameterException("Fragment must have context")) {
             override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
                     createIntentForCall(command, parameters).also { intent->
                         fragment.startActivityForResult(intent, requestCode)
@@ -506,7 +506,7 @@ abstract class DiceKeysApi(
     suspend fun sealWithSymmetricKey(
         keyDerivationOptionsJson: String,
         plaintext: ByteArray,
-        postDecryptionInstructionsJson: String
+        postDecryptionInstructionsJson: String = ""
     ): PackagedSealedMessage = awaitCallback{ sealWithSymmetricKey(
             keyDerivationOptionsJson, plaintext, postDecryptionInstructionsJson, it
     ) }

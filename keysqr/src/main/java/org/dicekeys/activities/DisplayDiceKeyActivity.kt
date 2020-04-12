@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.state.KeySqrState
 import org.dicekeys.readkeysqr.KeySqrDrawable
-import org.dicekeys.uses.seedfido.UsbCtapHidDeviceList
+//import com.dicekeys.fidowriter.UsbCtapHidDeviceList
 import org.dicekeys.R.id
 
 
@@ -28,7 +28,7 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
     private val REQUEST_CODE_PUBLIC_KEY = 3
 
     private lateinit var permissionIntent: android.app.PendingIntent
-    private lateinit var deviceList: UsbCtapHidDeviceList
+//    private lateinit var deviceList: UsbCtapHidDeviceList
     private lateinit var writeButton: Button
     private lateinit var forgetDiceKeyButton: Button
     private lateinit var viewPublicKeyButton: Button
@@ -43,10 +43,10 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
 
         permissionIntent = android.app.PendingIntent.getBroadcast(this, 0, Intent(INTENT_ACTION_USB_PERMISSION_EVENT), 0)
 
-        deviceList = UsbCtapHidDeviceList(
-                getSystemService(android.content.Context.USB_SERVICE) as UsbManager,
-                permissionIntent
-        )
+//        deviceList = UsbCtapHidDeviceList(
+//                getSystemService(android.content.Context.USB_SERVICE) as UsbManager,
+//                permissionIntent
+//        )
 
         forgetDiceKeyButton.setOnClickListener{
             KeySqrState.clear()
@@ -61,9 +61,9 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
             startActivityForResult(newIntent, REQUEST_CODE_PUBLIC_KEY)
         }
 
-        writeButton.setOnClickListener{
-            writeToCurrentFidoToken()
-        }
+//        writeButton.setOnClickListener{
+//            writeToCurrentFidoToken()
+//        }
 
     }
 
@@ -101,15 +101,15 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
     }
 
     fun renderButtonChanges() {
-        if (deviceList.devices.size == 1) deviceList.devices.values.firstOrNull()?.let {
-            val device = it
-            if (deviceList.hasPermission(device)) {
-                // Enable the write button
-                writeButton.isEnabled = true
-                writeButton.visibility = android.view.View.VISIBLE
-                return
-            }
-        }
+//        if (deviceList.devices.size == 1) deviceList.devices.values.firstOrNull()?.let {
+//            val device = it
+//            if (deviceList.hasPermission(device)) {
+//                // Enable the write button
+//                writeButton.isEnabled = true
+//                writeButton.visibility = android.view.View.VISIBLE
+//                return
+//            }
+//        }
         // Disable the write button
         writeButton.isEnabled = false
         writeButton.visibility = android.view.View.INVISIBLE
@@ -132,47 +132,47 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
     }
 
 
-    fun writeToCurrentFidoToken() {
-        if (deviceList.devices.size == 1) deviceList.devices.values.firstOrNull()?.let {
-            writeToFidoToken(it)
-        }
-    }
+//    fun writeToCurrentFidoToken() {
+//        if (deviceList.devices.size == 1) deviceList.devices.values.firstOrNull()?.let {
+//            writeToFidoToken(it)
+//        }
+//    }
 
-    private fun writeToFidoToken(device: UsbDevice) {
-        writeButton.isEnabled = false
-        val instructionToast = Toast.makeText(applicationContext,
-                "Press the button your FIDO token three times.", Toast.LENGTH_LONG)
-        Thread(Runnable {
-            try {
-                getSeed()?.let {
-                    val seed = it
-                    synchronized(this) {
-                        val connection = deviceList.connect(device)
-                        runOnUiThread{
-                            instructionToast.show()
-                        }
-                        connection.loadKeySeed(seed)
-                    }
-                    runOnUiThread {
-                        instructionToast.cancel()
-                        val successMessageToast = Toast.makeText(applicationContext,
-                                "FIDO token written.",
-                                // Integrate this into the above string to see what's written:
-                                //   ${seed.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') } }
-                                Toast.LENGTH_SHORT
-                        )
-                        successMessageToast.show()
-                        writeButton.isEnabled = true
-                    }
-                }
-            } catch (e: java.lang.Exception) {
-                runOnUiThread{
-                    val failureMessageToast = Toast.makeText(applicationContext,
-                            "FIDO token write failed: ${e.message}", Toast.LENGTH_LONG)
-                    failureMessageToast.show()
-                    writeButton.isEnabled = true
-                }
-            }
-        }).start()
-    }
+//    private fun writeToFidoToken(device: UsbDevice) {
+//        writeButton.isEnabled = false
+//        val instructionToast = Toast.makeText(applicationContext,
+//                "Press the button your FIDO token three times.", Toast.LENGTH_LONG)
+//        Thread(Runnable {
+//            try {
+//                getSeed()?.let {
+//                    val seed = it
+//                    synchronized(this) {
+//                        val connection = deviceList.connect(device)
+//                        runOnUiThread{
+//                            instructionToast.show()
+//                        }
+//                        connection.loadKeySeed(seed)
+//                    }
+//                    runOnUiThread {
+//                        instructionToast.cancel()
+//                        val successMessageToast = Toast.makeText(applicationContext,
+//                                "FIDO token written.",
+//                                // Integrate this into the above string to see what's written:
+//                                //   ${seed.asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') } }
+//                                Toast.LENGTH_SHORT
+//                        )
+//                        successMessageToast.show()
+//                        writeButton.isEnabled = true
+//                    }
+//                }
+//            } catch (e: java.lang.Exception) {
+//                runOnUiThread{
+//                    val failureMessageToast = Toast.makeText(applicationContext,
+//                            "FIDO token write failed: ${e.message}", Toast.LENGTH_LONG)
+//                    failureMessageToast.show()
+//                    writeButton.isEnabled = true
+//                }
+//            }
+//        }).start()
+//    }
 }

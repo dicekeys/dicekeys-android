@@ -10,12 +10,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import org.dicekeys.api.DiceKeysApi
-import org.dicekeys.uses.seedfido.UsbCtapHidDeviceList
-import org.dicekeys.crypto.seeded.Seed
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import org.dicekeys.api.DiceKeysApiClient
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var diceKeysApi: DiceKeysApi
+    private lateinit var diceKeysApiClient: DiceKeysApiClient
 
 
     private val INTENT_ACTION_USB_PERMISSION_EVENT = "org.dicekeys.intents.USB_PERMISSION_EVENT"
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diceKeysApi = DiceKeysApi.create(this)
+        diceKeysApiClient = DiceKeysApiClient.create(this)
         setContentView(R.layout.activity_main)
         secretTextView = findViewById(R.id.edit_text_secret)
         buttonWriteSecretToFidoToken = findViewById(R.id.btn_write_secret_to_fido_token)
@@ -66,22 +67,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         btn_generate_secret_from_dicekey.setOnClickListener {
-            try {
-                diceKeysApi.getSeed(seedKeyDerivationOptionsJson, object : DiceKeysApi.GetSeedCallback {
-                    override fun onGetSeedSuccess(seed: Seed, originalIntent: Intent) {
-                        edit_text_secret.text.clear()
-                        edit_text_secret.text.insert(0, seed.seedBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
-                        render()
-                    }
-
-                    override fun onGetSeedFail(exception: Exception, originalIntent: Intent) {
-                        render()
-                        TODO("Not yet implemented")
-                    }
-                })
-            } catch (e: java.lang.Exception) {
-                edit_text_secret.text.clear()
-                edit_text_secret.text.insert(0, e.toString())
+            GlobalScope.launch(Dispatchers.Main) {
+                try {
+                    val seed = diceKeysApiClient.getSeed(seedKeyDerivationOptionsJson)
+                    edit_text_secret.text.clear()
+                    edit_text_secret.text.insert(0, seed.seedBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
+                    render()
+                } catch (e: java.lang.Exception) {
+                    edit_text_secret.text.clear()
+                    edit_text_secret.text.insert(0, e.toString())
+                }
             }
         }
 
@@ -122,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        diceKeysApi.handleOnActivityResult(data)
+        diceKeysApiClient.handleOnActivityResult(data)
         render()
     }
 

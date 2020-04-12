@@ -14,7 +14,8 @@ class CryptographicVerificationFailureException(message: String) : java.lang.Exc
  * Thrown when a keyDerivationOptionsJson parameter contains a string that is neither
  * empty nor in valid JSON format.
  */
-class InvalidKeyDerivationOptionsJsonException(message: String) : java.lang.Exception(message)
+class InvalidKeyDerivationOptionsJsonException(message: String?) : java.lang.Exception(
+        message ?: "Invalid key-derivation options specified")
 
 /**
  * Thrown when a keyDerivationOptionsJson parameter contains a field that has an invalid

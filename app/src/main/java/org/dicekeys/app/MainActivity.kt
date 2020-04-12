@@ -6,11 +6,15 @@ import android.util.Base64
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import org.dicekeys.api.DiceKeysApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.dicekeys.api.DiceKeysApiClient
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.crypto.seeded.PublicKey
 import org.dicekeys.crypto.seeded.Seed
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -18,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         const val RC_DISPLAY_DICE = 2
     }
     private lateinit var buttonStart: Button
-    private lateinit var diceKeysApi: DiceKeysApi
+    private lateinit var diceKeysApiClient: DiceKeysApiClient
     private lateinit var resultTextView: TextView
     val keyDerivationOptionsJson = "{}"
     val testMessage = "The secret ingredient is dihydrogen monoxide"
@@ -26,130 +30,44 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diceKeysApi = DiceKeysApi.create(this)
+        diceKeysApiClient = DiceKeysApiClient.create(this)
         setContentView(R.layout.activity_main)
         resultTextView = findViewById(R.id.result_text)
         buttonStart = findViewById(R.id.btn_start)
 
-
-
-        buttonStart.setOnClickListener{
-            // basicApi.ensureKeyLoaded()
-            diceKeysApi.getSeed(
+        buttonStart.setOnClickListener{ GlobalScope.launch(Dispatchers.Main) { try {
+            val seed = diceKeysApiClient.getSeed(keyDerivationOptionsJson)
+            resultTextView.text = "Seed=${Base64.encodeToString(seed.seedBytes, Base64.DEFAULT)}"
+            val packagedSealedMessage = diceKeysApiClient.sealWithSymmetricKey(
                 keyDerivationOptionsJson,
-                object: DiceKeysApi.GetSeedCallback {
-                override fun onGetSeedSuccess(seed: Seed, originalIntent: Intent) {
-                    resultTextView.text = "Seed=${Base64.encodeToString(seed.seedBytes, Base64.DEFAULT)}"
-                    encryptSymmetric()
-                }
-            })
-        }
+                testMessageByteArray
+            )
+            resultTextView.text = "${resultTextView.text}\nSymmetrically sealed message '${testMessage}' as ciphertext '${Base64.encodeToString(packagedSealedMessage.ciphertext, Base64.DEFAULT)}'"
+            val plaintext = diceKeysApiClient.unsealWithSymmetricKey(packagedSealedMessage)
+            resultTextView.text =
+                "${resultTextView.text}\nUnsealed '${String(plaintext, Charsets.UTF_8)}'"
+            val sig = diceKeysApiClient.generateSignature(keyDerivationOptionsJson, testMessageByteArray)
+            resultTextView.text =
+                "${resultTextView.text}\nSigned test message '${Base64.encodeToString(sig.signature, Base64.DEFAULT)}'"
+            val signatureVerificationKey = diceKeysApiClient.getSignatureVerificationKey(keyDerivationOptionsJson)
+            val keysMatch = signatureVerificationKey == sig.signatureVerificationKey
+            val verified = signatureVerificationKey.verifySignature(testMessageByteArray, sig.signature)
+            resultTextView.text =
+                "${resultTextView.text}\nVerification key match=${keysMatch}, verification result=${verified}"
+            val publicKey = diceKeysApiClient.getPublicKey(keyDerivationOptionsJson)
+            val packagedSealedPkMessage = publicKey.seal(testMessageByteArray)
+            resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedPkMessage.ciphertext, Base64.DEFAULT)}'"
+            val pkPlaintext = diceKeysApiClient.unsealWithPrivateKey(packagedSealedMessage)
+            resultTextView.text = "${resultTextView.text}\nUnsealed '${String(pkPlaintext, Charsets.UTF_8)}'"
+        } catch (e: Exception) {
+            resultTextView.text = "${resultTextView.text}\nExceptionL $e"
+        }}}
     }
-
-    fun encryptSymmetric() {
-        diceKeysApi.sealWithSymmetricKey(
-            keyDerivationOptionsJson,
-            testMessageByteArray,
-            object: DiceKeysApi.SealWithSymmetricKeyCallback{
-                override fun onSealWithSymmetricKeySuccess(packagedSealedMessage: PackagedSealedMessage, originalIntent: Intent) {
-                    resultTextView.text = "${resultTextView.text}\nSymmetrically sealed message '${testMessage}' as ciphertext '${Base64.encodeToString(packagedSealedMessage.ciphertext, Base64.DEFAULT)}'"
-                    decryptSymmetric(packagedSealedMessage)
-                }
-
-                override fun onSealWithSymmetricKeyFail(exception: Exception, originalIntent: Intent) {
-                    resultTextView.text = "Symmetric seal failed:\n${exception.toString()}"
-                }
-        })
-    }
-
-    fun decryptSymmetric(packagedSealedMessage: PackagedSealedMessage) {
-        diceKeysApi.unsealWithSymmetricKey(
-            packagedSealedMessage,
-            object : DiceKeysApi.UnsealWithSymmetricKeyCallback {
-                override fun onUnsealSymmetricSuccess(plaintext: ByteArray, originalIntent: Intent) {
-                    resultTextView.text =
-                            "${resultTextView.text}\nUnsealed '${String(plaintext, Charsets.UTF_8)}'"
-                    sign()
-                }
-                override fun onUnsealSymmetricFail(exception: Exception, originalIntent: Intent) {
-                    resultTextView.text = "Symmetric unseal failed:\n${exception.toString()}"
-                }
-            })
-    }
-
-    fun sign() {
-        diceKeysApi.generateSignature(keyDerivationOptionsJson, testMessageByteArray, object: DiceKeysApi.GenerateSignatureCallback {
-            override fun onGenerateSignatureCallbackSuccess(signature: ByteArray, signatureVerificationKey: SignatureVerificationKey, originalIntent: Intent) {
-                resultTextView.text =
-                        "${resultTextView.text}\nSigned test message '${Base64.encodeToString(signature, Base64.DEFAULT)}'"
-                verifySignature(testMessageByteArray, signature, signatureVerificationKey)
-            }
-            override fun onGenerateSignatureCallbackFail(exception: Exception, originalIntent: Intent) {
-                resultTextView.text = "generateSignature failed:\n${exception.toString()}"
-            }
-        } )
-    }
-
-    fun verifySignature(message: ByteArray, signature: ByteArray, claimedSignatureVerificationKey: SignatureVerificationKey) {
-        diceKeysApi.getSignatureVerificationKey(keyDerivationOptionsJson, object: DiceKeysApi.GetSignatureVerificationKeyCallback{
-            override fun onGetSignatureVerificationKeySuccess(signatureVerificationKey: SignatureVerificationKey, originalIntent: Intent) {
-                val keysMatch = signatureVerificationKey == claimedSignatureVerificationKey
-                val verified = signatureVerificationKey.verifySignature(message, signature)
-                resultTextView.text =
-                        "${resultTextView.text}\nVerification key match=${keysMatch}, verification result=${verified}"
-                encryptPublic()
-            }
-            override fun onGetSignatureVerificationKeyFail(exception: Exception, originalIntent: Intent) {
-                resultTextView.text = "getSignatureVerificationKey failed:\n${exception.toString()}"
-            }
-        })
-    }
-
-
-    fun encryptPublic() {
-        diceKeysApi.getPublicKey(
-                keyDerivationOptionsJson,
-                object: DiceKeysApi.GetPublicKeyCallback{
-                    override fun onGetPublicKeySuccess(publicKey: PublicKey, originalIntent: Intent) {
-                        val packagedSealedMessage = publicKey.seal(testMessageByteArray)
-                        resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedMessage.ciphertext, Base64.DEFAULT)}'"
-                        decryptPrivate(packagedSealedMessage)
-                    }
-                    override fun onGetPublicKeyFail(exception: Exception, originalIntent: Intent) {
-                        resultTextView.text = "getPublicKey failed:\n${exception.toString()}"
-                    }
-                })
-    }
-
-    fun decryptPrivate(packagedSealedMessage: PackagedSealedMessage) {
-        diceKeysApi.unsealWithPrivateKey(
-                packagedSealedMessage,
-                object : DiceKeysApi.UnsealWithPrivateKeyCallback {
-                    override fun onUnsealAsymmetricSuccess(plaintext: ByteArray, originalIntent: Intent) {
-                        resultTextView.text =
-
-                                "${resultTextView.text}\nUnsealed '${String(plaintext, Charsets.UTF_8)}'"
-                    }
-                    override fun onUnsealAsymmetricFail(exception: Exception, originalIntent: Intent) {
-                        resultTextView.text = "unsealWithPrivateKey failed:\n${exception.toString()}"
-                    }
-                })
-    }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        diceKeysApi.handleOnActivityResult(data)
-//    if (requestCode == RC_READ_KEYSQR && resultCode == Activity.RESULT_OK && data!=null) {
-//        // After a DiceKey has been returned by the ReadKeySqrActivity,
-//        // launch the DisplayDiceKey activity to display it
-//        val keySqrAsJson: String? = data.getStringExtra("keySqrAsJson")
-//        if (keySqrAsJson != null && keySqrAsJson != "null") {
-//            val intent = Intent(this, DisplayDiceActivity::class.java)
-//            intent.putExtra("keySqrAsJson", keySqrAsJson)
-//            startActivityForResult(intent, RC_DISPLAY_DICE)
-//        }
-//    }
+        diceKeysApiClient.handleOnActivityResult(data)
+
 }
 
 

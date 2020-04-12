@@ -1,4 +1,4 @@
-package org.dicekeys.uses.seedfido
+package com.dicekeys.fidowriter
 
 import android.hardware.usb.*
 import java.util.*

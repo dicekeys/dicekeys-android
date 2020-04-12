@@ -1,5 +1,5 @@
 package org.dicekeys
-import org.dicekeys.crypto.seeded.KeyDerivationOptions
+import org.dicekeys.api.ApiKeyDerivationOptions
 import org.dicekeys.crypto.seeded.PrivateKey
 import org.dicekeys.crypto.seeded.PublicKey
 import org.dicekeys.crypto.seeded.Seed
@@ -83,7 +83,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
           keyDerivationOptionsJson: String,
           clientsApplicationId: String
   ) : String {
-    val kdo: KeyDerivationOptions = KeyDerivationOptions.fromJson(keyDerivationOptionsJson)
+    val kdo: ApiKeyDerivationOptions = ApiKeyDerivationOptions(keyDerivationOptionsJson)
     val restrictions = kdo.restrictions
     restrictions?.androidPackagePrefixesAllowed?.let { androidPackagePrefixesAllowed ->
       if (androidPackagePrefixesAllowed.isEmpty()) {

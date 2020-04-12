@@ -1,42 +1,43 @@
 package org.dicekeys.api
 
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonClass
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import org.json.JSONObject
 
-@JsonClass(generateAdapter = true)
-class PostDecryptionInstructions(
-    val clientApplicationIdMustHavePrefix: List<String>? = null,
-    val userMustAcknowledgeThisMessage: String? = null,
-    val alsoPostToUrl: String? = null,
-    val onlyPostToUrl: String? = null,
-    val reEncryptWithPublicKey: String? = null // hex bytes
+open class PostDecryptionInstructions(
+    postDecryptionInstructionsJson: String? = null
+): JSONObject(
+        if (postDecryptionInstructionsJson == null || postDecryptionInstructionsJson.isEmpty())
+            "{}"
+        else postDecryptionInstructionsJson
 ) {
-    companion object {
-        private val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .build()
 
-        private val jsonAdapter: JsonAdapter<PostDecryptionInstructions> =
-                moshi.adapter(PostDecryptionInstructions::class.java)
+//    val clientApplicationIdMustHavePrefix: List<String>? = null,
+//    val alsoPostToUrl: String? = null,
+//    val onlyPostToUrl: String? = null,
+//    val reEncryptWithPublicKey: String? = null // hex bytes
 
-        fun fromJsonReturningNullIfInvalid(json: String): PostDecryptionInstructions? {
-            try {
-                if (json == "null" || json.length < 2)
-                    return null
-                return jsonAdapter.fromJson(json)
-            } catch (e: Exception) {
-                return null
-            }
-        }
-        fun fromJsonReturningEmptyObjectIfInvalid(json: String): PostDecryptionInstructions {
-            return try {
-                jsonAdapter.fromJson(json) ?: PostDecryptionInstructions()
-            } catch (e: Exception) {
-                PostDecryptionInstructions()
-            }
+    var restrictions: ApiKeyDerivationOptions.Restrictions?
+        get() =
+            if (has(ApiKeyDerivationOptions::restrictions.name))
+                ApiKeyDerivationOptions.Restrictions(getJSONObject(ApiKeyDerivationOptions::restrictions.name))
+            else null
+        set(value) {
+            if (value == null)
+                remove(ApiKeyDerivationOptions::restrictions.name)
+            else
+                put(ApiKeyDerivationOptions::restrictions.name, value.jsonObj)
         }
 
-    }
+    var userMustAcknowledgeThisMessage: String?
+        get() =
+            if (has(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name))
+                getString(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name)
+            else null
+        set(value) {
+            if (value == null)
+                remove(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name)
+            else
+                put(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name, value)
+        }
+
+//    var sealResultWithPublicKey:
 }
