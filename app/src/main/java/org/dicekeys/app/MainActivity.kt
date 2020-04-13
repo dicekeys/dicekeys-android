@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             val publicKey = diceKeysApiClient.getPublicKey(keyDerivationOptionsJson)
             val packagedSealedPkMessage = publicKey.seal(testMessageByteArray)
             resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedPkMessage.ciphertext, Base64.DEFAULT)}'"
-            val pkPlaintext = diceKeysApiClient.unsealWithPrivateKey(packagedSealedMessage)
+            val pkPlaintext = diceKeysApiClient.unsealWithPrivateKey(packagedSealedPkMessage)
             resultTextView.text = "${resultTextView.text}\nUnsealed '${String(pkPlaintext, Charsets.UTF_8)}'"
         } catch (e: Exception) {
             resultTextView.text = "${resultTextView.text}\nExceptionL $e"
