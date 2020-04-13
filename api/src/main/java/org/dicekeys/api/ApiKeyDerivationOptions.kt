@@ -19,6 +19,7 @@ internal fun getJsonObjectsStringListOrNull(
 ): List<String>? =
         if (jsonObj.has(fieldName)) jsonArrayToStringList(jsonObj.getJSONArray(fieldName)) else null
 
+
 internal fun example_a() {
     val keyDerivationOptionsJson: String =
             ApiKeyDerivationOptions.Symmetric().apply {
@@ -126,7 +127,7 @@ open class ApiKeyDerivationOptions constructor(
             get() = getJsonObjectsStringListOrNull(
                     jsonObj, Restrictions::androidPackagePrefixesAllowed.name)
             set(value) { jsonObj.put(
-                    Restrictions::androidPackagePrefixesAllowed.name, value ) }
+                    Restrictions::androidPackagePrefixesAllowed.name, JSONArray(value) ) }
 
         /**
          * On Apple platforms, applications are specified by a URL containing a domain name
@@ -143,7 +144,7 @@ open class ApiKeyDerivationOptions constructor(
         var urlPrefixesAllowed: List<String>?
             get() = getJsonObjectsStringListOrNull(jsonObj,
                     Restrictions::urlPrefixesAllowed.name)
-            set(value) { jsonObj.put(Restrictions::urlPrefixesAllowed.name, value )}
+            set(value) { jsonObj.put(Restrictions::urlPrefixesAllowed.name, JSONArray(value) )}
     }
 
     /**
@@ -179,7 +180,7 @@ open class ApiKeyDerivationOptions constructor(
 
     /**
      * Restrict which clients are permitted to use the API to work with the derived key.
-     * See the documentation for [Restrcitions].
+     * See the documentation for [Restrictions].
      */
     var restrictions: Restrictions?
         get() =

@@ -1,5 +1,6 @@
 package org.dicekeys.api
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -40,14 +41,19 @@ abstract class DiceKeysApiClient(
 ) {
     companion object {
         /**
-         * Instantiate the API for a use by an [activity].
+         * Instantiate an API client for a use within a [Activity].
          *
-         * The calling [activity] will need to implement [android.app.Activity.onActivityResult]
-         * and have it call [handleOnActivityResult] so that the API can receive results passed
-         * back to the API through inter-process communication.
+         * The [Activity] using the [DiceKeysApiClient] must pass a reference
+         * to itself via the [activity] parameter.
+         *
+         * This client will send API requests to the DiceKeys app by creating intents and
+         * calling [Activity.startActivityForResult], but it needs your help
+         * to relay the results. You must have your activity override
+         * [Activity.onActivityResult] and pass the received intent to
+         * your [DiceKeysApiClient]'s [handleOnActivityResult] method.
          */
         @JvmStatic
-        fun create(activity: android.app.Activity): DiceKeysApiClient = object: DiceKeysApiClient(activity) {
+        fun create(activity: Activity): DiceKeysApiClient = object: DiceKeysApiClient(activity) {
             override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
                     createIntentForCall(command, parameters).also { intent->
                         activity.startActivityForResult(intent, requestCode)
@@ -55,11 +61,16 @@ abstract class DiceKeysApiClient(
         }
 
         /**
-         * Instantiate the API for a use by a [fragment].
+         * Instantiate an API client for a use within a [Fragment].
          *
-         * The calling [fragment] will need to implement [android.app.Activity.onActivityResult]
-         * and have it call [handleOnActivityResult] so that the API can receive results passed
-         * back to the API through inter-process communication.
+         * The [Fragment] using the [DiceKeysApiClient] must pass a reference
+         * to itself via the [fragment] parameter.
+         *
+         * This client will send API requests to the DiceKeys app by creating intents and
+         * calling [Fragment.startActivityForResult], but it needs your help
+         * to relay the results. You must have your activity override
+         * [Fragment.onActivityResult] and pass the received intent to
+         * your [DiceKeysApiClient]'s [handleOnActivityResult] method.
          */
         @JvmStatic
         fun create(fragment: Fragment): DiceKeysApiClient = object: DiceKeysApiClient(fragment.context ?: throw InvalidParameterException("Fragment must have context")) {
@@ -338,7 +349,7 @@ abstract class DiceKeysApiClient(
 
     private val getSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<SymmetricKey>>()
     /**
-     * Get a [SymmericKey] derived from the user's DiceKey (the seed) and the key-derivation options
+     * Get a [SymmetricKey] derived from the user's DiceKey (the seed) and the key-derivation options
      * specified via [keyDerivationOptionsJson], which must specify
      *  `"clientMayRetrieveKey": true`.
      */
@@ -514,13 +525,13 @@ abstract class DiceKeysApiClient(
 
     private val unsealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<ByteArray>>()
     /**
-     * Unseal (decrypt & authenticate) a message ([ciphertext]) that was previously sealed with a
+     * Unseal (decrypt & authenticate) a [packagedSealedMessage] that was previously sealed with a
      * symmetric key derived from the user's DiceKey, the
-     * [ApiKeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson],
-     * and any [PostDecryptionInstructions] optionally specified by [postDecryptionInstructionsJson].
+     * [ApiKeyDerivationOptions] specified in JSON format via [PackagedSealedMessage.keyDerivationOptionsJson],
+     * and any [PostDecryptionInstructions] optionally specified by [PackagedSealedMessage.postDecryptionInstructionsJson].
      *
      * If any of those strings change, the wrong key will be derive and the message will
-     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
+     * not be successfully unsealed, yielding a [org.dicekeys.crypto.seeded.CryptographicVerificationFailureException] exception.
      */
     fun unsealWithSymmetricKey(
             packagedSealedMessage: PackagedSealedMessage,

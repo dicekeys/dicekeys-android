@@ -69,11 +69,6 @@ android {
         }
     }
 
-    dokka {
-        outputFormat = 'html'
-        outputDirectory = "$buildDir/dokka"
-    }
-
     externalNativeBuild {
         cmake {
             version "3.15.0+"

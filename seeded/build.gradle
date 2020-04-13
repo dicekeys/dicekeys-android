@@ -53,13 +53,6 @@ android {
         }
     }
 
-
-    dokka {
-        outputFormat = 'html'
-        outputDirectory = "$buildDir/dokka"
-    }
-
-
     buildTypes {
         release {
             minifyEnabled false

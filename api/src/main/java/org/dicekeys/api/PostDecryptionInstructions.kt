@@ -39,5 +39,9 @@ open class PostDecryptionInstructions(
                 put(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name, value)
         }
 
+    fun toJson(indent: Int? = null): String =
+            if (indent == null) toString() else toString(indent)
+
+
 //    var sealResultWithPublicKey:
 }

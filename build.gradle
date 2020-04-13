@@ -33,11 +33,31 @@ dokka {
     
     // In case of a Gradle multiproject build, you can include subprojects here to get merged documentation
     // Note however, that you have to have the Kotlin plugin available in the root project and in the subprojects
-    subProjects = ["api", "seeded"]
+    subProjects = ["seeded", "api"]
 
     configuration {
         // Use to include or exclude non public members.
         includeNonPublic = false
+
+        // List of files with module and package documentation
+        // https://kotlinlang.org/docs/reference/kotlin-doc.html#module-and-package-documentation
+        // includes = ['packages.md', 'extra.md']
+
+        // Used for linking to JDK documentation
+        jdkVersion = 8
+
+        // Allows linking to documentation of the project's dependencies (generated with Javadoc or Dokka)
+        // Repeat for multiple links
+        externalDocumentationLink {
+            // Root URL of the generated documentation to link with. The trailing slash is required!
+            url = new URL("https://developer.android.com/reference/androidx/")
+
+            // If package-list file is located in non-standard location
+            // packageListUrl = new URL("file:///home/user/localdocs/package-list")
+        }
+        externalDocumentationLink {
+            url = new URL("https://developer.android.com/reference/")
+        }
     }
 }
 
