@@ -1,6 +1,7 @@
 package org.dicekeys.api
 
 import org.dicekeys.crypto.seeded.*
+import org.dicekeys.keysqr.KeySqrDerivationOptions
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -20,7 +21,7 @@ internal fun getJsonObjectsStringListOrNull(
         if (jsonObj.has(fieldName)) jsonArrayToStringList(jsonObj.getJSONArray(fieldName)) else null
 
 
-internal fun example_a() {
+internal fun sampleA() {
     val keyDerivationOptionsJson: String =
             ApiKeyDerivationOptions.Symmetric().apply {
                 // Ensure the JSON format has the "keyType" field specified
@@ -63,28 +64,30 @@ internal fun example_a() {
  * use the API to return derived keys back to the client, so that the clients can
  * perform cryptographic operations even when the DiceKeys app or seed string are unavailable.
  *
- * ```
+ * @sample sampleA
+ *
+ * ```kotlin
  * // Use this class (and its key-specific extension) to construct a JSON string specifying
  * // the derivation of a Symmetric Key that a client may retrieve.
  * val keyDerivationOptionsJson: String =
  *   ApiKeyDerivationOptions.Symmetric().apply {
- *        // Ensure the JSON format has the "keyType" field specified
- *        keyType = requiredKeyType  // sets "keyType": "Symmetric" since this class type is Symmetric
- *        algorithm = defaultAlgorithm // sets "algorithm": "XSalsa20Poly1305"
- *        // Set other fields in the spec in a Kotlin/Java friendly way
- *        clientMayRetrieveKey = true // sets "clientMayRetrieveKey": true
- *        // The restrictions subclass can be constructed
- *        restrictions = ApiKeyDerivationOptions.Restrictions().apply {
- *            androidPackagePrefixesAllowed = listOf("com.example.app")
- *            urlPrefixesAllowed = listOf("https://example.com/app/")
- *        }
- *        // The restrictions subclass can also be modified in place
- *        restrictions?.apply { urlPrefixesAllowed = listOf("https://example.com/app/", "https://example.com/anotherapp") }
- *        // You may set JSON fields outside the spec using methods this class inherits from
- *        // JSONObject, since the spec allows arbitrary fields to support use cases outside
- *        // its original purpose
- *        put("salt", "S0d1um Chl0r1d3")
- *    }.toJson()  // Converts KeyDerivationOptions to JSON string format
+ *     // Ensure the JSON format has the "keyType" field specified
+ *     keyType = requiredKeyType  // sets "keyType": "Symmetric" since this class type is Symmetric
+ *     algorithm = defaultAlgorithm // sets "algorithm": "XSalsa20Poly1305"
+ *     // Set other fields in the spec in a Kotlin/Java friendly way
+ *     clientMayRetrieveKey = true // sets "clientMayRetrieveKey": true
+ *     // The restrictions subclass can be constructed
+ *     restrictions = ApiKeyDerivationOptions.Restrictions().apply {
+ *       androidPackagePrefixesAllowed = listOf("com.example.app")
+ *       urlPrefixesAllowed = listOf("https://example.com/app/")
+ *     }
+ *     // The restrictions subclass can also be modified in place
+ *     restrictions?.apply { urlPrefixesAllowed = listOf("https://example.com/app/", "https://example.com/anotherapp") }
+ *     // You may set JSON fields outside the spec using methods this class inherits from
+ *     // JSONObject, since the spec allows arbitrary fields to support use cases outside
+ *     // its original purpose
+ *     put("salt", "S0d1um Chl0r1d3")
+ *   }.toJson()  // Converts KeyDerivationOptions to JSON string format
  *
  * // Use this class to parse a JSON string specifying the derivation of a public/private key
  * if (ApiKeyDerivationOptions.Public(keyDerivationOptionsJson).clientMayRetrieveKey ) {
@@ -93,11 +96,20 @@ internal fun example_a() {
  *   doSomething(...)
  * }
  * ```
+ *
+ * @see DiceKeysApiClient
+ * @see KeyDerivationOptions
+ * @see PostDecryptionInstructions
+ *
+ * @constructor Construct from a JSON string. When you know the type of key being derived,
+ * it's better to use a key class which fills in the [requiredKeyType] field of the constructor.
+ * For example [Symmetric] for the derivation options of a symmetric key.  If you pass nothing,
+ * empty options will be created, which you can then configure (e.g., via _apply).
  */
 open class ApiKeyDerivationOptions constructor(
         keyDerivationOptionsJson: String? = null,
         requiredKeyType: KeyType? = null
-): KeyDerivationOptions(
+): KeySqrDerivationOptions(
     keyDerivationOptionsJson, requiredKeyType
 ) {
 
@@ -164,19 +176,6 @@ open class ApiKeyDerivationOptions constructor(
     var clientMayRetrieveKey: Boolean
         get () = optBoolean(ApiKeyDerivationOptions::clientMayRetrieveKey.name, false)
         set(value)  { put(ApiKeyDerivationOptions::clientMayRetrieveKey.name, value) }
-
-    /**
-     * When using a DiceKey as a seed, setting this value to true will exclude the orientation
-     * of each face from the key, so that the seed is unchanged even if orientations are misread.
-     * This reduces the lieklihood that, if a user copies their DiceKey manually and does not verify
-     * it, an error in copying orientation would prevent them from re-generating their key.
-     * It also reduces the security of the key.
-     *
-     * For a key of 25 dice, it reduces the entropy by 50 (2x25) bits, from ~196 bits to ~146 bits.
-     */
-    var excludeOrientationOfFaces: Boolean
-        get () = optBoolean(ApiKeyDerivationOptions::excludeOrientationOfFaces.name, false)
-        set(value) { put(ApiKeyDerivationOptions::excludeOrientationOfFaces.name, value) }
 
     /**
      * Restrict which clients are permitted to use the API to work with the derived key.

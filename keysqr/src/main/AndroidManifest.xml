@@ -2,13 +2,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.dicekeys">
 
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <application>
-        <activity android:name="org.dicekeys.readkeysqr.ReadKeySqrActivity"></activity>
-        <activity android:name="org.dicekeys.activities.DisplayPublicKeyActivity"></activity>
-        <activity android:name="org.dicekeys.activities.ExecuteApiCommandActivity"></activity>
-        <activity android:name="org.dicekeys.activities.DisplayDiceKeyActivity"></activity>
-    </application>
-
 </manifest>
