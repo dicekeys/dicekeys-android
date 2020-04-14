@@ -152,7 +152,7 @@ class KeySqrDrawable(
     private val keySqr: KeySqr<Face>
 ) : Drawable() {
 
-    private val inconsolataBold: Typeface? = ResourcesCompat.getFont(context, org.dicekeys.R.font.inconsolata_bold)
+    private val inconsolataBold: Typeface? = ResourcesCompat.getFont(context, R.font.inconsolata_bold)
     private val renderer = KeySqrRenderer(inconsolataBold)
 
     override fun draw(canvas: Canvas) {

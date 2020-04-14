@@ -13,6 +13,7 @@ import org.dicekeys.state.KeySqrState
 import org.dicekeys.read.KeySqrDrawable
 //import com.dicekeys.fidowriter.UsbCtapHidDeviceList
 import org.dicekeys.R.id
+import org.dicekeys.dicekeysapp.R
 
 
 class DisplayDiceKeyActivity : AppCompatActivity() {
@@ -36,10 +37,10 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(org.dicekeys.R.layout.activity_display_dice_key)
-        writeButton = findViewById(id.btn_write_to_fido)
-        forgetDiceKeyButton = findViewById(id.btn_forget)
-        viewPublicKeyButton = findViewById(id.btn_view_public_key)
+        setContentView(R.layout.activity_display_dice_key)
+        writeButton = findViewById(R.id.btn_write_to_fido)
+        forgetDiceKeyButton = findViewById(R.id.btn_forget)
+        viewPublicKeyButton = findViewById(R.id.btn_view_public_key)
 
         permissionIntent = android.app.PendingIntent.getBroadcast(this, 0, Intent(INTENT_ACTION_USB_PERMISSION_EVENT), 0)
 
@@ -73,7 +74,7 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
             KeySqrState.keySqr?.let {
                 val humanReadableForm: String = it.toCanonicalRotation().toHumanReadableForm(true)
                 val myDrawing = KeySqrDrawable(this, it)
-                val image: ImageView = findViewById(id.keysqr_view)
+                val image: ImageView = findViewById(R.id.keysqr_view)
                 image.setImageDrawable(myDrawing)
                 image.contentDescription = humanReadableForm
             }
@@ -128,7 +129,7 @@ class DisplayDiceKeyActivity : AppCompatActivity() {
 
     private fun getSeed(): ByteArray? {
         // Should not be run on UI thread
-        return KeySqrState.keySqr?.getSeed(seedKeyDerivationOptions, "org.dicekeys.fido")?.seedBytes
+        return KeySqrState.keySqr?.getSeed(seedKeyDerivationOptions)?.seedBytes
     }
 
 

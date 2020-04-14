@@ -15,10 +15,7 @@ import androidx.camera.lifecycle.*
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
-import org.dicekeys.keysqr.FaceRead
-import org.dicekeys.state.KeySqrState
 import java.util.concurrent.Executors
 
 // FIXME - resolve API update: Moved rotationDegrees from class Analyzer to ImageInfo.
@@ -50,10 +47,10 @@ class ReadKeySqrActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
-        setContentView(org.dicekeys.R.layout.activity_read_key_sqr)
+        setContentView(R.layout.activity_read_key_sqr)
 
-        imageView = findViewById(org.dicekeys.R.id.overlay_view)
-        previewView = findViewById(org.dicekeys.R.id.preview_view)
+        imageView = findViewById(R.id.overlay_view)
+        previewView = findViewById(R.id.preview_view)
 
         if(allPermissionsGranted()) {
             imageView.post{startCamera()}
@@ -153,9 +150,6 @@ class ReadKeySqrActivity : AppCompatActivity() {
         }
 
         analyzeKeySqr.onActionDone = fun(keySqrAsJson){
-            FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
-                KeySqrState.setKeySquareRead(keySqr)
-            }
             var newIntent = Intent()
             newIntent.putExtra("keySqrAsJson", keySqrAsJson)
             setResult(RESULT_OK, newIntent)

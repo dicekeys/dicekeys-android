@@ -13,6 +13,8 @@ import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import org.dicekeys.crypto.seeded.SymmetricKey
 import org.dicekeys.crypto.seeded.PrivateKey
+import org.dicekeys.dicekeysapp.R
+import org.dicekeys.keysqr.FaceRead
 import org.dicekeys.state.KeySqrState
 import org.dicekeys.read.ReadKeySqrActivity
 
@@ -26,7 +28,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle? //, persistentState: PersistableBundle?
     ) {
         super.onCreate(savedInstanceState) // , persistentState)
-        setContentView(org.dicekeys.R.layout.activity_execute_api_command)
+        setContentView(R.layout.activity_execute_api_command)
 
         try {
             if (!intent.hasExtra(DiceKeysApiClient.ParameterNames.Common.requestId)) {
@@ -100,12 +102,19 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // if (requestCode == RC_READ_KEYSQR) {
-            keySqrReadActivityStarted = false
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                tryToExecuteIntentsCommand()
+        keySqrReadActivityStarted = false
+        if (
+            resultCode == Activity.RESULT_OK &&
+            data != null &&
+            data.hasExtra("keySqrAsJson")
+        ) {
+            data.getStringExtra("keySqrAsJson")?.let { keySqrAsJson ->
+                FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
+                    KeySqrState.setKeySquareRead(keySqr)
+                    tryToExecuteIntentsCommand()
+                }
             }
-        // }
+        }
     }
 
     private fun tryToExecuteIntentsCommand() {
@@ -125,6 +134,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
                     keySqrReadActivityStarted = true
                     val intent = Intent(this, ReadKeySqrActivity::class.java)
                     startActivityForResult(intent, 0)
+                    // FIXME -- must add result to state
                 }
                 return
             }
@@ -255,7 +265,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
                 if (!kdo.clientMayRetrieveKey) {
                     throw ClientMayNotRetrieveKeyException("Signing")
                 }
-                val signingKey = keySqr.getSigningKey(keyDerivationOptionsJson, clientsApplicationId)
+                val signingKey = keySqr.getSigningKey(keyDerivationOptionsJson)
                 resultIntent.putExtra(
                         DiceKeysApiClient.ParameterNames.SigningKey.GetSigningKey.signingKeySerializedToBinary,
                         signingKey.toSerializedBinaryForm()
@@ -270,7 +280,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
                 if (!kdo.clientMayRetrieveKey) {
                     throw ClientMayNotRetrieveKeyException("Symmetric")
                 }
-                val symmetricKey = keySqr.getSymmetricKey(keyDerivationOptionsJson, clientsApplicationId)
+                val symmetricKey = keySqr.getSymmetricKey(keyDerivationOptionsJson)
                 resultIntent.putExtra(
                         DiceKeysApiClient.ParameterNames.SymmetricKey.GetKey.symmetricKeySerializedToBinary,
                         symmetricKey.toSerializedBinaryForm()

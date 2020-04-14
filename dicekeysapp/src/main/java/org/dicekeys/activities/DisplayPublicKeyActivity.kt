@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
-import org.dicekeys.R.id
+import org.dicekeys.dicekeysapp.R
 import org.dicekeys.state.KeySqrState
 
 
@@ -17,10 +17,10 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(org.dicekeys.R.layout.activity_display_public_key)
-        image = findViewById(id.image_view_public_key_qr_code)
-        backButton = findViewById(id.btn_back)
-        textView = findViewById(id.text_view_json_public_key)
+        setContentView(R.layout.activity_display_public_key)
+        image = findViewById(R.id.image_view_public_key_qr_code)
+        backButton = findViewById(R.id.btn_back)
+        textView = findViewById(R.id.text_view_json_public_key)
 
         backButton.setOnClickListener{
             finish()
