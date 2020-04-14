@@ -77,7 +77,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     private fun throwUnlessIntentCommandIsPermitted(
         keyDerivationOptions: ApiKeyDerivationOptions
     ): Unit {
-        keyDerivationOptions.restrictions?.androidPackagePrefixesAllowed.let { androidPackagePrefixesAllowed ->
+        keyDerivationOptions.restrictions?.androidPackagePrefixesAllowed?.let { androidPackagePrefixesAllowed ->
             // The key derivation options require us to ensure that the client's application/package
             // starts with one of the included prefixes.
             val clientsApplicationIdWithTrailingDot: String = terminateWithDot(clientsApplicationId)

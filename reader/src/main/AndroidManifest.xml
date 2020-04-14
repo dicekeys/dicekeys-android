@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application>
-        <activity android:name="org.dicekeys.readkeysqr.ReadKeySqrActivity"></activity>
+        <activity android:name="org.dicekeys.read.ReadKeySqrActivity"></activity>
     </application>
 
 </manifest>
