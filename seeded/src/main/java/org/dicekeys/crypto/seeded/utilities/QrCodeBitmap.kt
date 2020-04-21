@@ -45,7 +45,7 @@ internal fun QrCodeBitmap(
 }
 
 @RequiresApi(Build.VERSION_CODES.KITKAT)
-fun QrCodeBitmap(
+internal fun QrCodeBitmap(
     urlBase: String,
     json: String,
     maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2

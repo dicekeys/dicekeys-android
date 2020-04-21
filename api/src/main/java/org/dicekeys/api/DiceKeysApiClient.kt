@@ -8,7 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import org.dicekeys.crypto.seeded.PublicKey
 import org.dicekeys.crypto.seeded.PrivateKey
-import org.dicekeys.crypto.seeded.Seed
+import org.dicekeys.crypto.seeded.Secret
 import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.crypto.seeded.SigningKey
 import org.dicekeys.crypto.seeded.SymmetricKey
@@ -20,8 +20,9 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 /**
- * The [DiceKeysApiClient] gives client applications access to the DiceKeys app to perform
- * cryptographic operations on their behalf.
+ * The API client used to ask the DiceKeys app to generate cryptographic keys seeded by a user's
+ * DiceKey and to perform operations on the application's behalf.
+ *
  *
  * **IMPORTANT**
  *
@@ -105,9 +106,9 @@ abstract class DiceKeysApiClient(
 //            Intent(callingContext, ExecuteApiCommandActivity::class.java).apply {
         Intent(command).apply {
                 // Component name set with (package name in manifest, fully qualified name)
-//            component = ComponentName("org.dicekeys","org.dicekeys.activities.ExecuteApiCommandActivity")
-            // FIXME -- will break when we separate out API from
-            component = android.content.ComponentName(callingContext.packageName ?: "", "org.dicekeys.activities.ExecuteApiCommandActivity")
+//            component = ComponentName("org.dicekeys","org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity")
+            // FIXME -- will break when we separate out API from the app
+            component = android.content.ComponentName(callingContext.packageName ?: "", "org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity")
                 action = command
                 val parametersWithRequestId = Bundle(parameters)
                 parametersWithRequestId.putString(ParameterNames.Common.requestId, uniqueRequestIdForCommand(command))
@@ -130,7 +131,7 @@ abstract class DiceKeysApiClient(
      */
     object ParameterNames {
         internal object Reused {
-            const val postDecryptionInstructionsJson = "postDecryptionInstructionsJson"
+            const val postDecryptionInstructions = "postDecryptionInstructions"
             const val plaintext = "plaintext"
             const val packagedSealedMessageSerializedToBinary = "packagedSealedMessageSerializedToBinary"
             const val signatureVerificationKeySerializedToBinary = "signatureVerificationKeySerializedToBinary"
@@ -147,9 +148,9 @@ abstract class DiceKeysApiClient(
             const val exception = "exception"
         }
 
-        object Seed {
+        object Secret {
             object Get {
-                const val seedJson = "seedJson"
+                const val secretJson = "secretJson"
             }
         }
 
@@ -160,7 +161,7 @@ abstract class DiceKeysApiClient(
 
             object Seal {
                 const val plaintext = Reused.plaintext
-                const val postDecryptionInstructionsJson = Reused.postDecryptionInstructionsJson
+                const val postDecryptionInstructions = Reused.postDecryptionInstructions
                 const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
             }
             object Unseal {
@@ -208,8 +209,8 @@ abstract class DiceKeysApiClient(
      */
     object OperationNames {
 
-        object Seed {
-            const val get = "org.dicekeys.api.actions.Seed.get"
+        object Secret {
+            const val get = "org.dicekeys.api.actions.Secret.get"
         }
 
         object SymmetricKey {
@@ -231,7 +232,7 @@ abstract class DiceKeysApiClient(
         }
 
         val All = setOf(
-                Seed.get,
+                Secret.get,
                 SymmetricKey.seal,
                 SymmetricKey.unseal,
                 PrivateKey.getPublic,
@@ -279,7 +280,7 @@ abstract class DiceKeysApiClient(
         }
     }
 
-    suspend fun <T> awaitCallback(block: (Callback<T>) -> Unit) : T =
+    private suspend fun <T> awaitCallback(block: (Callback<T>) -> Unit) : T =
         suspendCoroutine { cont ->
             block(object : Callback<T> {
                 override fun onComplete(result: T) = cont.resume(result)
@@ -289,7 +290,7 @@ abstract class DiceKeysApiClient(
             })
         }
 
-    private val getSeedCallbacks = HashMap<String, RequestIntentAndCallback<Seed>>()
+    private val getSecretCallbacks = HashMap<String, RequestIntentAndCallback<Secret>>()
 
     /*****************************************************************************
      * The API itself
@@ -297,27 +298,28 @@ abstract class DiceKeysApiClient(
 
 
     /**
-     * Derive a pseudo-random cryptographic seed from the user's DiceKey and
-     * the key-derivation options passed as [keyDerivationOptionsJson].
+     * Derive a pseudo-random cryptographic [Secret] from the user's DiceKey and
+     * the key-derivation options passed as [keyDerivationOptionsJson]
+     * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html).
      */
-    fun getSeed(
+    fun getSecret(
             keyDerivationOptionsJson: String,
-            callback: Callback<Seed>? = null
+            callback: Callback<Secret>? = null
     ): Intent =
-            call(OperationNames.Seed.get,
+            call(OperationNames.Secret.get,
                     bundleOf(
                             ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson
                     )
             ).also { intent -> callback?.let{
-                addRequestAndCallback(getSeedCallbacks, intent, it)
+                addRequestAndCallback(getSecretCallbacks, intent, it)
             } }
     /**
      * getSeed (same as above) implemented as a Kotlin suspend function
      * in place of callbacks.
      */
-    suspend fun getSeed(
+    suspend fun getSecret(
             keyDerivationOptionsJson: String
-    ): Seed = awaitCallback{ getSeed(
+    ): Secret = awaitCallback{ getSecret(
             keyDerivationOptionsJson, it
     ) }
 
@@ -325,7 +327,9 @@ abstract class DiceKeysApiClient(
     private val getPrivateKeyCallbacks = HashMap<String, RequestIntentAndCallback<PrivateKey>>()
     /**
      * Get a [PrivateKey] derived from the user's DiceKey (the seed) and the key-derivation options
-     * specified via [keyDerivationOptionsJson], which must specify
+     * specified via [keyDerivationOptionsJson],
+     * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+     * which must specify
      *  `"clientMayRetrieveKey": true`.
      */
     fun getPrivateKey(
@@ -350,7 +354,9 @@ abstract class DiceKeysApiClient(
     private val getSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<SymmetricKey>>()
     /**
      * Get a [SymmetricKey] derived from the user's DiceKey (the seed) and the key-derivation options
-     * specified via [keyDerivationOptionsJson], which must specify
+     * specified via [keyDerivationOptionsJson],
+     * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+     * which must specify
      *  `"clientMayRetrieveKey": true`.
      */
     fun getSymmetricKey(
@@ -375,7 +381,9 @@ abstract class DiceKeysApiClient(
     private val getSigningKeyCallbacks = HashMap<String, RequestIntentAndCallback<SigningKey>>()
     /**
      * Get a [SigningKey] derived from the user's DiceKey (the seed) and the key-derivation options
-     * specified via [keyDerivationOptionsJson], which must specify
+     * specified via [keyDerivationOptionsJson],
+     * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+     * which must specify
      *  `"clientMayRetrieveKey": true`.
      */
     fun getSigningKey(
@@ -398,11 +406,12 @@ abstract class DiceKeysApiClient(
     ) }
 
 
-    /**
-     * Get a public key derived from the user's DiceKey and the [ApiKeyDerivationOptions] specified
-     * in JSON format via [keyDerivationOptionsJson]
-     */
     private val getPublicKeyCallbacks = HashMap<String, RequestIntentAndCallback<PublicKey>>()
+    /**
+     * Get a [PublicKey] derived from the user's DiceKey and the [ApiKeyDerivationOptions] specified
+     * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html)
+     * as [keyDerivationOptionsJson].
+     */
     fun getPublicKey(
             keyDerivationOptionsJson: String,
             callback: Callback<PublicKey>? = null
@@ -455,7 +464,7 @@ abstract class DiceKeysApiClient(
 //     * [PublicKey.keyDerivationOptionsJson] field.
 //     *
 //     * The message-specific key will also be seeded by any [PostDecryptionInstructions] optionally
-//     * specified by [postDecryptionInstructionsJson].
+//     * specified by [postDecryptionInstructions].
 //     *
 //     * If any of those strings change, the wrong key will be derive and the message will
 //     * not be successfully unsealed, yielding a [CryptographicVerificationFailureException] exception.
@@ -463,9 +472,9 @@ abstract class DiceKeysApiClient(
 //    fun unsealWithPrivateKey(
 //            ciphertext: ByteArray,
 //            publicKey: PublicKey,
-//            postDecryptionInstructionsJson: String = "",
+//            postDecryptionInstructions: String = "",
 //            callback: UnsealWithPrivateKeyCallback? = null
-//    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, postDecryptionInstructionsJson, callback)
+//    ): Intent = unsealWithPrivateKey(ciphertext, publicKey.keyDerivationOptionsJson, postDecryptionInstructions, callback)
 //
 //    fun unsealWithPrivateKey(
 //            ciphertext: ByteArray,
@@ -491,21 +500,23 @@ abstract class DiceKeysApiClient(
     /**
      * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
      * symmetric key derived from the user's DiceKey, the
-     * key-derivation options specified in JSON format via [keyDerivationOptionsJson],
+     * [keyDerivationOptionsJson]
+     * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
      * and [PostDecryptionInstructions] specified via a JSON string as
-     * [postDecryptionInstructionsJson].
+     * [postDecryptionInstructions] in the
+     * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/post_decryption_instructions_format.html).
      */
     fun sealWithSymmetricKey(
             keyDerivationOptionsJson: String,
             plaintext: ByteArray,
-            postDecryptionInstructionsJson: String = "",
+            postDecryptionInstructions: String = "",
             callback: Callback<PackagedSealedMessage>
     ): Intent =
             call(OperationNames.SymmetricKey.seal,
                     bundleOf(
                             ParameterNames.Common.keyDerivationOptionsJson to keyDerivationOptionsJson,
                             ParameterNames.SymmetricKey.Seal.plaintext to plaintext,
-                            ParameterNames.SymmetricKey.Seal.postDecryptionInstructionsJson to postDecryptionInstructionsJson
+                            ParameterNames.SymmetricKey.Seal.postDecryptionInstructions to postDecryptionInstructions
                     )
             ).also { intent ->
                 addRequestAndCallback(sealWithSymmetricKeyCallbacks, intent, callback)
@@ -517,9 +528,9 @@ abstract class DiceKeysApiClient(
     suspend fun sealWithSymmetricKey(
         keyDerivationOptionsJson: String,
         plaintext: ByteArray,
-        postDecryptionInstructionsJson: String = ""
+        postDecryptionInstructions: String = ""
     ): PackagedSealedMessage = awaitCallback{ sealWithSymmetricKey(
-            keyDerivationOptionsJson, plaintext, postDecryptionInstructionsJson, it
+            keyDerivationOptionsJson, plaintext, postDecryptionInstructions, it
     ) }
 
 
@@ -528,7 +539,8 @@ abstract class DiceKeysApiClient(
      * Unseal (decrypt & authenticate) a [packagedSealedMessage] that was previously sealed with a
      * symmetric key derived from the user's DiceKey, the
      * [ApiKeyDerivationOptions] specified in JSON format via [PackagedSealedMessage.keyDerivationOptionsJson],
-     * and any [PostDecryptionInstructions] optionally specified by [PackagedSealedMessage.postDecryptionInstructionsJson].
+     * and any [PostDecryptionInstructions] optionally specified by [PackagedSealedMessage.postDecryptionInstructions]
+     * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/post_decryption_instructions_format.html).
      *
      * If any of those strings change, the wrong key will be derive and the message will
      * not be successfully unsealed, yielding a [org.dicekeys.crypto.seeded.CryptographicVerificationFailureException] exception.
@@ -555,7 +567,7 @@ abstract class DiceKeysApiClient(
     ) }
 
     /**
-     * Get a public signature-verification key derived from the user's DiceKey and the
+     * Get a public [SignatureVerificationKey] derived from the user's DiceKey and the
      * [ApiKeyDerivationOptions] specified in JSON format via [keyDerivationOptionsJson]
      */
     fun getSignatureVerificationKey(
@@ -643,11 +655,11 @@ abstract class DiceKeysApiClient(
         resultIntent.getStringExtra(ParameterNames.Common.requestId)?.let{ requestId ->
             when(requestIdToCommand(requestId)) {
 
-                OperationNames.Seed.get -> handleResult(getSeedCallbacks, resultIntent,
+                OperationNames.Secret.get -> handleResult(getSecretCallbacks, resultIntent,
                         { callback, _, e -> callback.onException(e) },
                         { callback, _ ->
-                            resultIntent.getStringExtra(ParameterNames.Seed.Get.seedJson)?.let{ seedJson ->
-                                callback.onComplete(Seed.fromJson(seedJson))
+                            resultIntent.getStringExtra(ParameterNames.Secret.Get.secretJson)?.let{ seedJson ->
+                                callback.onComplete(Secret.fromJson(seedJson))
                             }
                         }
                 )

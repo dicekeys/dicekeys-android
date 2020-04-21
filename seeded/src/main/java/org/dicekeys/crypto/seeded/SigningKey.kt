@@ -13,7 +13,7 @@ package org.dicekeys.crypto.seeded
  * from a seed and a set of key-derivation specified options in [keyDerivationOptionsJson]
  *
  * This class wraps the native c++ SigningKey class from the
- * DiceKeys seeded cryptography library.
+ * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
 
  */
 class SigningKey internal constructor(internal val nativeObjectPtr: Long) {

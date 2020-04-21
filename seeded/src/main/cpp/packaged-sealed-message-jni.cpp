@@ -14,7 +14,7 @@ Java_org_dicekeys_crypto_seeded_PackagedSealedMessage_postDecryptionInstructions
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PackagedSealedMessage>(env, thiz)->postDecryptionInstructionJson
+      getNativeObjectPtr<PackagedSealedMessage>(env, thiz)->postDecryptionInstructions
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -134,13 +134,13 @@ JNIEXPORT jlong JNICALL
   jclass clazz,
   jbyteArray ciphertext,
   jstring key_derivation_options_json,
-  jstring post_decryption_instructions_json
+  jstring post_decryption_instructions
 ) {
   try {
     return (jlong) new PackagedSealedMessage(
       jbyteArrayToVector(env, ciphertext),
       jstringToString(env, key_derivation_options_json),
-      jstringToString(env, post_decryption_instructions_json)
+      jstringToString(env, post_decryption_instructions)
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

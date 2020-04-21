@@ -9,7 +9,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * [PrivateKey] which can _unseal_ them.
  * The key pair of this [PublicKey] and the matching [PrivateKey] are generated
  * from a seed and a set of key-derivation specified options in JSON format
- * @ref key_derivation_options_format.
+ * [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html).
  *
  * To derive a public key from a seed, first derive the corresponding
  * [PrivateKey] and then call [PrivateKey.getPublicKey].
@@ -30,7 +30,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * message has not been forged or modified since the signer approved it.
  *
  * This class wraps the native c++ PublicKey class from the
- * DiceKeys seeded cryptography library.
+ * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
 
  */
 class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
@@ -129,22 +129,22 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
      * using the corresponding [PrivateKey]. The [message] string will be converted
      * to UTF8 binary format before it is sealed.
      *
-     * If a [postDecryptionInstructionsJson] string is passed,
-     * the exact same string must also be passed as [postDecryptionInstructionsJson]
+     * If a [postDecryptionInstructions] string is passed,
+     * the exact same string must also be passed as [postDecryptionInstructions]
      * to [PrivateKey.unseal] the message with the corresponding [PrivateKey].
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.
      */
     external fun sealJNI(
             message: ByteArray,
-            postDecryptionInstructionsJson: String = ""
+            postDecryptionInstructions: String = ""
     ): Long
 
     fun seal(
         message: ByteArray,
-        postDecryptionInstructionsJson: String = ""
+        postDecryptionInstructions: String = ""
     ) : PackagedSealedMessage = PackagedSealedMessage(
-        sealJNI(message, postDecryptionInstructionsJson)
+        sealJNI(message, postDecryptionInstructions)
     )
 
     /**
@@ -152,16 +152,16 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
      * using the corresponding [PrivateKey]. The [message] string will be converted
      * to UTF8 binary format before it is sealed.
      *
-     * If a [postDecryptionInstructionsJson] string is passed,
-     * the exact same string must also be passed as [postDecryptionInstructionsJson]
+     * If a [postDecryptionInstructions] string is passed,
+     * the exact same string must also be passed as [postDecryptionInstructions]
      * to [PrivateKey.unseal] the message with the corresponding [PrivateKey].
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.
      */
     fun seal(
             message: String,
-            postDecryptionInstructionsJson: String = ""
-    ): PackagedSealedMessage = seal( message.toByteArray(), postDecryptionInstructionsJson )
+            postDecryptionInstructions: String = ""
+    ): PackagedSealedMessage = seal( message.toByteArray(), postDecryptionInstructions )
 
     override fun equals(other: Any?): Boolean =
             (other is PublicKey) &&

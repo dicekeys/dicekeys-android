@@ -1,7 +1,6 @@
 package org.dicekeys.api
 
 import org.dicekeys.crypto.seeded.*
-import org.dicekeys.keysqr.KeySqrDerivationOptions
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -21,80 +20,33 @@ internal fun getJsonObjectsStringListOrNull(
         if (jsonObj.has(fieldName)) jsonArrayToStringList(jsonObj.getJSONArray(fieldName)) else null
 
 
-internal fun sampleA() {
-    val keyDerivationOptionsJson: String =
-            ApiKeyDerivationOptions.Symmetric().apply {
-                // Ensure the JSON format has the "keyType" field specified
-                keyType = requiredKeyType  // sets "keyType": "Symmetric" since this class type is Symmetric
-                algorithm = defaultAlgorithm // sets "algorithm": "XSalsa20Poly1305"
-                // Set other fields in the spec in a Kotlin/Java friendly way
-                clientMayRetrieveKey = true // sets "clientMayRetrieveKey": true
-                // The restrictions subclass can be constructed
-                restrictions = ApiKeyDerivationOptions.Restrictions().apply {
-                    androidPackagePrefixesAllowed = listOf("com.example.app")
-                    urlPrefixesAllowed = listOf("https://example.com/app/")
-                }
-                // The restrictions subclass can also be modified in place
-                restrictions?.apply { urlPrefixesAllowed = listOf("https://example.com/app/", "https://example.com/anotherapp") }
-                // You may set JSON fields outside the spec using methods this class inherits from
-                // JSONObject, since the spec allows arbitrary fields to support use cases outside
-                // its original purpose
-                put("salt", "S0d1um Chl0r1d3")
-            }.toJson()
-    // Use this class to parse a JSON string specifying the derivation of a public/private key
-    if (ApiKeyDerivationOptions.Public(keyDerivationOptionsJson).clientMayRetrieveKey ) {
-        // The keyDerivationOptionsJson allows clients not just to use the derived key,
-        // but also to retrieve a copy of it (conditional on evaluation of 'requirements')
-    } // Converts KeyDerivationOptions to JSON string format
-}
 
 /**
- * An extension of the more general [KeyDerivationOptions] class, which supports the
- * constructing and parsing the strings used to derive cryptographic keys from seed strings,
- * which typically appear in the API with the name _keyDerivationOptionsJson_.
+ * Used to construct and parse the strings in
+ * [key-derivation options JSON format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+ * which specify how to derive cryptographic keys from seed string.
+ * These JSON strings appear throughout the API (and in the [DiceKeysApiClient]) as a
+ * parameter named _keyDerivationOptionsJson_.
  *
- * This extension adds support for features specific to the use of DiceKeys as seeds via the
- * [excludeOrientationOfFaces] option.
+ * This implementation extends of the more general [KeyDerivationOptions] class, which
+ * abstracts all the general-purpose key-derivation options that aren't specific
+ * to DiceKeys or the DiceKeys App/API.
  *
  * This extension adds the [restrictions] field, and the [Restrictions] class, so that the
  * options string can specify which client apps and URLs are allowed to use the API to
- * perform cryptographic operations (e.g. sealing or signingd data) with the derived key.
+ * perform cryptographic operations (e.g. sealing or signed  data) with the derived key.
  *
  * This extension adds the [clientMayRetrieveKey] option to indicate that clients may
  * use the API to return derived keys back to the client, so that the clients can
  * perform cryptographic operations even when the DiceKeys app or seed string are unavailable.
  *
- * @sample sampleA
+ * This extension adds support for the [excludeOrientationOfFaces] option, which can create
+ * seeds that remain the same even if the orientation of a die within a DiceKey changes.
  *
- * ```kotlin
- * // Use this class (and its key-specific extension) to construct a JSON string specifying
- * // the derivation of a Symmetric Key that a client may retrieve.
- * val keyDerivationOptionsJson: String =
- *   ApiKeyDerivationOptions.Symmetric().apply {
- *     // Ensure the JSON format has the "keyType" field specified
- *     keyType = requiredKeyType  // sets "keyType": "Symmetric" since this class type is Symmetric
- *     algorithm = defaultAlgorithm // sets "algorithm": "XSalsa20Poly1305"
- *     // Set other fields in the spec in a Kotlin/Java friendly way
- *     clientMayRetrieveKey = true // sets "clientMayRetrieveKey": true
- *     // The restrictions subclass can be constructed
- *     restrictions = ApiKeyDerivationOptions.Restrictions().apply {
- *       androidPackagePrefixesAllowed = listOf("com.example.app")
- *       urlPrefixesAllowed = listOf("https://example.com/app/")
- *     }
- *     // The restrictions subclass can also be modified in place
- *     restrictions?.apply { urlPrefixesAllowed = listOf("https://example.com/app/", "https://example.com/anotherapp") }
- *     // You may set JSON fields outside the spec using methods this class inherits from
- *     // JSONObject, since the spec allows arbitrary fields to support use cases outside
- *     // its original purpose
- *     put("salt", "S0d1um Chl0r1d3")
- *   }.toJson()  // Converts KeyDerivationOptions to JSON string format
  *
- * // Use this class to parse a JSON string specifying the derivation of a public/private key
- * if (ApiKeyDerivationOptions.Public(keyDerivationOptionsJson).clientMayRetrieveKey ) {
- *   // The keyDerivationOptionsJson allows clients not just to use the derived key,
- *   // but also to retrieve a copy of it (conditional on evaluation of 'requirements')
- *   doSomething(...)
- * }
+ * @sample [ApiSamples.sampleOfApiKeyDerivationOptions]
+ *
+
  * ```
  *
  * @see DiceKeysApiClient
@@ -109,7 +61,7 @@ internal fun sampleA() {
 open class ApiKeyDerivationOptions constructor(
         keyDerivationOptionsJson: String? = null,
         requiredKeyType: KeyType? = null
-): KeySqrDerivationOptions(
+): KeyDerivationOptions(
     keyDerivationOptionsJson, requiredKeyType
 ) {
 
@@ -194,6 +146,20 @@ open class ApiKeyDerivationOptions constructor(
         }
 
     /**
+     * When using a DiceKey as a seed, setting this value to true will exclude the orientation
+     * of each face from the key, so that the seed is unchanged even if orientations are misread.
+     * This reduces the lieklihood that, if a user copies their DiceKey manually and does not verify
+     * it, an error in copying orientation would prevent them from re-generating their key.
+     * It also reduces the security of the key.
+     *
+     * For a key of 25 dice, it reduces the entropy by 50 (2x25) bits, from ~196 bits to ~146 bits.
+     */
+    var excludeOrientationOfFaces: Boolean
+        get () = optBoolean(ApiKeyDerivationOptions::excludeOrientationOfFaces.name, false)
+        set(value) { put(ApiKeyDerivationOptions::excludeOrientationOfFaces.name, value) }
+
+
+    /**
      * An extension class that must represent a specification for a public/private key pair
      */
     class Public(keyDerivationOptionsJson: String? = null) :
@@ -203,7 +169,7 @@ open class ApiKeyDerivationOptions constructor(
      * An extension class that must represent a specification for a derived seed
      */
     class Seed(keyDerivationOptionsJson: String? = null) :
-            ApiKeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Seed)
+            ApiKeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Secret)
 
     /**
      * An extension class that must represent a specification for a signing/verification key pair

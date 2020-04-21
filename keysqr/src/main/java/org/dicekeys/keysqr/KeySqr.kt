@@ -1,7 +1,7 @@
 package org.dicekeys.keysqr
 import org.dicekeys.crypto.seeded.PrivateKey
 import org.dicekeys.crypto.seeded.PublicKey
-import org.dicekeys.crypto.seeded.Seed
+import org.dicekeys.crypto.seeded.Secret
 import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.crypto.seeded.SigningKey
 import org.dicekeys.crypto.seeded.SymmetricKey
@@ -42,8 +42,8 @@ class KeySqr<F: Face>(val faces: List<F>) {
     )
   }
 
-  fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
-    return faces.joinToString(separator = "") {it.toHumanReadableForm((includeFaceOrientations))}
+  fun toHumanReadableForm(): String {
+    return faces.joinToString(separator = "") {it.toHumanReadableForm(allOrientationsAreDefined)}
   }
 
   val allOrientationsAreDefined: Boolean get() = faces.all { it.clockwise90DegreeRotationsFromUpright != null }
@@ -52,23 +52,27 @@ class KeySqr<F: Face>(val faces: List<F>) {
   val allLettersAndDigitsAreDefined: Boolean get() = allLettersAreDefined && allDigitsAreDefined
   val allLettersDigitsAndOrientationsAreDefined: Boolean get() = allLettersAndDigitsAreDefined && allOrientationsAreDefined
 
-  fun rotate(clockwise90DegreeRotations: Int): KeySqr<Face> {
-    val clockwiseTurnsMod4 = clockwise90DegreeRotations % 4
-    return KeySqr(
-            rotationIndexes[clockwiseTurnsMod4]
-                    .map<Byte, F>() { faces[it.toInt()] }
-                    .map<F, Face>() { it.rotate(clockwiseTurnsMod4) }
+  fun rotate(clockwise90DegreeRotations: Int): KeySqr<Face> =
+      (clockwise90DegreeRotations % 4).let { clockwiseTurnsMod4 ->
+          KeySqr(
+                  rotationIndexes[clockwiseTurnsMod4]
+                          .map<Byte, F>() { faces[it.toInt()] }
+                          .map<F, Face>() { it.rotate(clockwiseTurnsMod4) }
+          )
+      }
+
+  fun removeOrientations() : KeySqr<Face> = KeySqr(
+      faces.map{ face -> Face(face.letter, face.digit) }
     )
-  }
 
   fun toCanonicalRotation(
     includeFaceOrientations: Boolean = allOrientationsAreDefined
   ): KeySqr<Face> {
     var winningRotation: KeySqr<Face> = rotate(0)
-    var winningReadableForm = toHumanReadableForm(includeFaceOrientations)
+    var winningReadableForm = toHumanReadableForm()
     for (clockwiseTurns in 1..3) {
       val rotatedKey = rotate(clockwiseTurns)
-      val readableForm = rotatedKey.toHumanReadableForm(includeFaceOrientations)
+      val readableForm = rotatedKey.toHumanReadableForm()
       if (readableForm < winningReadableForm) {
         winningRotation = rotatedKey
         winningReadableForm = readableForm
@@ -78,73 +82,10 @@ class KeySqr<F: Face>(val faces: List<F>) {
   }
 
   fun toKeySeed(
-    keyDerivationOptionsJson: String
-  ) : String = toKeySeed(KeySqrDerivationOptions(keyDerivationOptionsJson))
-
-  fun toKeySeed(
-      keyDerivationOptions : KeySqrDerivationOptions
-  ) : String {
-    if (keyDerivationOptions.excludeOrientationOfFaces) {
-        // FIXME
-    }
-    val canonicalRotations = toCanonicalRotation();
-    val fixmeShouldUseFaceOrientations = true
-    return canonicalRotations.toHumanReadableForm(fixmeShouldUseFaceOrientations)
-  }
-
-  fun getSeed(
-    keyDerivationOptionsJson: String? = null
-  ): Seed {
-    return Seed.deriveFromSeed(
-      toKeySeed(keyDerivationOptionsJson ?: ""),
-      keyDerivationOptionsJson ?: ""
-    )
-  }
-
-  fun getSymmetricKey(
-          keyDerivationOptionsJson: String? = null
-  ): SymmetricKey {
-    return SymmetricKey.deriveFromSeed(
-        toKeySeed(keyDerivationOptionsJson ?: ""),
-        keyDerivationOptionsJson ?: ""
-    )
-  }
-
-  fun getPublicKey(
-    keyDerivationOptionsJson: String? = null
-  ): PublicKey {
-    return PrivateKey.deriveFromSeed(
-      toKeySeed(keyDerivationOptionsJson ?: ""),
-      keyDerivationOptionsJson ?: ""
-    ).getPublicKey()
-  }
-
-  fun getPrivateKey(
-        keyDerivationOptionsJson: String? = null
-  ): PrivateKey {
-    return PrivateKey.deriveFromSeed(
-        toKeySeed(keyDerivationOptionsJson ?: ""),
-        keyDerivationOptionsJson ?: ""
-    )
-  }
-
-  fun getSigningKey(
-          keyDerivationOptionsJson: String? = null
-  ): SigningKey {
-    return SigningKey.deriveFromSeed(
-        toKeySeed(keyDerivationOptionsJson ?: ""),
-        keyDerivationOptionsJson ?: ""
-    )
-  }
-
-  fun getSignatureVerificationKey(
-          keyDerivationOptionsJson: String? = null
-  ): SignatureVerificationKey {
-    return SigningKey.deriveFromSeed(
-        toKeySeed(keyDerivationOptionsJson ?: ""),
-        keyDerivationOptionsJson ?: ""
-    ).getSignatureVerificationKey()
-  }
-
+      excludeOrientationOfFaces : Boolean
+  ) : String =
+    (if (excludeOrientationOfFaces) removeOrientations() else this)
+      .toCanonicalRotation()
+      .toHumanReadableForm()
 
 }

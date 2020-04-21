@@ -158,13 +158,13 @@ class PublicKeyTests {
 
     @Test
     fun testSeed() {
-        val keyDerivationOptionsJson = """{"keyType": "Seed", "keyLengthInBytes": 48}"""
-        val s = Seed.deriveFromSeed(seed, keyDerivationOptionsJson)
-        assertEquals(s.seedBytes.size, 48)
+        val keyDerivationOptionsJson = """{"keyType": "Secret", "keyLengthInBytes": 48}"""
+        val s = Secret.deriveFromSeed(seed, keyDerivationOptionsJson)
+        assertEquals(s.secretBytes.size, 48)
 
         val binaryCopy = s.toSerializedBinaryForm()
-        val copy = Seed.fromSerializedBinaryForm(binaryCopy)
-        assertArrayEquals(copy.seedBytes, s.seedBytes)
+        val copy = Secret.fromSerializedBinaryForm(binaryCopy)
+        assertArrayEquals(copy.secretBytes, s.secretBytes)
         assertEquals(copy.keyDerivationOptionsJson, s.keyDerivationOptionsJson)
     }
 

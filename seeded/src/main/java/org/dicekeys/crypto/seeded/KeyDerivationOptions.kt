@@ -1,14 +1,9 @@
 package org.dicekeys.crypto.seeded
-import org.json.JSONArray
 import org.json.JSONObject
 
 
 /**
  * A class to parse and construct key-derivation options in _keyDerivationOptionsJson_ format.
- *
- * FIXME
- * Explain getter/setter
- * Link to
  *
  * ```
  * val keyDerivationOptionsJson: String =
@@ -45,20 +40,37 @@ open class KeyDerivationOptions(
         "{}"
     else keyDerivationOptionsJson
 ) {
+    /**
+     * The keyType values currently supported by this library as an enum,
+     * with names matching the string values in the JSON format.
+     */
     enum class KeyType {
-        Seed, Symmetric, Public, Signing;
+        Secret, Symmetric, Public, Signing;
     }
 
+    /**
+     * Specify whether this JSON object should be used to construct a
+     * [Secret], [SymmetricKey], [PrivateKey], or [SigningKey].
+     */
     var keyType: KeyType?
     get() = optString(KeyDerivationOptions::keyType.name, "").let{
         if (it.isEmpty()) requiredKeyType else KeyType.valueOf(it)
     }
     set(value) { put(KeyDerivationOptions::keyType.name, value?.name) }
 
+    /**
+     * Specify the specific algorithm to use for the supported cryptographic operation(s).
+     * Do not set if `"keyType": "Secret"`.
+     */
     enum class Algorithm {
         XSalsa20Poly1305, X25519, Ed25519;
     }
 
+    /**
+     * A read-only field that yields the default algorithm to use for the keyType
+     * that has been ste for this object.  If keyType isn't set, or is set to
+     * a value with no algorithm (Secret), then the value is null.
+     */
     val defaultAlgorithm: Algorithm? get() = when(this.keyType) {
         KeyType.Public -> Algorithm.X25519
         KeyType.Symmetric -> Algorithm.XSalsa20Poly1305
@@ -66,24 +78,48 @@ open class KeyDerivationOptions(
         else -> null
     }
 
+    /**
+     * Specifies the hash function used to derive the key.
+     */
     var algorithm: Algorithm?
         get() = optString(KeyDerivationOptions::algorithm.name, "").let{
             if (it.isEmpty()) defaultAlgorithm else Algorithm.valueOf(it) }
         set(value) { put(KeyDerivationOptions::algorithm.name, value?.name) }
 
+    /**
+     * Specifies the key-length in bytes if using a cryptographic operation for which
+     * multiple key lengths are supported, or the length of the secret to be derived
+     * if `"keyType": "Secret"`.
+     */
     var keyLengthInBytes: Int?
         get() = if (has(KeyDerivationOptions::keyLengthInBytes.name))
             getInt(KeyDerivationOptions::keyLengthInBytes.name) else null
         set(value) { put(KeyDerivationOptions::keyLengthInBytes.name, value) }
 
+    /**
+     * The key-derivation hash functions currently supported by this library,
+     * with names matching the string values in the JSON format.
+     */
     enum class HashFunction {
         BLAKE2b, SHA256, Argon2id, Scrypt
     }
+
+    /**
+     * The default hash function is SHA256
+     */
     val defaultHashFunction = HashFunction.SHA256
+
+    /**
+     * The hash function the use to derive the secret or the key seed.
+     */
     var hashFunction: HashFunction
         get() = HashFunction.valueOf(optString(KeyDerivationOptions::hashFunction.name, HashFunction.SHA256.name))
         set(value) { put(KeyDerivationOptions::hashFunction.name, value.name) }
 
+    /**
+     * If using the memory-intensive `Argon2id` or `Scrypt` hash functions, you can set the
+     * memory required for the hash function via this value.  The default is 67108864.
+     */
     var hashFunctionMemoryLimit: Long
         get() =
             when(hashFunction) {
@@ -101,6 +137,10 @@ open class KeyDerivationOptions(
             }
         }
 
+    /**
+     * If using the memory-intensive `Argon2id` or `Scrypt` hash functions, you can set the
+     * number of iterative cycles (which those algorithms call opsLimit) via this field.
+     */
     var hashFunctionIterations: Long
         get() =
             when(hashFunction) {
@@ -118,6 +158,22 @@ open class KeyDerivationOptions(
             }
         }
 
+    /**
+     * Generate JSON for these key-derivation options.
+     *
+     * *DO NOT* assume this will always generate the same JSON string, as the JSON
+     * spec allows fields to be placed in different orders.
+     * Any change will yield a different key.
+     * Rather, the original JSON string should be preserved.
+     * This library is designed to preserve the keyDerivationOptionsJson string for you.
+     * All derived keys, including the public [PublicKey] and [SignatureVerificationKey], contain
+     * the keyDerivationOptionsJson used to derive them so that the corresponding
+     * [PrivateKey] and [SigningKey] can be re-derived if needed.
+     * All values sealed by a [SymmetricKey] or [PublicKe] are returned in a
+     * [PackagedSealedMessage] class which contains the keyDerivationOptionsJson needed
+     * to re-derive the keys to unseal the message (but not the seed, as that would
+     * allow anyone who intercepts the message to re-derive the key.)
+     */
     fun toJson(indent: Int? = null): String =
         if (indent == null) toString() else toString(indent)
 
@@ -134,7 +190,7 @@ open class KeyDerivationOptions(
         KeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Public)
 
     class Seed(keyDerivationOptionsJson: String? = null) :
-        KeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Seed)
+        KeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Secret)
 
     class Signing(keyDerivationOptionsJson: String? = null) :
         KeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Signing)

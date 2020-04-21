@@ -15,3 +15,4 @@ org.eclipse.buildship.core.prefs
 keystore.properties
 .keys
 keys.jks
+docs/

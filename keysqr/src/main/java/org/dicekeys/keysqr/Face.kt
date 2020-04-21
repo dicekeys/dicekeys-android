@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
 open class Face(
     open val letter: Char,
     open val digit: Char,
-    open val orientationAsLowercaseLetterTRBL: Char
+    open val orientationAsLowercaseLetterTRBL: Char = '?'
 ) {
     val clockwise90DegreeRotationsFromUpright: Byte? get()  =
         FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTRBL)
@@ -43,14 +43,13 @@ open class Face(
     }
 
 
-    fun toHumanReadableForm(includeFaceOrientations: Boolean): String {
-        return String(
+    fun toHumanReadableForm(includeFaceOrientations: Boolean): String =
+        String(
             if (includeFaceOrientations)
                 charArrayOf(letter, digit, orientationAsLowercaseLetterTRBL)
             else
                 charArrayOf(letter, digit)
         )
-    }
 
     fun rotate(clockwise90DegreeRotations: Int): Face {
         return Face(
@@ -102,8 +101,8 @@ internal class FaceInternals {
         fun clockwise90DegreeRotationsFromUprightToTrbl(
                 clockwise90DegreeRotationsFromUpright: Byte?,
                 additionalClockwise90DegreeRotations: Int = 0
-        ): Char {
-            return if (clockwise90DegreeRotationsFromUpright == null)
+        ): Char =
+            if (clockwise90DegreeRotationsFromUpright == null)
                 '?'
             else
                 FaceRotationLetters[
@@ -112,7 +111,6 @@ internal class FaceInternals {
                                         additionalClockwise90DegreeRotations
                                 ) % 4
                 ]
-        }
 
     }
 }

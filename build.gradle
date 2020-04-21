@@ -10,7 +10,7 @@ buildscript {
         
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.2'
+        classpath 'com.android.tools.build:gradle:3.6.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
 
@@ -33,17 +33,16 @@ dokka {
 
     // In case of a Gradle multiproject build, you can include subprojects here to get merged documentation
     // Note however, that you have to have the Kotlin plugin available in the root project and in the subprojects
-    subProjects = ["seeded", "api"]
+    subProjects = ["seeded", "api", "fidowriter"] //, "trustedapp", "keysqr", "read", 
 
     configuration {
         // Use to include or exclude non public members.
         includeNonPublic = false
-
-        //targets = ["jvm", "common"]
+        samples = ["api/src/sample"]
 
         // List of files with module and package documentation
         // https://kotlinlang.org/docs/reference/kotlin-doc.html#module-and-package-documentation
-        // includes = ['packages.md', 'extra.md']
+        includes = ['packages.md', 'extra.md'] // , 'packages.md' 'extra.md']
 
         // Used for linking to JDK documentation
         jdkVersion = 8
@@ -56,6 +55,25 @@ dokka {
 
             // If package-list file is located in non-standard location
             // packageListUrl = new URL("file:///home/user/localdocs/package-list")
+        }
+        externalDocumentationLink {
+            url = new URL("https://developer.android.com/reference/")
+        }
+    }
+}
+
+task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'gfm'
+    outputDirectory = "docs"
+    subProjects = ["seeded", "api", "keysqr", "read", "fidowriter", "trustedapp"]
+
+    configuration {
+        samples = ["api/src/sample"]
+        includeNonPublic = false
+        includes = ['packages.md', 'extra.md']
+        jdkVersion = 8
+        externalDocumentationLink {
+            url = new URL("https://developer.android.com/reference/androidx/")
         }
         externalDocumentationLink {
             url = new URL("https://developer.android.com/reference/")

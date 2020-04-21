@@ -15,6 +15,10 @@ import kotlinx.coroutines.GlobalScope
 import org.dicekeys.api.DiceKeysApiClient
 import kotlinx.coroutines.launch
 
+/**
+ * The main activity for an application that seeds FIDO security keys using
+ * seeds obtained from a DiceKey using a DiceKeys API.
+ */
 class MainActivity : AppCompatActivity() {
     private lateinit var diceKeysApiClient: DiceKeysApiClient
 
@@ -33,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_PUBLIC_KEY = 3
 
     private lateinit var permissionIntent: android.app.PendingIntent
-    private lateinit var deviceList: UsbCtapHidDeviceList
+    private lateinit var deviceList: ListOfWritableUsbFidoKeys
     private var isWriteUnderway: Boolean = false
     private lateinit var secretTextView: EditText
     private lateinit var buttonWriteSecretToFidoToken: Button
@@ -52,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         permissionIntent = android.app.PendingIntent.getBroadcast(this, 0, Intent(INTENT_ACTION_USB_PERMISSION_EVENT), 0)
 
-        deviceList = UsbCtapHidDeviceList(
+        deviceList = ListOfWritableUsbFidoKeys(
                 getSystemService(android.content.Context.USB_SERVICE) as UsbManager,
                 permissionIntent
         )
@@ -69,9 +73,9 @@ class MainActivity : AppCompatActivity() {
         btn_generate_secret_from_dicekey.setOnClickListener {
             GlobalScope.launch(Dispatchers.Main) {
                 try {
-                    val seed = diceKeysApiClient.getSeed(seedKeyDerivationOptionsJson)
+                    val seed = diceKeysApiClient.getSecret(seedKeyDerivationOptionsJson)
                     edit_text_secret.text.clear()
-                    edit_text_secret.text.insert(0, seed.seedBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
+                    edit_text_secret.text.insert(0, seed.secretBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
                     render()
                 } catch (e: java.lang.Exception) {
                     edit_text_secret.text.clear()

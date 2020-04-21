@@ -17,7 +17,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * corresponding SigningKey and then call [SigningKey.getSignatureVerificationKey].
  *
  * This class wraps the native c++ SignatureVerificationKey class from the
- * DiceKeys seeded cryptography library.
+ * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
  */
  class SignatureVerificationKey internal constructor(internal val nativeObjectPtr: Long) {
     companion object {

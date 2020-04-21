@@ -8,13 +8,13 @@ package org.dicekeys.crypto.seeded
  * corresponding [PublicKey].
  * The [PrivateKey] and [PublicKey] are generated
  * from a seed and a set of key-derivation specified options in
- * @ref key_derivation_options_format.
+ * [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html).
  *
  * The [PrivateKey] includes a copy of the public key in binary format, which can be
  * reconstituted as a [PublicKey] object via the [getPublicKey] method.
  *
  * This class wraps the native c++ PrivateKey class from the
- * DiceKeys seeded cryptography library.
+ * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
  */
 class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     companion object {
@@ -74,7 +74,7 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
          * used to originally derive it.  The [PackagedSealedMessage.keyDerivationOptionsJson]
          * needed to derive it is in the [packagedSealedMessage], as are the
          * [PackagedSealedMessage.ciphertext] and
-         * [PackagedSealedMessage.postDecryptionInstructionsJson].
+         * [PackagedSealedMessage.postDecryptionInstructions].
          */
         fun unseal(
                 seedString: String,
@@ -84,7 +84,7 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
                 seedString, packagedSealedMessage.keyDerivationOptionsJson
             ).unseal(
                 packagedSealedMessage.ciphertext,
-                packagedSealedMessage.postDecryptionInstructionsJson
+                packagedSealedMessage.postDecryptionInstructions
             )
         }
 
@@ -161,14 +161,14 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     /**
      * Unseal a ciphertext that was sealed by this key's corresponding [PublicKey].
      *
-     * If a [postDecryptionInstructionsJson] was passed to the [PublicKey.seal] operation,
-     * the exact same string must also be passed as [postDecryptionInstructionsJson] here.
+     * If a [postDecryptionInstructions] was passed to the [PublicKey.seal] operation,
+     * the exact same string must also be passed as [postDecryptionInstructions] here.
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.
      */
     external fun unseal(
         ciphertext: ByteArray,
-        postDecryptionInstructionsJson: String = ""
+        postDecryptionInstructions: String = ""
     ): ByteArray
 
     /**
@@ -179,7 +179,7 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
         packagedSealedMessage: PackagedSealedMessage
     ): ByteArray = unseal(
         packagedSealedMessage.ciphertext,
-        packagedSealedMessage.postDecryptionInstructionsJson
+        packagedSealedMessage.postDecryptionInstructions
     )
 
 

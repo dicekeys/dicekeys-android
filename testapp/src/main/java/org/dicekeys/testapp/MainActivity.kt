@@ -32,8 +32,8 @@ class MainActivity : AppCompatActivity() {
         buttonStart = findViewById(R.id.btn_start)
 
         buttonStart.setOnClickListener{ GlobalScope.launch(Dispatchers.Main) { try {
-            val seed = diceKeysApiClient.getSeed(keyDerivationOptionsJson)
-            resultTextView.text = "Seed=${Base64.encodeToString(seed.seedBytes, Base64.DEFAULT)}"
+            val seed = diceKeysApiClient.getSecret(keyDerivationOptionsJson)
+            resultTextView.text = "Seed=${Base64.encodeToString(seed.secretBytes, Base64.DEFAULT)}"
             val packagedSealedMessage = diceKeysApiClient.sealWithSymmetricKey(
                 keyDerivationOptionsJson,
                 testMessageByteArray
