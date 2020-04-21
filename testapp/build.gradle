@@ -87,7 +87,6 @@ dependencies {
 
     implementation project(path: ':api')
     implementation project(path: ':seeded')
-    implementation project(path: ':trustedapp')
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

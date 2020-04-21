@@ -4,10 +4,26 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <application>
-        <activity android:name="org.dicekeys.trustedapp.activities.DisplayDiceKeyActivity"></activity>
-        <activity android:name="org.dicekeys.trustedapp.activities.DisplayPublicKeyActivity"></activity>
-        <activity android:name="org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity"></activity>
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="DiceKeys Trusted App"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+    >
+        <activity android:name="org.dicekeys.trustedapp.activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.dicekeys.trustedapp.activities.DisplayPublicKeyActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

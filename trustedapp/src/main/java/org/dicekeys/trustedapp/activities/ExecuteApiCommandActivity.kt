@@ -54,10 +54,6 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     }
 
 
-//    private fun isIntentAValidCommand(): Boolean {
-//        return org.dicekeys.activities.Operations.All.contains(intent.action)
-//    }
-//
     /**
      * Ensure any non-empty string ends in a "." by appending one if necessary
      */
@@ -105,19 +101,19 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
             postDecryptionInstructions: PostDecryptionInstructions
     ) : Unit = throwUnlessRestrictionsSatisfied(postDecryptionInstructions.restrictions)
 
-    private var postDecryptinInstructionsMessageApproved: String? = null
-    private var postDecryptinInstructionsMessageRejected: String? = null
+    private var postDecryptionInstructionsMessageApproved: String? = null
+    private var postDecryptionInstructionsMessageRejected: String? = null
     private fun noPostDecryptionInstructionsWarningRequirementsUnmet(
         postDecryptionInstructions: PostDecryptionInstructions
     ) : Boolean = postDecryptionInstructions.userMustAcknowledgeThisMessage.let{ message ->
         if (message == null) return true
-        if (postDecryptinInstructionsMessageApproved == null &&
-            postDecryptinInstructionsMessageRejected != message) {
+        if (postDecryptionInstructionsMessageApproved == null &&
+            postDecryptionInstructionsMessageRejected != message) {
             // Launch the dialog to display the message and request the user's approval
             // FIXME -- to be implemented.
             throw NotImplementedError()
         }
-        return (message == postDecryptinInstructionsMessageApproved)
+        return (message == postDecryptionInstructionsMessageApproved)
     }
 
     private var requiredUserActionsCompleted: Boolean = false

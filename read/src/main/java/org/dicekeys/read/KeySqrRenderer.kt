@@ -10,7 +10,6 @@ import org.dicekeys.keysqr.KeySqr
 
 
 class KeySqrRenderer(private val typeface: Typeface?) {
-
     // Typeface inconsolata = Typeface.createFromAsset(assetManager, pathToFont) / ResourcesCompat.getFont(context, R.font.Inconsolata700)
     private fun textPaintForFaceSize(faceSize: Float): Paint {
         val paint = Paint()
@@ -144,31 +143,4 @@ class KeySqrRenderer(private val typeface: Typeface?) {
             }
         }
     }
-}
-
-
-class KeySqrDrawable(
-    private val context: Context,
-    private val keySqr: KeySqr<Face>
-) : Drawable() {
-
-    private val inconsolataBold: Typeface? = ResourcesCompat.getFont(context, R.font.inconsolata_bold)
-    private val renderer = KeySqrRenderer(inconsolataBold)
-
-    override fun draw(canvas: Canvas) {
-        // https://github.com/dicekeys/read-keysqr-android/issues/18
-        renderer.renderKeySqr(keySqr.rotate(1), canvas)
-    }
-
-    override fun setAlpha(alpha: Int) {
-        // This method is required
-    }
-
-    override fun setColorFilter(colorFilter: ColorFilter?) {
-        // This method is required
-    }
-
-    override fun getOpacity(): Int =
-            // Must be PixelFormat.UNKNOWN, TRANSLUCENT, TRANSPARENT, or OPAQUE
-            PixelFormat.OPAQUE
 }

@@ -106,7 +106,7 @@ abstract class DiceKeysApiClient(
 //            Intent(callingContext, ExecuteApiCommandActivity::class.java).apply {
         Intent(command).apply {
                 // Component name set with (package name in manifest, fully qualified name)
-//            component = ComponentName("org.dicekeys","org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity")
+//            component = ComponentName("org.dicekeys.trustedapp","org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity")
             // FIXME -- will break when we separate out API from the app
             component = android.content.ComponentName(callingContext.packageName ?: "", "org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity")
                 action = command
