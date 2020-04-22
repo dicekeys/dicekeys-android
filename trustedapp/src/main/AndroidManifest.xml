@@ -23,7 +23,8 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name="org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:exported="true"/>
     </application>
 
 </manifest>

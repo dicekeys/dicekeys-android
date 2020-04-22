@@ -78,7 +78,6 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace(pw)
             val stackTrace: String = sw.toString()
             android.util.Log.e("We caught exception", stackTrace)
-            // findViewById<TextView>(R.id.txt_json).text = stackTrace
         }
     }
 

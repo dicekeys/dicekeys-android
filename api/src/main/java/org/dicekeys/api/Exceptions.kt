@@ -19,3 +19,6 @@ class ClientPackageNotAuthorizedException(
 
 class ClientMayNotRetrieveKeyException(keyName: String) :
         IllegalArgumentException("You cannot generate a $keyName without including clientMayRetrieveKey in your key derivation options.")
+
+class DiceKeysAppNotPresentException() :
+  IllegalArgumentException("The DiceKeys App is not installed")

@@ -10,6 +10,7 @@
       <w>generichash</w>
       <w>jbyte</w>
       <w>jstring</w>
+      <w>marhsalling</w>
       <w>moshi</w>
       <w>overline</w>
       <w>overlines</w>
@@ -18,6 +19,8 @@
       <w>thiz</w>
       <w>trustedapp</w>
       <w>undoverline</w>
+      <w>unmarshall</w>
+      <w>unmarshalling</w>
     </words>
   </dictionary>
 </component>
