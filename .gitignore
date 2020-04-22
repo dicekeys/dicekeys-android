@@ -1,14 +1,8 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/misc.xml
-/.idea/assetWizardSettings.xml
-.idea
+.idea/*
+!.idea/dictionaries
 .vscode
 .classpath
 .DS_Store
@@ -18,7 +12,7 @@
 .cxx
 .project
 org.eclipse.buildship.core.prefs
-.idea/vcs.xml
 keystore.properties
 .keys
 keys.jks
+docs/

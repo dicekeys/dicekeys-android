@@ -1,15 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.3.61'
+    ext.kotlin_version = '1.3.72'
+    ext.dokka_version = '0.10.1'
     repositories {
         google()
         jcenter()
         
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:3.6.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -21,6 +24,60 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
+    }
+}
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+
+    // In case of a Gradle multiproject build, you can include subprojects here to get merged documentation
+    // Note however, that you have to have the Kotlin plugin available in the root project and in the subprojects
+    subProjects = ["seeded", "api", "fidowriter"] //, "trustedapp", "keysqr", "read", 
+
+    configuration {
+        // Use to include or exclude non public members.
+        includeNonPublic = false
+        samples = ["api/src/sample"]
+
+        // List of files with module and package documentation
+        // https://kotlinlang.org/docs/reference/kotlin-doc.html#module-and-package-documentation
+        includes = ['packages.md', 'extra.md'] // , 'packages.md' 'extra.md']
+
+        // Used for linking to JDK documentation
+        jdkVersion = 8
+
+        // Allows linking to documentation of the project's dependencies (generated with Javadoc or Dokka)
+        // Repeat for multiple links
+        externalDocumentationLink {
+            // Root URL of the generated documentation to link with. The trailing slash is required!
+            url = new URL("https://developer.android.com/reference/androidx/")
+
+            // If package-list file is located in non-standard location
+            // packageListUrl = new URL("file:///home/user/localdocs/package-list")
+        }
+        externalDocumentationLink {
+            url = new URL("https://developer.android.com/reference/")
+        }
+    }
+}
+
+task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'gfm'
+    outputDirectory = "docs"
+    subProjects = ["seeded", "api", "keysqr", "read", "fidowriter", "trustedapp"]
+
+    configuration {
+        samples = ["api/src/sample"]
+        includeNonPublic = false
+        includes = ['packages.md', 'extra.md']
+        jdkVersion = 8
+        externalDocumentationLink {
+            url = new URL("https://developer.android.com/reference/androidx/")
+        }
+        externalDocumentationLink {
+            url = new URL("https://developer.android.com/reference/")
+        }
     }
 }
 
