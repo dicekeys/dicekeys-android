@@ -1,19 +1,18 @@
-package org.dicekeys.trustedapp
+package org.dicekeys.trustedapp.apicommands.permissionchecked
 
 import android.content.Intent
 import org.dicekeys.api.*
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 
 /**
- * Wrap the [ApiCommandsWithPermissionChecks] to unmarshall parameters from the
+ * Wrap the [PermissionCheckedCommands] to unmarshall parameters from the
  * Android Intents (e.g. via `getStringExtra` or `getByteArrayExtra`) and then
  * marshall the Api call's result into a result intent (e.g. via `putExtra`).
  *
- * Errors are not caught, but trickle up to the caller as Exceptions, and so it's
- * the caller's job to marshall exceptions
+ *  The caller is responsible for catching exceptions and marshalling them
  */
-class ApiCommandsWithPermissionChecksAndIntentMarhsalling(
-  private val api: ApiCommandsWithPermissionChecks,
+class PermissionCheckedIntentCommands(
+  private val api: PermissionCheckedCommands,
   private val intent: Intent,
   private val returnIntent: ((fn: (intent: Intent) -> Any) -> Unit)
 ) {

@@ -9,8 +9,8 @@ import org.dicekeys.trustedapp.R
 import org.dicekeys.keysqr.FaceRead
 import org.dicekeys.trustedapp.state.KeySqrState
 import org.dicekeys.read.ReadKeySqrActivity
-import org.dicekeys.trustedapp.ApiCommandsWithPermissionChecks
-import org.dicekeys.trustedapp.ApiCommandsWithPermissionChecksAndIntentMarhsalling
+import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedCommands
+import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedIntentCommands
 
 class ExecuteApiCommandActivity : AppCompatActivity() {
   private var keySqrReadActivityStarted: Boolean = false
@@ -104,17 +104,17 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
         }
         return
       }
-      val apiCommandsWithPermissionChecks = ApiCommandsWithPermissionChecks(
-          keySqr,
-          callingActivity?.packageName ?: ""
-        ) {
-          warningHandler(it)
-        }
-      val intentMarshalledApi = ApiCommandsWithPermissionChecksAndIntentMarhsalling(
+      val apiCommandsWithPermissionChecks = PermissionCheckedCommands(
+        keySqr,
+        callingActivity?.packageName ?: ""
+      ) {
+        warningHandler(it)
+      }
+      val intentMarshalledApi = PermissionCheckedIntentCommands(
         apiCommandsWithPermissionChecks,
         intent
-      ){
-        intent -> returnIntent(intent)
+      ) { intent ->
+        returnIntent(intent)
       }
       with(intentMarshalledApi){
         when (intent.action) {
