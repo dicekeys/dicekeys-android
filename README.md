@@ -2,7 +2,7 @@
 # DiceKeys for Android
 
 ```
-git clone --recursive https://github.com/dicekeys/read-keysqr-android.git
+git clone --recursive https://github.com/dicekeys/dicekeys-android.git
 ```
 
 ### Prerequisites Install CMake and Ninja
