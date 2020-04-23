@@ -65,7 +65,7 @@ dokka {
 task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'gfm'
     outputDirectory = "docs"
-    subProjects = ["seeded", "api", "keysqr", "read", "fidowriter", "trustedapp"]
+    subProjects = ["seeded", "api", "fidowriter"] //, "trustedapp", "keysqr", "read", 
 
     configuration {
         samples = ["api/src/sample"]
