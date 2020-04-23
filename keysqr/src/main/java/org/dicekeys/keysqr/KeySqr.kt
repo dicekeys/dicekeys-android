@@ -65,9 +65,7 @@ class KeySqr<F: Face>(val faces: List<F>) {
       faces.map{ face -> Face(face.letter, face.digit) }
     )
 
-  fun toCanonicalRotation(
-    includeFaceOrientations: Boolean = allOrientationsAreDefined
-  ): KeySqr<Face> {
+  fun toCanonicalRotation(): KeySqr<Face> {
     var winningRotation: KeySqr<Face> = rotate(0)
     var winningReadableForm = toHumanReadableForm()
     for (clockwiseTurns in 1..3) {

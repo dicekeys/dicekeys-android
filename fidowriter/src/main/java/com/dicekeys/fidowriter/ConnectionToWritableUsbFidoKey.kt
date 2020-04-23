@@ -25,7 +25,7 @@ class LoadKeyNotAuthorizedByUserException(
  *     [documented](https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-client-to-authenticator-protocol-v2.0-id-20180227.html#usb))
  *     by the FIDO alliance.
  */
-@Suppress("EXPERIMENTAL_UNSIGNED_LITERALS", "EXPERIMENTAL_UNSIGNED_TYPES")
+@kotlin.ExperimentalUnsignedTypes
 open class ConnectionToWritableUsbFidoKey internal constructor(
         /*
          * The underlying USB connection created on construction
