@@ -29,7 +29,7 @@ allprojects {
 
 dokka {
     outputFormat = 'html'
-    outputDirectory = "$buildDir/javadoc"
+    outputDirectory = "$buildDir/dokka"
 
     // In case of a Gradle multiproject build, you can include subprojects here to get merged documentation
     // Note however, that you have to have the Kotlin plugin available in the root project and in the subprojects
