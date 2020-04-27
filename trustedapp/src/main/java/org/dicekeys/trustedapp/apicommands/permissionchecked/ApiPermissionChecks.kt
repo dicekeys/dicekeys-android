@@ -55,6 +55,13 @@ open class ApiPermissionChecks(
     postDecryptionInstructions: PostDecryptionInstructions
   ) : Unit = throwIfClientNotAuthorized(postDecryptionInstructions.restrictions)
 
+  internal fun throwIfPostDecryptionInstructionsViolated(
+    postDecryptionInstructions: String
+  ) : Unit = throwIfClientNotAuthorized(
+    PostDecryptionInstructions(postDecryptionInstructions).restrictions
+  )
+
+
   /**
    * Return true if unsealing is allowed
    * Throw if it is forbidden

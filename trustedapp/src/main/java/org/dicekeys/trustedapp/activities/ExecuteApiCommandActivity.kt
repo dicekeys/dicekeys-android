@@ -7,10 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.api.*
 import org.dicekeys.trustedapp.R
 import org.dicekeys.keysqr.FaceRead
-import org.dicekeys.trustedapp.state.KeySqrState
-import org.dicekeys.read.ReadKeySqrActivity
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedCommands
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedIntentCommands
+import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedSeedAccessor
 
 class ExecuteApiCommandActivity : AppCompatActivity() {
   private var keySqrReadActivityStarted: Boolean = false
@@ -38,7 +37,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     ) {
       data.getStringExtra("keySqrAsJson")?.let { keySqrAsJson ->
         FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
-          KeySqrState.setKeySquareRead(keySqr)
+          org.dicekeys.trustedapp.state.KeySqrState.setKeySquareRead(keySqr)
           executeIntentsCommand()
         }
       }
@@ -93,23 +92,17 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
         throw IllegalArgumentException("Invalid command for DiceKeys API")
       }
 
-      val keySqr = KeySqrState.keySqr
-      if (keySqr == null) {
-        // We need to first trigger an action to load the key square, then come back to this
-        // intent.
-        if (!keySqrReadActivityStarted) {
-          keySqrReadActivityStarted = true
-          val intent = Intent(this, ReadKeySqrActivity::class.java)
-          startActivityForResult(intent, 0)
-        }
-        return
-      }
-      val apiCommandsWithPermissionChecks = PermissionCheckedCommands(
-        keySqr,
-        callingActivity?.packageName ?: ""
-      ) {
+      // Get a permission-checked accessor for obtaining seeds from the DiceKey.
+      // If the user doesn't have a DiceKey loaded into memory yet, this will trigger
+      // a load request, return null, and cause this function to return null.
+      // When a key is loaded, this function will be called again.
+      val permissionCheckedSeedAccessor = PermissionCheckedSeedAccessor.create(this){
         warningHandler(it)
-      }
+      } ?: return
+
+      // Our API commands don't get a copy of the raw DiceKey seed, but only an accessor
+      // which must be passed parameters to check.
+      val apiCommandsWithPermissionChecks = PermissionCheckedCommands(permissionCheckedSeedAccessor)
       val intentMarshalledApi = PermissionCheckedIntentCommands(
         apiCommandsWithPermissionChecks,
         intent

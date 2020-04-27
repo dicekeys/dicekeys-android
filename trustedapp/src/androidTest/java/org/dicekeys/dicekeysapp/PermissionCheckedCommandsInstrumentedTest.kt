@@ -11,6 +11,7 @@ import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import org.dicekeys.keysqr.Face
 import org.dicekeys.trustedapp.apicommands.permissionchecked.ApiPermissionChecks
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedCommands
+import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedSeedAccessor
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +30,7 @@ class PermissionCheckedCommandsInstrumentedTest {
 
   @Test(expected = ClientPackageNotAuthorizedException::class)
   fun preventsLengthExtensionAttackOnASymmetricSeal() {
-    PermissionCheckedCommands(keySqr, "com.examplespoof"){ true }
+    PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.examplespoof"){ true })
       .sealWithSymmetricKey(
         ApiKeyDerivationOptions().apply {
           restrictions = ApiKeyDerivationOptions.Restrictions().apply{
@@ -43,7 +44,7 @@ class PermissionCheckedCommandsInstrumentedTest {
 
   @Test(expected = ClientPackageNotAuthorizedException::class)
   fun preventsLengthExtensionAttackOnASymmetricUnseal() {
-    PermissionCheckedCommands(keySqr, "com.examplespoof"){ true }
+    PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.examplespoof"){ true })
       .unsealWithSymmetricKey(PackagedSealedMessage(
         ByteArray(0),
         ApiKeyDerivationOptions().apply {
@@ -57,7 +58,7 @@ class PermissionCheckedCommandsInstrumentedTest {
 
   @Test(expected = ClientPackageNotAuthorizedException::class)
   fun preventsLengthExtensionAttackOnASymmetricUnsealPostDecryptionOptions() {
-    val api = PermissionCheckedCommands(keySqr, "com.examplespoof"){ true }
+    val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.examplespoof"){ true })
     val publicKey = api.getPublicKey("")
     val packagedSealedMessage = publicKey.seal("The secret ingredient is eternal despair.",
         PostDecryptionInstructions().apply {
@@ -70,13 +71,13 @@ class PermissionCheckedCommandsInstrumentedTest {
 
   @Test(expected = ClientMayNotRetrieveKeyException::class)
   fun preventsPrivateKeySinceKeyDerivationOptionsDoesNotAllowIt() {
-    val api = PermissionCheckedCommands(keySqr, "com.example"){ true }
+    val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.example"){ true })
     val privateKey = api.getPrivateKey("")
   }
 
   @Test()
   fun allowsPrivateKeySinceKeyDerivationOptions() {
-    val api = PermissionCheckedCommands(keySqr, "com.example"){ true }
+    val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.example"){ true })
     val privateKey = api.getPrivateKey(
       ApiKeyDerivationOptions().apply {
         clientMayRetrieveKey = true
