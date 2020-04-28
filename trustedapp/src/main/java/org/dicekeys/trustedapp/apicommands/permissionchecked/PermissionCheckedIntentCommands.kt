@@ -1,131 +1,53 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
+import android.app.Activity
 import android.content.Intent
-import org.dicekeys.api.*
-import org.dicekeys.crypto.seeded.PackagedSealedMessage
+import androidx.appcompat.app.AppCompatActivity
+import org.dicekeys.api.DiceKeysApiClient
 
-/**
- * Wrap the [PermissionCheckedCommands] to unmarshall parameters from the
- * Android Intents (e.g. via `getStringExtra` or `getByteArrayExtra`) and then
- * marshall the Api call's result into a result intent (e.g. via `putExtra`).
- *
- *  The caller is responsible for catching exceptions and marshalling them
- */
 class PermissionCheckedIntentCommands(
-  private val api: PermissionCheckedCommands,
-  private val intent: Intent,
-  private val returnIntent: ((fn: (intent: Intent) -> Any) -> Unit)
-) {
-  private fun getCommonKeyDerivationOptionsJsonParameter() : String =
-    intent.getStringExtra(DiceKeysApiClient.ParameterNames.Common.keyDerivationOptionsJson) ?:
-    throw java.lang.IllegalArgumentException(
-      "API call must include DiceKeysApiClient.ParameterNames.Common.keyDerivationOptionsJson"
-    )
+  permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor,
+  private val activity: Activity
+) : PermissionCheckedMarshalledCommands(permissionCheckedSeedAccessor) {
+  private val requestIntent = activity.intent
+  private val resultIntent = Intent()
 
-  fun getSecret() =
-    returnIntent{ resultIntent ->
-      resultIntent.putExtra(
-        DiceKeysApiClient.ParameterNames.Secret.Get.secretJson,
-        api.getSecret(getCommonKeyDerivationOptionsJsonParameter()).toJson()
+  override fun binaryParameter(parameterName: String): ByteArray? =
+    requestIntent.getByteArrayExtra(parameterName)
+
+  override fun stringParameter(parameterName: String): String? =
+    requestIntent.getStringExtra(parameterName)
+
+  override fun respondWith(responseParameterName: String, value: String): PermissionCheckedIntentCommands {
+    resultIntent.putExtra(responseParameterName, value)
+    return this
+  }
+
+  override fun respondWith(responseParameterName: String, value: ByteArray): PermissionCheckedIntentCommands {
+    resultIntent.putExtra(responseParameterName, value)
+    return this
+  }
+
+  override fun sendSuccess() {
+    super.sendSuccess()
+    // Return the result intent as a success response (OK)
+    activity.setResult(AppCompatActivity.RESULT_OK, resultIntent)
+    // Finish this activity, which exist(ed) only for the purpose of handling this API request
+    activity.finish()
+  }
+
+  override fun sendException(exception: Exception) {
+    activity.setResult(Activity.RESULT_CANCELED, Intent().apply{
+      putExtra(DiceKeysApiClient.ParameterNames.Common.requestId,
+        stringParameter(DiceKeysApiClient.ParameterNames.Common.requestId)
       )
-    }
+      putExtra(DiceKeysApiClient.ParameterNames.Common.exception, exception)
+    })
+    activity.finish()
+  }
 
-  fun sealWithSymmetricKey() =
-    returnIntent{ resultIntent->
-      resultIntent.putExtra(
-        DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary,
-        api.sealWithSymmetricKey(
-          getCommonKeyDerivationOptionsJsonParameter(),
-          intent.getByteArrayExtra(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.plaintext)
-            ?: throw IllegalArgumentException("Seal operation must include plaintext byte array"),
-          intent.getStringExtra(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.postDecryptionInstructions)
-        ).toSerializedBinaryForm())
-    }
-
-  fun unsealWithSymmetricKey() =
-    api.unsealWithSymmetricKey(
-      PackagedSealedMessage.fromSerializedBinaryForm(
-        intent.getByteArrayExtra(DiceKeysApiClient.ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary)
-          ?: throw IllegalArgumentException("Unseal operation must include packagedSealedMessageSerializedToBinary")
-      )
-    )?.let { plaintext ->
-      returnIntent{ resultIntent ->
-        resultIntent.putExtra(DiceKeysApiClient.ParameterNames.SymmetricKey.Unseal.plaintext, plaintext)
-      }
-    }
-
-  fun getPublicKey() =
-    returnIntent{ resultIntent ->
-      resultIntent.putExtra(
-        DiceKeysApiClient.ParameterNames.PrivateKey.GetPublic.publicKeySerializedToBinary,
-        api.getPublicKey(getCommonKeyDerivationOptionsJsonParameter()).toSerializedBinaryForm()
-      )
-    }
-
-  fun unsealWithPrivateKey() =
-    api.unsealWithPrivateKey(
-      PackagedSealedMessage.fromSerializedBinaryForm(
-        intent.getByteArrayExtra(DiceKeysApiClient.ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary)
-          ?: throw IllegalArgumentException("Unseal operation must include packagedSealedMessageSerializedToBinary")
-      )
-    )?.let { plaintext ->
-      returnIntent{ resultIntent ->
-        resultIntent.putExtra(DiceKeysApiClient.ParameterNames.PrivateKey.Unseal.plaintext, plaintext)
-      }
-    }
-
-  fun getSignatureVerificationKey() =
-    returnIntent{ resultIntent ->
-      resultIntent.putExtra(
-        DiceKeysApiClient.ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeySerializedToBinary,
-        api.getSignatureVerificationKey(getCommonKeyDerivationOptionsJsonParameter()).toSerializedBinaryForm())
-    }
-
-  fun generateSignature() =
-    api.generateSignature(
-      getCommonKeyDerivationOptionsJsonParameter(),
-      intent.getByteArrayExtra(DiceKeysApiClient.ParameterNames.SigningKey.GenerateSignature.message)
-        ?: throw IllegalArgumentException("Seal operation must include message byte array")
-    ).let { resultPair ->
-      returnIntent{ resultIntent ->
-        resultIntent.putExtra(
-          DiceKeysApiClient.ParameterNames.SigningKey.GenerateSignature.signature,
-          resultPair.first)
-        resultIntent.putExtra(
-          DiceKeysApiClient.ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeySerializedToBinary,
-          resultPair.second.toSerializedBinaryForm()
-        )
-      }
-    }
-
-  fun getPrivate() =
-    api.getPrivateKey(getCommonKeyDerivationOptionsJsonParameter()).let { privateKey ->
-      returnIntent{ resultIntent ->
-        resultIntent.putExtra(
-          DiceKeysApiClient.ParameterNames.PrivateKey.GetPrivate.privateKeySerializedToBinary,
-          privateKey.toSerializedBinaryForm()
-        )
-      }
-    }
-
-  fun getSigningKey() =
-    api.getSigningKey(getCommonKeyDerivationOptionsJsonParameter()).let { signingKey ->
-      returnIntent { resultIntent ->
-        resultIntent.putExtra(
-          DiceKeysApiClient.ParameterNames.SigningKey.GetSigningKey.signingKeySerializedToBinary,
-          signingKey.toSerializedBinaryForm()
-        )
-      }}
-
-  fun getSymmetricKey() =
-    api.getSymmetricKey(getCommonKeyDerivationOptionsJsonParameter()).let { symmetricKey ->
-      returnIntent { resultIntent ->
-        resultIntent.putExtra(
-          DiceKeysApiClient.ParameterNames.SymmetricKey.GetKey.symmetricKeySerializedToBinary,
-          symmetricKey.toSerializedBinaryForm()
-        )
-      }
-    }
+  override fun executeCommand() {
+    executeCommand(requestIntent.action ?: "")
+  }
 
 }
-

@@ -160,7 +160,7 @@ abstract class DiceKeysApiClient(
 
     object Secret {
       object Get {
-        const val secretJson = "secretJson"
+        const val secretSerializedToBinary = "secretSerializedToBinary"
       }
     }
 
@@ -675,7 +675,7 @@ abstract class DiceKeysApiClient(
         OperationNames.Secret.get -> handleResult(getSecretCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(
-            Secret.fromJson(requireResult(resultIntent.getStringExtra(ParameterNames.Secret.Get.secretJson))))
+            Secret.fromSerializedBinaryForm(requireResult(resultIntent.getByteArrayExtra( ParameterNames.Secret.Get.secretSerializedToBinary))))
           }
         )
 

@@ -2,8 +2,6 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 
 import org.dicekeys.crypto.seeded.*
 import org.dicekeys.api.*
-import org.dicekeys.keysqr.Face
-import org.dicekeys.keysqr.KeySqr
 
 /**
  * Implements the server-side API calls and the necessary permission checks,
@@ -19,7 +17,6 @@ import org.dicekeys.keysqr.KeySqr
 class PermissionCheckedCommands(
   private val permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
 ) {
-
   /**
    * Implement [DiceKeysApiClient.getSecret] with the necessary permissions checks
    */

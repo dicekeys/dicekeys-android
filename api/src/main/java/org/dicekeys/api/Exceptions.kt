@@ -17,6 +17,17 @@ class ClientPackageNotAuthorizedException(
             authorizedPrefixes.joinToString(",", "'", "'" )}")
 )
 
+class ClientUriNotAuthorizedException(
+  clientsUri: String?,
+  authorizedPrefixes: List<String>?
+): java.lang.Exception(
+  "Client is not authorized " +
+    if (authorizedPrefixes == null)
+      "as no Uri prefixes have been specified in the key derivation options"
+    else ("as its Uri does not start with one of the following prefixes: ${
+    authorizedPrefixes.joinToString(",", "'", "'" )}")
+)
+
 class ClientMayNotRetrieveKeyException(keyName: String) :
         IllegalArgumentException("You cannot generate a $keyName without including clientMayRetrieveKey in your key derivation options.")
 

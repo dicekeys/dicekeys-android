@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import org.dicekeys.api.ApiKeyDerivationOptions
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
-import org.dicekeys.api.PostDecryptionInstructions
 import org.dicekeys.crypto.seeded.KeyDerivationOptions
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import org.dicekeys.keysqr.Face
@@ -20,8 +19,8 @@ import org.dicekeys.trustedapp.state.KeySqrState
 open class PermissionCheckedSeedAccessor(
   private val keySqr: KeySqr<Face>,
   clientsApplicationId: String,
-  askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean?
-) :  ApiPermissionChecks(clientsApplicationId, askUserForApprovalOrReturnResultIfReady) {
+  askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
+) :  ApiPermissionChecksForPackages(clientsApplicationId, askUserForApprovalOrReturnResultIfReady) {
 
   companion object {
     private var keySqrReadActivityStarted: Boolean = false
@@ -40,7 +39,7 @@ open class PermissionCheckedSeedAccessor(
      */
     fun create(
       activity: Activity,
-      askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean?
+      askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
     ): PermissionCheckedSeedAccessor? {
 
       val keySqr = KeySqrState.keySqr

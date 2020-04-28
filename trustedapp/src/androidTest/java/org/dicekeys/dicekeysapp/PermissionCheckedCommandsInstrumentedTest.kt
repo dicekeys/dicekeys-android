@@ -1,15 +1,12 @@
 package org.dicekeys.dicekeysapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import org.dicekeys.api.ApiKeyDerivationOptions
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.PostDecryptionInstructions
-import org.dicekeys.crypto.seeded.KeyDerivationOptions
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import org.dicekeys.keysqr.Face
-import org.dicekeys.trustedapp.apicommands.permissionchecked.ApiPermissionChecks
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedCommands
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedSeedAccessor
 import org.junit.Assert
@@ -67,12 +64,14 @@ class PermissionCheckedCommandsInstrumentedTest {
         }}.toJson()
       )
     val plaintextNotFoundBecauseOfException = api.unsealWithPrivateKey(packagedSealedMessage)
+    Assert.fail()
   }
 
   @Test(expected = ClientMayNotRetrieveKeyException::class)
   fun preventsPrivateKeySinceKeyDerivationOptionsDoesNotAllowIt() {
     val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.example"){ true })
     val privateKey = api.getPrivateKey("")
+    Assert.fail()
   }
 
   @Test()
