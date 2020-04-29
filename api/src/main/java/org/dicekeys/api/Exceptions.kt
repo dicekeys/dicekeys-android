@@ -3,7 +3,7 @@ package org.dicekeys.api
 import java.lang.IllegalArgumentException
 
 /**
- * Thrown when a key to be derived has requirements in keyDerivationOptionsJson that disallow
+ * Thrown when a key to be derived has requirements in derivationOptionsJson that disallow
  * the calling client application from accessing or using the key.
  */
 class ClientPackageNotAuthorizedException(

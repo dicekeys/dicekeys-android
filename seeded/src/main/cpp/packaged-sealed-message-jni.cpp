@@ -23,13 +23,13 @@ Java_org_dicekeys_crypto_seeded_PackagedSealedMessage_postDecryptionInstructions
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_PackagedSealedMessage_keyDerivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_PackagedSealedMessage_derivationOptionsJsonGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PackagedSealedMessage>(env, thiz)->keyDerivationOptionsJson
+      getNativeObjectPtr<PackagedSealedMessage>(env, thiz)->derivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

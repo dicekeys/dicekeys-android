@@ -29,15 +29,15 @@ class PublicKeyTests {
 
     @Test
     fun createPublicKeyFromJson() {
-        val keyDerivationOptionsJson = """{}"""
+        val derivationOptionsJson = """{}"""
         val publicKeyJson = """{
             "keyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
-            "keyDerivationOptionsJson": "$keyDerivationOptionsJson"
+            "derivationOptionsJson": "$derivationOptionsJson"
         }"""
         val pk = PublicKey.fromJson(publicKeyJson)
         assertEquals(0x0f, pk.keyBytes[31].toInt())
-        assertEquals(keyDerivationOptionsJson, pk.keyDerivationOptionsJson)
-        val copyOfPk = PublicKey(pk.keyBytes, pk.keyDerivationOptionsJson)
+        assertEquals(derivationOptionsJson, pk.derivationOptionsJson)
+        val copyOfPk = PublicKey(pk.keyBytes, pk.derivationOptionsJson)
         assertEquals(pk, copyOfPk)
     }
 
@@ -45,8 +45,8 @@ class PublicKeyTests {
 
     @Test
     fun testPrivateKeys() {
-        val keyDerivationOptionsJson = """{"keyType": "Public"}"""
-        val sk = PrivateKey.deriveFromSeed(seed, keyDerivationOptionsJson)
+        val derivationOptionsJson = """{"keyType": "Public"}"""
+        val sk = PrivateKey.deriveFromSeed(seed, derivationOptionsJson)
         val pk = sk.getPublicKey()
         val testMessage = "some message to test"
         val packagedSealedMessage = pk.seal( testMessage );
@@ -66,16 +66,16 @@ class PublicKeyTests {
     }
 
     @Test
-    fun shouldThrowInvalidKeyDerivationOptionValueException() {
-        val keyDerivationOptionsJson = """{}"""
+    fun shouldThrowInvalidDerivationOptionValueException() {
+        val derivationOptionsJson = """{}"""
         val publicKeyJson = """{
             "ErrorInsteadOfKeyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
-            "keyDerivationOptionsJson": "$keyDerivationOptionsJson"
+            "derivationOptionsJson": "$derivationOptionsJson"
         }"""
         try {
             PublicKey.fromJson(publicKeyJson)
             fail()
-        } catch (e: InvalidKeyDerivationOptionValueException) {
+        } catch (e: InvalidDerivationOptionValueException) {
         } catch (e: JsonParsingException) {
         } catch (other: Exception) {
             fail()
@@ -98,15 +98,15 @@ class PublicKeyTests {
 
     @Test
     fun createSignatureVerificationKeyFromJson() {
-        val keyDerivationOptionsJson = """{}"""
+        val derivationOptionsJson = """{}"""
         val signatureVerificationKeyJson = """{
             "keyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
-            "keyDerivationOptionsJson": "$keyDerivationOptionsJson"
+            "derivationOptionsJson": "$derivationOptionsJson"
         }"""
         val svk = SignatureVerificationKey.fromJson(signatureVerificationKeyJson)
         assertEquals(0x0f, svk.keyBytes[31].toInt())
-        assertEquals(keyDerivationOptionsJson, svk.keyDerivationOptionsJson)
-        val copyOfSvk = SignatureVerificationKey(svk.keyBytes, svk.keyDerivationOptionsJson)
+        assertEquals(derivationOptionsJson, svk.derivationOptionsJson)
+        val copyOfSvk = SignatureVerificationKey(svk.keyBytes, svk.derivationOptionsJson)
         assertEquals(svk, copyOfSvk)
 
         val bCopy = svk.toSerializedBinaryForm()
@@ -116,8 +116,8 @@ class PublicKeyTests {
 
     @Test
     fun testSigningAndVerificationPairs() {
-        val keyDerivationOptionsJson = """{"keyType": "Signing"}"""
-        val sk = SigningKey.deriveFromSeed(seed, keyDerivationOptionsJson)
+        val derivationOptionsJson = """{"keyType": "Signing"}"""
+        val sk = SigningKey.deriveFromSeed(seed, derivationOptionsJson)
         val vk = sk.getSignatureVerificationKey()
         val testMessage = "some message to test"
         val signature = sk.generateSignature( testMessage )
@@ -141,8 +141,8 @@ class PublicKeyTests {
 
     @Test
     fun testSymmetricKey() {
-        val keyDerivationOptionsJson = """{"keyType": "Symmetric"}"""
-        val sk = SymmetricKey.deriveFromSeed(seed, keyDerivationOptionsJson)
+        val derivationOptionsJson = """{"keyType": "Symmetric"}"""
+        val sk = SymmetricKey.deriveFromSeed(seed, derivationOptionsJson)
         val testMessage = "some message to test"
         val packagedSealedMessage = sk.seal(testMessage)
         val decryptedBytes = SymmetricKey.unseal(packagedSealedMessage, seed)
@@ -152,20 +152,20 @@ class PublicKeyTests {
         val binaryCopy = sk.toSerializedBinaryForm()
         val copy = SymmetricKey.fromSerializedBinaryForm(binaryCopy)
         assertArrayEquals(copy.keyBytes, sk.keyBytes)
-        assertEquals(copy.keyDerivationOptionsJson, sk.keyDerivationOptionsJson)
+        assertEquals(copy.derivationOptionsJson, sk.derivationOptionsJson)
 
     }
 
     @Test
     fun testSeed() {
-        val keyDerivationOptionsJson = """{"keyType": "Secret", "keyLengthInBytes": 48}"""
-        val s = Secret.deriveFromSeed(seed, keyDerivationOptionsJson)
+        val derivationOptionsJson = """{"keyType": "Secret", "lengthInBytes": 48}"""
+        val s = Secret.deriveFromSeed(seed, derivationOptionsJson)
         assertEquals(s.secretBytes.size, 48)
 
         val binaryCopy = s.toSerializedBinaryForm()
         val copy = Secret.fromSerializedBinaryForm(binaryCopy)
         assertArrayEquals(copy.secretBytes, s.secretBytes)
-        assertEquals(copy.keyDerivationOptionsJson, s.keyDerivationOptionsJson)
+        assertEquals(copy.derivationOptionsJson, s.derivationOptionsJson)
     }
 
 

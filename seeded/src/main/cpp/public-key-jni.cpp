@@ -72,13 +72,13 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_keyBytesG
   }
 }
 
-JNIEXPORT jstring JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_keyDerivationOptionsJsonGetterJNI(
+JNIEXPORT jstring JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_derivationOptionsJsonGetterJNI(
     JNIEnv* env,
     jobject obj
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PublicKey>(env, obj)->getKeyDerivationOptionsJson()
+      getNativeObjectPtr<PublicKey>(env, obj)->getDerivationOptionsJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

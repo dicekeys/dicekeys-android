@@ -1,7 +1,7 @@
 package org.dicekeys.dicekeysapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.dicekeys.api.ApiKeyDerivationOptions
+import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.PostDecryptionInstructions
@@ -29,8 +29,8 @@ class PermissionCheckedCommandsInstrumentedTest {
   fun preventsLengthExtensionAttackOnASymmetricSeal() {
     PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.examplespoof"){ true })
       .sealWithSymmetricKey(
-        ApiKeyDerivationOptions().apply {
-          restrictions = ApiKeyDerivationOptions.Restrictions().apply{
+        ApiDerivationOptions().apply {
+          restrictions = ApiDerivationOptions.Restrictions().apply{
             androidPackagePrefixesAllowed = listOf("com.example")
           }
         }.toJson(),
@@ -44,8 +44,8 @@ class PermissionCheckedCommandsInstrumentedTest {
     PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.examplespoof"){ true })
       .unsealWithSymmetricKey(PackagedSealedMessage(
         ByteArray(0),
-        ApiKeyDerivationOptions().apply {
-          restrictions = ApiKeyDerivationOptions.Restrictions().apply{
+        ApiDerivationOptions().apply {
+          restrictions = ApiDerivationOptions.Restrictions().apply{
             androidPackagePrefixesAllowed = listOf("com.example")
           }
         }.toJson(),
@@ -59,7 +59,7 @@ class PermissionCheckedCommandsInstrumentedTest {
     val publicKey = api.getPublicKey("")
     val packagedSealedMessage = publicKey.seal("The secret ingredient is eternal despair.",
         PostDecryptionInstructions().apply {
-          restrictions = ApiKeyDerivationOptions.Restrictions().apply{
+          restrictions = ApiDerivationOptions.Restrictions().apply{
             androidPackagePrefixesAllowed = listOf("com.example")
         }}.toJson()
       )
@@ -68,19 +68,19 @@ class PermissionCheckedCommandsInstrumentedTest {
   }
 
   @Test(expected = ClientMayNotRetrieveKeyException::class)
-  fun preventsPrivateKeySinceKeyDerivationOptionsDoesNotAllowIt() {
+  fun preventsPrivateKeySinceDerivationOptionsDoesNotAllowIt() {
     val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.example"){ true })
     val privateKey = api.getPrivateKey("")
     Assert.fail()
   }
 
   @Test()
-  fun allowsPrivateKeySinceKeyDerivationOptions() {
+  fun allowsPrivateKeySinceDerivationOptions() {
     val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.example"){ true })
     val privateKey = api.getPrivateKey(
-      ApiKeyDerivationOptions().apply {
+      ApiDerivationOptions().apply {
         clientMayRetrieveKey = true
-        restrictions = ApiKeyDerivationOptions.Restrictions().apply {
+        restrictions = ApiDerivationOptions.Restrictions().apply {
           androidPackagePrefixesAllowed = listOf("com.example")
         }
       }.toJson()

@@ -45,13 +45,13 @@ Java_org_dicekeys_crypto_seeded_SigningKey_generateSignature(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_SigningKey_keyDerivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_SigningKey_derivationOptionsJsonGetterJNI(
   JNIEnv *env,
     jobject thiz
   ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<SigningKey>(env, thiz)->keyDerivationOptionsJson
+      getNativeObjectPtr<SigningKey>(env, thiz)->derivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

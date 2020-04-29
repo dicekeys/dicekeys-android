@@ -31,16 +31,16 @@ open class PostDecryptionInstructions(
 //    val onlyPostToUrl: String? = null,
 //    val reEncryptWithPublicKey: String? = null // hex bytes
 
-    var restrictions: ApiKeyDerivationOptions.Restrictions?
+    var restrictions: ApiDerivationOptions.Restrictions?
         get() =
-            if (has(ApiKeyDerivationOptions::restrictions.name))
-                ApiKeyDerivationOptions.Restrictions(getJSONObject(ApiKeyDerivationOptions::restrictions.name))
+            if (has(ApiDerivationOptions::restrictions.name))
+                ApiDerivationOptions.Restrictions(getJSONObject(ApiDerivationOptions::restrictions.name))
             else null
         set(value) {
             if (value == null)
-                remove(ApiKeyDerivationOptions::restrictions.name)
+                remove(ApiDerivationOptions::restrictions.name)
             else
-                put(ApiKeyDerivationOptions::restrictions.name, value.jsonObj)
+                put(ApiDerivationOptions::restrictions.name, value.jsonObj)
         }
 
     var userMustAcknowledgeThisMessage: String?

@@ -41,13 +41,13 @@ Java_org_dicekeys_crypto_seeded_PrivateKey_toJson(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_PrivateKey_keyDerivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_PrivateKey_derivationOptionsJsonGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PrivateKey>(env, thiz)->keyDerivationOptionsJson
+      getNativeObjectPtr<PrivateKey>(env, thiz)->derivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -105,7 +105,7 @@ Java_org_dicekeys_crypto_seeded_PrivateKey_getPublicKeyPtrJNI(
       getNativeObjectPtr<PrivateKey>(env, thiz);
     return (jlong) new PublicKey(
       PrivateKeyPtr->publicKeyBytes,
-      PrivateKeyPtr->keyDerivationOptionsJson
+      PrivateKeyPtr->derivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

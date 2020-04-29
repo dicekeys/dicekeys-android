@@ -54,7 +54,7 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
 
         @JvmStatic private external fun constructJNI(
                 keyBytes: ByteArray,
-                keyDerivationOptionsJson: String = ""
+                derivationOptionsJson: String = ""
         ) : Long
 
         @JvmStatic private external fun fromSerializedBinaryFormJNI(
@@ -83,17 +83,17 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
      */
     constructor(
         other: PublicKey
-    ) : this(other.keyBytes, other.keyDerivationOptionsJson)
+    ) : this(other.keyBytes, other.derivationOptionsJson)
 
     /**
      * Construct by specifying the value of each member
      */
     internal constructor(
             keyBytes: ByteArray,
-            keyDerivationOptionsJson: String
+            derivationOptionsJson: String
     ) : this ( constructJNI(
             keyBytes,
-            keyDerivationOptionsJson
+            derivationOptionsJson
     ) )
 
     protected fun finalize() {
@@ -101,7 +101,7 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
     }
     private external fun deleteNativeObjectPtrJNI()
     private external fun keyBytesGetterJNI(): ByteArray
-    private external fun keyDerivationOptionsJsonGetterJNI(): String
+    private external fun derivationOptionsJsonGetterJNI(): String
 
     /**
      * Serialize the object to JSON format so that it can later be
@@ -122,7 +122,7 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
      * The key-derivation options used to derive the [PublicKey] and its corresponding
      * [PrivateKey]
      */
-    val keyDerivationOptionsJson get() = keyDerivationOptionsJsonGetterJNI()
+    val derivationOptionsJson get() = derivationOptionsJsonGetterJNI()
 
     /**
      * Seal a plaintext message to create a ciphertext which can only be unsealed
@@ -165,7 +165,7 @@ class PublicKey internal constructor(internal val nativeObjectPtr: Long) {
 
     override fun equals(other: Any?): Boolean =
             (other is PublicKey) &&
-            keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
+            derivationOptionsJson == other.derivationOptionsJson &&
             keyBytes.contentEquals(other.keyBytes)
 
     /**

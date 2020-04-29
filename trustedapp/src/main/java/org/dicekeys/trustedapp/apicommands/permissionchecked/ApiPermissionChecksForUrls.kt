@@ -1,6 +1,6 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
-import org.dicekeys.api.ApiKeyDerivationOptions
+import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.ClientUriNotAuthorizedException
 
@@ -17,7 +17,7 @@ open class ApiPermissionChecksForUrls(
    */
 
   override fun isClientAuthorizedInFaceOfRestrictions(
-    restrictions: ApiKeyDerivationOptions.Restrictions?
+    restrictions: ApiDerivationOptions.Restrictions?
   ): Boolean = restrictions == null ||
     restrictions.urlPrefixesAllowed.let { urlPrefixesAllowed ->
       urlPrefixesAllowed != null &&
@@ -27,7 +27,7 @@ open class ApiPermissionChecksForUrls(
     }
 
   override fun throwIfClientNotAuthorized(
-    restrictions: ApiKeyDerivationOptions.Restrictions?
+    restrictions: ApiDerivationOptions.Restrictions?
   ): Unit {
     if (!isClientAuthorizedInFaceOfRestrictions(restrictions)) {
       // The client application id does not start with any of the specified prefixes

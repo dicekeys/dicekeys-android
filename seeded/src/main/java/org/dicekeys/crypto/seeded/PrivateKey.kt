@@ -25,11 +25,11 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
         @JvmStatic private external fun constructJNI(
             privateKeyBytes: ByteArray,
             publicKeyBytes: ByteArray,
-            keyDerivationOptionsJson: String
+            derivationOptionsJson: String
         ) : Long
         @JvmStatic private external fun deriveFromSeedJNI(
             seedString: String,
-            keyDerivationOptionsJson: String
+            derivationOptionsJson: String
         ) : Long
 
         /**
@@ -38,8 +38,8 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
          */
         fun deriveFromSeed(
                 seedString: String,
-                keyDerivationOptionsJson: String
-        ) = PrivateKey(deriveFromSeedJNI(seedString, keyDerivationOptionsJson))
+                derivationOptionsJson: String
+        ) = PrivateKey(deriveFromSeedJNI(seedString, derivationOptionsJson))
 
 
 
@@ -71,7 +71,7 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
 
         /**
          * Unseal a message by re-deriving the [PrivateKey] from the secret [seedString]
-         * used to originally derive it.  The [PackagedSealedMessage.keyDerivationOptionsJson]
+         * used to originally derive it.  The [PackagedSealedMessage.derivationOptionsJson]
          * needed to derive it is in the [packagedSealedMessage], as are the
          * [PackagedSealedMessage.ciphertext] and
          * [PackagedSealedMessage.postDecryptionInstructions].
@@ -81,7 +81,7 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
                 packagedSealedMessage: PackagedSealedMessage
         ) : ByteArray {
             return deriveFromSeed(
-                seedString, packagedSealedMessage.keyDerivationOptionsJson
+                seedString, packagedSealedMessage.derivationOptionsJson
             ).unseal(
                 packagedSealedMessage.ciphertext,
                 packagedSealedMessage.postDecryptionInstructions
@@ -100,7 +100,7 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     private external fun deleteNativeObjectPtrJNI()
     private external fun privateKeyBytesGetterJNI(): ByteArray
     private external fun publicKeyBytesGetterJNI(): ByteArray
-    private external fun keyDerivationOptionsJsonGetterJNI(): String
+    private external fun derivationOptionsJsonGetterJNI(): String
     external fun toJson(): String
 
     /**
@@ -109,13 +109,13 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
      */
     constructor(
         other: PrivateKey
-    ) : this(other.privateKeyBytes, other.publicKeyBytes, other.keyDerivationOptionsJson)
+    ) : this(other.privateKeyBytes, other.publicKeyBytes, other.derivationOptionsJson)
 
     internal constructor(
         privateKeyBytes: ByteArray,
         publicKeyBytes: ByteArray,
-        keyDerivationOptionsJson: String
-    ) : this( constructJNI(privateKeyBytes, publicKeyBytes, keyDerivationOptionsJson))
+        derivationOptionsJson: String
+    ) : this( constructJNI(privateKeyBytes, publicKeyBytes, derivationOptionsJson))
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()
@@ -150,11 +150,11 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     /**
      * The options that guided the derivation of this key from the seed.
      */
-    val keyDerivationOptionsJson get() = keyDerivationOptionsJsonGetterJNI()
+    val derivationOptionsJson get() = derivationOptionsJsonGetterJNI()
 
     override fun equals(other: Any?): Boolean =
             (other is PrivateKey) &&
-                    keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
+                    derivationOptionsJson == other.derivationOptionsJson &&
                     privateKeyBytes.contentEquals(other.privateKeyBytes) &&
                     publicKeyBytes.contentEquals(other.publicKeyBytes)
 

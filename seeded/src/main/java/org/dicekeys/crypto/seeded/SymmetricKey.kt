@@ -7,7 +7,7 @@ package org.dicekeys.crypto.seeded
  * So, you can use this symmetric-key to seal a message, throw the
  * key away, and re-generate the key when you need to unseal the
  * message so long as you still have the original seed and
- * keyDerivationOptionsJson.
+ * derivationOptionsJson.
  *  
  * Sealing a message (_plaintext_) creates a _ciphertext which contains
  * the message but from which observers who do not have the PrivateKey
@@ -36,22 +36,22 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
 
         @JvmStatic private external fun constructJNI(
             keyBytes: ByteArray,
-            keyDerivationOptionsJson: String
+            derivationOptionsJson: String
         ) : Long
         @JvmStatic private external fun deriveFromSeedJNI(
             seedString: String,
-            keyDerivationOptionsJson: String
+            derivationOptionsJson: String
         ) : Long
 
         /**
          * Construct a symmetric key from a secret [seedString], which should have enough
          * entropy to make it hard to guess (e.g. 128+ bits) and a set of public (non-secret)
-         * key-derivation options ([keyDerivationOptionsJson]).
+         * key-derivation options ([derivationOptionsJson]).
          */
         @JvmStatic fun deriveFromSeed(
             seedString: String,
-            keyDerivationOptionsJson: String
-        ) : SymmetricKey = SymmetricKey(deriveFromSeedJNI(seedString, keyDerivationOptionsJson))
+            derivationOptionsJson: String
+        ) : SymmetricKey = SymmetricKey(deriveFromSeedJNI(seedString, derivationOptionsJson))
 
 
         @JvmStatic private external fun fromJsonJNI(
@@ -91,7 +91,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
             seedString: String
         ) : ByteArray {
             return deriveFromSeed(
-                seedString, packagedSealedMessage.keyDerivationOptionsJson
+                seedString, packagedSealedMessage.derivationOptionsJson
             ).unseal(
                 packagedSealedMessage.ciphertext,
                 packagedSealedMessage.postDecryptionInstructions
@@ -107,7 +107,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun keyBytesGetterJNI(): ByteArray
-    private external fun keyDerivationOptionsJsonGetterJNI(): String
+    private external fun derivationOptionsJsonGetterJNI(): String
 
     /**
      * Convert this symmetric key to JSON-format string so that it can be later reconstituted
@@ -127,16 +127,16 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
     /**
      * The options that guided the derivation of this key from the seed.
      */
-    val keyDerivationOptionsJson: String get() = keyDerivationOptionsJsonGetterJNI()
+    val derivationOptionsJson: String get() = derivationOptionsJsonGetterJNI()
 
     /**
      * Construct this object manually by passing the [keyBytes] and the
-     * [keyDerivationOptionsJson] that was used in the derivation of [keyBytes].
+     * [derivationOptionsJson] that was used in the derivation of [keyBytes].
      */
     internal constructor(
         keyBytes: ByteArray,
-        keyDerivationOptionsJson: String
-    ) : this( constructJNI(keyBytes, keyDerivationOptionsJson) )
+        derivationOptionsJson: String
+    ) : this( constructJNI(keyBytes, derivationOptionsJson) )
 
     /**
      * A copy constructor to prevent copying of the native pointer, which would lead
@@ -144,7 +144,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      */
     internal constructor(
         other: SymmetricKey
-    ) : this(other.keyBytes, other.keyDerivationOptionsJson)
+    ) : this(other.keyBytes, other.derivationOptionsJson)
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()
@@ -192,7 +192,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      *
      * Returns a [PackagedSealedMessage] containing not only the ciphertext, but the
      * plaintext [postDecryptionInstructions] the message was sealed with, which
-     * are required for unsealing, as well as the [keyDerivationOptionsJson] used to
+     * are required for unsealing, as well as the [derivationOptionsJson] used to
      * construct this [SymmetricKey] in case it needs to be re-derived from the
      * original secret seed.
      */

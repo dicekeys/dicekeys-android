@@ -26,9 +26,9 @@ internal fun getJsonObjectsStringListOrNull(
  * [key-derivation options JSON format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
  * which specify how to derive cryptographic keys from seed string.
  * These JSON strings appear throughout the API (and in the [DiceKeysApiClient]) as a
- * parameter named _keyDerivationOptionsJson_.
+ * parameter named _derivationOptionsJson_.
  *
- * This implementation extends of the more general [KeyDerivationOptions] class, which
+ * This implementation extends of the more general [DerivationOptions] class, which
  * abstracts all the general-purpose key-derivation options that aren't specific
  * to DiceKeys or the DiceKeys App/API.
  *
@@ -44,13 +44,13 @@ internal fun getJsonObjectsStringListOrNull(
  * seeds that remain the same even if the orientation of a die within a DiceKey changes.
  *
  *
- * @sample [ApiSamples.sampleOfApiKeyDerivationOptions]
+ * @sample [ApiSamples.sampleOfApiDerivationOptions]
  *
 
  * ```
  *
  * @see DiceKeysApiClient
- * @see KeyDerivationOptions
+ * @see DerivationOptions
  * @see PostDecryptionInstructions
  *
  * @constructor Construct from a JSON string. When you know the type of key being derived,
@@ -58,16 +58,16 @@ internal fun getJsonObjectsStringListOrNull(
  * For example [Symmetric] for the derivation options of a symmetric key.  If you pass nothing,
  * empty options will be created, which you can then configure (e.g., via _apply).
  */
-open class ApiKeyDerivationOptions constructor(
-        keyDerivationOptionsJson: String? = null,
-        requiredKeyType: KeyType? = null
-): KeyDerivationOptions(
-    keyDerivationOptionsJson, requiredKeyType
+open class ApiDerivationOptions constructor(
+  derivationOptionsJson: String? = null,
+  requiredType: Type? = null
+): DerivationOptions(
+    derivationOptionsJson, requiredType
 ) {
 
     /**
      * This subclass is used to determine which clients/sites are permitted to use keys
-     * derived from a keyDerivationOptionsJson string.
+     * derived from a derivationOptionsJson string.
      */
     class Restrictions(
             var jsonObj: JSONObject = JSONObject()
@@ -126,8 +126,8 @@ open class ApiKeyDerivationOptions constructor(
      * specified [Restrictions] are not met.
      */
     var clientMayRetrieveKey: Boolean
-        get () = optBoolean(ApiKeyDerivationOptions::clientMayRetrieveKey.name, false)
-        set(value)  { put(ApiKeyDerivationOptions::clientMayRetrieveKey.name, value) }
+        get () = optBoolean(ApiDerivationOptions::clientMayRetrieveKey.name, false)
+        set(value)  { put(ApiDerivationOptions::clientMayRetrieveKey.name, value) }
 
     /**
      * Restrict which clients are permitted to use the API to work with the derived key.
@@ -135,14 +135,14 @@ open class ApiKeyDerivationOptions constructor(
      */
     var restrictions: Restrictions?
         get() =
-            if (has(ApiKeyDerivationOptions::restrictions.name))
-                Restrictions(getJSONObject(ApiKeyDerivationOptions::restrictions.name))
+            if (has(ApiDerivationOptions::restrictions.name))
+                Restrictions(getJSONObject(ApiDerivationOptions::restrictions.name))
             else null
         set(value) {
             if (value == null)
-                remove(ApiKeyDerivationOptions::restrictions.name)
+                remove(ApiDerivationOptions::restrictions.name)
             else
-                put(ApiKeyDerivationOptions::restrictions.name, value.jsonObj)
+                put(ApiDerivationOptions::restrictions.name, value.jsonObj)
         }
 
     /**
@@ -155,32 +155,32 @@ open class ApiKeyDerivationOptions constructor(
      * For a key of 25 dice, it reduces the entropy by 50 (2x25) bits, from ~196 bits to ~146 bits.
      */
     var excludeOrientationOfFaces: Boolean
-        get () = optBoolean(ApiKeyDerivationOptions::excludeOrientationOfFaces.name, false)
-        set(value) { put(ApiKeyDerivationOptions::excludeOrientationOfFaces.name, value) }
+        get () = optBoolean(ApiDerivationOptions::excludeOrientationOfFaces.name, false)
+        set(value) { put(ApiDerivationOptions::excludeOrientationOfFaces.name, value) }
 
 
     /**
      * An extension class that must represent a specification for a public/private key pair
      */
-    class Public(keyDerivationOptionsJson: String? = null) :
-            ApiKeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Public)
+    class Public(derivationOptionsJson: String? = null) :
+            ApiDerivationOptions(derivationOptionsJson,  Type.Public)
 
     /**
      * An extension class that must represent a specification for a derived seed
      */
-    class Seed(keyDerivationOptionsJson: String? = null) :
-            ApiKeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Secret)
+    class Secret(derivationOptionsJson: String? = null) :
+            ApiDerivationOptions(derivationOptionsJson,  Type.Secret)
 
     /**
      * An extension class that must represent a specification for a signing/verification key pair
      */
-    class Signing(keyDerivationOptionsJson: String? = null) :
-            ApiKeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Signing)
+    class Signing(derivationOptionsJson: String? = null) :
+            ApiDerivationOptions(derivationOptionsJson,  Type.Signing)
 
     /**
      * An extension class that must represent a specification for a symmetric key
      */
-    class Symmetric(keyDerivationOptionsJson: String? = null) :
-            ApiKeyDerivationOptions(keyDerivationOptionsJson,  KeyType.Symmetric)
+    class Symmetric(derivationOptionsJson: String? = null) :
+            ApiDerivationOptions(derivationOptionsJson,  Type.Symmetric)
 
 }

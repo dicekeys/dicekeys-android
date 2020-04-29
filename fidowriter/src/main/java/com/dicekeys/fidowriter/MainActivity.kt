@@ -25,9 +25,9 @@ class MainActivity : AppCompatActivity() {
 
     private val INTENT_ACTION_USB_PERMISSION_EVENT = "org.dicekeys.intents.USB_PERMISSION_EVENT"
 
-    private val seedKeyDerivationOptionsJson : String = """{
+    private val seedDerivationOptionsJson : String = """{
             |"keyType":"Secret",
-            |"keyLengthInBytes":96,
+            |"lengthInBytes":96,
             |"hashFunction": "Argon2id",
             |"restrictions": {
             |       "androidPackagePrefixesAllowed":["com.dicekeys.fidowriter."]
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         btn_generate_secret_from_dicekey.setOnClickListener {
             GlobalScope.launch(Dispatchers.Main) {
                 try {
-                    val seed = diceKeysApiClient.getSecret(seedKeyDerivationOptionsJson)
+                    val seed = diceKeysApiClient.getSecret(seedDerivationOptionsJson)
                     edit_text_secret.text.clear()
                     edit_text_secret.text.insert(0, seed.secretBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
                     render()

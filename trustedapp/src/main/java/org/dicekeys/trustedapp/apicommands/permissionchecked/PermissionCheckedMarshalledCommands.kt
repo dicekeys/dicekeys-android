@@ -42,18 +42,18 @@ abstract class PermissionCheckedMarshalledCommands(
   abstract fun sendException(exception: Exception)
 
 
-  private fun getCommonKeyDerivationOptionsJsonParameter() : String =
-    requiredStringParameter((DiceKeysApiClient.ParameterNames.Common.keyDerivationOptionsJson))
+  private fun getCommonDerivationOptionsJsonParameter() : String =
+    requiredStringParameter((DiceKeysApiClient.ParameterNames.Common.derivationOptionsJson))
 
   fun getSecret(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.Secret.Get.secretSerializedToBinary,
-      api.getSecret(getCommonKeyDerivationOptionsJsonParameter()).toSerializedBinaryForm()
+      api.getSecret(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
     ).sendSuccess()
 
   fun sealWithSymmetricKey(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary,
       api.sealWithSymmetricKey(
-        getCommonKeyDerivationOptionsJsonParameter(),
+        getCommonDerivationOptionsJsonParameter(),
         requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.plaintext),
         stringParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.postDecryptionInstructions)
       ).toSerializedBinaryForm()
@@ -69,7 +69,7 @@ abstract class PermissionCheckedMarshalledCommands(
 
   fun getPublicKey(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.PrivateKey.GetPublic.publicKeySerializedToBinary,
-      api.getPublicKey(getCommonKeyDerivationOptionsJsonParameter()).toSerializedBinaryForm()
+      api.getPublicKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
     ).sendSuccess()
 
   fun unsealWithPrivateKey(): Unit = respondWith(
@@ -83,13 +83,13 @@ abstract class PermissionCheckedMarshalledCommands(
 
   fun getSignatureVerificationKey(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeySerializedToBinary,
-      api.getSignatureVerificationKey(getCommonKeyDerivationOptionsJsonParameter())
+      api.getSignatureVerificationKey(getCommonDerivationOptionsJsonParameter())
         .toSerializedBinaryForm()
     ).sendSuccess()
 
   fun generateSignature(): Unit =
     api.generateSignature(
-      getCommonKeyDerivationOptionsJsonParameter(),
+      getCommonDerivationOptionsJsonParameter(),
       requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SigningKey.GenerateSignature.message)
     ).let { resultPair ->
       respondWith(
@@ -102,17 +102,17 @@ abstract class PermissionCheckedMarshalledCommands(
 
   fun getPrivate(): Unit = respondWith(
     DiceKeysApiClient.ParameterNames.PrivateKey.GetPrivate.privateKeySerializedToBinary,
-    api.getPrivateKey(getCommonKeyDerivationOptionsJsonParameter()).toSerializedBinaryForm()
+    api.getPrivateKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
   fun getSigningKey(): Unit = respondWith(
     DiceKeysApiClient.ParameterNames.SigningKey.GetSigningKey.signingKeySerializedToBinary,
-    api.getSigningKey(getCommonKeyDerivationOptionsJsonParameter()).toSerializedBinaryForm()
+    api.getSigningKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
   fun getSymmetricKey(): Unit = respondWith(
     DiceKeysApiClient.ParameterNames.SymmetricKey.GetKey.symmetricKeySerializedToBinary,
-    api.getSymmetricKey(getCommonKeyDerivationOptionsJsonParameter()).toSerializedBinaryForm()
+    api.getSymmetricKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
   fun executeCommand(command: String) {

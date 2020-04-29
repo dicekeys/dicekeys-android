@@ -1,6 +1,5 @@
 package org.dicekeys.api
 
-import org.dicekeys.crypto.seeded.KeyDerivationOptions
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Test
@@ -30,18 +29,18 @@ fun compareJson(j1: Any, j2: Any) : Boolean {
     }
 }
 
-class KeyDerivationOptionsTests {
+class DerivationOptionsTests {
 
     @Test
-    fun KeyDerivationOptions_toAndBack() {
-        val kdo = ApiKeyDerivationOptions.Symmetric().apply {
+    fun DerivationOptions_toAndBack() {
+        val kdo = ApiDerivationOptions.Symmetric().apply {
             // Ensure the JSON format has the "keyType" field specified
-            keyType = requiredKeyType  // sets "keyType": "Symmetric" since this class type is Symmetric
+            type = requiredType  // sets "keyType": "Symmetric" since this class type is Symmetric
             algorithm = defaultAlgorithm // sets "algorithm": "XSalsa20Poly1305"
             // Set other fields in the spec in a Kotlin/Java friendly way
             clientMayRetrieveKey = true // sets "clientMayRetrieveKey": true
             // The restrictions subclass can be constructed
-            restrictions = ApiKeyDerivationOptions.Restrictions().apply {
+            restrictions = ApiDerivationOptions.Restrictions().apply {
                 androidPackagePrefixesAllowed = listOf("com.example.app")
                 urlPrefixesAllowed = listOf("https://example.com/app/")
             }
@@ -52,8 +51,8 @@ class KeyDerivationOptionsTests {
             // its original purpose
             put("salt", "S0d1um Chl0r1d3")
         }
-        val keyDerivationOptionsJson = kdo.toJson()
-        val replica = ApiKeyDerivationOptions(keyDerivationOptionsJson)
+        val derivationOptionsJson = kdo.toJson()
+        val replica = ApiDerivationOptions(derivationOptionsJson)
         assertTrue(compareJson(kdo, replica))
         val expectJson = """{
                 | "salt": "S0d1um Chl0r1d3",
@@ -83,15 +82,15 @@ class PostDecryptionInstructionsTests {
         val kdo = PostDecryptionInstructions().apply {
             // Ensure the JSON format has the "keyType" field specified
             // The restrictions subclass can be constructed
-            restrictions = ApiKeyDerivationOptions.Restrictions().apply {
+            restrictions = ApiDerivationOptions.Restrictions().apply {
                 androidPackagePrefixesAllowed = listOf("com.example.app")
                 urlPrefixesAllowed = listOf("https://example.com/app/", "https://evenworseexample.com")
             }
             userMustAcknowledgeThisMessage = "Only unseal this message if you are trying to " +
                 "reset your PoodleMail password."
         }
-        val keyDerivationOptionsJson = kdo.toJson()
-        val replica = ApiKeyDerivationOptions(keyDerivationOptionsJson)
+        val derivationOptionsJson = kdo.toJson()
+        val replica = ApiDerivationOptions(derivationOptionsJson)
         assertTrue(compareJson(kdo, replica))
         val expectJson = """{
             | "userMustAcknowledgeThisMessage": "Only unseal this message if you are trying to reset your PoodleMail password.",

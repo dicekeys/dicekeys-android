@@ -20,29 +20,29 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.getSecret] with the necessary permissions checks
    */
-  fun getSecret(keyDerivationOptionsJson: String): Secret =
+  fun getSecret(derivationOptionsJson: String): Secret =
     Secret.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        keyDerivationOptionsJson,
-        KeyDerivationOptions.KeyType.Secret
+        derivationOptionsJson,
+        DerivationOptions.Type.Secret
       ),
-      keyDerivationOptionsJson
+      derivationOptionsJson
     )
 
   /**
    * Implement [DiceKeysApiClient.sealWithSymmetricKey] with the necessary permissions checks
    */
   fun sealWithSymmetricKey(
-    keyDerivationOptionsJson: String,
+    derivationOptionsJson: String,
     plaintext: ByteArray,
     postDecryptionInstructions: String?
   ): PackagedSealedMessage =
     SymmetricKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        keyDerivationOptionsJson,
-        KeyDerivationOptions.KeyType.Symmetric
+        derivationOptionsJson,
+        DerivationOptions.Type.Symmetric
       ),
-      keyDerivationOptionsJson
+      derivationOptionsJson
     ).seal(plaintext, postDecryptionInstructions ?: "")
 
   /**
@@ -54,7 +54,7 @@ class PermissionCheckedCommands(
       packagedSealedMessage,
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorizedToUnseal(
         packagedSealedMessage,
-        KeyDerivationOptions.KeyType.Symmetric
+        DerivationOptions.Type.Symmetric
       )
     )
 
@@ -62,67 +62,67 @@ class PermissionCheckedCommands(
    * Implement [DiceKeysApiClient.getPublicKey] with the necessary permissions checks
    */
   fun getPublicKey(
-    keyDerivationOptionsJson: String
+    derivationOptionsJson: String
   ) : PublicKey =
     PrivateKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        keyDerivationOptionsJson,
-        KeyDerivationOptions.KeyType.Public
+        derivationOptionsJson,
+        DerivationOptions.Type.Public
       ),
-      keyDerivationOptionsJson
+      derivationOptionsJson
     ).getPublicKey()
 
   /**
    * Implement [DiceKeysApiClient.getPrivateKey] with the necessary permissions checks
    */
   fun getPrivateKey(
-    keyDerivationOptionsJson: String
+    derivationOptionsJson: String
   ) : PrivateKey = PrivateKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
-      keyDerivationOptionsJson,
-      KeyDerivationOptions.KeyType.Public
+      derivationOptionsJson,
+      DerivationOptions.Type.Public
     ),
-    keyDerivationOptionsJson
+    derivationOptionsJson
   )
 
   /**
    * Implement [DiceKeysApiClient.getSigningKey] with the necessary permissions checks
    */
   fun getSigningKey(
-    keyDerivationOptionsJson: String
+    derivationOptionsJson: String
   ) : SigningKey = SigningKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
-      keyDerivationOptionsJson,
-      KeyDerivationOptions.KeyType.Signing
+      derivationOptionsJson,
+      DerivationOptions.Type.Signing
     ),
-    keyDerivationOptionsJson
+    derivationOptionsJson
   )
 
   /**
    * Implement [DiceKeysApiClient.getSymmetricKey] with the necessary permissions checks
    */
   fun getSymmetricKey(
-    keyDerivationOptionsJson: String
+    derivationOptionsJson: String
   ) : SymmetricKey = SymmetricKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
-      keyDerivationOptionsJson,
-      KeyDerivationOptions.KeyType.Symmetric
+      derivationOptionsJson,
+      DerivationOptions.Type.Symmetric
     ),
-    keyDerivationOptionsJson
+    derivationOptionsJson
   )
 
   /**
    * Implement [DiceKeysApiClient.getSignatureVerificationKey] with the necessary permissions checks
    */
   fun getSignatureVerificationKey(
-    keyDerivationOptionsJson: String
+    derivationOptionsJson: String
   ) : SignatureVerificationKey =
     SigningKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        keyDerivationOptionsJson,
-        KeyDerivationOptions.KeyType.Signing
+        derivationOptionsJson,
+        DerivationOptions.Type.Signing
       ),
-      keyDerivationOptionsJson
+      derivationOptionsJson
     ).getSignatureVerificationKey()
 
   /**
@@ -134,23 +134,23 @@ class PermissionCheckedCommands(
       PrivateKey.deriveFromSeed(
         permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorizedToUnseal(
           packagedSealedMessage,
-          KeyDerivationOptions.KeyType.Public
+          DerivationOptions.Type.Public
         ),
-        packagedSealedMessage.keyDerivationOptionsJson
+        packagedSealedMessage.derivationOptionsJson
       ).unseal(packagedSealedMessage)
 
   /**
    * Implement [DiceKeysApiClient.generateSignature] with the necessary permissions checks
    */
   fun generateSignature(
-    keyDerivationOptionsJson: String,
+    derivationOptionsJson: String,
     message: ByteArray
   ): Pair<ByteArray, SignatureVerificationKey> = SigningKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        keyDerivationOptionsJson,
-        KeyDerivationOptions.KeyType.Signing
+        derivationOptionsJson,
+        DerivationOptions.Type.Signing
       ),
-      keyDerivationOptionsJson
+      derivationOptionsJson
     ).let{ signingKey ->
       Pair(signingKey.generateSignature(message), signingKey.getSignatureVerificationKey())
     }

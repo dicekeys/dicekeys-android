@@ -11,17 +11,17 @@ class ClientNotAuthorizedException(message: String) : java.lang.Exception(messag
 class CryptographicVerificationFailureException(message: String) : java.lang.Exception(message)
 
 /**
- * Thrown when a keyDerivationOptionsJson parameter contains a string that is neither
+ * Thrown when a derivationOptionsJson parameter contains a string that is neither
  * empty nor in valid JSON format.
  */
-class InvalidKeyDerivationOptionsJsonException(message: String?) : java.lang.Exception(
+class InvalidDerivationOptionsJsonException(message: String?) : java.lang.Exception(
         message ?: "Invalid key-derivation options specified")
 
 /**
- * Thrown when a keyDerivationOptionsJson parameter contains a field that has an invalid
+ * Thrown when a derivationOptionsJson parameter contains a field that has an invalid
  * or forbidden value.
  */
-class InvalidKeyDerivationOptionValueException(message: String) : java.lang.Exception(message)
+class InvalidDerivationOptionValueException(message: String) : java.lang.Exception(message)
 
 /**
  * A generic exception for invalid arguments.
@@ -35,6 +35,6 @@ class InvalidArgumentException(message: String) : java.lang.Exception(message)
 class JsonParsingException(message: String) : java.lang.Exception(message)
 
 /**
- * Thrown when keyDerivationOptionsJson parameter contains an invalid keyLengthInBytes field.
+ * Thrown when derivationOptionsJson parameter contains an invalid lengthInBytes field.
  */
 class KeyLengthException(message: String) : java.lang.Exception(message)

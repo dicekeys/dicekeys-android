@@ -1,6 +1,6 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
-import org.dicekeys.api.ApiKeyDerivationOptions
+import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 
 
@@ -21,7 +21,7 @@ open class ApiPermissionChecksForPackages(
       "${prefix}."
 
   override fun isClientAuthorizedInFaceOfRestrictions(
-    restrictions: ApiKeyDerivationOptions.Restrictions?
+    restrictions: ApiDerivationOptions.Restrictions?
   ): Boolean = restrictions == null ||
     restrictions.androidPackagePrefixesAllowed.let { androidPackagePrefixesAllowed ->
       androidPackagePrefixesAllowed != null &&
@@ -33,7 +33,7 @@ open class ApiPermissionChecksForPackages(
     }
 
   public override fun throwIfClientNotAuthorized(
-    restrictions: ApiKeyDerivationOptions.Restrictions?
+    restrictions: ApiDerivationOptions.Restrictions?
   ): Unit {
     if (!isClientAuthorizedInFaceOfRestrictions(restrictions)) {
       // The client application id does not start with any of the specified prefixes

@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonStart: Button
     private lateinit var diceKeysApiClient: DiceKeysApiClient
     private lateinit var resultTextView: TextView
-    val keyDerivationOptionsJson = "{}"
+    val derivationOptionsJson = "{}"
     val testMessage = "The secret ingredient is dihydrogen monoxide"
     val testMessageByteArray = testMessage.toByteArray(Charsets.UTF_8)
 
@@ -32,25 +32,25 @@ class MainActivity : AppCompatActivity() {
         buttonStart = findViewById(R.id.btn_start)
 
         buttonStart.setOnClickListener{ GlobalScope.launch(Dispatchers.Main) { try {
-            val seed = diceKeysApiClient.getSecret(keyDerivationOptionsJson)
+            val seed = diceKeysApiClient.getSecret(derivationOptionsJson)
             resultTextView.text = "Seed=${Base64.encodeToString(seed.secretBytes, Base64.DEFAULT)}"
             val packagedSealedMessage = diceKeysApiClient.sealWithSymmetricKey(
-                keyDerivationOptionsJson,
+                derivationOptionsJson,
                 testMessageByteArray
             )
             resultTextView.text = "${resultTextView.text}\nSymmetrically sealed message '${testMessage}' as ciphertext '${Base64.encodeToString(packagedSealedMessage.ciphertext, Base64.DEFAULT)}'"
             val plaintext = diceKeysApiClient.unsealWithSymmetricKey(packagedSealedMessage)
             resultTextView.text =
                 "${resultTextView.text}\nUnsealed '${String(plaintext, Charsets.UTF_8)}'"
-            val sig = diceKeysApiClient.generateSignature(keyDerivationOptionsJson, testMessageByteArray)
+            val sig = diceKeysApiClient.generateSignature(derivationOptionsJson, testMessageByteArray)
             resultTextView.text =
                 "${resultTextView.text}\nSigned test message '${Base64.encodeToString(sig.signature, Base64.DEFAULT)}'"
-            val signatureVerificationKey = diceKeysApiClient.getSignatureVerificationKey(keyDerivationOptionsJson)
+            val signatureVerificationKey = diceKeysApiClient.getSignatureVerificationKey(derivationOptionsJson)
             val keysMatch = signatureVerificationKey == sig.signatureVerificationKey
             val verified = signatureVerificationKey.verifySignature(testMessageByteArray, sig.signature)
             resultTextView.text =
                 "${resultTextView.text}\nVerification key match=${keysMatch}, verification result=${verified}"
-            val publicKey = diceKeysApiClient.getPublicKey(keyDerivationOptionsJson)
+            val publicKey = diceKeysApiClient.getPublicKey(derivationOptionsJson)
             val packagedSealedPkMessage = publicKey.seal(testMessageByteArray)
             resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedPkMessage.ciphertext, Base64.DEFAULT)}'"
             val pkPlaintext = diceKeysApiClient.unsealWithPrivateKey(packagedSealedPkMessage)
