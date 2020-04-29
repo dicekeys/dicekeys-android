@@ -59,9 +59,9 @@ class PermissionCheckedCommands(
     )
 
   /**
-   * Implement [DiceKeysApiClient.getPublicKey] with the necessary permissions checks
+   * Implement [DiceKeysApiClient.getSealingKey] with the necessary permissions checks
    */
-  fun getPublicKey(
+  fun getSealingKey(
     derivationOptionsJson: String
   ) : SealingKey =
     UnsealingKey.deriveFromSeed(
@@ -73,9 +73,9 @@ class PermissionCheckedCommands(
     ).getPublicKey()
 
   /**
-   * Implement [DiceKeysApiClient.getPrivateKey] with the necessary permissions checks
+   * Implement [DiceKeysApiClient.getUnsealingKey] with the necessary permissions checks
    */
-  fun getPrivateKey(
+  fun getUnsealingKey(
     derivationOptionsJson: String
   ) : UnsealingKey = UnsealingKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
@@ -126,9 +126,9 @@ class PermissionCheckedCommands(
     ).getSignatureVerificationKey()
 
   /**
-   * Implement [DiceKeysApiClient.unsealWithPrivateKey] with the necessary permissions checks
+   * Implement [DiceKeysApiClient.unsealWithUnsealingKey] with the necessary permissions checks
    */
-  fun unsealWithPrivateKey(
+  fun unsealWithUnsealingKey(
     packagedSealedMessage: PackagedSealedMessage
   ) : ByteArray =
       UnsealingKey.deriveFromSeed(

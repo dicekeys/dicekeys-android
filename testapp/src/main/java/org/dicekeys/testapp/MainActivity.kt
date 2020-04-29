@@ -50,10 +50,10 @@ class MainActivity : AppCompatActivity() {
             val verified = signatureVerificationKey.verifySignature(testMessageByteArray, sig.signature)
             resultTextView.text =
                 "${resultTextView.text}\nVerification key match=${keysMatch}, verification result=${verified}"
-            val publicKey = diceKeysApiClient.getPublicKey(derivationOptionsJson)
+            val publicKey = diceKeysApiClient.getSealingKey(derivationOptionsJson)
             val packagedSealedPkMessage = publicKey.seal(testMessageByteArray)
             resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedPkMessage.ciphertext, Base64.DEFAULT)}'"
-            val pkPlaintext = diceKeysApiClient.unsealWithPrivateKey(packagedSealedPkMessage)
+            val pkPlaintext = diceKeysApiClient.unsealWithUnsealingKey(packagedSealedPkMessage)
             resultTextView.text = "${resultTextView.text}\nUnsealed '${String(pkPlaintext, Charsets.UTF_8)}'"
             resultTextView.text = "${resultTextView.text}\nTests complete"
         } catch (e: Exception) {

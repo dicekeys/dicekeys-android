@@ -56,28 +56,28 @@ class PermissionCheckedCommandsInstrumentedTest {
   @Test(expected = ClientPackageNotAuthorizedException::class)
   fun preventsLengthExtensionAttackOnASymmetricUnsealPostDecryptionOptions() {
     val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.examplespoof"){ true })
-    val publicKey = api.getPublicKey("")
+    val publicKey = api.getSealingKey("")
     val packagedSealedMessage = publicKey.seal("The secret ingredient is eternal despair.",
         PostDecryptionInstructions().apply {
           restrictions = ApiDerivationOptions.Restrictions().apply{
             androidPackagePrefixesAllowed = listOf("com.example")
         }}.toJson()
       )
-    val plaintextNotFoundBecauseOfException = api.unsealWithPrivateKey(packagedSealedMessage)
+    val plaintextNotFoundBecauseOfException = api.unsealWithUnsealingKey(packagedSealedMessage)
     Assert.fail()
   }
 
   @Test(expected = ClientMayNotRetrieveKeyException::class)
   fun preventsPrivateKeySinceDerivationOptionsDoesNotAllowIt() {
     val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.example"){ true })
-    val privateKey = api.getPrivateKey("")
+    val privateKey = api.getUnsealingKey("")
     Assert.fail()
   }
 
   @Test()
   fun allowsPrivateKeySinceDerivationOptions() {
     val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor( keySqr, "com.example"){ true })
-    val privateKey = api.getPrivateKey(
+    val privateKey = api.getUnsealingKey(
       ApiDerivationOptions().apply {
         clientMayRetrieveKey = true
         restrictions = ApiDerivationOptions.Restrictions().apply {

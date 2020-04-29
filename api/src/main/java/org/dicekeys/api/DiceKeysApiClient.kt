@@ -146,8 +146,8 @@ abstract class DiceKeysApiClient(
       const val packagedSealedMessageSerializedToBinary = "packagedSealedMessageSerializedToBinary"
       const val signatureVerificationKeySerializedToBinary = "signatureVerificationKeySerializedToBinary"
       const val signingKeySerializedToBinary = "signingKeySerializedToBinary"
-      const val privateKeySerializedToBinary = "privateKeySerializedToBinary"
-      const val publicKeySerializedToBinary = "publicKeySerializedToBinary"
+      const val unsealingKeySerializedToBinary = "privateKeySerializedToBinary"
+      const val sealingKeySerializedToBinary = "publicKeySerializedToBinary"
       const val symmetricKeySerializedToBinary = "symmetricKeySerializedToBinary"
 
     }
@@ -180,13 +180,13 @@ abstract class DiceKeysApiClient(
       }
     }
 
-    object PrivateKey {
-      object GetPrivate {
-        const val privateKeySerializedToBinary = Reused.privateKeySerializedToBinary
+    object UnsealingKey {
+      object GetUnsealingKey {
+        const val unsealingKeySerializedToBinary = Reused.unsealingKeySerializedToBinary
       }
 
-      object GetPublic {
-        const val publicKeySerializedToBinary = Reused.publicKeySerializedToBinary
+      object GetSealingKey {
+        const val sealingKeySerializedToBinary = Reused.sealingKeySerializedToBinary
       }
 
       object Unseal {
@@ -219,39 +219,28 @@ abstract class DiceKeysApiClient(
    */
   object OperationNames {
 
-    object Secret {
-      const val get = "org.dicekeys.api.actions.Secret.get"
-    }
-
-    object SymmetricKey {
-      const val getKey = "org.dicekeys.api.actions.SymmetricKey.getKey"
-      const val seal = "org.dicekeys.api.actions.SymmetricKey.seal"
-      const val unseal = "org.dicekeys.api.actions.SymmetricKey.unseal"
-    }
-
-    object PrivateKey {
-      const val getPrivate = "org.dicekeys.api.actions.PrivateKey.getPrivateKey"
-      const val getPublic = "org.dicekeys.api.actions.PrivateKey.getPublicKey"
-      const val unseal = "org.dicekeys.api.actions.PrivateKey.unseal"
-    }
-
-    object SigningKey {
-      const val getSigningKey = "org.dicekeys.api.actions.SigningKey.getSigningKey"
-      const val getSignatureVerificationKey = "org.dicekeys.api.actions.SigningKey.getSignatureVerificationKey"
-      const val generateSignature = "org.dicekeys.api.actions.SigningKey.generateSignature"
-    }
+    const val getSecret = "org.dicekeys.api.actions.getSecret"
+    const val getSymmetricKey = "org.dicekeys.api.actions.getSymmetricKey"
+    const val sealWithSymmetricKey = "org.dicekeys.api.actions.sealWithSymmetricKey"
+    const val unsealWithSymmetricKey = "org.dicekeys.api.actions.unsealWithSymmetricKey"
+    const val getUnsealingKey = "org.dicekeys.api.actions.getUnsealingKey"
+    const val getSealingKey = "org.dicekeys.api.actions.getSealingKey"
+    const val unsealWithUnsealingKey = "org.dicekeys.api.actions.unsealWithUnsealingKey"
+    const val getSigningKey = "org.dicekeys.api.actions.getSigningKey"
+    const val getSignatureVerificationKey = "org.dicekeys.api.actions.getSignatureVerificationKey"
+    const val generateSignature = "org.dicekeys.api.actions.generateSignature"
 
     val All = setOf(
-      Secret.get,
-      SymmetricKey.seal,
-      SymmetricKey.unseal,
-      SymmetricKey.getKey,
-      PrivateKey.getPublic,
-      PrivateKey.getPrivate,
-      PrivateKey.unseal,
-      SigningKey.generateSignature,
-      SigningKey.getSigningKey,
-      SigningKey.getSignatureVerificationKey
+      getSecret,
+      sealWithSymmetricKey,
+      unsealWithSymmetricKey,
+      getSymmetricKey,
+      getSealingKey,
+      getUnsealingKey,
+      unsealWithUnsealingKey,
+      generateSignature,
+      getSigningKey,
+      getSignatureVerificationKey
     )
   }
 
@@ -319,7 +308,7 @@ abstract class DiceKeysApiClient(
     derivationOptionsJson: String,
     callback: Callback<Secret>? = null
   ): Intent =
-    call(OperationNames.Secret.get,
+    call(OperationNames.getSecret,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson
       )
@@ -345,11 +334,11 @@ abstract class DiceKeysApiClient(
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
-  fun getPrivateKey(
+  fun getUnsealingKey(
     derivationOptionsJson: String,
     callback: Callback<UnsealingKey>? = null
   ): Intent =
-    call(OperationNames.PrivateKey.getPrivate,
+    call(OperationNames.getUnsealingKey,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson
       )
@@ -358,9 +347,9 @@ abstract class DiceKeysApiClient(
    * getPrivateKey (same as above) implemented as a Kotlin suspend function
    * in place of callbacks.
    */
-  suspend fun getPrivateKey(
+  suspend fun getUnsealingKey(
     derivationOptionsJson: String
-  ): UnsealingKey = awaitCallback{ getPrivateKey(
+  ): UnsealingKey = awaitCallback{ getUnsealingKey(
     derivationOptionsJson, it
   ) }
 
@@ -376,7 +365,7 @@ abstract class DiceKeysApiClient(
     derivationOptionsJson: String,
     callback: Callback<SymmetricKey>? = null
   ): Intent =
-    call(OperationNames.SymmetricKey.getKey,
+    call(OperationNames.getSymmetricKey,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson
       )
@@ -403,7 +392,7 @@ abstract class DiceKeysApiClient(
     derivationOptionsJson: String,
     callback: Callback<SigningKey>? = null
   ): Intent =
-    call(OperationNames.SigningKey.getSigningKey,
+    call(OperationNames.getSigningKey,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson
       )
@@ -425,11 +414,11 @@ abstract class DiceKeysApiClient(
    * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html)
    * as [derivationOptionsJson].
    */
-  fun getPublicKey(
+  fun getSealingKey(
     derivationOptionsJson: String,
     callback: Callback<SealingKey>? = null
   ): Intent =
-    call(OperationNames.PrivateKey.getPublic,
+    call(OperationNames.getSealingKey,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson
       )
@@ -438,9 +427,9 @@ abstract class DiceKeysApiClient(
    * getPublicKey (same as above) implemented as a Kotlin suspend function
    * in place of callbacks.
    */
-  suspend fun getPublicKey(
+  suspend fun getSealingKey(
     derivationOptionsJson: String
-  ): SealingKey = awaitCallback{ getPublicKey(
+  ): SealingKey = awaitCallback{ getSealingKey(
     derivationOptionsJson, it
   ) }
 
@@ -452,22 +441,22 @@ abstract class DiceKeysApiClient(
    * key-derivation options packaged with the message.  It will also ensure that the
    * post-decryption instructions have not changed since the message was packaged.
    */
-  fun unsealWithPrivateKey(
+  fun unsealWithUnsealingKey(
     packagedSealedMessage: PackagedSealedMessage,
     callback: Callback<ByteArray>? = null
   ): Intent =
-    call(OperationNames.PrivateKey.unseal,
+    call(OperationNames.unsealWithUnsealingKey,
       bundleOf(
-        ParameterNames.PrivateKey.Unseal.packagedSealedMessageSerializedToBinary to packagedSealedMessage.toSerializedBinaryForm()
+        ParameterNames.UnsealingKey.Unseal.packagedSealedMessageSerializedToBinary to packagedSealedMessage.toSerializedBinaryForm()
       )
     ).also { intent -> callback?.let{ addRequestAndCallback(unsealAsymmetricCallbacks, intent, it) } }
   /**
    * unsealWithPrivateKey (same as above) implemented as a Kotlin suspend function
    * in place of callbacks.
    */
-  suspend fun unsealWithPrivateKey(
+  suspend fun unsealWithUnsealingKey(
     packagedSealedMessage: PackagedSealedMessage
-  ): ByteArray = awaitCallback{ unsealWithPrivateKey(
+  ): ByteArray = awaitCallback{ unsealWithUnsealingKey(
     packagedSealedMessage, it
   ) }
 //    /**
@@ -525,7 +514,7 @@ abstract class DiceKeysApiClient(
     postDecryptionInstructions: String = "",
     callback: Callback<PackagedSealedMessage>
   ): Intent =
-    call(OperationNames.SymmetricKey.seal,
+    call(OperationNames.sealWithSymmetricKey,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson,
         ParameterNames.SymmetricKey.Seal.plaintext to plaintext,
@@ -562,7 +551,7 @@ abstract class DiceKeysApiClient(
     packagedSealedMessage: PackagedSealedMessage,
     callback: Callback<ByteArray>? = null
   ): Intent =
-    call(OperationNames.SymmetricKey.unseal,
+    call(OperationNames.unsealWithSymmetricKey,
       bundleOf(
         ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary to packagedSealedMessage.toSerializedBinaryForm()
       )
@@ -587,7 +576,7 @@ abstract class DiceKeysApiClient(
     derivationOptionsJson: String,
     callback: Callback<SignatureVerificationKey>? = null
   ): Intent =
-    call(OperationNames.SigningKey.getSignatureVerificationKey,
+    call(OperationNames.getSignatureVerificationKey,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson
       )
@@ -617,7 +606,7 @@ abstract class DiceKeysApiClient(
     message: ByteArray,
     callback: Callback<GenerateSignatureResult>? = null
   ): Intent =
-    call(OperationNames.SigningKey.generateSignature,
+    call(OperationNames.generateSignature,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson,
         ParameterNames.SigningKey.GenerateSignature.message to message
@@ -672,23 +661,23 @@ abstract class DiceKeysApiClient(
     resultIntent?.getStringExtra(ParameterNames.Common.requestId)?.let{ requestId ->
       when(requestIdToCommand(requestId)) {
 
-        OperationNames.Secret.get -> handleResult(getSecretCallbacks, resultIntent,
+        OperationNames.getSecret -> handleResult(getSecretCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(
             Secret.fromSerializedBinaryForm(requireResult(resultIntent.getByteArrayExtra( ParameterNames.Secret.Get.secretSerializedToBinary))))
           }
         )
 
-        OperationNames.PrivateKey.getPublic -> handleResult(getPublicKeyCallbacks, resultIntent,
+        OperationNames.getSealingKey -> handleResult(getPublicKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(
             SealingKey.fromSerializedBinaryForm(
-              requireResult(resultIntent.getByteArrayExtra(ParameterNames.PrivateKey.GetPublic.publicKeySerializedToBinary))
+              requireResult(resultIntent.getByteArrayExtra(ParameterNames.UnsealingKey.GetSealingKey.sealingKeySerializedToBinary))
             ))
           }
         )
 
-        OperationNames.SymmetricKey.unseal -> handleResult(unsealWithSymmetricKeyCallbacks, resultIntent,
+        OperationNames.unsealWithSymmetricKey -> handleResult(unsealWithSymmetricKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(
             requireResult(resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.Unseal.plaintext))
@@ -696,15 +685,15 @@ abstract class DiceKeysApiClient(
           }
         )
 
-        OperationNames.PrivateKey.unseal -> handleResult(unsealAsymmetricCallbacks, resultIntent,
+        OperationNames.unsealWithUnsealingKey -> handleResult(unsealAsymmetricCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(
-            requireResult(resultIntent.getByteArrayExtra(ParameterNames.PrivateKey.Unseal.plaintext))
+            requireResult(resultIntent.getByteArrayExtra(ParameterNames.UnsealingKey.Unseal.plaintext))
           )
           }
         )
 
-        OperationNames.SymmetricKey.seal -> handleResult(sealWithSymmetricKeyCallbacks, resultIntent,
+        OperationNames.sealWithSymmetricKey -> handleResult(sealWithSymmetricKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ ->
             resultIntent.getByteArrayExtra(ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary)?.let { sealedMessageJson ->
@@ -713,7 +702,7 @@ abstract class DiceKeysApiClient(
           }
         )
 
-        OperationNames.SigningKey.generateSignature -> handleResult(generateSignatureCallbacks, resultIntent,
+        OperationNames.generateSignature -> handleResult(generateSignatureCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(object: GenerateSignatureResult {
                   override val signature = requireResult(
@@ -727,7 +716,7 @@ abstract class DiceKeysApiClient(
           }
         )
 
-        OperationNames.SigningKey.getSignatureVerificationKey -> handleResult(getSignatureVerificationKeyCallbacks, resultIntent,
+        OperationNames.getSignatureVerificationKey -> handleResult(getSignatureVerificationKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(SignatureVerificationKey.fromSerializedBinaryForm(
               requireResult(resultIntent.getByteArrayExtra(
@@ -737,7 +726,7 @@ abstract class DiceKeysApiClient(
           }
         )
 
-        OperationNames.SigningKey.getSigningKey -> handleResult(getSigningKeyCallbacks, resultIntent,
+        OperationNames.getSigningKey -> handleResult(getSigningKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ ->
             callback.onComplete(SigningKey.fromSerializedBinaryForm(
@@ -749,17 +738,17 @@ abstract class DiceKeysApiClient(
             ))
           })
 
-        OperationNames.PrivateKey.getPrivate -> handleResult(getPrivateKeyCallbacks, resultIntent,
+        OperationNames.getUnsealingKey -> handleResult(getPrivateKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ ->
             callback.onComplete(UnsealingKey.fromSerializedBinaryForm(requireResult(
               resultIntent.getByteArrayExtra(
-                ParameterNames.PrivateKey.GetPrivate.privateKeySerializedToBinary
+                ParameterNames.UnsealingKey.GetUnsealingKey.unsealingKeySerializedToBinary
               )
             )))
           })
 
-        OperationNames.SymmetricKey.getKey -> handleResult(getSymmetricKeyCallbacks, resultIntent,
+        OperationNames.getSymmetricKey -> handleResult(getSymmetricKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(SymmetricKey.fromSerializedBinaryForm(requireResult(
             resultIntent.getByteArrayExtra(

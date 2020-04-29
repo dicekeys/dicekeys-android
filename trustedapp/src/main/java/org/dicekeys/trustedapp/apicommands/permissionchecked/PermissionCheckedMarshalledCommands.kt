@@ -67,14 +67,14 @@ abstract class PermissionCheckedMarshalledCommands(
       )
     )).sendSuccess()
 
-  fun getPublicKey(): Unit = respondWith(
-      DiceKeysApiClient.ParameterNames.PrivateKey.GetPublic.publicKeySerializedToBinary,
-      api.getPublicKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
+  fun getSealingKey(): Unit = respondWith(
+      DiceKeysApiClient.ParameterNames.UnsealingKey.GetSealingKey.sealingKeySerializedToBinary,
+      api.getSealingKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
     ).sendSuccess()
 
   fun unsealWithPrivateKey(): Unit = respondWith(
-      DiceKeysApiClient.ParameterNames.PrivateKey.Unseal.plaintext,
-      api.unsealWithPrivateKey(
+      DiceKeysApiClient.ParameterNames.UnsealingKey.Unseal.plaintext,
+      api.unsealWithUnsealingKey(
         PackagedSealedMessage.fromSerializedBinaryForm(
           requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary)
         )
@@ -100,9 +100,9 @@ abstract class PermissionCheckedMarshalledCommands(
       ).sendSuccess()
     }
 
-  fun getPrivate(): Unit = respondWith(
-    DiceKeysApiClient.ParameterNames.PrivateKey.GetPrivate.privateKeySerializedToBinary,
-    api.getPrivateKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
+  fun getUnsealingKey(): Unit = respondWith(
+    DiceKeysApiClient.ParameterNames.UnsealingKey.GetUnsealingKey.unsealingKeySerializedToBinary,
+    api.getUnsealingKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
   fun getSigningKey(): Unit = respondWith(
@@ -118,16 +118,16 @@ abstract class PermissionCheckedMarshalledCommands(
   fun executeCommand(command: String) {
     try {
       when (command) {
-        DiceKeysApiClient.OperationNames.Secret.get -> getSecret()
-        DiceKeysApiClient.OperationNames.SymmetricKey.seal -> sealWithSymmetricKey()
-        DiceKeysApiClient.OperationNames.SymmetricKey.unseal -> unsealWithSymmetricKey()
-        DiceKeysApiClient.OperationNames.PrivateKey.getPublic -> getPublicKey()
-        DiceKeysApiClient.OperationNames.PrivateKey.unseal -> unsealWithPrivateKey()
-        DiceKeysApiClient.OperationNames.SigningKey.getSignatureVerificationKey -> getSignatureVerificationKey()
-        DiceKeysApiClient.OperationNames.SigningKey.generateSignature -> generateSignature()
-        DiceKeysApiClient.OperationNames.PrivateKey.getPrivate -> getPrivate()
-        DiceKeysApiClient.OperationNames.SigningKey.getSigningKey -> getSigningKey()
-        DiceKeysApiClient.OperationNames.SymmetricKey.getKey -> getSymmetricKey()
+        DiceKeysApiClient.OperationNames.getSecret -> getSecret()
+        DiceKeysApiClient.OperationNames.sealWithSymmetricKey -> sealWithSymmetricKey()
+        DiceKeysApiClient.OperationNames.unsealWithSymmetricKey -> unsealWithSymmetricKey()
+        DiceKeysApiClient.OperationNames.getSealingKey -> getSealingKey()
+        DiceKeysApiClient.OperationNames.unsealWithUnsealingKey -> unsealWithPrivateKey()
+        DiceKeysApiClient.OperationNames.getSignatureVerificationKey -> getSignatureVerificationKey()
+        DiceKeysApiClient.OperationNames.generateSignature -> generateSignature()
+        DiceKeysApiClient.OperationNames.getUnsealingKey -> getUnsealingKey()
+        DiceKeysApiClient.OperationNames.getSigningKey -> getSigningKey()
+        DiceKeysApiClient.OperationNames.getSymmetricKey -> getSymmetricKey()
         else -> {
           throw IllegalArgumentException("Invalid command for DiceKeys API")
         }
