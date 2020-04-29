@@ -219,16 +219,16 @@ abstract class DiceKeysApiClient(
    */
   object OperationNames {
 
-    const val getSecret = "org.dicekeys.api.actions.getSecret"
-    const val getSymmetricKey = "org.dicekeys.api.actions.getSymmetricKey"
-    const val sealWithSymmetricKey = "org.dicekeys.api.actions.sealWithSymmetricKey"
-    const val unsealWithSymmetricKey = "org.dicekeys.api.actions.unsealWithSymmetricKey"
-    const val getUnsealingKey = "org.dicekeys.api.actions.getUnsealingKey"
-    const val getSealingKey = "org.dicekeys.api.actions.getSealingKey"
-    const val unsealWithUnsealingKey = "org.dicekeys.api.actions.unsealWithUnsealingKey"
-    const val getSigningKey = "org.dicekeys.api.actions.getSigningKey"
-    const val getSignatureVerificationKey = "org.dicekeys.api.actions.getSignatureVerificationKey"
-    const val generateSignature = "org.dicekeys.api.actions.generateSignature"
+    const val getSecret = "getSecret"
+    const val getSymmetricKey = "getSymmetricKey"
+    const val sealWithSymmetricKey = "sealWithSymmetricKey"
+    const val unsealWithSymmetricKey = "unsealWithSymmetricKey"
+    const val getUnsealingKey = "getUnsealingKey"
+    const val getSealingKey = "getSealingKey"
+    const val unsealWithUnsealingKey = "unsealWithUnsealingKey"
+    const val getSigningKey = "getSigningKey"
+    const val getSignatureVerificationKey = "getSignatureVerificationKey"
+    const val generateSignature = "generateSignature"
 
     val All = setOf(
       getSecret,
