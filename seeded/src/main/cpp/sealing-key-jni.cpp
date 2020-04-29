@@ -7,14 +7,14 @@
 
 extern "C" {
 
-JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_fromJsonJNI(
+JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_SealingKey_fromJsonJNI(
     JNIEnv* env,
     jclass cls,
-    jstring _publicKeyAsJson
+    jstring _sealingKeyAsJson
 ) {
   try {
-    return (jlong) new PublicKey(PublicKey::fromJson(
-      jstringToString(env, _publicKeyAsJson)
+    return (jlong) new SealingKey(SealingKey::fromJson(
+      jstringToString(env, _sealingKeyAsJson)
     ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -22,22 +22,22 @@ JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_fromJsonJNI(
   }
 }
 
-JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_constructFromJsonJNI_00024seeded_1debug(
+JNIEXPORT jlong JNICALL Java_org_dicekeys_crypto_seeded_SealingKey_constructFromJsonJNI_00024seeded_1debug(
   JNIEnv* env,
   jclass cls,
-  jstring _publicKeyAsJson
+  jstring _sealingKeyAsJson
 ) {
-  return Java_org_dicekeys_crypto_seeded_PublicKey_fromJsonJNI(env, cls, _publicKeyAsJson);
+  return Java_org_dicekeys_crypto_seeded_SealingKey_fromJsonJNI(env, cls, _sealingKeyAsJson);
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_PublicKey_constructJNI(
+Java_org_dicekeys_crypto_seeded_SealingKey_constructJNI(
     JNIEnv *env, jclass clazz,
     jbyteArray key_bytes,
     jstring key_derivation_options_json
 ) {
   try {
-    return (jlong) new PublicKey(
+    return (jlong) new SealingKey(
       jbyteArrayToVector(env, key_bytes),
       jstringToString(env, key_derivation_options_json)
     );
@@ -48,9 +48,9 @@ Java_org_dicekeys_crypto_seeded_PublicKey_constructJNI(
 }
 
 
-JNIEXPORT void  JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_deleteNativeObjectPtrJNI(JNIEnv *env, jobject obj) {
+JNIEXPORT void  JNICALL Java_org_dicekeys_crypto_seeded_SealingKey_deleteNativeObjectPtrJNI(JNIEnv *env, jobject obj) {
   try {
-    deleteNativeObjectPtr<PublicKey>(env, obj);
+    deleteNativeObjectPtr<SealingKey>(env, obj);
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
   }
@@ -58,13 +58,13 @@ JNIEXPORT void  JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_deleteNativeOb
 
 
 // keyBytesGetterJNI
-JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_keyBytesGetterJNI(
+JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_crypto_seeded_SealingKey_keyBytesGetterJNI(
     JNIEnv* env,
     jobject obj
 ) {
   try {
     return byteVectorToJbyteArray(env,
-      getNativeObjectPtr<PublicKey>(env, obj)->getPublicKeyBytes()
+      getNativeObjectPtr<SealingKey>(env, obj)->getSealingKeyBytes()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -72,13 +72,13 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_keyBytesG
   }
 }
 
-JNIEXPORT jstring JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_derivationOptionsJsonGetterJNI(
+JNIEXPORT jstring JNICALL Java_org_dicekeys_crypto_seeded_SealingKey_derivationOptionsJsonGetterJNI(
     JNIEnv* env,
     jobject obj
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PublicKey>(env, obj)->getDerivationOptionsJson()
+      getNativeObjectPtr<SealingKey>(env, obj)->getDerivationOptionsJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -87,7 +87,7 @@ JNIEXPORT jstring JNICALL Java_org_dicekeys_crypto_seeded_PublicKey_derivationOp
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_PublicKey_sealJNI(
+Java_org_dicekeys_crypto_seeded_SealingKey_sealJNI(
   JNIEnv *env,
   jobject obj,
   jbyteArray message,
@@ -95,7 +95,7 @@ Java_org_dicekeys_crypto_seeded_PublicKey_sealJNI(
 ) {
   try {
     return (jlong) new PackagedSealedMessage(
-      getNativeObjectPtr<PublicKey>(env, obj)->seal(
+      getNativeObjectPtr<SealingKey>(env, obj)->seal(
         jbyteArrayToSodiumBuffer(env, message),
         jstringToString(env, post_decryption_instructions_json)
       )
@@ -107,10 +107,10 @@ Java_org_dicekeys_crypto_seeded_PublicKey_sealJNI(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_PublicKey_toJson(JNIEnv *env, jobject obj) {
+Java_org_dicekeys_crypto_seeded_SealingKey_toJson(JNIEnv *env, jobject obj) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PublicKey>(env, obj)->toJson()
+      getNativeObjectPtr<SealingKey>(env, obj)->toJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -120,14 +120,14 @@ Java_org_dicekeys_crypto_seeded_PublicKey_toJson(JNIEnv *env, jobject obj) {
 
 
 JNIEXPORT jbyteArray JNICALL
-Java_org_dicekeys_crypto_seeded_PublicKey_toSerializedBinaryForm(
+Java_org_dicekeys_crypto_seeded_SealingKey_toSerializedBinaryForm(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return sodiumBufferToJbyteArray(
       env,
-      getNativeObjectPtr<PublicKey>(env, thiz)->toSerializedBinaryForm()
+      getNativeObjectPtr<SealingKey>(env, thiz)->toSerializedBinaryForm()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -136,12 +136,12 @@ Java_org_dicekeys_crypto_seeded_PublicKey_toSerializedBinaryForm(
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_PublicKey_fromSerializedBinaryFormJNI(
+Java_org_dicekeys_crypto_seeded_SealingKey_fromSerializedBinaryFormJNI(
   JNIEnv *env,
   jclass clazz,
   jbyteArray as_serialized_binary_form) {
   try {
-    return (jlong) new PublicKey(PublicKey::fromSerializedBinaryForm(
+    return (jlong) new SealingKey(SealingKey::fromSerializedBinaryForm(
       jbyteArrayToSodiumBuffer(env, as_serialized_binary_form)
     ));
   } catch (...) {

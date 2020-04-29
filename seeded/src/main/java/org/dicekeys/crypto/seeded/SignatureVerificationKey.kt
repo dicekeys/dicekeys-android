@@ -68,7 +68,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
      * lead to a use-after-free vulnerability or an exception on the second deletion.
      */
     constructor(
-            other: PublicKey
+            other: SealingKey
     ) : this(other.keyBytes, other.derivationOptionsJson)
 
 

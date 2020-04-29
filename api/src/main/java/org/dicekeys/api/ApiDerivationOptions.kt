@@ -23,7 +23,7 @@ internal fun getJsonObjectsStringListOrNull(
 
 /**
  * Used to construct and parse the strings in
- * [key-derivation options JSON format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+ * [key-derivation options JSON format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
  * which specify how to derive cryptographic keys from seed string.
  * These JSON strings appear throughout the API (and in the [DiceKeysApiClient]) as a
  * parameter named _derivationOptionsJson_.
@@ -114,9 +114,9 @@ open class ApiDerivationOptions constructor(
     /**
      * Unless this value is explicitly set to _true_, the DiceKeys may prevent
      * to obtain a raw derived [SymmetricKey],
-     * [PrivateKey], or
+     * [UnsealingKey], or
      * [SigningKey].
-     * Clients may retrieve a derived [PublicKey],
+     * Clients may retrieve a derived [SealingKey],
      * or [SignatureVerificationKey] even if this value
      * is not set or set to false.
      *
@@ -163,7 +163,7 @@ open class ApiDerivationOptions constructor(
      * An extension class that must represent a specification for a public/private key pair
      */
     class Public(derivationOptionsJson: String? = null) :
-            ApiDerivationOptions(derivationOptionsJson,  Type.Public)
+            ApiDerivationOptions(derivationOptionsJson,  Type.UnsealingKey)
 
     /**
      * An extension class that must represent a specification for a derived seed
@@ -175,12 +175,12 @@ open class ApiDerivationOptions constructor(
      * An extension class that must represent a specification for a signing/verification key pair
      */
     class Signing(derivationOptionsJson: String? = null) :
-            ApiDerivationOptions(derivationOptionsJson,  Type.Signing)
+            ApiDerivationOptions(derivationOptionsJson,  Type.SigningKey)
 
     /**
      * An extension class that must represent a specification for a symmetric key
      */
     class Symmetric(derivationOptionsJson: String? = null) :
-            ApiDerivationOptions(derivationOptionsJson,  Type.Symmetric)
+            ApiDerivationOptions(derivationOptionsJson,  Type.SymmetricKey)
 
 }

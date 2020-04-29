@@ -12,7 +12,7 @@ You can ask the DiceKeys app to derive cryptographic keys seeded by the user's D
 to perform cryptographic operations using the derived keys,
 and to give those keys to your application if it is authorized to receive them.
 You specify how keys are derived and who can access them via the
-[Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html/),
+[Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html/),
 which you can construct and parse using the [ApiKeyDerivationOptions] class.
 
 The API builds on the the cross-platform

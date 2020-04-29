@@ -8,8 +8,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import org.dicekeys.crypto.seeded.PublicKey
-import org.dicekeys.crypto.seeded.PrivateKey
+import org.dicekeys.crypto.seeded.SealingKey
+import org.dicekeys.crypto.seeded.UnsealingKey
 import org.dicekeys.crypto.seeded.Secret
 import org.dicekeys.crypto.seeded.SignatureVerificationKey
 import org.dicekeys.crypto.seeded.SigningKey
@@ -313,7 +313,7 @@ abstract class DiceKeysApiClient(
   /**
    * Derive a pseudo-random cryptographic [Secret] from the user's DiceKey and
    * the key-derivation options passed as [derivationOptionsJson]
-   * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html).
+   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
    */
   fun getSecret(
     derivationOptionsJson: String,
@@ -337,17 +337,17 @@ abstract class DiceKeysApiClient(
   ) }
 
 
-  private val getPrivateKeyCallbacks = HashMap<String, RequestIntentAndCallback<PrivateKey>>()
+  private val getPrivateKeyCallbacks = HashMap<String, RequestIntentAndCallback<UnsealingKey>>()
   /**
-   * Get a [PrivateKey] derived from the user's DiceKey (the seed) and the key-derivation options
+   * Get a [UnsealingKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
   fun getPrivateKey(
     derivationOptionsJson: String,
-    callback: Callback<PrivateKey>? = null
+    callback: Callback<UnsealingKey>? = null
   ): Intent =
     call(OperationNames.PrivateKey.getPrivate,
       bundleOf(
@@ -360,7 +360,7 @@ abstract class DiceKeysApiClient(
    */
   suspend fun getPrivateKey(
     derivationOptionsJson: String
-  ): PrivateKey = awaitCallback{ getPrivateKey(
+  ): UnsealingKey = awaitCallback{ getPrivateKey(
     derivationOptionsJson, it
   ) }
 
@@ -368,7 +368,7 @@ abstract class DiceKeysApiClient(
   /**
    * Get a [SymmetricKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
@@ -395,7 +395,7 @@ abstract class DiceKeysApiClient(
   /**
    * Get a [SigningKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
@@ -419,15 +419,15 @@ abstract class DiceKeysApiClient(
   ) }
 
 
-  private val getPublicKeyCallbacks = HashMap<String, RequestIntentAndCallback<PublicKey>>()
+  private val getPublicKeyCallbacks = HashMap<String, RequestIntentAndCallback<SealingKey>>()
   /**
-   * Get a [PublicKey] derived from the user's DiceKey and the [ApiDerivationOptions] specified
-   * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html)
+   * Get a [SealingKey] derived from the user's DiceKey and the [ApiDerivationOptions] specified
+   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html)
    * as [derivationOptionsJson].
    */
   fun getPublicKey(
     derivationOptionsJson: String,
-    callback: Callback<PublicKey>? = null
+    callback: Callback<SealingKey>? = null
   ): Intent =
     call(OperationNames.PrivateKey.getPublic,
       bundleOf(
@@ -440,14 +440,14 @@ abstract class DiceKeysApiClient(
    */
   suspend fun getPublicKey(
     derivationOptionsJson: String
-  ): PublicKey = awaitCallback{ getPublicKey(
+  ): SealingKey = awaitCallback{ getPublicKey(
     derivationOptionsJson, it
   ) }
 
   private val unsealAsymmetricCallbacks = HashMap<String, RequestIntentAndCallback<ByteArray>>()
   /**
    * Unseal (decrypt & authenticate) a message that was previously sealed with a
-   * [PublicKey] to construct a [PackagedSealedMessage].
+   * [SealingKey] to construct a [PackagedSealedMessage].
    * The public/private key pair will be re-derived from the user's seed (DiceKey) and the
    * key-derivation options packaged with the message.  It will also ensure that the
    * post-decryption instructions have not changed since the message was packaged.
@@ -514,7 +514,7 @@ abstract class DiceKeysApiClient(
    * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
    * symmetric key derived from the user's DiceKey, the
    * [derivationOptionsJson]
-   * in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html),
+   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
    * and [PostDecryptionInstructions] specified via a JSON string as
    * [postDecryptionInstructions] in the
    * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/post_decryption_instructions_format.html).
@@ -682,7 +682,7 @@ abstract class DiceKeysApiClient(
         OperationNames.PrivateKey.getPublic -> handleResult(getPublicKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ -> callback.onComplete(
-            PublicKey.fromSerializedBinaryForm(
+            SealingKey.fromSerializedBinaryForm(
               requireResult(resultIntent.getByteArrayExtra(ParameterNames.PrivateKey.GetPublic.publicKeySerializedToBinary))
             ))
           }
@@ -752,7 +752,7 @@ abstract class DiceKeysApiClient(
         OperationNames.PrivateKey.getPrivate -> handleResult(getPrivateKeyCallbacks, resultIntent,
           { callback, _, e -> callback.onException(e) },
           { callback, _ ->
-            callback.onComplete(PrivateKey.fromSerializedBinaryForm(requireResult(
+            callback.onComplete(UnsealingKey.fromSerializedBinaryForm(requireResult(
               resultIntent.getByteArrayExtra(
                 ParameterNames.PrivateKey.GetPrivate.privateKeySerializedToBinary
               )

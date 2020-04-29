@@ -40,7 +40,7 @@ class PermissionCheckedCommands(
     SymmetricKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.Symmetric
+        DerivationOptions.Type.SymmetricKey
       ),
       derivationOptionsJson
     ).seal(plaintext, postDecryptionInstructions ?: "")
@@ -54,7 +54,7 @@ class PermissionCheckedCommands(
       packagedSealedMessage,
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorizedToUnseal(
         packagedSealedMessage,
-        DerivationOptions.Type.Symmetric
+        DerivationOptions.Type.SymmetricKey
       )
     )
 
@@ -63,11 +63,11 @@ class PermissionCheckedCommands(
    */
   fun getPublicKey(
     derivationOptionsJson: String
-  ) : PublicKey =
-    PrivateKey.deriveFromSeed(
+  ) : SealingKey =
+    UnsealingKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.Public
+        DerivationOptions.Type.UnsealingKey
       ),
       derivationOptionsJson
     ).getPublicKey()
@@ -77,10 +77,10 @@ class PermissionCheckedCommands(
    */
   fun getPrivateKey(
     derivationOptionsJson: String
-  ) : PrivateKey = PrivateKey.deriveFromSeed(
+  ) : UnsealingKey = UnsealingKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
       derivationOptionsJson,
-      DerivationOptions.Type.Public
+      DerivationOptions.Type.UnsealingKey
     ),
     derivationOptionsJson
   )
@@ -93,7 +93,7 @@ class PermissionCheckedCommands(
   ) : SigningKey = SigningKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
       derivationOptionsJson,
-      DerivationOptions.Type.Signing
+      DerivationOptions.Type.SigningKey
     ),
     derivationOptionsJson
   )
@@ -106,7 +106,7 @@ class PermissionCheckedCommands(
   ) : SymmetricKey = SymmetricKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
       derivationOptionsJson,
-      DerivationOptions.Type.Symmetric
+      DerivationOptions.Type.SymmetricKey
     ),
     derivationOptionsJson
   )
@@ -120,7 +120,7 @@ class PermissionCheckedCommands(
     SigningKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.Signing
+        DerivationOptions.Type.SigningKey
       ),
       derivationOptionsJson
     ).getSignatureVerificationKey()
@@ -131,10 +131,10 @@ class PermissionCheckedCommands(
   fun unsealWithPrivateKey(
     packagedSealedMessage: PackagedSealedMessage
   ) : ByteArray =
-      PrivateKey.deriveFromSeed(
+      UnsealingKey.deriveFromSeed(
         permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorizedToUnseal(
           packagedSealedMessage,
-          DerivationOptions.Type.Public
+          DerivationOptions.Type.UnsealingKey
         ),
         packagedSealedMessage.derivationOptionsJson
       ).unseal(packagedSealedMessage)
@@ -148,7 +148,7 @@ class PermissionCheckedCommands(
   ): Pair<ByteArray, SignatureVerificationKey> = SigningKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.Signing
+        DerivationOptions.Type.SigningKey
       ),
       derivationOptionsJson
     ).let{ signingKey ->

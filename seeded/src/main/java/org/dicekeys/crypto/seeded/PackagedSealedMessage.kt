@@ -2,7 +2,7 @@ package org.dicekeys.crypto.seeded
 
 /**
  * This class stores everything needed to unseal a message
- * sealed with a [SymmetricKey] or [PublicKey], so long as you have either the seed from which
+ * sealed with a [SymmetricKey] or [SealingKey], so long as you have either the seed from which
  * that key was derived from _or_ the key itself:
  *
  * This class wraps the native c++ PackagedSealedMessage class from the

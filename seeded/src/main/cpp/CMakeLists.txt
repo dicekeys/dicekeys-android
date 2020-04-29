@@ -13,8 +13,8 @@ add_library(
     SHARED
     java-throw-exception.cpp
     packaged-sealed-message-jni.cpp
-    public-key-jni.cpp
-    private-key-jni.cpp
+    sealing-key-jni.cpp
+    unsealing-key-jni.cpp
     secret-jni.cpp
     signature-verification-key-jni.cpp
     signing-key-jni.cpp

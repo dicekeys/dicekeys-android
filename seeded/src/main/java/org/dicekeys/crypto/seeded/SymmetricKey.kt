@@ -3,7 +3,7 @@ package org.dicekeys.crypto.seeded
 /**
  * A SymmetricKey can be used to seal and unseal messages.
  * This SymmetricKey class can be (re) derived from a seed using
- * set of key-derivation options specified in [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html).
+ * set of key-derivation options specified in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
  * So, you can use this symmetric-key to seal a message, throw the
  * key away, and re-generate the key when you need to unseal the
  * message so long as you still have the original seed and
@@ -157,7 +157,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      *
      * If a [postDecryptionInstructions] string is passed,
      * the exact same string must also be passed as [postDecryptionInstructions]
-     * to [PrivateKey.unseal] the message with the corresponding [PrivateKey].
+     * to [UnsealingKey.unseal] the message with the corresponding [UnsealingKey].
      * This allows the sealer to specify a public-set of instructions that the the party
      * unsealing must be aware of before the message can be unsealed.
      */
@@ -186,7 +186,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      *
      * If a [postDecryptionInstructions] string is passed,
      * the exact same string must also be passed as [postDecryptionInstructions]
-     * to [PrivateKey.unseal] the message with the corresponding [PrivateKey].
+     * to [UnsealingKey.unseal] the message with the corresponding [UnsealingKey].
      * This allows the sealer to specify a public-set of instructions that the the party
      * unsealing must be aware of before the message can be unsealed.
      *
@@ -217,7 +217,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
     /**
      * Decrypt and authenticate a message which had been sealed by [sealToCiphertextOnly].
      *
-     * If a [postDecryptionInstructions] was passed to the [PublicKey.seal] operation,
+     * If a [postDecryptionInstructions] was passed to the [SealingKey.seal] operation,
      * the exact same string must also be passed as [postDecryptionInstructions] here.
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.

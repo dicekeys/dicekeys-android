@@ -1,10 +1,4 @@
 package org.dicekeys.keysqr
-import org.dicekeys.crypto.seeded.PrivateKey
-import org.dicekeys.crypto.seeded.PublicKey
-import org.dicekeys.crypto.seeded.Secret
-import org.dicekeys.crypto.seeded.SignatureVerificationKey
-import org.dicekeys.crypto.seeded.SigningKey
-import org.dicekeys.crypto.seeded.SymmetricKey
 
 
 class KeySqr<F: Face>(val faces: List<F>) {

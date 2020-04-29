@@ -4,19 +4,19 @@ package org.dicekeys.crypto.seeded
 //import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
 /**
- * A [PrivateKey] is used to _unseal_ messages sealed with its
- * corresponding [PublicKey].
- * The [PrivateKey] and [PublicKey] are generated
+ * A [UnsealingKey] is used to _unseal_ messages sealed with its
+ * corresponding [SealingKey].
+ * The [UnsealingKey] and [SealingKey] are generated
  * from a seed and a set of key-derivation specified options in
- * [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html).
+ * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
  *
- * The [PrivateKey] includes a copy of the public key in binary format, which can be
- * reconstituted as a [PublicKey] object via the [getPublicKey] method.
+ * The [UnsealingKey] includes a copy of the public key in binary format, which can be
+ * reconstituted as a [SealingKey] object via the [getPublicKey] method.
  *
  * This class wraps the native c++ PrivateKey class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
  */
-class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
+class UnsealingKey private constructor(internal val nativeObjectPtr: Long) {
     companion object {
         init {
             ensureJniLoaded()
@@ -39,21 +39,21 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
         fun deriveFromSeed(
                 seedString: String,
                 derivationOptionsJson: String
-        ) = PrivateKey(deriveFromSeedJNI(seedString, derivationOptionsJson))
+        ) = UnsealingKey(deriveFromSeedJNI(seedString, derivationOptionsJson))
 
 
 
         @JvmStatic private external fun fromJsonJNI(json: String) : Long
 
         /**
-         * Construct a [PrivateKey] from a JSON format string,
-         * replicating the [PrivateKey] on which [toJson]
+         * Construct a [UnsealingKey] from a JSON format string,
+         * replicating the [UnsealingKey] on which [toJson]
          * was called to generate [privateKeyAsJson]
          */
         @JvmStatic fun fromJson(
                 privateKeyAsJson: String
-        ): PrivateKey =
-            PrivateKey(fromJsonJNI(privateKeyAsJson)
+        ): UnsealingKey =
+            UnsealingKey(fromJsonJNI(privateKeyAsJson)
         )
 
 
@@ -67,10 +67,10 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
          */
         fun fromSerializedBinaryForm(
                 asSerializedBinaryForm: ByteArray
-        ) : PrivateKey = PrivateKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
+        ) : UnsealingKey = UnsealingKey(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
 
         /**
-         * Unseal a message by re-deriving the [PrivateKey] from the secret [seedString]
+         * Unseal a message by re-deriving the [UnsealingKey] from the secret [seedString]
          * used to originally derive it.  The [PackagedSealedMessage.derivationOptionsJson]
          * needed to derive it is in the [packagedSealedMessage], as are the
          * [PackagedSealedMessage.ciphertext] and
@@ -108,7 +108,7 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
      * lead to a use-after-free vulnerability or an exception on the second deletion.
      */
     constructor(
-        other: PrivateKey
+        other: UnsealingKey
     ) : this(other.privateKeyBytes, other.publicKeyBytes, other.derivationOptionsJson)
 
     internal constructor(
@@ -122,11 +122,11 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     }
 
     /**
-     * Get the corresponding [PublicKey] that can seal messages such that they can only
-     * be unsealed with the [PrivateKey].
+     * Get the corresponding [SealingKey] that can seal messages such that they can only
+     * be unsealed with the [UnsealingKey].
      */
-    fun getPublicKey(): PublicKey {
-        return PublicKey(getPublicKeyPtrJNI())
+    fun getPublicKey(): SealingKey {
+        return SealingKey(getPublicKeyPtrJNI())
     }
 
     /**
@@ -153,15 +153,15 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     val derivationOptionsJson get() = derivationOptionsJsonGetterJNI()
 
     override fun equals(other: Any?): Boolean =
-            (other is PrivateKey) &&
+            (other is UnsealingKey) &&
                     derivationOptionsJson == other.derivationOptionsJson &&
                     privateKeyBytes.contentEquals(other.privateKeyBytes) &&
                     publicKeyBytes.contentEquals(other.publicKeyBytes)
 
     /**
-     * Unseal a ciphertext that was sealed by this key's corresponding [PublicKey].
+     * Unseal a ciphertext that was sealed by this key's corresponding [SealingKey].
      *
-     * If a [postDecryptionInstructions] was passed to the [PublicKey.seal] operation,
+     * If a [postDecryptionInstructions] was passed to the [SealingKey.seal] operation,
      * the exact same string must also be passed as [postDecryptionInstructions] here.
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.
@@ -172,8 +172,8 @@ class PrivateKey private constructor(internal val nativeObjectPtr: Long) {
     ): ByteArray
 
     /**
-     * Unseal a [PackagedSealedMessage] that was sealed with the [PublicKey]
-     * corresponding to this [PrivateKey].
+     * Unseal a [PackagedSealedMessage] that was sealed with the [SealingKey]
+     * corresponding to this [UnsealingKey].
      */
     public fun unseal(
         packagedSealedMessage: PackagedSealedMessage

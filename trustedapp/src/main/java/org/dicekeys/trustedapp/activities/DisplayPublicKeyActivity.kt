@@ -6,8 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
-import org.dicekeys.crypto.seeded.PrivateKey
-import org.dicekeys.crypto.seeded.PublicKey
+import org.dicekeys.crypto.seeded.UnsealingKey
 import org.dicekeys.trustedapp.R
 import org.dicekeys.trustedapp.state.KeySqrState
 
@@ -37,7 +36,7 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
         private fun render() {
         KeySqrState.keySqr?.let{ Thread(Runnable {
             try {
-                val publicKey = PrivateKey.deriveFromSeed(
+                val publicKey = UnsealingKey.deriveFromSeed(
                         it.toKeySeed(false),
                         ""//""""{"keyType":"Public"}"""
                 ).getPublicKey()

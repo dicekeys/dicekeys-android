@@ -3,7 +3,7 @@ package org.dicekeys.crypto.seeded
 /**
  * This class represents secret , which is  derived from a seed
  * and set of key-derivation specified options in
- * [Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html).
+ * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
  *
  * Because secret derivation uses a one-way function, this secret can be shared without
  * revealing the secret seed used to derive it.
@@ -91,7 +91,7 @@ class Secret private constructor(internal val nativeObjectPtr: Long) {
     /**
      * The secret as a byte array.
      *
-     * Unlike the raw byte arrays generated for keys (e.g. [PrivateKey]s and [SigningKey]s),
+     * Unlike the raw byte arrays generated for keys (e.g. [UnsealingKey]s and [SigningKey]s),
      * which perform operations on internal binary keys and discourage callers from accessing
      * them directly,
      * the purpose of the [Secret] class is to expose this array of [secretBytes] to the

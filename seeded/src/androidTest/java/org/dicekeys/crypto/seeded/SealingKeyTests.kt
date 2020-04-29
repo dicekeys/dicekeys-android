@@ -14,7 +14,7 @@ import java.lang.Exception
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class PublicKeyTests {
+class SealingKeyTests {
 //    @Test
 //    fun useAppContext() {
 //        // Context of the app under test.
@@ -34,10 +34,10 @@ class PublicKeyTests {
             "keyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
             "derivationOptionsJson": "$derivationOptionsJson"
         }"""
-        val pk = PublicKey.fromJson(publicKeyJson)
+        val pk = SealingKey.fromJson(publicKeyJson)
         assertEquals(0x0f, pk.keyBytes[31].toInt())
         assertEquals(derivationOptionsJson, pk.derivationOptionsJson)
-        val copyOfPk = PublicKey(pk.keyBytes, pk.derivationOptionsJson)
+        val copyOfPk = SealingKey(pk.keyBytes, pk.derivationOptionsJson)
         assertEquals(pk, copyOfPk)
     }
 
@@ -46,20 +46,20 @@ class PublicKeyTests {
     @Test
     fun testPrivateKeys() {
         val derivationOptionsJson = """{"keyType": "Public"}"""
-        val sk = PrivateKey.deriveFromSeed(seed, derivationOptionsJson)
+        val sk = UnsealingKey.deriveFromSeed(seed, derivationOptionsJson)
         val pk = sk.getPublicKey()
         val testMessage = "some message to test"
         val packagedSealedMessage = pk.seal( testMessage );
-        val decryptedBytes = PrivateKey.unseal(seed, packagedSealedMessage )
+        val decryptedBytes = UnsealingKey.unseal(seed, packagedSealedMessage )
         val decryptedMessage = String(decryptedBytes)
         assertEquals(testMessage, decryptedMessage)
 
         val binaryCopy = pk.toSerializedBinaryForm()
-        val copy = PublicKey.fromSerializedBinaryForm(binaryCopy)
+        val copy = SealingKey.fromSerializedBinaryForm(binaryCopy)
         assertEquals(copy, pk)
 
         val binaryCopySk = sk.toSerializedBinaryForm()
-        val copySk = PrivateKey.fromSerializedBinaryForm(binaryCopySk)
+        val copySk = UnsealingKey.fromSerializedBinaryForm(binaryCopySk)
         assertEquals(copySk, sk)
 
 
@@ -73,7 +73,7 @@ class PublicKeyTests {
             "derivationOptionsJson": "$derivationOptionsJson"
         }"""
         try {
-            PublicKey.fromJson(publicKeyJson)
+            SealingKey.fromJson(publicKeyJson)
             fail()
         } catch (e: InvalidDerivationOptionValueException) {
         } catch (e: JsonParsingException) {
@@ -88,7 +88,7 @@ class PublicKeyTests {
             withoutQuotesBeforeAColon: This$ - is not ! valid JSON
         }"""
         try {
-            PublicKey.fromJson(publicKeyJson)
+            SealingKey.fromJson(publicKeyJson)
             fail()
         } catch (e: JsonParsingException) {
         } catch (other: Exception) {

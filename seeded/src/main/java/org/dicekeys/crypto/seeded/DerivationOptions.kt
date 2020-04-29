@@ -45,12 +45,12 @@ open class DerivationOptions(
      * with names matching the string values in the JSON format.
      */
     enum class Type {
-        Secret, Symmetric, Public, Signing;
+        Secret, SymmetricKey, UnsealingKey, SigningKey;
     }
 
     /**
      * Specify whether this JSON object should be used to construct a
-     * [Secret], [SymmetricKey], [PrivateKey], or [SigningKey].
+     * [Secret], [SymmetricKey], [UnsealingKey], or [SigningKey].
      */
     var type: Type?
     get() = optString(DerivationOptions::type.name, "").let{
@@ -72,9 +72,9 @@ open class DerivationOptions(
      * a value with no algorithm (Secret), then the value is null.
      */
     val defaultAlgorithm: Algorithm? get() = when(this.type) {
-        Type.Public -> Algorithm.X25519
-        Type.Symmetric -> Algorithm.XSalsa20Poly1305
-        Type.Signing -> Algorithm.Ed25519
+        Type.UnsealingKey -> Algorithm.X25519
+        Type.SymmetricKey -> Algorithm.XSalsa20Poly1305
+        Type.SigningKey -> Algorithm.Ed25519
         else -> null
     }
 
@@ -166,9 +166,9 @@ open class DerivationOptions(
      * Any change will yield a different key.
      * Rather, the original JSON string should be preserved.
      * This library is designed to preserve the derivationOptionsJson string for you.
-     * All derived keys, including the public [PublicKey] and [SignatureVerificationKey], contain
+     * All derived keys, including the public [SealingKey] and [SignatureVerificationKey], contain
      * the derivationOptionsJson used to derive them so that the corresponding
-     * [PrivateKey] and [SigningKey] can be re-derived if needed.
+     * [UnsealingKey] and [SigningKey] can be re-derived if needed.
      * All values sealed by a [SymmetricKey] or [PublicKe] are returned in a
      * [PackagedSealedMessage] class which contains the derivationOptionsJson needed
      * to re-derive the keys to unseal the message (but not the seed, as that would
@@ -186,16 +186,16 @@ open class DerivationOptions(
         }}
     }
 
-    class Public(derivationOptionsJson: String? = null) :
-        DerivationOptions(derivationOptionsJson,  Type.Public)
+    class UnsealingKey(derivationOptionsJson: String? = null) :
+        DerivationOptions(derivationOptionsJson,  Type.UnsealingKey)
 
     class Secret(derivationOptionsJson: String? = null) :
         DerivationOptions(derivationOptionsJson,  Type.Secret)
 
-    class Signing(derivationOptionsJson: String? = null) :
-        DerivationOptions(derivationOptionsJson,  Type.Signing)
+    class SigningKey(derivationOptionsJson: String? = null) :
+        DerivationOptions(derivationOptionsJson,  Type.SigningKey)
 
-    class Symmetric(derivationOptionsJson: String? = null) :
-        DerivationOptions(derivationOptionsJson,  Type.Symmetric)
+    class SymmetricKey(derivationOptionsJson: String? = null) :
+        DerivationOptions(derivationOptionsJson,  Type.SymmetricKey)
 
 }
