@@ -45,7 +45,7 @@ class SealingKeyTests {
 
     @Test
     fun testPrivateKeys() {
-        val derivationOptionsJson = """{"keyType": "Public"}"""
+        val derivationOptionsJson = """{"type": "UnsealingKey"}"""
         val sk = UnsealingKey.deriveFromSeed(seed, derivationOptionsJson)
         val pk = sk.getPublicKey()
         val testMessage = "some message to test"
@@ -116,7 +116,7 @@ class SealingKeyTests {
 
     @Test
     fun testSigningAndVerificationPairs() {
-        val derivationOptionsJson = """{"keyType": "Signing"}"""
+        val derivationOptionsJson = """{"type": "SigningKey"}"""
         val sk = SigningKey.deriveFromSeed(seed, derivationOptionsJson)
         val vk = sk.getSignatureVerificationKey()
         val testMessage = "some message to test"
@@ -141,7 +141,7 @@ class SealingKeyTests {
 
     @Test
     fun testSymmetricKey() {
-        val derivationOptionsJson = """{"keyType": "Symmetric"}"""
+        val derivationOptionsJson = """{"type": "SymmetricKey"}"""
         val sk = SymmetricKey.deriveFromSeed(seed, derivationOptionsJson)
         val testMessage = "some message to test"
         val packagedSealedMessage = sk.seal(testMessage)
@@ -158,7 +158,7 @@ class SealingKeyTests {
 
     @Test
     fun testSeed() {
-        val derivationOptionsJson = """{"keyType": "Secret", "lengthInBytes": 48}"""
+        val derivationOptionsJson = """{"type": "Secret", "lengthInBytes": 48}"""
         val s = Secret.deriveFromSeed(seed, derivationOptionsJson)
         assertEquals(s.secretBytes.size, 48)
 

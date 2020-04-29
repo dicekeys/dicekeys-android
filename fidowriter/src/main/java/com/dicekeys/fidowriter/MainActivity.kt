@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private val INTENT_ACTION_USB_PERMISSION_EVENT = "org.dicekeys.intents.USB_PERMISSION_EVENT"
 
     private val seedDerivationOptionsJson : String = """{
-            |"keyType":"Secret",
+            |"type":"Secret",
             |"lengthInBytes":96,
             |"hashFunction": "Argon2id",
             |"restrictions": {

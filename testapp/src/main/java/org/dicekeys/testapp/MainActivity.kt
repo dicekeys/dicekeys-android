@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             resultTextView.text = "${resultTextView.text}\nUnsealed '${String(pkPlaintext, Charsets.UTF_8)}'"
             resultTextView.text = "${resultTextView.text}\nTests complete"
         } catch (e: Exception) {
-            resultTextView.text = "${resultTextView.text}\nExceptionL $e"
+            resultTextView.text = "${resultTextView.text}\nException $e"
         }}}
     }
 

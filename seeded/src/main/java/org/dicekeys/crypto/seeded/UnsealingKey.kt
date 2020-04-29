@@ -96,10 +96,10 @@ class UnsealingKey private constructor(internal val nativeObjectPtr: Long) {
      */
     external fun toSerializedBinaryForm(): ByteArray
 
-    private external fun getPublicKeyPtrJNI(): Long
+    private external fun getSealingKeyPtrJNI(): Long
     private external fun deleteNativeObjectPtrJNI()
-    private external fun privateKeyBytesGetterJNI(): ByteArray
-    private external fun publicKeyBytesGetterJNI(): ByteArray
+    private external fun unsealingKeyBytesGetterJNI(): ByteArray
+    private external fun sealingKeyBytesGetterJNI(): ByteArray
     private external fun derivationOptionsJsonGetterJNI(): String
     external fun toJson(): String
 
@@ -109,7 +109,7 @@ class UnsealingKey private constructor(internal val nativeObjectPtr: Long) {
      */
     constructor(
         other: UnsealingKey
-    ) : this(other.privateKeyBytes, other.publicKeyBytes, other.derivationOptionsJson)
+    ) : this(other.unsealingKeyBytes, other.sealingKeyBytes, other.derivationOptionsJson)
 
     internal constructor(
         privateKeyBytes: ByteArray,
@@ -126,26 +126,26 @@ class UnsealingKey private constructor(internal val nativeObjectPtr: Long) {
      * be unsealed with the [UnsealingKey].
      */
     fun getPublicKey(): SealingKey {
-        return SealingKey(getPublicKeyPtrJNI())
+        return SealingKey(getSealingKeyPtrJNI())
     }
 
     /**
-     * The internal binary representation of this private key.
+     * The internal binary representation of this private unsealing key.
      *
      * (You should not need to access this directly unless you are
      * need to extend the functionality of this library by operating
      * on keys directly.)
      */
-    val privateKeyBytes get() = privateKeyBytesGetterJNI()
+    val unsealingKeyBytes get() = unsealingKeyBytesGetterJNI()
     /**
-     * The internal binary representation of this private key's
-     * corresponding public key.
+     * The internal binary representation of this unsealing key's
+     * corresponding public SealingKey.
      *
      * (You should not need to access this directly unless you are
      * need to extend the functionality of this library by operating
      * on keys directly.)
      */
-    val publicKeyBytes get() = publicKeyBytesGetterJNI()
+    val sealingKeyBytes get() = sealingKeyBytesGetterJNI()
 
     /**
      * The options that guided the derivation of this key from the seed.
@@ -155,8 +155,8 @@ class UnsealingKey private constructor(internal val nativeObjectPtr: Long) {
     override fun equals(other: Any?): Boolean =
             (other is UnsealingKey) &&
                     derivationOptionsJson == other.derivationOptionsJson &&
-                    privateKeyBytes.contentEquals(other.privateKeyBytes) &&
-                    publicKeyBytes.contentEquals(other.publicKeyBytes)
+                    unsealingKeyBytes.contentEquals(other.unsealingKeyBytes) &&
+                    sealingKeyBytes.contentEquals(other.sealingKeyBytes)
 
     /**
      * Unseal a ciphertext that was sealed by this key's corresponding [SealingKey].
@@ -175,25 +175,11 @@ class UnsealingKey private constructor(internal val nativeObjectPtr: Long) {
      * Unseal a [PackagedSealedMessage] that was sealed with the [SealingKey]
      * corresponding to this [UnsealingKey].
      */
-    public fun unseal(
+    fun unseal(
         packagedSealedMessage: PackagedSealedMessage
     ): ByteArray = unseal(
         packagedSealedMessage.ciphertext,
         packagedSealedMessage.postDecryptionInstructions
     )
-
-
-//    fun getJsonQrCode(
-//        maxEdgeLengthInDevicePixels: Int = qrCodeNativeSizeInQrCodeSquarePixels * 2
-//    ): Bitmap = QrCodeBitmap(
-//        "https://dicekeys.org/pk/",
-//        toJson(),
-//        maxEdgeLengthInDevicePixels
-//    )
-//
-//    fun getJsonQrCode(
-//            maxWidth: Int,
-//            maxHeight: Int
-//    ): Bitmap = getJsonQrCode(kotlin.math.min(maxWidth, maxHeight))
 
 }
