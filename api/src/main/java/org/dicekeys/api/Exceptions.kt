@@ -24,8 +24,9 @@ class ClientUriNotAuthorizedException(
   "Client is not authorized " +
     if (authorizedPrefixes == null)
       "as no Uri prefixes have been specified in the key derivation options"
-    else ("as its Uri does not start with one of the following prefixes: ${
-    authorizedPrefixes.joinToString(",", "'", "'" )}")
+    else ("as no prefix in {${
+    authorizedPrefixes.joinToString(",", "'", "'" )
+    }) matches $clientsUri")
 )
 
 class ClientMayNotRetrieveKeyException(keyName: String) :
