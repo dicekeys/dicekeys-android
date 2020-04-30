@@ -65,9 +65,11 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     // If the user doesn't have a DiceKey loaded into memory yet, this will trigger
     // a load request, return null, and cause this function to return null.
     // When a key is loaded, this function will be called again.
-    val permissionCheckedSeedAccessor = PermissionCheckedSeedAccessor.create(this) {
-      warningHandler(it)
-    } ?: return
+    val permissionCheckedSeedAccessor =
+      PermissionCheckedSeedAccessor.createForIntentApi(
+        this) {
+        warningHandler(it)
+      } ?: return
 
     // Our API commands don't get a copy of the raw DiceKey seed, but only an accessor
     // which must be passed parameters to check.

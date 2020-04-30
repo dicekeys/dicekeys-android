@@ -18,9 +18,8 @@ import org.dicekeys.trustedapp.state.KeySqrState
  */
 open class PermissionCheckedSeedAccessor(
   private val keySqr: KeySqr<Face>,
-  clientsApplicationId: String,
-  askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
-) :  ApiPermissionChecksForPackages(clientsApplicationId, askUserForApprovalOrReturnResultIfReady) {
+  private val permissionChecks: ApiPermissionChecks
+) {
 
   companion object {
     private var keySqrReadActivityStarted: Boolean = false
@@ -37,7 +36,7 @@ open class PermissionCheckedSeedAccessor(
      * wait for the result with onActivityResult, put the loaded DiceKey
      * into the KeySqrState, and try to create the seed accessor again.
      */
-    fun create(
+    fun createForIntentApi(
       activity: Activity,
       askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
     ): PermissionCheckedSeedAccessor? {
@@ -55,8 +54,10 @@ open class PermissionCheckedSeedAccessor(
       }
       return PermissionCheckedSeedAccessor(
         keySqr,
-        activity.callingActivity?.packageName ?: "",
-        askUserForApprovalOrReturnResultIfReady
+        ApiPermissionChecksForPackages(
+           activity.callingActivity?.packageName ?: "",
+          askUserForApprovalOrReturnResultIfReady
+        )
       )
     }
   }
@@ -64,7 +65,7 @@ open class PermissionCheckedSeedAccessor(
   private fun getSeedOrThrowIfClientNotAuthorized(
     derivationOptions: ApiDerivationOptions
   ): String {
-    throwIfClientNotAuthorized(derivationOptions)
+    permissionChecks.throwIfClientNotAuthorized(derivationOptions)
     return keySqr.toKeySeed(derivationOptions.excludeOrientationOfFaces)
   }
 
@@ -97,7 +98,7 @@ open class PermissionCheckedSeedAccessor(
     packagedSealedMessage: PackagedSealedMessage,
     type: DerivationOptions.Type
   ): String {
-    throwIfPostDecryptionInstructionsViolated(packagedSealedMessage.postDecryptionInstructions)
+    permissionChecks.throwIfPostDecryptionInstructionsViolated(packagedSealedMessage.postDecryptionInstructions)
     return getSeedOrThrowIfClientNotAuthorized(
       ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson, type)
     )

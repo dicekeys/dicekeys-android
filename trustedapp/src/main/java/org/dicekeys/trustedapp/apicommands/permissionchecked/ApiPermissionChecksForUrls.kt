@@ -12,9 +12,6 @@ open class ApiPermissionChecksForUrls(
   private val clientsUrl: String,
   private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
 ): ApiPermissionChecks(askUserForApprovalOrReturnResultIfReady) {
-  /**
-   * Ensure any non-empty string ends in a "." by appending one if necessary
-   */
 
   override fun isClientAuthorizedInFaceOfRestrictions(
     restrictions: ApiDerivationOptions.Restrictions?
