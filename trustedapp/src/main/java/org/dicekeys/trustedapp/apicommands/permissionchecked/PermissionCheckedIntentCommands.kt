@@ -38,10 +38,10 @@ class PermissionCheckedIntentCommands(
 
   override fun sendException(exception: Exception) {
     activity.setResult(Activity.RESULT_CANCELED, Intent().apply{
-      putExtra(DiceKeysApiClient.ParameterNames.Common.requestId,
-        stringParameter(DiceKeysApiClient.ParameterNames.Common.requestId)
+      putExtra(DiceKeysApiClient.Companion.ParameterNames.Common.requestId,
+        stringParameter(DiceKeysApiClient.Companion.ParameterNames.Common.requestId)
       )
-      putExtra(DiceKeysApiClient.ParameterNames.Common.exception, exception)
+      putExtra(DiceKeysApiClient.Companion.ParameterNames.Common.exception, exception)
     })
     activity.finish()
   }

@@ -1,6 +1,7 @@
 package org.dicekeys.read
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -23,7 +24,12 @@ import java.util.concurrent.Executors
 
 class ReadKeySqrActivity : AppCompatActivity() {
     companion object {
-        const val RC_READ_KEYSQR = 1
+        object Parameters {
+            const val requestId = "requestId"
+            object Response {
+                const val keySqrAsJson = "keySqrAsJson"
+            }
+        }
     }
 
     // This is an arbitrary number we are using to keep track of the permission
@@ -75,6 +81,9 @@ class ReadKeySqrActivity : AppCompatActivity() {
                 Toast.makeText(this,
                         "Permissions not granted by the user.",
                         Toast.LENGTH_SHORT).show()
+                setResult(Activity.RESULT_CANCELED, Intent().apply{
+                    putExtra(Parameters.requestId, intent.getStringExtra(Parameters.requestId))
+                })
                 finish()
             }
         }
@@ -151,7 +160,8 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
         analyzeKeySqr.onActionDone = fun(keySqrAsJson){
             var newIntent = Intent()
-            newIntent.putExtra("keySqrAsJson", keySqrAsJson)
+            newIntent.putExtra(Parameters.requestId, intent.getStringExtra(Parameters.requestId))
+            newIntent.putExtra(Parameters.Response.keySqrAsJson, keySqrAsJson)
             setResult(RESULT_OK, newIntent)
             cameraProviderFuture.get().unbindAll()
             finish()

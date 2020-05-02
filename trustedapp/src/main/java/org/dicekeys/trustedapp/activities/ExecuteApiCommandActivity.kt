@@ -3,12 +3,14 @@ package org.dicekeys.trustedapp.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
+import org.dicekeys.api.UnsealingInstructions
+import org.dicekeys.api.UnsealingInstructions.RequestForUsersConsent
 import org.dicekeys.keysqr.DiceKey
 import org.dicekeys.trustedapp.R
 import org.dicekeys.keysqr.FaceRead
-import org.dicekeys.keysqr.KeySqr
 import org.dicekeys.read.ReadKeySqrActivity
 import org.dicekeys.trustedapp.apicommands.permissionchecked.*
 import java.lang.Exception
@@ -22,10 +24,8 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState) // , persistentState)
     setContentView(R.layout.activity_execute_api_command)
     executeIntentsCommand()
-
   }
 
-  private val requestIdParameterName = "requestId"
   /**
    * Handle results of activities to
    *   * Load a DiceKey into memory if it isn't there when the command is executed
@@ -35,24 +35,8 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     super.onActivityResult(requestCode, resultCode, data)
     if (data == null)
       return
-    if (data.hasExtra(requestIdParameterName)) {
-      data.getStringExtra(requestIdParameterName)?.let { requestId ->
-        deferredWarnings.get(requestId)?.let { deferredWarning ->
-          // Handle the result
-          if (resultCode == Activity.RESULT_CANCELED) {
-            // FIXME with better exception
-            deferredWarning.completeExceptionally(Exception("Warning message cancelled"))
-          }
-          if (resultCode == Activity.RESULT_OK) {
-            val usersAnswer = data.getBooleanExtra("usersAnswer", false)
-            deferredWarning.complete(usersAnswer)
-          }
-          return@onActivityResult
-        }
-      }
-    }
     // If we've gotten this far, this must be the result of trying to read in the DiceKey
-    data.getStringExtra("keySqrAsJson")?.let { keySqrAsJson ->
+    data.getStringExtra(ReadKeySqrActivity.Companion.Parameters.Response.keySqrAsJson)?.let { keySqrAsJson ->
       FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
         // Complete the deferred load operation
         val diceKey = DiceKey(keySqr.faces)
@@ -68,22 +52,22 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     }
   }
 
-  private var deferredWarnings = mutableMapOf<String,CompletableDeferred<Boolean>>()
-  private fun warningHandler(message: String): Deferred<Boolean> {
-    val requestId = UUID.randomUUID().toString()
-    val deferredResult = CompletableDeferred<Boolean>().apply {
-      // Register this handler into the mapping of requestIds to deferred warnings and...
-      deferredWarnings[requestId]
-      // Make sure it is removed from the map when the warning completes
-      invokeOnCompletion { deferredWarnings.remove(requestId) }
-    }
-
-    startActivityForResult(Intent(this, ReadKeySqrActivity::class.java), 0)
-//    startActivityForResult(Intent(this, DisplayWarningActivity::class.java).apply{
-//      this.putExtra(requestIdParameterName, requestId)
-//      this.putExtra("message", message)
-//    }, 0)
-    return deferredResult
+  private fun requestUsersConsentAsync(
+    requestForUsersConsent: RequestForUsersConsent
+  ): Deferred<RequestForUsersConsent.UsersResponse> =
+    CompletableDeferred<RequestForUsersConsent.UsersResponse>().also {
+      deferredDialogResult -> runOnUiThread {
+        AlertDialog.Builder(this)
+          .setMessage(requestForUsersConsent.question)
+          .setPositiveButton(requestForUsersConsent.actionButtonLabels.allow) { _, _ ->
+            deferredDialogResult.complete(RequestForUsersConsent.UsersResponse.allow)
+          }
+          .setNegativeButton(requestForUsersConsent.actionButtonLabels.deny) { _, _ ->
+            deferredDialogResult.complete(RequestForUsersConsent.UsersResponse.deny)
+          }
+          .create()
+          .show()
+      }
   }
 
   private var loadDiceKeyCompletableDeferred : CompletableDeferred<DiceKey>? = null
@@ -94,7 +78,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
         loadDiceKeyCompletableDeferred = completableDeferred
         // Start the load activity
         startActivityForResult(Intent(this, ReadKeySqrActivity::class.java).apply{
-          this.putExtra(requestIdParameterName, requestId)
+          this.putExtra( ReadKeySqrActivity.Companion.Parameters.Response.keySqrAsJson, requestId)
         }, 0)
         completableDeferred.invokeOnCompletion {
           // When this completes, no new threads should start waiting on it
@@ -112,7 +96,7 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
         this,
         { this.loadDiceKey() }
       ) {
-        warningHandler(it)
+        requestUsersConsentAsync(it)
       } ?: return
 
     // Our API commands don't get a copy of the raw DiceKey seed, but only an accessor

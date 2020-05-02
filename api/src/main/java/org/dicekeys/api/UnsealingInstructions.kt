@@ -2,6 +2,7 @@ package org.dicekeys.api
 
 import org.json.JSONObject
 
+
 /**
  * Parse or construct
  * [unsealing_instructions instructions JSON format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html)
@@ -25,6 +26,28 @@ open class UnsealingInstructions(
             "{}"
         else unsealingInstructions
 ) {
+    class RequestForUsersConsent(val jsonObject: JSONObject = JSONObject()) {
+        enum class UsersResponse { allow, deny }
+
+        var question: String
+            get() = jsonObject.getString(RequestForUsersConsent::question.name)
+            set(value) { jsonObject.put(RequestForUsersConsent::question.name, value) }
+
+        class ActionButtonLabels(val jsonObject: JSONObject) {
+            var allow: String
+                get() = jsonObject.getString(ActionButtonLabels::allow.name)
+                set(value) { jsonObject.put(ActionButtonLabels::allow.name, value) }
+            var deny: String
+                get() = jsonObject.getString(ActionButtonLabels::deny.name)
+                set(value) { jsonObject.put(ActionButtonLabels::deny.name, value) }
+        }
+
+        val actionButtonLabels: ActionButtonLabels
+            get() = ActionButtonLabels(
+              jsonObject.optJSONObject(RequestForUsersConsent::actionButtonLabels.name) ?:
+              (JSONObject().also { jsonObject.put(RequestForUsersConsent::actionButtonLabels.name, it) })
+            )
+    }
 
 //    val clientApplicationIdMustHavePrefix: List<String>? = null,
 //    val alsoPostToUrl: String? = null,
@@ -43,17 +66,9 @@ open class UnsealingInstructions(
                 put(ApiDerivationOptions::restrictions.name, value.jsonObj)
         }
 
-    var userMustAcknowledgeThisMessage: String?
-        get() =
-            if (has(UnsealingInstructions::userMustAcknowledgeThisMessage.name))
-                getString(UnsealingInstructions::userMustAcknowledgeThisMessage.name)
-            else null
-        set(value) {
-            if (value == null)
-                remove(UnsealingInstructions::userMustAcknowledgeThisMessage.name)
-            else
-                put(UnsealingInstructions::userMustAcknowledgeThisMessage.name, value)
-        }
+    var requireUsersConsent: RequestForUsersConsent?
+        get() = optJSONObject(UnsealingInstructions::requireUsersConsent.name)?.let{ RequestForUsersConsent(it) }
+        set(value) { put(UnsealingInstructions::requireUsersConsent.name, value?.jsonObject) }
 
     fun toJson(indent: Int? = null): String =
             if (indent == null) toString() else toString(indent)

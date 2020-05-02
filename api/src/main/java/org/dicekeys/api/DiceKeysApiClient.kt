@@ -87,6 +87,116 @@ abstract class DiceKeysApiClient {
           }
         }
     }
+
+
+
+    /**
+     * The names used to marshall parameters into bundles for requests and response.
+     */
+    object ParameterNames {
+      internal object Reused {
+        const val unsealingInstructions = "unsealingInstructions"
+        const val plaintext = "plaintext"
+        const val packagedSealedMessageSerializedToBinary = "packagedSealedMessageSerializedToBinary"
+        const val signatureVerificationKeySerializedToBinary = "signatureVerificationKeySerializedToBinary"
+        const val signingKeySerializedToBinary = "signingKeySerializedToBinary"
+        const val unsealingKeySerializedToBinary = "privateKeySerializedToBinary"
+        const val sealingKeySerializedToBinary = "publicKeySerializedToBinary"
+        const val symmetricKeySerializedToBinary = "symmetricKeySerializedToBinary"
+
+      }
+
+      object Common {
+        const val requestId  = "requestId"
+        const val derivationOptionsJson = "derivationOptionsJson "
+        const val exception = "exception"
+      }
+
+      object Secret {
+        object Get {
+          const val secretSerializedToBinary = "secretSerializedToBinary"
+        }
+      }
+
+      object SymmetricKey {
+        object GetKey {
+          const val symmetricKeySerializedToBinary = Reused.symmetricKeySerializedToBinary
+        }
+
+        object Seal {
+          const val plaintext = Reused.plaintext
+          const val unsealingInstructions = Reused.unsealingInstructions
+          const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
+        }
+        object Unseal {
+          const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
+          const val plaintext = Reused.plaintext
+        }
+      }
+
+      object UnsealingKey {
+        object GetUnsealingKey {
+          const val unsealingKeySerializedToBinary = Reused.unsealingKeySerializedToBinary
+        }
+
+        object GetSealingKey {
+          const val sealingKeySerializedToBinary = Reused.sealingKeySerializedToBinary
+        }
+
+        object Unseal {
+          const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
+          const val plaintext = Reused.plaintext
+        }
+      }
+
+      object SigningKey {
+        object GetSigningKey {
+          const val signingKeySerializedToBinary = Reused.signingKeySerializedToBinary
+        }
+
+        object GetSignatureVerificationKey {
+          const val signatureVerificationKeySerializedToBinary = Reused.signatureVerificationKeySerializedToBinary
+        }
+
+        object GenerateSignature {
+          const val message = "message"
+          const val signature = "signature"
+          const val signatureVerificationKeySerializedToBinary = Reused.signatureVerificationKeySerializedToBinary
+        }
+      }
+
+    }
+
+    /**
+     * When an API call is made, an intent is sent with an actual equal to one of these
+     * operation names, each of which represents a different API function (operation).
+     */
+    object OperationNames {
+
+      const val getSecret = "getSecret"
+      const val getSymmetricKey = "getSymmetricKey"
+      const val sealWithSymmetricKey = "sealWithSymmetricKey"
+      const val unsealWithSymmetricKey = "unsealWithSymmetricKey"
+      const val getUnsealingKey = "getUnsealingKey"
+      const val getSealingKey = "getSealingKey"
+      const val unsealWithUnsealingKey = "unsealWithUnsealingKey"
+      const val getSigningKey = "getSigningKey"
+      const val getSignatureVerificationKey = "getSignatureVerificationKey"
+      const val generateSignature = "generateSignature"
+
+//    val All = setOf(
+//      getSecret,
+//      sealWithSymmetricKey,
+//      unsealWithSymmetricKey,
+//      getSymmetricKey,
+//      getSealingKey,
+//      getUnsealingKey,
+//      unsealWithUnsealingKey,
+//      generateSignature,
+//      getSigningKey,
+//      getSignatureVerificationKey
+//    )
+    }
   }
 
   /**
@@ -132,114 +242,6 @@ abstract class DiceKeysApiClient {
     requestCode: Int = 0
   ): Intent
 
-
-  /**
-   * The names used to marshall parameters into bundles for requests and response.
-   */
-  object ParameterNames {
-    internal object Reused {
-      const val unsealingInstructions = "unsealingInstructions"
-      const val plaintext = "plaintext"
-      const val packagedSealedMessageSerializedToBinary = "packagedSealedMessageSerializedToBinary"
-      const val signatureVerificationKeySerializedToBinary = "signatureVerificationKeySerializedToBinary"
-      const val signingKeySerializedToBinary = "signingKeySerializedToBinary"
-      const val unsealingKeySerializedToBinary = "privateKeySerializedToBinary"
-      const val sealingKeySerializedToBinary = "publicKeySerializedToBinary"
-      const val symmetricKeySerializedToBinary = "symmetricKeySerializedToBinary"
-
-    }
-
-    object Common {
-      const val requestId  = "requestId"
-      const val derivationOptionsJson = "derivationOptionsJson "
-      const val exception = "exception"
-    }
-
-    object Secret {
-      object Get {
-        const val secretSerializedToBinary = "secretSerializedToBinary"
-      }
-    }
-
-    object SymmetricKey {
-      object GetKey {
-        const val symmetricKeySerializedToBinary = Reused.symmetricKeySerializedToBinary
-      }
-
-      object Seal {
-        const val plaintext = Reused.plaintext
-        const val unsealingInstructions = Reused.unsealingInstructions
-        const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
-      }
-      object Unseal {
-        const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
-        const val plaintext = Reused.plaintext
-      }
-    }
-
-    object UnsealingKey {
-      object GetUnsealingKey {
-        const val unsealingKeySerializedToBinary = Reused.unsealingKeySerializedToBinary
-      }
-
-      object GetSealingKey {
-        const val sealingKeySerializedToBinary = Reused.sealingKeySerializedToBinary
-      }
-
-      object Unseal {
-        const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
-        const val plaintext = Reused.plaintext
-      }
-    }
-
-    object SigningKey {
-      object GetSigningKey {
-        const val signingKeySerializedToBinary = Reused.signingKeySerializedToBinary
-      }
-
-      object GetSignatureVerificationKey {
-        const val signatureVerificationKeySerializedToBinary = Reused.signatureVerificationKeySerializedToBinary
-      }
-
-      object GenerateSignature {
-        const val message = "message"
-        const val signature = "signature"
-        const val signatureVerificationKeySerializedToBinary = Reused.signatureVerificationKeySerializedToBinary
-      }
-    }
-
-  }
-
-  /**
-   * When an API call is made, an intent is sent with an actual equal to one of these
-   * operation names, each of which represents a different API function (operation).
-   */
-  object OperationNames {
-
-    const val getSecret = "getSecret"
-    const val getSymmetricKey = "getSymmetricKey"
-    const val sealWithSymmetricKey = "sealWithSymmetricKey"
-    const val unsealWithSymmetricKey = "unsealWithSymmetricKey"
-    const val getUnsealingKey = "getUnsealingKey"
-    const val getSealingKey = "getSealingKey"
-    const val unsealWithUnsealingKey = "unsealWithUnsealingKey"
-    const val getSigningKey = "getSigningKey"
-    const val getSignatureVerificationKey = "getSignatureVerificationKey"
-    const val generateSignature = "generateSignature"
-
-//    val All = setOf(
-//      getSecret,
-//      sealWithSymmetricKey,
-//      unsealWithSymmetricKey,
-//      getSymmetricKey,
-//      getSealingKey,
-//      getUnsealingKey,
-//      unsealWithUnsealingKey,
-//      generateSignature,
-//      getSigningKey,
-//      getSignatureVerificationKey
-//    )
-  }
 
   /**
    * The generic wrapper for all callback classes used to get asynchronous

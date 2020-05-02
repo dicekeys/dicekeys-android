@@ -33,54 +33,54 @@ abstract class PermissionCheckedMarshalledCommands(
 
   protected open fun sendSuccess() {
     respondWith(
-      DiceKeysApiClient.ParameterNames.Common.requestId,
-      requiredStringParameter(DiceKeysApiClient.ParameterNames.Common.requestId)
+      DiceKeysApiClient.Companion.ParameterNames.Common.requestId,
+      requiredStringParameter(DiceKeysApiClient.Companion.ParameterNames.Common.requestId)
     )
   }
   abstract fun sendException(exception: Exception)
 
 
   private fun getCommonDerivationOptionsJsonParameter() : String =
-    requiredStringParameter((DiceKeysApiClient.ParameterNames.Common.derivationOptionsJson))
+    requiredStringParameter((DiceKeysApiClient.Companion.ParameterNames.Common.derivationOptionsJson))
 
   private suspend fun getSecret(): Unit = respondWith(
-      DiceKeysApiClient.ParameterNames.Secret.Get.secretSerializedToBinary,
+      DiceKeysApiClient.Companion.ParameterNames.Secret.Get.secretSerializedToBinary,
       api.getSecret(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
     ).sendSuccess()
 
   private suspend fun sealWithSymmetricKey(): Unit = respondWith(
-      DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary,
+      DiceKeysApiClient.Companion.ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary,
       api.sealWithSymmetricKey(
         getCommonDerivationOptionsJsonParameter(),
-        requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.plaintext),
-        stringParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.unsealingInstructions)
+        requiredBinaryParameter(DiceKeysApiClient.Companion.ParameterNames.SymmetricKey.Seal.plaintext),
+        stringParameter(DiceKeysApiClient.Companion.ParameterNames.SymmetricKey.Seal.unsealingInstructions)
       ).toSerializedBinaryForm()
     ).sendSuccess()
 
   private suspend fun unsealWithSymmetricKey(): Unit = respondWith(
-      DiceKeysApiClient.ParameterNames.SymmetricKey.Unseal.plaintext,
+      DiceKeysApiClient.Companion.ParameterNames.SymmetricKey.Unseal.plaintext,
       api.unsealWithSymmetricKey(
         PackagedSealedMessage.fromSerializedBinaryForm(
-        requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary)
+        requiredBinaryParameter(DiceKeysApiClient.Companion.ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary)
       )
     )).sendSuccess()
 
   private suspend fun getSealingKey(): Unit = respondWith(
-      DiceKeysApiClient.ParameterNames.UnsealingKey.GetSealingKey.sealingKeySerializedToBinary,
+      DiceKeysApiClient.Companion.ParameterNames.UnsealingKey.GetSealingKey.sealingKeySerializedToBinary,
       api.getSealingKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
     ).sendSuccess()
 
   private suspend fun unsealWithPrivateKey(): Unit = respondWith(
-      DiceKeysApiClient.ParameterNames.UnsealingKey.Unseal.plaintext,
+      DiceKeysApiClient.Companion.ParameterNames.UnsealingKey.Unseal.plaintext,
       api.unsealWithUnsealingKey(
         PackagedSealedMessage.fromSerializedBinaryForm(
-          requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary)
+          requiredBinaryParameter(DiceKeysApiClient.Companion.ParameterNames.SymmetricKey.Unseal.packagedSealedMessageSerializedToBinary)
         )
       )
     ).sendSuccess()
 
   private suspend fun getSignatureVerificationKey(): Unit = respondWith(
-      DiceKeysApiClient.ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeySerializedToBinary,
+      DiceKeysApiClient.Companion.ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeySerializedToBinary,
       api.getSignatureVerificationKey(getCommonDerivationOptionsJsonParameter())
         .toSerializedBinaryForm()
     ).sendSuccess()
@@ -88,44 +88,44 @@ abstract class PermissionCheckedMarshalledCommands(
   private suspend fun generateSignature(): Unit =
     api.generateSignature(
       getCommonDerivationOptionsJsonParameter(),
-      requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SigningKey.GenerateSignature.message)
+      requiredBinaryParameter(DiceKeysApiClient.Companion.ParameterNames.SigningKey.GenerateSignature.message)
     ).let { resultPair ->
       respondWith(
-        DiceKeysApiClient.ParameterNames.SigningKey.GenerateSignature.signature, resultPair.first
+        DiceKeysApiClient.Companion.ParameterNames.SigningKey.GenerateSignature.signature, resultPair.first
       ).respondWith(
-        DiceKeysApiClient.ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeySerializedToBinary,
+        DiceKeysApiClient.Companion.ParameterNames.SigningKey.GenerateSignature.signatureVerificationKeySerializedToBinary,
         resultPair.second.toSerializedBinaryForm()
       ).sendSuccess()
     }
 
   private suspend fun getUnsealingKey(): Unit = respondWith(
-    DiceKeysApiClient.ParameterNames.UnsealingKey.GetUnsealingKey.unsealingKeySerializedToBinary,
+    DiceKeysApiClient.Companion.ParameterNames.UnsealingKey.GetUnsealingKey.unsealingKeySerializedToBinary,
     api.getUnsealingKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
   private suspend fun getSigningKey(): Unit = respondWith(
-    DiceKeysApiClient.ParameterNames.SigningKey.GetSigningKey.signingKeySerializedToBinary,
+    DiceKeysApiClient.Companion.ParameterNames.SigningKey.GetSigningKey.signingKeySerializedToBinary,
     api.getSigningKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
   private suspend fun getSymmetricKey(): Unit = respondWith(
-    DiceKeysApiClient.ParameterNames.SymmetricKey.GetKey.symmetricKeySerializedToBinary,
+    DiceKeysApiClient.Companion.ParameterNames.SymmetricKey.GetKey.symmetricKeySerializedToBinary,
     api.getSymmetricKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
   protected suspend fun executeCommand(command: String) {
     try {
       when (command) {
-        DiceKeysApiClient.OperationNames.getSecret -> getSecret()
-        DiceKeysApiClient.OperationNames.sealWithSymmetricKey -> sealWithSymmetricKey()
-        DiceKeysApiClient.OperationNames.unsealWithSymmetricKey -> unsealWithSymmetricKey()
-        DiceKeysApiClient.OperationNames.getSealingKey -> getSealingKey()
-        DiceKeysApiClient.OperationNames.unsealWithUnsealingKey -> unsealWithPrivateKey()
-        DiceKeysApiClient.OperationNames.getSignatureVerificationKey -> getSignatureVerificationKey()
-        DiceKeysApiClient.OperationNames.generateSignature -> generateSignature()
-        DiceKeysApiClient.OperationNames.getUnsealingKey -> getUnsealingKey()
-        DiceKeysApiClient.OperationNames.getSigningKey -> getSigningKey()
-        DiceKeysApiClient.OperationNames.getSymmetricKey -> getSymmetricKey()
+        DiceKeysApiClient.Companion.OperationNames.getSecret -> getSecret()
+        DiceKeysApiClient.Companion.OperationNames.sealWithSymmetricKey -> sealWithSymmetricKey()
+        DiceKeysApiClient.Companion.OperationNames.unsealWithSymmetricKey -> unsealWithSymmetricKey()
+        DiceKeysApiClient.Companion.OperationNames.getSealingKey -> getSealingKey()
+        DiceKeysApiClient.Companion.OperationNames.unsealWithUnsealingKey -> unsealWithPrivateKey()
+        DiceKeysApiClient.Companion.OperationNames.getSignatureVerificationKey -> getSignatureVerificationKey()
+        DiceKeysApiClient.Companion.OperationNames.generateSignature -> generateSignature()
+        DiceKeysApiClient.Companion.OperationNames.getUnsealingKey -> getUnsealingKey()
+        DiceKeysApiClient.Companion.OperationNames.getSigningKey -> getSigningKey()
+        DiceKeysApiClient.Companion.OperationNames.getSymmetricKey -> getSymmetricKey()
         else -> {
           throw IllegalArgumentException("Invalid command for DiceKeys API")
         }

@@ -3,6 +3,7 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientPackageNotAuthorizedException
+import org.dicekeys.api.UnsealingInstructions
 
 
 /**
@@ -10,8 +11,9 @@ import org.dicekeys.api.ClientPackageNotAuthorizedException
  */
 open class ApiPermissionChecksForPackages(
   private val clientsApplicationId: String,
-  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Deferred<Boolean>
-): ApiPermissionChecks(askUserForApprovalOrReturnResultIfReady) {
+  requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
+  ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
+): ApiPermissionChecks(requestUsersConsent) {
   /**
    * Ensure any non-empty string ends in a "." by appending one if necessary
    */

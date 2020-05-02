@@ -51,7 +51,15 @@ class MainActivity : AppCompatActivity() {
             resultTextView.text =
                 "${resultTextView.text}\nVerification key match=${keysMatch}, verification result=${verified}"
             val publicKey = diceKeysApiClient.getSealingKey(derivationOptionsJson)
-            val packagedSealedPkMessage = publicKey.seal(testMessageByteArray)
+            val packagedSealedPkMessage = publicKey.seal(testMessageByteArray, """{
+               |  "requireUsersConsent": {
+               |     "question": "Do you want use \"8fsd8pweDmqed\" as your SpoonerMail account password and remove your current password?",
+               |     "actionButtonLabels": {
+               |         "allow": "Make my password \"8fsd8pweDmqed\"",
+               |         "deny": "No" 
+               |     }
+               |  }   
+               |}""".trimMargin())
             resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedPkMessage.ciphertext, Base64.DEFAULT)}'"
             val pkPlaintext = diceKeysApiClient.unsealWithUnsealingKey(packagedSealedPkMessage)
             resultTextView.text = "${resultTextView.text}\nUnsealed '${String(pkPlaintext, Charsets.UTF_8)}'"

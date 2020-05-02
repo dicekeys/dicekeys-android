@@ -1,17 +1,13 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
 import android.app.Activity
-import android.content.Intent
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
+import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.crypto.seeded.DerivationOptions
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import org.dicekeys.keysqr.DiceKey
-import org.dicekeys.keysqr.Face
-import org.dicekeys.keysqr.FaceRead
-import org.dicekeys.keysqr.KeySqr
-import org.dicekeys.read.ReadKeySqrActivity
 import org.dicekeys.trustedapp.state.KeySqrState
 
 /**
@@ -44,11 +40,12 @@ open class PermissionCheckedSeedAccessor(
     fun createForIntentApi(
       activity: Activity,
       loadDiceKey: () -> Deferred<DiceKey>,
-      askUserForApprovalOrReturnResultIfReady: (message: String) -> Deferred<Boolean>
+      requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
+        ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
     ): PermissionCheckedSeedAccessor? = PermissionCheckedSeedAccessor(
       ApiPermissionChecksForPackages(
         activity.callingActivity?.packageName ?: "",
-        askUserForApprovalOrReturnResultIfReady
+        requestUsersConsent
       ),
       loadDiceKey
     )

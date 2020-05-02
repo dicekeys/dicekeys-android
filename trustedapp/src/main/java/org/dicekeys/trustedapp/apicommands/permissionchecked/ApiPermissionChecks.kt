@@ -8,15 +8,17 @@ import org.dicekeys.crypto.seeded.ClientNotAuthorizedException
 /**
  * Abstract away all permissions checks for the DiceKeys API
  *
- * @param askUserForApprovalOrReturnResultIfReady You must pass this function, which is
+ * @param requestUsersConsent You must pass this function, which is
  * called if a message must be shown to the user which will allow them to choose whether
  * to return unsealed data or not.  Your function should return true if the user has
  * already authorized the action, false if they rejected the action, or throw an exception
  * if waiting for the action to complete.
  */
 abstract class ApiPermissionChecks(
-  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Deferred<Boolean>
+  private val requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
+    ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
 ) {
+
   /**
    * Those inheriting this class must implement this test of whether
    * a client is authorized.
@@ -50,12 +52,11 @@ abstract class ApiPermissionChecks(
    */
   suspend fun throwIfUnsealingInstructionsViolated(
     unsealingInstructions: UnsealingInstructions
-  ) : Unit {
+  ) {
     throwIfClientNotAuthorized(unsealingInstructions.restrictions)
-    unsealingInstructions.userMustAcknowledgeThisMessage?.let{ message ->
-      if (askUserForApprovalOrReturnResultIfReady(message).await()) {
-        throw ClientNotAuthorizedException("Operation declined by user")
-      }
+    val requireUsersConsent = unsealingInstructions.requireUsersConsent ?: return;
+    if (requestUsersConsent(requireUsersConsent).await() != UnsealingInstructions.RequestForUsersConsent.UsersResponse.allow) {
+      throw ClientNotAuthorizedException("Operation declined by user")
     }
   }
 
@@ -67,10 +68,10 @@ abstract class ApiPermissionChecks(
    * @throws ClientNotAuthorizedException
    */
   suspend fun throwIfUnsealingInstructionsViolated(
-    unsealingInstructions: String
+    unsealingInstructions: String?
   ) : Unit = throwIfUnsealingInstructionsViolated(
-    UnsealingInstructions(unsealingInstructions)
-  )
+      UnsealingInstructions(unsealingInstructions)
+    )
 
 
 }
