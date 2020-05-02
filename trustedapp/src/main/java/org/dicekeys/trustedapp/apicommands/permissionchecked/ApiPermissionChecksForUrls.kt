@@ -1,5 +1,6 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
+import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.ClientUriNotAuthorizedException
@@ -10,7 +11,7 @@ import org.dicekeys.api.ClientUriNotAuthorizedException
  */
 open class ApiPermissionChecksForUrls(
   private val clientsUrl: String,
-  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
+  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Deferred<Boolean>
 ): ApiPermissionChecks(askUserForApprovalOrReturnResultIfReady) {
 
   override fun isClientAuthorizedInFaceOfRestrictions(

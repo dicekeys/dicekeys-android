@@ -129,22 +129,22 @@ class SealingKey internal constructor(internal val nativeObjectPtr: Long) {
      * using the corresponding [UnsealingKey]. The [message] string will be converted
      * to UTF8 binary format before it is sealed.
      *
-     * If a [postDecryptionInstructions] string is passed,
-     * the exact same string must also be passed as [postDecryptionInstructions]
+     * If a [unsealingInstructions] string is passed,
+     * the exact same string must also be passed as [unsealingInstructions]
      * to [UnsealingKey.unseal] the message with the corresponding [UnsealingKey].
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.
      */
     external fun sealJNI(
             message: ByteArray,
-            postDecryptionInstructions: String = ""
+            unsealingInstructions: String = ""
     ): Long
 
     fun seal(
         message: ByteArray,
-        postDecryptionInstructions: String = ""
+        unsealingInstructions: String = ""
     ) : PackagedSealedMessage = PackagedSealedMessage(
-        sealJNI(message, postDecryptionInstructions)
+        sealJNI(message, unsealingInstructions)
     )
 
     /**
@@ -152,16 +152,16 @@ class SealingKey internal constructor(internal val nativeObjectPtr: Long) {
      * using the corresponding [UnsealingKey]. The [message] string will be converted
      * to UTF8 binary format before it is sealed.
      *
-     * If a [postDecryptionInstructions] string is passed,
-     * the exact same string must also be passed as [postDecryptionInstructions]
+     * If a [unsealingInstructions] string is passed,
+     * the exact same string must also be passed as [unsealingInstructions]
      * to [UnsealingKey.unseal] the message with the corresponding [UnsealingKey].
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.
      */
     fun seal(
             message: String,
-            postDecryptionInstructions: String = ""
-    ): PackagedSealedMessage = seal( message.toByteArray(), postDecryptionInstructions )
+            unsealingInstructions: String = ""
+    ): PackagedSealedMessage = seal( message.toByteArray(), unsealingInstructions )
 
     override fun equals(other: Any?): Boolean =
             (other is SealingKey) &&

@@ -91,13 +91,13 @@ Java_org_dicekeys_crypto_seeded_SealingKey_sealJNI(
   JNIEnv *env,
   jobject obj,
   jbyteArray message,
-  jstring post_decryption_instructions_json
+  jstring unsealing_instructions
 ) {
   try {
     return (jlong) new PackagedSealedMessage(
       getNativeObjectPtr<SealingKey>(env, obj)->seal(
         jbyteArrayToSodiumBuffer(env, message),
-        jstringToString(env, post_decryption_instructions_json)
+        jstringToString(env, unsealing_instructions)
       )
     );
   } catch (...) {

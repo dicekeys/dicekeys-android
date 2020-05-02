@@ -2,9 +2,7 @@ package org.dicekeys.trustedapp.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.keysqr.Face
 import org.dicekeys.keysqr.FaceRead
@@ -12,7 +10,6 @@ import org.dicekeys.keysqr.KeySqr
 import org.dicekeys.trustedapp.state.KeySqrState
 import org.dicekeys.read.KeySqrDrawable
 import org.dicekeys.read.ReadKeySqrActivity
-import org.dicekeys.trustedapp.R
 import org.dicekeys.trustedapp.databinding.ActivityMainBinding
 
 
@@ -42,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     private var keySqrReadActivityStarted = false
     private fun getDiceKeyOrTriggerRead(): KeySqr<Face>? {
-        val keySqr = KeySqrState.keySqr
+        val keySqr = KeySqrState.diceKey
         if (keySqr == null && !keySqrReadActivityStarted) {
             // We need to first trigger an action to load the key square, then come back to this
             // intent.
@@ -56,13 +53,13 @@ class MainActivity : AppCompatActivity() {
     private fun render() {
         try {
             // Render button changes
-            val diceKeyPresent = KeySqrState.keySqr != null
+            val diceKeyPresent = KeySqrState.diceKey != null
             val visibleIfDiceKeyPresent = if (diceKeyPresent) android.view.View.VISIBLE else android.view.View.GONE
             val visibleIfDiceKeyAbsent = if (!diceKeyPresent) android.view.View.VISIBLE else android.view.View.GONE
             binding.btnReadDicekey.visibility = visibleIfDiceKeyAbsent
             binding.btnForget.visibility = visibleIfDiceKeyPresent
             binding.btnViewPublicKey.visibility = visibleIfDiceKeyPresent
-            val keySqr = KeySqrState.keySqr
+            val keySqr = KeySqrState.diceKey
             if (keySqr == null) {
                 binding.keysqrView.setImageDrawable(null)
                 binding.keysqrView.contentDescription = ""
@@ -91,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             data.getStringExtra("keySqrAsJson")?.let { keySqrAsJson ->
                 FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
-                    KeySqrState.setKeySquareRead(keySqr)
+                    KeySqrState.setDiceKeyRead(keySqr)
                 }
             }
         }

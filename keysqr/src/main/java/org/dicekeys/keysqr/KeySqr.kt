@@ -1,7 +1,6 @@
 package org.dicekeys.keysqr
 
-
-class KeySqr<F: Face>(val faces: List<F>) {
+open class KeySqr<F: Face>(val faces: List<F>) {
   companion object {
     const val NumberOfFacesInKey = 25
     val rotationIndexes = listOf<List<Byte>>(

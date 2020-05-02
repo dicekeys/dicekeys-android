@@ -34,7 +34,7 @@ To this end, we have placed features specific to DiceKeys in the [org.dicekeys.a
 That includes [ApiKeyDerivationOptions], which extends [KeyDerivationOptions] in this package
 with fields that would not apply to other seeded cryptography applications (e.g.,
 ignoring the orientation of the faces of dice within a DiceKey).
-It also includes the format for post-decryption instructions [PostDecryptionInstructions]
+It also includes the format for unsealing_instructions instructions [UnsealingInstructions]
 used by DiceKeys, allowing this library to remain format agnostic (as well as
 agnostic to whether sealed messages should include post-decyrption instructions).
 
@@ -51,8 +51,8 @@ which you can construct and parse using [ApiKeyDerivationOptions].
 If you are sealing messages with a [SymmetricKey] or [PublicKey], you can
 instruct the DiceKeys to enforce additional restrictions before unsealing a
 message with a derived key. You can create these
-[post-decryption instructions](https://dicekeys.github.io/seeded-crypto/post_decryption_instructions_format.html) by using the
-[PostDecryptionInstructions] class.
+[unsealing instructions](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html) by using the
+[UnsealingInstructions] class.
 These instructions are not sealed, but are stored in plaintext within a
 [PackagedSealedMessage], along with the ciphertext and the key-derivation
 options needed to re-derive the unsealing key from the user's DiceKey.

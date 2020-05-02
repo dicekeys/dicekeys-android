@@ -11,12 +11,12 @@ JNIEXPORT jbyteArray JNICALL
 Java_org_dicekeys_crypto_seeded_UnsealingKey_unseal(
   JNIEnv *env, jobject thiz,
   jbyteArray ciphertext,
-  jstring post_decryption_instructions_json) {
+  jstring unsealing_instructions) {
   try {
     return sodiumBufferToJbyteArray(env,
       getNativeObjectPtr<UnsealingKey>(env, thiz)->unseal(
           jbyteArrayToVector(env, ciphertext),
-          jstringToString(env, post_decryption_instructions_json)
+          jstringToString(env, unsealing_instructions)
       )
     );
   } catch (...) {

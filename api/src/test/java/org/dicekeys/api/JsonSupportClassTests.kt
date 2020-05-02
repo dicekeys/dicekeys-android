@@ -75,11 +75,11 @@ class DerivationOptionsTests {
 }
 
 
-class PostDecryptionInstructionsTests {
+class UnsealingInstructionsTests {
 
     @Test
-    fun PostDecryptionInstructions_toAndBack() {
-        val kdo = PostDecryptionInstructions().apply {
+    fun UnsealingInstructions_toAndBack() {
+        val kdo = UnsealingInstructions().apply {
             // Ensure the JSON format has the "keyType" field specified
             // The restrictions subclass can be constructed
             restrictions = ApiDerivationOptions.Restrictions().apply {

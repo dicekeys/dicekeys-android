@@ -94,7 +94,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
                 seedString, packagedSealedMessage.derivationOptionsJson
             ).unseal(
                 packagedSealedMessage.ciphertext,
-                packagedSealedMessage.postDecryptionInstructions
+                packagedSealedMessage.unsealingInstructions
             )
         }
     }
@@ -155,15 +155,15 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      * transmission, so that it can later be decrypted and authenticated by calling
      * [unseal] with the same [SymmetricKey] (or a copy of the key).
      *
-     * If a [postDecryptionInstructions] string is passed,
-     * the exact same string must also be passed as [postDecryptionInstructions]
+     * If a [unsealingInstructions] string is passed,
+     * the exact same string must also be passed as [unsealingInstructions]
      * to [UnsealingKey.unseal] the message with the corresponding [UnsealingKey].
      * This allows the sealer to specify a public-set of instructions that the the party
      * unsealing must be aware of before the message can be unsealed.
      */
     external fun sealToCiphertextOnly(
         plaintext: ByteArray,
-        postDecryptionInstructions: String = ""
+        unsealingInstructions: String = ""
     ): ByteArray
 
     /**
@@ -171,12 +171,12 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      */
     fun sealToCiphertextOnly(
         plaintext: String,
-        postDecryptionInstructions: String = ""
-    ): ByteArray = sealToCiphertextOnly(plaintext.toByteArray(), postDecryptionInstructions)
+        unsealingInstructions: String = ""
+    ): ByteArray = sealToCiphertextOnly(plaintext.toByteArray(), unsealingInstructions)
 
     private external fun sealJNI(
         plaintext: ByteArray,
-        postDecryptionInstructions: String
+        unsealingInstructions: String
     ): Long
 
     /**
@@ -184,23 +184,23 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      * transmission, so that it can later be decrypted and authenticated by calling
      * [unseal] with the same [SymmetricKey] (or a copy of the key).
      *
-     * If a [postDecryptionInstructions] string is passed,
-     * the exact same string must also be passed as [postDecryptionInstructions]
+     * If a [unsealingInstructions] string is passed,
+     * the exact same string must also be passed as [unsealingInstructions]
      * to [UnsealingKey.unseal] the message with the corresponding [UnsealingKey].
      * This allows the sealer to specify a public-set of instructions that the the party
      * unsealing must be aware of before the message can be unsealed.
      *
      * Returns a [PackagedSealedMessage] containing not only the ciphertext, but the
-     * plaintext [postDecryptionInstructions] the message was sealed with, which
+     * plaintext [unsealingInstructions] the message was sealed with, which
      * are required for unsealing, as well as the [derivationOptionsJson] used to
      * construct this [SymmetricKey] in case it needs to be re-derived from the
      * original secret seed.
      */
     fun seal(
         plaintext: ByteArray,
-        postDecryptionInstructions: String = ""
+        unsealingInstructions: String = ""
     ): PackagedSealedMessage = PackagedSealedMessage(
-        sealJNI( plaintext, postDecryptionInstructions)
+        sealJNI( plaintext, unsealingInstructions)
     )
 
     /**
@@ -208,23 +208,23 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      */
     fun seal(
         plaintext: String,
-        postDecryptionInstructions: String = ""
+        unsealingInstructions: String = ""
     ): PackagedSealedMessage = seal(
         plaintext.toByteArray(),
-        postDecryptionInstructions
+        unsealingInstructions
     )
 
     /**
      * Decrypt and authenticate a message which had been sealed by [sealToCiphertextOnly].
      *
-     * If a [postDecryptionInstructions] was passed to the [SealingKey.seal] operation,
-     * the exact same string must also be passed as [postDecryptionInstructions] here.
+     * If a [unsealingInstructions] was passed to the [SealingKey.seal] operation,
+     * the exact same string must also be passed as [unsealingInstructions] here.
      * This allows the sealer to specify a public-set of instructions that the party
      * unsealing must be aware of before the message can be unsealed.
      */
     public external fun unseal(
         ciphertext: ByteArray,
-        postDecryptionInstructions: String = ""
+        unsealingInstructions: String = ""
     ): ByteArray
 
 
@@ -235,7 +235,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
         packagedSealedMessage: PackagedSealedMessage
     ): ByteArray = unseal(
         packagedSealedMessage.ciphertext,
-        packagedSealedMessage.postDecryptionInstructions
+        packagedSealedMessage.unsealingInstructions
     )
 
 

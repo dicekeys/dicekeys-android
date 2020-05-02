@@ -3,11 +3,11 @@ package org.dicekeys.api
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import org.dicekeys.crypto.seeded.CryptographicVerificationFailureException
 import org.dicekeys.crypto.seeded.SealingKey
 import org.dicekeys.crypto.seeded.UnsealingKey
 import org.dicekeys.crypto.seeded.Secret
@@ -16,7 +16,6 @@ import org.dicekeys.crypto.seeded.SigningKey
 import org.dicekeys.crypto.seeded.SymmetricKey
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import java.security.InvalidParameterException
-import kotlin.collections.HashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -39,9 +38,7 @@ import kotlin.coroutines.suspendCoroutine
  * documented in ([Steiner and Hawes, 1949](https://en.wikipedia.org/wiki/M.T.A._(song))).
  *
  */
-abstract class DiceKeysApiClient(
-  private val callingContext: Context
-) {
+abstract class DiceKeysApiClient {
   companion object {
     /**
      * Instantiate an API client for a use within a [Activity].
@@ -56,7 +53,7 @@ abstract class DiceKeysApiClient(
      * your [DiceKeysApiClient]'s [handleOnActivityResult] method.
      */
     @JvmStatic
-    fun create(activity: Activity): DiceKeysApiClient = object: DiceKeysApiClient(activity) {
+    fun create(activity: Activity): DiceKeysApiClient = object: DiceKeysApiClient() {
       override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
         createIntentForCall(command, parameters).also { intent->
           try {
@@ -80,7 +77,7 @@ abstract class DiceKeysApiClient(
      * your [DiceKeysApiClient]'s [handleOnActivityResult] method.
      */
     @JvmStatic
-    fun create(fragment: Fragment): DiceKeysApiClient = object: DiceKeysApiClient(fragment.context ?: throw InvalidParameterException("Fragment must have context")) {
+    fun create(fragment: Fragment): DiceKeysApiClient = object: DiceKeysApiClient() {
       override fun call(command: String, parameters: Bundle, requestCode: Int): Intent =
         createIntentForCall(command, parameters).also { intent->
           try {
@@ -105,7 +102,7 @@ abstract class DiceKeysApiClient(
 
   /**
    * Creates an intent used to call the DiceKeys API by referencing the DiceKeys API server
-   * class, which responds to API requests ([ExecuteApiCommandActivity]).
+   * class, which responds to API requests ("org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity").
    * The intent's action is set to the command name and the rest of the parameters
    * are passed as a bundle, with a unique requestId added the parameter list.
    */
@@ -141,7 +138,7 @@ abstract class DiceKeysApiClient(
    */
   object ParameterNames {
     internal object Reused {
-      const val postDecryptionInstructions = "postDecryptionInstructions"
+      const val unsealingInstructions = "unsealingInstructions"
       const val plaintext = "plaintext"
       const val packagedSealedMessageSerializedToBinary = "packagedSealedMessageSerializedToBinary"
       const val signatureVerificationKeySerializedToBinary = "signatureVerificationKeySerializedToBinary"
@@ -171,7 +168,7 @@ abstract class DiceKeysApiClient(
 
       object Seal {
         const val plaintext = Reused.plaintext
-        const val postDecryptionInstructions = Reused.postDecryptionInstructions
+        const val unsealingInstructions = Reused.unsealingInstructions
         const val packagedSealedMessageSerializedToBinary = Reused.packagedSealedMessageSerializedToBinary
       }
       object Unseal {
@@ -230,18 +227,18 @@ abstract class DiceKeysApiClient(
     const val getSignatureVerificationKey = "getSignatureVerificationKey"
     const val generateSignature = "generateSignature"
 
-    val All = setOf(
-      getSecret,
-      sealWithSymmetricKey,
-      unsealWithSymmetricKey,
-      getSymmetricKey,
-      getSealingKey,
-      getUnsealingKey,
-      unsealWithUnsealingKey,
-      generateSignature,
-      getSigningKey,
-      getSignatureVerificationKey
-    )
+//    val All = setOf(
+//      getSecret,
+//      sealWithSymmetricKey,
+//      unsealWithSymmetricKey,
+//      getSymmetricKey,
+//      getSealingKey,
+//      getUnsealingKey,
+//      unsealWithUnsealingKey,
+//      generateSignature,
+//      getSigningKey,
+//      getSignatureVerificationKey
+//    )
   }
 
   /**
@@ -273,12 +270,12 @@ abstract class DiceKeysApiClient(
    * to a map that can retrieve them based on the requestId.
    */
   private fun <T>addRequestAndCallback(
-    map: HashMap<String, RequestIntentAndCallback<T>>,
+    map: MutableMap<String, RequestIntentAndCallback<T>>,
     intent: Intent,
     callback: Callback<T>
-  ): Unit {
+  ) {
     intent.getStringExtra(ParameterNames.Common.requestId)?.let { requestId ->
-      map[requestId] = RequestIntentAndCallback<T>(intent, callback)
+      map[requestId] = RequestIntentAndCallback(intent, callback)
     }
   }
 
@@ -292,7 +289,7 @@ abstract class DiceKeysApiClient(
       })
     }
 
-  private val getSecretCallbacks = HashMap<String, RequestIntentAndCallback<Secret>>()
+  private val getSecretCallbacks = mutableMapOf<String, RequestIntentAndCallback<Secret>>()
 
   /*****************************************************************************
    * The API itself
@@ -326,7 +323,7 @@ abstract class DiceKeysApiClient(
   ) }
 
 
-  private val getPrivateKeyCallbacks = HashMap<String, RequestIntentAndCallback<UnsealingKey>>()
+  private val getPrivateKeyCallbacks = mutableMapOf<String, RequestIntentAndCallback<UnsealingKey>>()
   /**
    * Get a [UnsealingKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
@@ -353,7 +350,7 @@ abstract class DiceKeysApiClient(
     derivationOptionsJson, it
   ) }
 
-  private val getSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<SymmetricKey>>()
+  private val getSymmetricKeyCallbacks = mutableMapOf<String, RequestIntentAndCallback<SymmetricKey>>()
   /**
    * Get a [SymmetricKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
@@ -380,7 +377,7 @@ abstract class DiceKeysApiClient(
     derivationOptionsJson, it
   ) }
 
-  private val getSigningKeyCallbacks = HashMap<String, RequestIntentAndCallback<SigningKey>>()
+  private val getSigningKeyCallbacks = mutableMapOf<String, RequestIntentAndCallback<SigningKey>>()
   /**
    * Get a [SigningKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
@@ -408,7 +405,7 @@ abstract class DiceKeysApiClient(
   ) }
 
 
-  private val getPublicKeyCallbacks = HashMap<String, RequestIntentAndCallback<SealingKey>>()
+  private val getPublicKeyCallbacks = mutableMapOf<String, RequestIntentAndCallback<SealingKey>>()
   /**
    * Get a [SealingKey] derived from the user's DiceKey and the [ApiDerivationOptions] specified
    * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html)
@@ -433,13 +430,13 @@ abstract class DiceKeysApiClient(
     derivationOptionsJson, it
   ) }
 
-  private val unsealAsymmetricCallbacks = HashMap<String, RequestIntentAndCallback<ByteArray>>()
+  private val unsealAsymmetricCallbacks = mutableMapOf<String, RequestIntentAndCallback<ByteArray>>()
   /**
    * Unseal (decrypt & authenticate) a message that was previously sealed with a
    * [SealingKey] to construct a [PackagedSealedMessage].
    * The public/private key pair will be re-derived from the user's seed (DiceKey) and the
    * key-derivation options packaged with the message.  It will also ensure that the
-   * post-decryption instructions have not changed since the message was packaged.
+   * unsealing_instructions instructions have not changed since the message was packaged.
    *
    * @throws [CryptographicVerificationFailureException]
    */
@@ -463,27 +460,27 @@ abstract class DiceKeysApiClient(
   ) }
 
 
-  private val sealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<PackagedSealedMessage>>()
+  private val sealWithSymmetricKeyCallbacks = mutableMapOf<String, RequestIntentAndCallback<PackagedSealedMessage>>()
   /**
    * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
    * symmetric key derived from the user's DiceKey, the
    * [derivationOptionsJson]
    * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
-   * and [PostDecryptionInstructions] specified via a JSON string as
-   * [postDecryptionInstructions] in the
-   * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/post_decryption_instructions_format.html).
+   * and [UnsealingInstructions] specified via a JSON string as
+   * [unsealingInstructions] in the
+   * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html).
    */
   fun sealWithSymmetricKey(
     derivationOptionsJson: String,
     plaintext: ByteArray,
-    postDecryptionInstructions: String = "",
+    unsealingInstructions: String = "",
     callback: Callback<PackagedSealedMessage>
   ): Intent =
     call(OperationNames.sealWithSymmetricKey,
       bundleOf(
         ParameterNames.Common.derivationOptionsJson to derivationOptionsJson,
         ParameterNames.SymmetricKey.Seal.plaintext to plaintext,
-        ParameterNames.SymmetricKey.Seal.postDecryptionInstructions to postDecryptionInstructions
+        ParameterNames.SymmetricKey.Seal.unsealingInstructions to unsealingInstructions
       )
     ).also { intent ->
       addRequestAndCallback(sealWithSymmetricKeyCallbacks, intent, callback)
@@ -495,19 +492,19 @@ abstract class DiceKeysApiClient(
   suspend fun sealWithSymmetricKey(
     derivationOptionsJson: String,
     plaintext: ByteArray,
-    postDecryptionInstructions: String = ""
+    unsealingInstructions: String = ""
   ): PackagedSealedMessage = awaitCallback{ sealWithSymmetricKey(
-    derivationOptionsJson, plaintext, postDecryptionInstructions, it
+    derivationOptionsJson, plaintext, unsealingInstructions, it
   ) }
 
 
-  private val unsealWithSymmetricKeyCallbacks = HashMap<String, RequestIntentAndCallback<ByteArray>>()
+  private val unsealWithSymmetricKeyCallbacks = mutableMapOf<String, RequestIntentAndCallback<ByteArray>>()
   /**
    * Unseal (decrypt & authenticate) a [packagedSealedMessage] that was previously sealed with a
    * symmetric key derived from the user's DiceKey, the
    * [ApiDerivationOptions] specified in JSON format via [PackagedSealedMessage.derivationOptionsJson],
-   * and any [PostDecryptionInstructions] optionally specified by [PackagedSealedMessage.postDecryptionInstructions]
-   * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/post_decryption_instructions_format.html).
+   * and any [UnsealingInstructions] optionally specified by [PackagedSealedMessage.unsealingInstructions]
+   * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html).
    *
    * If any of those strings change, the wrong key will be derive and the message will
    * not be successfully unsealed, yielding a [org.dicekeys.crypto.seeded.CryptographicVerificationFailureException] exception.
@@ -522,7 +519,7 @@ abstract class DiceKeysApiClient(
       )
     ).also { intent -> callback?.let{ addRequestAndCallback(unsealWithSymmetricKeyCallbacks, intent, it) } }
 
-  private val getSignatureVerificationKeyCallbacks = HashMap<String, RequestIntentAndCallback<SignatureVerificationKey>>()
+  private val getSignatureVerificationKeyCallbacks = mutableMapOf<String, RequestIntentAndCallback<SignatureVerificationKey>>()
   /**
    * unsealWithSymmetricKey (same as above) implemented as a Kotlin suspend function
    * in place of callbacks.
@@ -560,7 +557,7 @@ abstract class DiceKeysApiClient(
     val signature: ByteArray
     val signatureVerificationKey: SignatureVerificationKey
   }
-  private val generateSignatureCallbacks = HashMap<String, RequestIntentAndCallback<GenerateSignatureResult>>()
+  private val generateSignatureCallbacks = mutableMapOf<String, RequestIntentAndCallback<GenerateSignatureResult>>()
   /**
    * Sign a [message] using a public/private signing key pair derived
    * from the user's DiceKey and the [ApiDerivationOptions] specified in JSON format via
@@ -589,7 +586,7 @@ abstract class DiceKeysApiClient(
   ) }
 
   private fun <T>handleResult(
-    intentAndCallbackMap: HashMap<String, RequestIntentAndCallback<T>>,
+    intentAndCallbackMap: MutableMap<String, RequestIntentAndCallback<T>>,
     resultIntent: Intent,
     failureHandler: (callback: Callback<T>, originalIntent: Intent, e: Exception) -> Unit,
     successHandler: (callback: Callback<T>, originalIntent: Intent) -> Unit

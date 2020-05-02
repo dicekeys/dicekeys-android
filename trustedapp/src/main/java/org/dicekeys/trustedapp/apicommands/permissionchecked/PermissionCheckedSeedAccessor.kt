@@ -2,11 +2,14 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 
 import android.app.Activity
 import android.content.Intent
+import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.crypto.seeded.DerivationOptions
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
+import org.dicekeys.keysqr.DiceKey
 import org.dicekeys.keysqr.Face
+import org.dicekeys.keysqr.FaceRead
 import org.dicekeys.keysqr.KeySqr
 import org.dicekeys.read.ReadKeySqrActivity
 import org.dicekeys.trustedapp.state.KeySqrState
@@ -17,13 +20,15 @@ import org.dicekeys.trustedapp.state.KeySqrState
  * going through the permission checks.
  */
 open class PermissionCheckedSeedAccessor(
-  private val keySqr: KeySqr<Face>,
-  private val permissionChecks: ApiPermissionChecks
+  private val permissionChecks: ApiPermissionChecks,
+  private val loadDiceKey: () -> Deferred<DiceKey>
 ) {
 
-  companion object {
-    private var keySqrReadActivityStarted: Boolean = false
+  private suspend fun getDiceKey(): DiceKey =
+    KeySqrState.diceKey ?:
+      loadDiceKey().await().also { diceKey -> KeySqrState.setDiceKey(diceKey) }
 
+  companion object {
     /**
      * Try to construct a permission-checked accessor for DiceKey seeds.
      *
@@ -38,35 +43,23 @@ open class PermissionCheckedSeedAccessor(
      */
     fun createForIntentApi(
       activity: Activity,
-      askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
-    ): PermissionCheckedSeedAccessor? {
-
-      val keySqr = KeySqrState.keySqr
-      if (keySqr == null) {
-        // We need to first trigger an action to load the key square, then come back to this
-        // intent.
-        if (!keySqrReadActivityStarted) {
-          keySqrReadActivityStarted = true
-          val intent = Intent(activity, ReadKeySqrActivity::class.java)
-          activity.startActivityForResult(intent, 0)
-        }
-        return null
-      }
-      return PermissionCheckedSeedAccessor(
-        keySqr,
-        ApiPermissionChecksForPackages(
-           activity.callingActivity?.packageName ?: "",
-          askUserForApprovalOrReturnResultIfReady
-        )
-      )
-    }
+      loadDiceKey: () -> Deferred<DiceKey>,
+      askUserForApprovalOrReturnResultIfReady: (message: String) -> Deferred<Boolean>
+    ): PermissionCheckedSeedAccessor? = PermissionCheckedSeedAccessor(
+      ApiPermissionChecksForPackages(
+        activity.callingActivity?.packageName ?: "",
+        askUserForApprovalOrReturnResultIfReady
+      ),
+      loadDiceKey
+    )
   }
 
-  private fun getSeedOrThrowIfClientNotAuthorized(
+
+  private suspend fun getSeedOrThrowIfClientNotAuthorized(
     derivationOptions: ApiDerivationOptions
   ): String {
     permissionChecks.throwIfClientNotAuthorized(derivationOptions)
-    return keySqr.toKeySeed(derivationOptions.excludeOrientationOfFaces)
+    return getDiceKey().toKeySeed(derivationOptions.excludeOrientationOfFaces)
   }
 
   /**
@@ -76,7 +69,7 @@ open class PermissionCheckedSeedAccessor(
    * keyDerivationOptionsJson allow the client application with the
    * requester's package name to perform operations with this key.
    */
-  internal fun getSeedOrThrowIfClientNotAuthorized(
+  internal suspend fun getSeedOrThrowIfClientNotAuthorized(
     derivationOptionsJson: String?,
     type: DerivationOptions.Type
   ): String = getSeedOrThrowIfClientNotAuthorized(
@@ -94,11 +87,11 @@ open class PermissionCheckedSeedAccessor(
    * keyDerivationOptionsJson allow the client application with the
    * requester's package name to perform operations with this key.
    */
-  internal fun getSeedOrThrowIfClientNotAuthorizedToUnseal(
+  internal suspend fun getSeedOrThrowIfClientNotAuthorizedToUnseal(
     packagedSealedMessage: PackagedSealedMessage,
     type: DerivationOptions.Type
   ): String {
-    permissionChecks.throwIfPostDecryptionInstructionsViolated(packagedSealedMessage.postDecryptionInstructions)
+    permissionChecks.throwIfUnsealingInstructionsViolated(packagedSealedMessage.unsealingInstructions)
     return getSeedOrThrowIfClientNotAuthorized(
       ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson, type)
     )
@@ -116,7 +109,7 @@ open class PermissionCheckedSeedAccessor(
    * allows the DiceKeys app to return these keys to the requesting app
    * if the derivationOptionsJson has `"clientMayRetrieveKey": true`.
    */
-  internal fun getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
+  internal suspend fun getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
     derivationOptionsJson: String?,
     type: DerivationOptions.Type
   ) : String =

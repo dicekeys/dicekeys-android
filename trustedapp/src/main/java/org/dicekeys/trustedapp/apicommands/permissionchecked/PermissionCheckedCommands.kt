@@ -20,7 +20,7 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.getSecret] with the necessary permissions checks
    */
-  fun getSecret(derivationOptionsJson: String): Secret =
+  suspend fun getSecret(derivationOptionsJson: String): Secret =
     Secret.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
@@ -32,10 +32,10 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.sealWithSymmetricKey] with the necessary permissions checks
    */
-  fun sealWithSymmetricKey(
+  suspend fun sealWithSymmetricKey(
     derivationOptionsJson: String,
     plaintext: ByteArray,
-    postDecryptionInstructions: String?
+    unsealingInstructions: String?
   ): PackagedSealedMessage =
     SymmetricKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
@@ -43,12 +43,12 @@ class PermissionCheckedCommands(
         DerivationOptions.Type.SymmetricKey
       ),
       derivationOptionsJson
-    ).seal(plaintext, postDecryptionInstructions ?: "")
+    ).seal(plaintext, unsealingInstructions ?: "")
 
   /**
    * Implement [DiceKeysApiClient.unsealWithSymmetricKey] with the necessary permissions checks
    */
-  fun unsealWithSymmetricKey(
+  suspend fun unsealWithSymmetricKey(
     packagedSealedMessage: PackagedSealedMessage
   ) : ByteArray = SymmetricKey.unseal(
       packagedSealedMessage,
@@ -61,7 +61,7 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.getSealingKey] with the necessary permissions checks
    */
-  fun getSealingKey(
+  suspend fun getSealingKey(
     derivationOptionsJson: String
   ) : SealingKey =
     UnsealingKey.deriveFromSeed(
@@ -75,7 +75,7 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.getUnsealingKey] with the necessary permissions checks
    */
-  fun getUnsealingKey(
+  suspend fun getUnsealingKey(
     derivationOptionsJson: String
   ) : UnsealingKey = UnsealingKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
@@ -88,7 +88,7 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.getSigningKey] with the necessary permissions checks
    */
-  fun getSigningKey(
+  suspend fun getSigningKey(
     derivationOptionsJson: String
   ) : SigningKey = SigningKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
@@ -101,7 +101,7 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.getSymmetricKey] with the necessary permissions checks
    */
-  fun getSymmetricKey(
+  suspend fun getSymmetricKey(
     derivationOptionsJson: String
   ) : SymmetricKey = SymmetricKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
@@ -114,7 +114,7 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.getSignatureVerificationKey] with the necessary permissions checks
    */
-  fun getSignatureVerificationKey(
+  suspend fun getSignatureVerificationKey(
     derivationOptionsJson: String
   ) : SignatureVerificationKey =
     SigningKey.deriveFromSeed(
@@ -128,7 +128,7 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.unsealWithUnsealingKey] with the necessary permissions checks
    */
-  fun unsealWithUnsealingKey(
+  suspend fun unsealWithUnsealingKey(
     packagedSealedMessage: PackagedSealedMessage
   ) : ByteArray =
       UnsealingKey.deriveFromSeed(
@@ -142,7 +142,7 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysApiClient.generateSignature] with the necessary permissions checks
    */
-  fun generateSignature(
+  suspend fun generateSignature(
     derivationOptionsJson: String,
     message: ByteArray
   ): Pair<ByteArray, SignatureVerificationKey> = SigningKey.deriveFromSeed(

@@ -1,7 +1,8 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
+import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
-import org.dicekeys.api.PostDecryptionInstructions
+import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.crypto.seeded.ClientNotAuthorizedException
 
 /**
@@ -14,7 +15,7 @@ import org.dicekeys.crypto.seeded.ClientNotAuthorizedException
  * if waiting for the action to complete.
  */
 abstract class ApiPermissionChecks(
-  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
+  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Deferred<Boolean>
 ) {
   /**
    * Those inheriting this class must implement this test of whether
@@ -41,34 +42,34 @@ abstract class ApiPermissionChecks(
 
 
   /**
-   * Verify that PostDecryptionInstructions do not forbid the client from using
+   * Verify that UnsealingInstructions do not forbid the client from using
    * unsealing a message.  If the client is not authorized,
    * throw a [ClientNotAuthorizedException].
    *
    * @throws ClientNotAuthorizedException
    */
-  fun throwIfPostDecryptionInstructionsViolated(
-    postDecryptionInstructions: PostDecryptionInstructions
+  suspend fun throwIfUnsealingInstructionsViolated(
+    unsealingInstructions: UnsealingInstructions
   ) : Unit {
-    throwIfClientNotAuthorized(postDecryptionInstructions.restrictions)
-    postDecryptionInstructions.userMustAcknowledgeThisMessage?.let{ message ->
-      if (!askUserForApprovalOrReturnResultIfReady(message)) {
+    throwIfClientNotAuthorized(unsealingInstructions.restrictions)
+    unsealingInstructions.userMustAcknowledgeThisMessage?.let{ message ->
+      if (askUserForApprovalOrReturnResultIfReady(message).await()) {
         throw ClientNotAuthorizedException("Operation declined by user")
       }
     }
   }
 
   /**
-   * Verify that PostDecryptionInstructions do not forbid the client from using
+   * Verify that UnsealingInstructions do not forbid the client from using
    * unsealing a message.  If the client is not authorized,
    * throw a [ClientNotAuthorizedException].
    *
    * @throws ClientNotAuthorizedException
    */
-  fun throwIfPostDecryptionInstructionsViolated(
-    postDecryptionInstructions: String
-  ) : Unit = throwIfPostDecryptionInstructionsViolated(
-    PostDecryptionInstructions(postDecryptionInstructions)
+  suspend fun throwIfUnsealingInstructionsViolated(
+    unsealingInstructions: String
+  ) : Unit = throwIfUnsealingInstructionsViolated(
+    UnsealingInstructions(unsealingInstructions)
   )
 
 

@@ -12,11 +12,9 @@ import org.dicekeys.crypto.seeded.PackagedSealedMessage
  *  The caller is responsible for catching exceptions and marshalling them
  */
 abstract class PermissionCheckedMarshalledCommands(
-  private val permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
+  permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
 ) {
-  val api = PermissionCheckedCommands(permissionCheckedSeedAccessor)
-
-  open class AwaitingFurtherAction(message: String? = null): Exception(message)
+  protected val api = PermissionCheckedCommands(permissionCheckedSeedAccessor)
 
   protected abstract fun stringParameter(parameterName: String) : String?
 
@@ -26,7 +24,7 @@ abstract class PermissionCheckedMarshalledCommands(
 
   protected abstract fun binaryParameter(parameterName: String) : ByteArray?
 
-  protected fun requiredBinaryParameter(parameterName: String) : ByteArray =
+  private fun requiredBinaryParameter(parameterName: String) : ByteArray =
     binaryParameter(parameterName) ?:
     throw java.lang.IllegalArgumentException("API call must include binary parameter '$parameterName'")
 
@@ -45,21 +43,21 @@ abstract class PermissionCheckedMarshalledCommands(
   private fun getCommonDerivationOptionsJsonParameter() : String =
     requiredStringParameter((DiceKeysApiClient.ParameterNames.Common.derivationOptionsJson))
 
-  fun getSecret(): Unit = respondWith(
+  private suspend fun getSecret(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.Secret.Get.secretSerializedToBinary,
       api.getSecret(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
     ).sendSuccess()
 
-  fun sealWithSymmetricKey(): Unit = respondWith(
+  private suspend fun sealWithSymmetricKey(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.packagedSealedMessageSerializedToBinary,
       api.sealWithSymmetricKey(
         getCommonDerivationOptionsJsonParameter(),
         requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.plaintext),
-        stringParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.postDecryptionInstructions)
+        stringParameter(DiceKeysApiClient.ParameterNames.SymmetricKey.Seal.unsealingInstructions)
       ).toSerializedBinaryForm()
     ).sendSuccess()
 
-  fun unsealWithSymmetricKey(): Unit = respondWith(
+  private suspend fun unsealWithSymmetricKey(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.SymmetricKey.Unseal.plaintext,
       api.unsealWithSymmetricKey(
         PackagedSealedMessage.fromSerializedBinaryForm(
@@ -67,12 +65,12 @@ abstract class PermissionCheckedMarshalledCommands(
       )
     )).sendSuccess()
 
-  fun getSealingKey(): Unit = respondWith(
+  private suspend fun getSealingKey(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.UnsealingKey.GetSealingKey.sealingKeySerializedToBinary,
       api.getSealingKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
     ).sendSuccess()
 
-  fun unsealWithPrivateKey(): Unit = respondWith(
+  private suspend fun unsealWithPrivateKey(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.UnsealingKey.Unseal.plaintext,
       api.unsealWithUnsealingKey(
         PackagedSealedMessage.fromSerializedBinaryForm(
@@ -81,13 +79,13 @@ abstract class PermissionCheckedMarshalledCommands(
       )
     ).sendSuccess()
 
-  fun getSignatureVerificationKey(): Unit = respondWith(
+  private suspend fun getSignatureVerificationKey(): Unit = respondWith(
       DiceKeysApiClient.ParameterNames.SigningKey.GetSignatureVerificationKey.signatureVerificationKeySerializedToBinary,
       api.getSignatureVerificationKey(getCommonDerivationOptionsJsonParameter())
         .toSerializedBinaryForm()
     ).sendSuccess()
 
-  fun generateSignature(): Unit =
+  private suspend fun generateSignature(): Unit =
     api.generateSignature(
       getCommonDerivationOptionsJsonParameter(),
       requiredBinaryParameter(DiceKeysApiClient.ParameterNames.SigningKey.GenerateSignature.message)
@@ -100,22 +98,22 @@ abstract class PermissionCheckedMarshalledCommands(
       ).sendSuccess()
     }
 
-  fun getUnsealingKey(): Unit = respondWith(
+  private suspend fun getUnsealingKey(): Unit = respondWith(
     DiceKeysApiClient.ParameterNames.UnsealingKey.GetUnsealingKey.unsealingKeySerializedToBinary,
     api.getUnsealingKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
-  fun getSigningKey(): Unit = respondWith(
+  private suspend fun getSigningKey(): Unit = respondWith(
     DiceKeysApiClient.ParameterNames.SigningKey.GetSigningKey.signingKeySerializedToBinary,
     api.getSigningKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
-  fun getSymmetricKey(): Unit = respondWith(
+  private suspend fun getSymmetricKey(): Unit = respondWith(
     DiceKeysApiClient.ParameterNames.SymmetricKey.GetKey.symmetricKeySerializedToBinary,
     api.getSymmetricKey(getCommonDerivationOptionsJsonParameter()).toSerializedBinaryForm()
   ).sendSuccess()
 
-  fun executeCommand(command: String) {
+  protected suspend fun executeCommand(command: String) {
     try {
       when (command) {
         DiceKeysApiClient.OperationNames.getSecret -> getSecret()
@@ -132,20 +130,12 @@ abstract class PermissionCheckedMarshalledCommands(
           throw IllegalArgumentException("Invalid command for DiceKeys API")
         }
       }
-    }catch (e: AwaitingFurtherAction) {
-      return
-      // The above exception indicates that the operation can't be performed right now
-      // because we're awaiting the user's response to a request to permission to complete
-      // the operation.  When the user responds to the permission request, this function
-      // will be called again and succeed or fail based on the user's response.
-      // FUTURE - perhaps use suspend operations instead?
-
-    } catch (e: Exception) {
+    }catch (e: Exception) {
       sendException(e)
     }
   }
 
-  abstract fun executeCommand(): Unit
+  abstract suspend fun executeCommand()
 
 }
 

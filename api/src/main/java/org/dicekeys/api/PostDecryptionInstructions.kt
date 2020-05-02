@@ -4,26 +4,26 @@ import org.json.JSONObject
 
 /**
  * Parse or construct
- * [post-decryption instructions JSON format](https://dicekeys.github.io/seeded-crypto/post_decryption_instructions_format.html)
+ * [unsealing_instructions instructions JSON format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html)
  * strings. If constructing from a JSON string, the class will be populated with the fields
  * specified by that JSON object.  Or, pass an empty string to the constructor, set the
- * fields using `apply`, and then generate a postDecryptionInstructions string.
+ * fields using `apply`, and then generate a unsealingInstructions string.
  *
  * For example:
  * ```kotlin
- * val postDecryptionInstructions = PostDecryptionInstructions().apply{
+ * val unsealingInstructions = UnsealingInstructions().apply{
  *   userMustAcknowledgeThisMessage = "Only allow this message to be unsealed if you want to spoilers for season 6."
  * }.toJson()
  *
- * val message = PostDecryptionInstructions(postDecryptionInstructions).userMustAcknowledgeThisMessage
+ * val message = UnsealingInstructions(unsealingInstructions).userMustAcknowledgeThisMessage
  * ```
  */
-open class PostDecryptionInstructions(
-    postDecryptionInstructions: String? = null
+open class UnsealingInstructions(
+    unsealingInstructions: String? = null
 ): JSONObject(
-        if (postDecryptionInstructions == null || postDecryptionInstructions.isEmpty())
+        if (unsealingInstructions == null || unsealingInstructions.isEmpty())
             "{}"
-        else postDecryptionInstructions
+        else unsealingInstructions
 ) {
 
 //    val clientApplicationIdMustHavePrefix: List<String>? = null,
@@ -45,14 +45,14 @@ open class PostDecryptionInstructions(
 
     var userMustAcknowledgeThisMessage: String?
         get() =
-            if (has(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name))
-                getString(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name)
+            if (has(UnsealingInstructions::userMustAcknowledgeThisMessage.name))
+                getString(UnsealingInstructions::userMustAcknowledgeThisMessage.name)
             else null
         set(value) {
             if (value == null)
-                remove(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name)
+                remove(UnsealingInstructions::userMustAcknowledgeThisMessage.name)
             else
-                put(PostDecryptionInstructions::userMustAcknowledgeThisMessage.name, value)
+                put(UnsealingInstructions::userMustAcknowledgeThisMessage.name, value)
         }
 
     fun toJson(indent: Int? = null): String =

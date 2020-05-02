@@ -8,13 +8,13 @@
 extern "C" {
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_PackagedSealedMessage_postDecryptionInstructionsGetterJNI(
+Java_org_dicekeys_crypto_seeded_PackagedSealedMessage_unsealingInstructionsGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<PackagedSealedMessage>(env, thiz)->postDecryptionInstructions
+      getNativeObjectPtr<PackagedSealedMessage>(env, thiz)->unsealingInstructions
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -134,13 +134,13 @@ JNIEXPORT jlong JNICALL
   jclass clazz,
   jbyteArray ciphertext,
   jstring key_derivation_options_json,
-  jstring post_decryption_instructions
+  jstring unsealing_instructions
 ) {
   try {
     return (jlong) new PackagedSealedMessage(
       jbyteArrayToVector(env, ciphertext),
       jstringToString(env, key_derivation_options_json),
-      jstringToString(env, post_decryption_instructions)
+      jstringToString(env, unsealing_instructions)
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

@@ -34,7 +34,7 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
     }
 
         private fun render() {
-        KeySqrState.keySqr?.let{ Thread(Runnable {
+        KeySqrState.diceKey?.let{ Thread(Runnable {
             try {
                 val publicKey = UnsealingKey.deriveFromSeed(
                         it.toKeySeed(false),

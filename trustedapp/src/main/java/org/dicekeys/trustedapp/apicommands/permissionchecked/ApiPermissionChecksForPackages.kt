@@ -1,5 +1,6 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
+import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 
@@ -9,7 +10,7 @@ import org.dicekeys.api.ClientPackageNotAuthorizedException
  */
 open class ApiPermissionChecksForPackages(
   private val clientsApplicationId: String,
-  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean
+  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Deferred<Boolean>
 ): ApiPermissionChecks(askUserForApprovalOrReturnResultIfReady) {
   /**
    * Ensure any non-empty string ends in a "." by appending one if necessary
@@ -47,20 +48,20 @@ open class ApiPermissionChecksForPackages(
      * Throw if it is forbidden
      * Return false if waiting on the user to make this choice
      */
-//  internal fun isUnsealingAllowedByPostDecryptionInstructions(
-//    postDecryptionInstructions: PostDecryptionInstructions
-//  ) : Boolean? = postDecryptionInstructions.userMustAcknowledgeThisMessage.let { message ->
-//    throwIfPostDecryptionInstructionsViolated(postDecryptionInstructions)
+//  internal fun isUnsealingAllowedByUnsealingInstructions(
+//    unsealingInstructions: UnsealingInstructions
+//  ) : Boolean? = unsealingInstructions.userMustAcknowledgeThisMessage.let { message ->
+//    throwIfUnsealingInstructionsViolated(unsealingInstructions)
 //    if (message == null) return true
 //    return askUserForApprovalOrReturnResultIfReady(message)
 //  }
 //
-//  internal fun isUnsealingAllowedByPostDecryptionInstructions(
-//    postDecryptionInstructions: String
-//  ) = isUnsealingAllowedByPostDecryptionInstructions(PostDecryptionInstructions(postDecryptionInstructions))
+//  internal fun isUnsealingAllowedByUnsealingInstructions(
+//    unsealingInstructions: String
+//  ) = isUnsealingAllowedByUnsealingInstructions(UnsealingInstructions(unsealingInstructions))
 //
-//  internal fun isUnsealingAllowedByPostDecryptionInstructions(
+//  internal fun isUnsealingAllowedByUnsealingInstructions(
 //    packagedSealedMessage: PackagedSealedMessage
-//  ) = isUnsealingAllowedByPostDecryptionInstructions(packagedSealedMessage.postDecryptionInstructions)
+//  ) = isUnsealingAllowedByUnsealingInstructions(packagedSealedMessage.unsealingInstructions)
 //  }
 }

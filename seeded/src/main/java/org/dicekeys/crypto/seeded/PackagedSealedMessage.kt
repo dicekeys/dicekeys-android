@@ -19,7 +19,7 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
         @JvmStatic private external fun constructJNI(
             ciphertext: ByteArray,
             derivationOptionsJson: String,
-            postDecryptionInstructions: String
+            unsealingInstructions: String
         ) : Long
 
         @JvmStatic private external fun fromJsonJNI(
@@ -59,7 +59,7 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
 
     /**
      * Serialize the object to a JSON format that stores the [ciphertext],
-     * [derivationOptionsJson], and [postDecryptionInstructions].
+     * [derivationOptionsJson], and [unsealingInstructions].
      * It can then be reconstructed via a call to [fromJson].
      */
     external fun toJson(): String
@@ -68,7 +68,7 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
 
     private external fun ciphertextGetterJNI(): ByteArray
     private external fun derivationOptionsJsonGetterJNI(): String
-    private external fun postDecryptionInstructionsGetterJNI(): String
+    private external fun unsealingInstructionsGetterJNI(): String
 
     /**
      * The encrypted message in binary format
@@ -85,7 +85,7 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
      * be aware of (or is asked to follow).  If this is changed between when the message
      * is sealed and when it is unsealed the unseal operation will fail.
      */
-    val postDecryptionInstructions: String get() = postDecryptionInstructionsGetterJNI()
+    val unsealingInstructions: String get() = unsealingInstructionsGetterJNI()
 
     /**
      * A copy constructor to prevent copying of the native pointer, which would lead
@@ -93,7 +93,7 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
      */
     constructor(
         other: PackagedSealedMessage
-    ) : this(other.ciphertext, other.derivationOptionsJson, other.postDecryptionInstructions)
+    ) : this(other.ciphertext, other.derivationOptionsJson, other.unsealingInstructions)
 
     /**
      * Construct this object from its member values
@@ -101,8 +101,8 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
     constructor(
             ciphertext: ByteArray,
             derivationOptionsJson: String,
-            postDecryptionInstructions: String
-    ) : this( constructJNI(ciphertext, derivationOptionsJson, postDecryptionInstructions) )
+            unsealingInstructions: String
+    ) : this( constructJNI(ciphertext, derivationOptionsJson, unsealingInstructions) )
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()

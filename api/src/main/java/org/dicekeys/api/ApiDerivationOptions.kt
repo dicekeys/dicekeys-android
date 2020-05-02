@@ -51,7 +51,7 @@ internal fun getJsonObjectsStringListOrNull(
  *
  * @see DiceKeysApiClient
  * @see DerivationOptions
- * @see PostDecryptionInstructions
+ * @see UnsealingInstructions
  *
  * @constructor Construct from a JSON string. When you know the type of key being derived,
  * it's better to use a key class which fills in the [requiredKeyType] field of the constructor.

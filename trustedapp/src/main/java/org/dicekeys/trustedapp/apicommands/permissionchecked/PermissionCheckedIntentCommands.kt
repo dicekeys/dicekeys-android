@@ -46,7 +46,7 @@ class PermissionCheckedIntentCommands(
     activity.finish()
   }
 
-  override fun executeCommand() {
+  override suspend fun executeCommand() {
     executeCommand(requestIntent.action ?: "")
   }
 
