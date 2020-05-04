@@ -25,15 +25,13 @@ class ApiMarshaller<T>(
 
   private fun getRequestId() = "$commandName:${java.util.UUID.randomUUID()}"
 
-  private fun register(): String = getRequestId().also { requestId ->
-    requestIdToDeferredApiResult[requestId] = CompletableDeferred<T>()
-  }
-
-  fun <T>callAsync(
+  fun callAsync(
     marshallParameters: ApiMarshaller.ParameterMarshaller.() -> Unit
-  ): Deferred<T> = CompletableDeferred<T>().also {
+  ): Deferred<T> = CompletableDeferred<T>().also { deferredApiResult ->
     sendCommand(commandName) {
-      marshallParameter(ApiStrings::requestId.name, register())
+      val requestId = getRequestId()
+      requestIdToDeferredApiResult[requestId] = deferredApiResult
+      marshallParameter(ApiStrings::requestId.name, requestId)
       marshallParameters(this)
     }
   }
@@ -51,7 +49,8 @@ class ApiMarshaller<T>(
     requestIdToDeferredApiResult.remove(requestId)
     // If an exception was returned, throw it
     unmarshaller.unmarshallExceptionIfPresent()?.let { deferredResult.completeExceptionally(it) } ?: try {
-      deferredResult.complete(getResult(unmarshaller))
+      val result = getResult(unmarshaller)
+      deferredResult.complete(result)
     } catch (e: Throwable) {
       deferredResult.completeExceptionally(e)
     }
