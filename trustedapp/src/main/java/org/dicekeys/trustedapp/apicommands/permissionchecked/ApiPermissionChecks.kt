@@ -55,7 +55,7 @@ abstract class ApiPermissionChecks(
   ) {
     throwIfClientNotAuthorized(unsealingInstructions.restrictions)
     val requireUsersConsent = unsealingInstructions.requireUsersConsent ?: return;
-    if (requestUsersConsent(requireUsersConsent).await() != UnsealingInstructions.RequestForUsersConsent.UsersResponse.allow) {
+    if (requestUsersConsent(requireUsersConsent).await() != UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow) {
       throw ClientNotAuthorizedException("Operation declined by user")
     }
   }

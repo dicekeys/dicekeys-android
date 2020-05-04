@@ -13,7 +13,9 @@ package org.dicekeys.crypto.seeded
  * This class wraps the native c++ Secret class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
  */
-class Secret private constructor(internal val nativeObjectPtr: Long) {
+class Secret private constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable,JsonSerializable {
 
     companion object {
         init {
@@ -74,7 +76,7 @@ class Secret private constructor(internal val nativeObjectPtr: Long) {
      * Convert this object to serialized binary form so that this object
      * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
      */
-    external fun toSerializedBinaryForm(): ByteArray
+    external override fun toSerializedBinaryForm(): ByteArray
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun secretBytesGetterJNI(): ByteArray
@@ -86,7 +88,7 @@ class Secret private constructor(internal val nativeObjectPtr: Long) {
      * (The secret seed string used to generate it is not stored, as it is
      * not kept after the object is constructed.)
      */
-    external fun toJson(): String
+    external override fun toJson(): String
 
     /**
      * The secret as a byte array.

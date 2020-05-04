@@ -7,12 +7,12 @@
  * A sample Android activity using the DiceKeys Client API to seal/unseal a message.
  */
 class SampleActivity: AppCompatActivity() {
-    private lateinit var diceKeysApiClient: DiceKeysApiClient
+    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Create a client for access the DiceKeys API
-        diceKeysApiClient = DiceKeysApiClient.create(this)
+        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
         // Use the API to perform cryptographic operations
         sealAndUnsealASillyMessage()
     }

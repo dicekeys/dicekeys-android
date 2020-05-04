@@ -11,7 +11,8 @@ import org.dicekeys.api.UnsealingInstructions
  */
 open class ApiPermissionChecksForPackages(
   private val clientsApplicationId: String,
-  requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
+  requestUsersConsent: (
+    UnsealingInstructions.RequestForUsersConsent
   ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
 ): ApiPermissionChecks(requestUsersConsent) {
   /**

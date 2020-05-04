@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.dicekeys.api.DiceKeysApiClient
+import org.dicekeys.api.DiceKeysIntentApiClient
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         const val RC_DISPLAY_DICE = 2
     }
     private lateinit var buttonStart: Button
-    private lateinit var diceKeysApiClient: DiceKeysApiClient
+    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
     private lateinit var resultTextView: TextView
     val derivationOptionsJson = "{}"
     val testMessage = "The secret ingredient is dihydrogen monoxide"
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diceKeysApiClient = DiceKeysApiClient.create(this)
+        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
         setContentView(R.layout.activity_main)
         resultTextView = findViewById(R.id.result_text)
         buttonStart = findViewById(R.id.btn_start)
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        diceKeysApiClient.handleOnActivityResult(data)
+        data?.let { diceKeysApiClient.handleOnActivityResult(it) }
     }
 
 

@@ -18,7 +18,7 @@ class PermissionCheckedCommands(
   private val permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
 ) {
   /**
-   * Implement [DiceKeysApiClient.getSecret] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.getSecret] with the necessary permissions checks
    */
   suspend fun getSecret(derivationOptionsJson: String): Secret =
     Secret.deriveFromSeed(
@@ -30,7 +30,7 @@ class PermissionCheckedCommands(
     )
 
   /**
-   * Implement [DiceKeysApiClient.sealWithSymmetricKey] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.sealWithSymmetricKey] with the necessary permissions checks
    */
   suspend fun sealWithSymmetricKey(
     derivationOptionsJson: String,
@@ -46,7 +46,7 @@ class PermissionCheckedCommands(
     ).seal(plaintext, unsealingInstructions ?: "")
 
   /**
-   * Implement [DiceKeysApiClient.unsealWithSymmetricKey] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.unsealWithSymmetricKey] with the necessary permissions checks
    */
   suspend fun unsealWithSymmetricKey(
     packagedSealedMessage: PackagedSealedMessage
@@ -59,7 +59,7 @@ class PermissionCheckedCommands(
     )
 
   /**
-   * Implement [DiceKeysApiClient.getSealingKey] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.getSealingKey] with the necessary permissions checks
    */
   suspend fun getSealingKey(
     derivationOptionsJson: String
@@ -73,7 +73,7 @@ class PermissionCheckedCommands(
     ).getPublicKey()
 
   /**
-   * Implement [DiceKeysApiClient.getUnsealingKey] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.getUnsealingKey] with the necessary permissions checks
    */
   suspend fun getUnsealingKey(
     derivationOptionsJson: String
@@ -86,7 +86,7 @@ class PermissionCheckedCommands(
   )
 
   /**
-   * Implement [DiceKeysApiClient.getSigningKey] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.getSigningKey] with the necessary permissions checks
    */
   suspend fun getSigningKey(
     derivationOptionsJson: String
@@ -99,7 +99,7 @@ class PermissionCheckedCommands(
   )
 
   /**
-   * Implement [DiceKeysApiClient.getSymmetricKey] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.getSymmetricKey] with the necessary permissions checks
    */
   suspend fun getSymmetricKey(
     derivationOptionsJson: String
@@ -112,7 +112,7 @@ class PermissionCheckedCommands(
   )
 
   /**
-   * Implement [DiceKeysApiClient.getSignatureVerificationKey] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.getSignatureVerificationKey] with the necessary permissions checks
    */
   suspend fun getSignatureVerificationKey(
     derivationOptionsJson: String
@@ -126,7 +126,7 @@ class PermissionCheckedCommands(
     ).getSignatureVerificationKey()
 
   /**
-   * Implement [DiceKeysApiClient.unsealWithUnsealingKey] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.unsealWithUnsealingKey] with the necessary permissions checks
    */
   suspend fun unsealWithUnsealingKey(
     packagedSealedMessage: PackagedSealedMessage
@@ -140,7 +140,7 @@ class PermissionCheckedCommands(
       ).unseal(packagedSealedMessage)
 
   /**
-   * Implement [DiceKeysApiClient.generateSignature] with the necessary permissions checks
+   * Implement [DiceKeysIntentApiClient.generateSignature] with the necessary permissions checks
    */
   suspend fun generateSignature(
     derivationOptionsJson: String,

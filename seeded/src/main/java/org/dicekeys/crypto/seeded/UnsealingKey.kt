@@ -16,7 +16,9 @@ package org.dicekeys.crypto.seeded
  * This class wraps the native c++ PrivateKey class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
  */
-class UnsealingKey private constructor(internal val nativeObjectPtr: Long) {
+class UnsealingKey private constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable, JsonSerializable {
     companion object {
         init {
             ensureJniLoaded()
@@ -94,14 +96,14 @@ class UnsealingKey private constructor(internal val nativeObjectPtr: Long) {
      * Convert this object to serialized binary form so that this object
      * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
      */
-    external fun toSerializedBinaryForm(): ByteArray
+    external override fun toSerializedBinaryForm(): ByteArray
 
     private external fun getSealingKeyPtrJNI(): Long
     private external fun deleteNativeObjectPtrJNI()
     private external fun unsealingKeyBytesGetterJNI(): ByteArray
     private external fun sealingKeyBytesGetterJNI(): ByteArray
     private external fun derivationOptionsJsonGetterJNI(): String
-    external fun toJson(): String
+    external override fun toJson(): String
 
     /**
      * This constructor ensures copying does not copy the underlying pointer, which could

@@ -27,7 +27,9 @@ package org.dicekeys.crypto.seeded
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
 
  */
-class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
+class SymmetricKey private constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable,JsonSerializable {
 
     companion object {
         init {
@@ -103,7 +105,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      * Convert this object to serialized binary form so that this object
      * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
      */
-    external fun toSerializedBinaryForm(): ByteArray
+    external override fun toSerializedBinaryForm(): ByteArray
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun keyBytesGetterJNI(): ByteArray
@@ -113,7 +115,7 @@ class SymmetricKey private constructor(internal val nativeObjectPtr: Long) {
      * Convert this symmetric key to JSON-format string so that it can be later reconstituted
      * by passing the string to [fromJson].
      */
-    external fun toJson(): String
+    external override fun toJson(): String
 
     /**
      * The binary representation of the symmetric key.

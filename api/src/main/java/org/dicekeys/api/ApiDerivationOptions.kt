@@ -25,7 +25,7 @@ internal fun getJsonObjectsStringListOrNull(
  * Used to construct and parse the strings in
  * [key-derivation options JSON format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
  * which specify how to derive cryptographic keys from seed string.
- * These JSON strings appear throughout the API (and in the [DiceKeysApiClient]) as a
+ * These JSON strings appear throughout the API (and in the [DiceKeysIntentApiClient]) as a
  * parameter named _derivationOptionsJson_.
  *
  * This implementation extends of the more general [DerivationOptions] class, which
@@ -49,7 +49,7 @@ internal fun getJsonObjectsStringListOrNull(
 
  * ```
  *
- * @see DiceKeysApiClient
+ * @see DiceKeysIntentApiClient
  * @see DerivationOptions
  * @see UnsealingInstructions
  *
@@ -162,7 +162,7 @@ open class ApiDerivationOptions constructor(
     /**
      * An extension class that must represent a specification for a public/private key pair
      */
-    class Public(derivationOptionsJson: String? = null) :
+    class UnsealingKey(derivationOptionsJson: String? = null) :
             ApiDerivationOptions(derivationOptionsJson,  Type.UnsealingKey)
 
     /**
@@ -174,13 +174,13 @@ open class ApiDerivationOptions constructor(
     /**
      * An extension class that must represent a specification for a signing/verification key pair
      */
-    class Signing(derivationOptionsJson: String? = null) :
+    class SigningKey(derivationOptionsJson: String? = null) :
             ApiDerivationOptions(derivationOptionsJson,  Type.SigningKey)
 
     /**
      * An extension class that must represent a specification for a symmetric key
      */
-    class Symmetric(derivationOptionsJson: String? = null) :
+    class SymmetricKey(derivationOptionsJson: String? = null) :
             ApiDerivationOptions(derivationOptionsJson,  Type.SymmetricKey)
 
 }

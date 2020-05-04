@@ -12,7 +12,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import org.dicekeys.api.DiceKeysApiClient
+import org.dicekeys.api.DiceKeysIntentApiClient
 import kotlinx.coroutines.launch
 
 /**
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
  * seeds obtained from a DiceKey using a DiceKeys API.
  */
 class MainActivity : AppCompatActivity() {
-    private lateinit var diceKeysApiClient: DiceKeysApiClient
+    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
 
 
     private val INTENT_ACTION_USB_PERMISSION_EVENT = "org.dicekeys.intents.USB_PERMISSION_EVENT"
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diceKeysApiClient = DiceKeysApiClient.create(this)
+        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
         setContentView(R.layout.activity_main)
         secretTextView = findViewById(R.id.edit_text_secret)
         buttonWriteSecretToFidoToken = findViewById(R.id.btn_write_secret_to_fido_token)
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        diceKeysApiClient.handleOnActivityResult(data)
+        data?.let { diceKeysApiClient.handleOnActivityResult(it) }
         render()
     }
 

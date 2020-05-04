@@ -19,7 +19,9 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * This class wraps the native c++ SignatureVerificationKey class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
  */
- class SignatureVerificationKey internal constructor(internal val nativeObjectPtr: Long) {
+ class SignatureVerificationKey internal constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable,JsonSerializable {
     companion object {
         init {
             ensureJniLoaded()
@@ -60,7 +62,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
     * Convert this object to serialized binary form so that this object
     * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
     */
-   external fun toSerializedBinaryForm(): ByteArray
+   external override fun toSerializedBinaryForm(): ByteArray
 
 
    /**
@@ -94,7 +96,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
      * Serialize the object to JSON format so that it can later be
      * reconstituted via a call to [fromJson],
      */
-    external fun toJson(): String
+    external override fun toJson(): String
 
     /**
      * The binary representation of the signature-verification key.

@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
-import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.api.UnsealingInstructions.RequestForUsersConsent
 import org.dicekeys.keysqr.DiceKey
 import org.dicekeys.trustedapp.R
@@ -23,20 +22,23 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
   ) {
     super.onCreate(savedInstanceState) // , persistentState)
     setContentView(R.layout.activity_execute_api_command)
-    executeIntentsCommand()
+    executeApiCommand()
   }
 
   /**
-   * Handle results of activities to
-   *   * Load a DiceKey into memory if it isn't there when the command is executed
-   *   * Ask the user to respond to a warning
+   * When a DiceKey is needed, a new activity will be spawned to load it and the
+   * result will be sent via a call to this method.
    */
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    if (data == null)
-      return
+    if (resultCode == Activity.RESULT_CANCELED) {
+      // This wasn't a failed or successful warning, or a successful load of a DiceKey,
+      // so by deduction the remaining possibility is that we failed to load a DiceKey
+      // FIXME with better exception
+      loadDiceKeyCompletableDeferred?.completeExceptionally(Exception("Failed to read DiceKey"))
+    }
     // If we've gotten this far, this must be the result of trying to read in the DiceKey
-    data.getStringExtra(ReadKeySqrActivity.Companion.Parameters.Response.keySqrAsJson)?.let { keySqrAsJson ->
+    data?.getStringExtra(ReadKeySqrActivity.Companion.Parameters.Response.keySqrAsJson)?.let { keySqrAsJson ->
       FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
         // Complete the deferred load operation
         val diceKey = DiceKey(keySqr.faces)
@@ -44,14 +46,12 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
         return@onActivityResult
       }
     }
-    if (resultCode == Activity.RESULT_CANCELED) {
-      // This wasn't a failed or successful warning, or a successful load of a DiceKey,
-      // so by deduction the remaining possibility is that we failed to load a DiceKey
-      // FIXME with better exception
-      loadDiceKeyCompletableDeferred?.completeExceptionally(Exception("Failed to read DiceKey"))
-    }
   }
 
+  /**
+   * Ask the user for consent to unseal a message if the UnsealingInstructions
+   * encountered on an `unseal` operation require the user's consent
+   */
   private fun requestUsersConsentAsync(
     requestForUsersConsent: RequestForUsersConsent
   ): Deferred<RequestForUsersConsent.UsersResponse> =
@@ -60,16 +60,20 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
           .setMessage(requestForUsersConsent.question)
           .setPositiveButton(requestForUsersConsent.actionButtonLabels.allow) { _, _ ->
-            deferredDialogResult.complete(RequestForUsersConsent.UsersResponse.allow)
+            deferredDialogResult.complete(RequestForUsersConsent.UsersResponse.Allow)
           }
           .setNegativeButton(requestForUsersConsent.actionButtonLabels.deny) { _, _ ->
-            deferredDialogResult.complete(RequestForUsersConsent.UsersResponse.deny)
+            deferredDialogResult.complete(RequestForUsersConsent.UsersResponse.Deny)
           }
           .create()
           .show()
       }
   }
 
+  /**
+   * Start an action to load in the user's DiceKey so that the requested operation can
+   * be performed.
+   */
   private var loadDiceKeyCompletableDeferred : CompletableDeferred<DiceKey>? = null
   private fun loadDiceKey(): Deferred<DiceKey> =
     loadDiceKeyCompletableDeferred ?:
@@ -86,7 +90,10 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
         }
       }
 
-  private fun executeIntentsCommand() {
+  /**
+   * Execute the API request specified via an intent.
+   */
+  private fun executeApiCommand() {
     // Get a permission-checked accessor for obtaining seeds from the DiceKey.
     // If the user doesn't have a DiceKey loaded into memory yet, this will trigger
     // a load request, return null, and cause this function to return null.
@@ -94,10 +101,9 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
     val permissionCheckedSeedAccessor =
       PermissionCheckedSeedAccessor.createForIntentApi(
         this,
-        { this.loadDiceKey() }
-      ) {
-        requestUsersConsentAsync(it)
-      } ?: return
+        ::loadDiceKey,
+        ::requestUsersConsentAsync
+      ) ?: return
 
     // Our API commands don't get a copy of the raw DiceKey seed, but only an accessor
     // which must be passed parameters to check.

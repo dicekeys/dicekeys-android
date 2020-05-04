@@ -4,10 +4,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.CompletableDeferred
 import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientPackageNotAuthorizedException
+import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.trustedapp.apicommands.permissionchecked.ApiPermissionChecksForPackages
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -16,32 +18,36 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class ApiPermissionChecksInstrumentedTest {
+  private val deferredAllow =
+    CompletableDeferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>(
+      UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow
+    )
+
   @Test
   fun isClientAuthorizedInFaceOfRestrictionsMostlyHarmless() {
-    val deferredTrue = CompletableDeferred<Boolean>(true)
 
-    Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredTrue }
+    Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .isClientAuthorizedInFaceOfRestrictions(
         ApiDerivationOptions.Restrictions().apply {
           androidPackagePrefixesAllowed = listOf("com.example", "com.other")
         }
       ))
 
-    Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredTrue }
+    Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .isClientAuthorizedInFaceOfRestrictions(
         ApiDerivationOptions.Restrictions().apply {
           androidPackagePrefixesAllowed = listOf("com.example.", "com.other")
         }
       ))
 
-      Assert.assertTrue(ApiPermissionChecksForPackages("com.example."){ deferredTrue }
+      Assert.assertTrue(ApiPermissionChecksForPackages("com.example."){ deferredAllow }
       .isClientAuthorizedInFaceOfRestrictions(
         ApiDerivationOptions.Restrictions().apply {
           androidPackagePrefixesAllowed = listOf("com.example", "com.other")
         }
       ))
 
-      Assert.assertFalse(ApiPermissionChecksForPackages("com.examplespoof"){ deferredTrue }
+      Assert.assertFalse(ApiPermissionChecksForPackages("com.examplespoof"){ deferredAllow }
       .isClientAuthorizedInFaceOfRestrictions(
         ApiDerivationOptions.Restrictions().apply {
           androidPackagePrefixesAllowed = listOf("com.example", "com.other")
@@ -52,7 +58,7 @@ class ApiPermissionChecksInstrumentedTest {
 
   @Test(expected = ClientPackageNotAuthorizedException::class)
   fun preventsLengthExtensionAttack() {
-    ApiPermissionChecksForPackages("com.examplespoof"){ CompletableDeferred<Boolean>(true) }
+    ApiPermissionChecksForPackages("com.examplespoof"){ deferredAllow }
       .throwIfClientNotAuthorized(
         ApiDerivationOptions.Restrictions().apply {
           androidPackagePrefixesAllowed = listOf("com.example", "com.other")
@@ -62,7 +68,7 @@ class ApiPermissionChecksInstrumentedTest {
 
   @Test(expected = ClientPackageNotAuthorizedException::class)
   fun throwsIfAndroidPackagePrefixesNotSet() {
-    ApiPermissionChecksForPackages("com.example"){ CompletableDeferred<Boolean>(true) }
+    ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .throwIfClientNotAuthorized(
         ApiDerivationOptions.Restrictions()
       )

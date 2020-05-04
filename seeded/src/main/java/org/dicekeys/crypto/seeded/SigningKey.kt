@@ -16,7 +16,9 @@ package org.dicekeys.crypto.seeded
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
 
  */
-class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
+class SigningKey internal constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable,JsonSerializable  {
     companion object {
         init {
             ensureJniLoaded()
@@ -78,7 +80,7 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
      * Convert this object to serialized binary form so that this object
      * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
      */
-    external fun toSerializedBinaryForm(): ByteArray
+    external override fun toSerializedBinaryForm(): ByteArray
 
     /**
      * This constructor ensures copying does not copy the underlying pointer, which could
@@ -132,8 +134,9 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
       */
     external fun toJson(
         minimizeSizeByRemovingTheSignatureVerificationKeyBytesWhichCanBeRegeneratedLater: Boolean
-            = true
     ): String
+
+    override fun toJson(): String = toJson(true)
 
     /**
     * Generate a signature for a message, which can be used

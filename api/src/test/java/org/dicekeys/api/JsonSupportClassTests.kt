@@ -33,7 +33,7 @@ class DerivationOptionsTests {
 
     @Test
     fun DerivationOptions_toAndBack() {
-        val kdo = ApiDerivationOptions.Symmetric().apply {
+        val kdo = ApiDerivationOptions.SymmetricKey().apply {
             // Ensure the JSON format has the "keyType" field specified
             type = requiredType  // sets "keyType": "Symmetric" since this class type is Symmetric
             algorithm = defaultAlgorithm // sets "algorithm": "XSalsa20Poly1305"

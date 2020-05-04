@@ -39,7 +39,7 @@ used by DiceKeys, allowing this library to remain format agnostic (as well as
 agnostic to whether sealed messages should include post-decyrption instructions).
 
 # org.dicekeys.api
-Your can use the [DiceKeysApiClient] in this package to ask the DiceKeys app
+Your can use the [DiceKeysIntentApiClient] in this package to ask the DiceKeys app
 to derive keys from the user's DiceKey, and to perform cryptographic operations
 on your application's behalf.
 This package uses and returns keys from the [org.dicekeys.crypto.seeded] package.

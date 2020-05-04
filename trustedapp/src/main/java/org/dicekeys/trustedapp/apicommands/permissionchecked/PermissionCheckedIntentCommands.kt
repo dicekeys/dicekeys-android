@@ -3,7 +3,8 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
-import org.dicekeys.api.DiceKeysApiClient
+import org.dicekeys.api.ApiStrings
+import org.dicekeys.api.DiceKeysIntentApiClient
 
 class PermissionCheckedIntentCommands(
   permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor,
@@ -38,10 +39,10 @@ class PermissionCheckedIntentCommands(
 
   override fun sendException(exception: Exception) {
     activity.setResult(Activity.RESULT_CANCELED, Intent().apply{
-      putExtra(DiceKeysApiClient.Companion.ParameterNames.Common.requestId,
-        stringParameter(DiceKeysApiClient.Companion.ParameterNames.Common.requestId)
+      putExtra(ApiStrings::requestId.name,
+        stringParameter(ApiStrings::requestId.name)
       )
-      putExtra(DiceKeysApiClient.Companion.ParameterNames.Common.exception, exception)
+      putExtra(ApiStrings.Outputs::exception.name, exception)
     })
     activity.finish()
   }

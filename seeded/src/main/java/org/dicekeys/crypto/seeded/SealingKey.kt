@@ -33,7 +33,9 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
 
  */
-class SealingKey internal constructor(internal val nativeObjectPtr: Long) {
+class SealingKey internal constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable,JsonSerializable {
     companion object {
         init {
             ensureJniLoaded()
@@ -75,7 +77,7 @@ class SealingKey internal constructor(internal val nativeObjectPtr: Long) {
      * Convert this object to serialized binary form so that this object
      * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
      */
-    external fun toSerializedBinaryForm(): ByteArray
+    external override fun toSerializedBinaryForm(): ByteArray
 
     /**
      * This constructor ensures copying does not copy the underlying pointer, which could
@@ -107,7 +109,7 @@ class SealingKey internal constructor(internal val nativeObjectPtr: Long) {
      * Serialize the object to JSON format so that it can later be
      * reconstituted via a call to [fromJson].
      */
-    external fun toJson(): String
+    external override fun toJson(): String
 
     /**
      * The binary representation of the public key.

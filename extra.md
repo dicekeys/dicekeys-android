@@ -7,7 +7,7 @@
 The DiceKeys app enables mutually-distrusting applications to derive keys and
 other secrets from the user's DiceKey without actually seeing the DiceKey.
 
-Your applications can communicate with the DiceKeys app via the [DiceKeysApiClient].
+Your applications can communicate with the DiceKeys app via the [DiceKeysIntentApiClient].
 You can ask the DiceKeys app to derive cryptographic keys seeded by the user's DiceKey,
 to perform cryptographic operations using the derived keys,
 and to give those keys to your application if it is authorized to receive them.
@@ -45,12 +45,12 @@ They are included here for transparency. -->
  * A sample Android activity using the DiceKeys Client API to seal/unseal a message.
  */
 class SampleActivity: AppCompatActivity() {
-    private lateinit var diceKeysApiClient: DiceKeysApiClient
+    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Create a client for access the DiceKeys API
-        diceKeysApiClient = DiceKeysApiClient.create(this)
+        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
         // Use the API to perform cryptographic operations
         sealAndUnsealASillyMessage()
     }

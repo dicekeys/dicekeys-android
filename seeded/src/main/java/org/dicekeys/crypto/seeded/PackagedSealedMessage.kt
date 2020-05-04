@@ -9,7 +9,9 @@ package org.dicekeys.crypto.seeded
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
 
  */
-class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: Long) {
+class PackagedSealedMessage internal constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable,JsonSerializable {
 
     companion object {
         init {
@@ -36,9 +38,9 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
          * was called to generate [packagedSealedMessageAsJson]
          */
         fun fromJson(
-                packagedSealedMessageAsJson: ByteArray
+                packagedSealedMessageAsJson: String
         ) : PackagedSealedMessage = PackagedSealedMessage(
-                fromSerializedBinaryFormJNI(packagedSealedMessageAsJson)
+                fromJsonJNI(packagedSealedMessageAsJson)
         )
 
         /**
@@ -55,14 +57,14 @@ class PackagedSealedMessage internal constructor(internal val nativeObjectPtr: L
      * Convert this object to serialized binary form so that this object
      * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
      */
-    external fun toSerializedBinaryForm(): ByteArray
+    external override fun toSerializedBinaryForm(): ByteArray
 
     /**
      * Serialize the object to a JSON format that stores the [ciphertext],
      * [derivationOptionsJson], and [unsealingInstructions].
      * It can then be reconstructed via a call to [fromJson].
      */
-    external fun toJson(): String
+    external override fun toJson(): String
 
     private external fun deleteNativeObjectPtrJNI()
 
