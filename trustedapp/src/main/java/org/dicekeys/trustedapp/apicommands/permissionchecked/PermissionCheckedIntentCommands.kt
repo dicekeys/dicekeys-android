@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import org.dicekeys.api.ApiStrings
-import org.dicekeys.api.DiceKeysIntentApiClient
 
 class PermissionCheckedIntentCommands(
   permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor,
@@ -13,18 +12,18 @@ class PermissionCheckedIntentCommands(
   private val requestIntent = activity.intent
   private val resultIntent = Intent()
 
-  override fun binaryParameter(parameterName: String): ByteArray? =
+  override fun unmarshallBinaryParameter(parameterName: String): ByteArray? =
     requestIntent.getByteArrayExtra(parameterName)
 
-  override fun stringParameter(parameterName: String): String? =
+  override fun unmarshallStringParameter(parameterName: String): String? =
     requestIntent.getStringExtra(parameterName)
 
-  override fun respondWith(responseParameterName: String, value: String): PermissionCheckedIntentCommands {
+  override fun marshallResult(responseParameterName: String, value: String): PermissionCheckedIntentCommands {
     resultIntent.putExtra(responseParameterName, value)
     return this
   }
 
-  override fun respondWith(responseParameterName: String, value: ByteArray): PermissionCheckedIntentCommands {
+  override fun marshallResult(responseParameterName: String, value: ByteArray): PermissionCheckedIntentCommands {
     resultIntent.putExtra(responseParameterName, value)
     return this
   }
@@ -37,10 +36,10 @@ class PermissionCheckedIntentCommands(
     activity.finish()
   }
 
-  override fun sendException(exception: Exception) {
+  override fun sendException(exception: Throwable) {
     activity.setResult(Activity.RESULT_CANCELED, Intent().apply{
       putExtra(ApiStrings::requestId.name,
-        stringParameter(ApiStrings::requestId.name)
+        unmarshallStringParameter(ApiStrings::requestId.name)
       )
       putExtra(ApiStrings.Outputs::exception.name, exception)
     })

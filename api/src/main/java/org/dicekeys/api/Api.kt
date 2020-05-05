@@ -2,6 +2,8 @@ package org.dicekeys.api
 
 import kotlinx.coroutines.*
 import org.dicekeys.crypto.seeded.*
+import org.dicekeys.api.ApiStrings.Inputs
+import org.dicekeys.api.ApiStrings.Outputs
 
 abstract class Api: AsyncApi, SuspendApi, CallbackApi {
   protected abstract fun call(
@@ -40,12 +42,12 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     derivationOptionsJson: String
   ): Deferred<Secret> =
     getSecretMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.getSecret::derivationOptionsJson.name, derivationOptionsJson)
+      marshallParameter(Inputs.getSecret::derivationOptionsJson.name, derivationOptionsJson)
     }
 
   private val getSecretMarshaller =
     apiMarshallers.add<Secret>(SuspendApi::getSecret.name) {
-      Secret.fromJson(unmarshallString(ApiStrings.Outputs.getSecret::secret.name))
+      Secret.fromJson(unmarshallString(Outputs.getSecret::secret.name))
     }
 
 
@@ -60,12 +62,12 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     derivationOptionsJson: String
   ): Deferred<UnsealingKey> =
     getUnsealingKeyMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.getUnsealingKey::derivationOptionsJson.name, derivationOptionsJson)
+      marshallParameter(Inputs.getUnsealingKey::derivationOptionsJson.name, derivationOptionsJson)
     }
 
   private val getUnsealingKeyMarshaller =
     apiMarshallers.add<UnsealingKey>(SuspendApi::getUnsealingKey.name) {
-      UnsealingKey.fromJson(unmarshallString(ApiStrings.Outputs.getUnsealingKey::unsealingKey.name))
+      UnsealingKey.fromJson(unmarshallString(Outputs.getUnsealingKey::unsealingKey.name))
     }
 
 
@@ -80,12 +82,12 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     derivationOptionsJson: String
   ): Deferred<SymmetricKey> =
     getSymmetricKeyMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.getSymmetricKey::derivationOptionsJson.name, derivationOptionsJson)
+      marshallParameter(Inputs.getSymmetricKey::derivationOptionsJson.name, derivationOptionsJson)
     }
 
   private val getSymmetricKeyMarshaller =
     apiMarshallers.add(SuspendApi::getSymmetricKey.name) {
-      SymmetricKey.fromJson(unmarshallString(ApiStrings.Outputs.getSymmetricKey::symmetricKey.name))
+      SymmetricKey.fromJson(unmarshallString(Outputs.getSymmetricKey::symmetricKey.name))
     }
 
   /**
@@ -99,12 +101,12 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     derivationOptionsJson: String
   ): Deferred<SigningKey> =
     getSigningKeyMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.getSigningKey::derivationOptionsJson.name, derivationOptionsJson)
+      marshallParameter(Inputs.getSigningKey::derivationOptionsJson.name, derivationOptionsJson)
     }
 
   private val getSigningKeyMarshaller =
     apiMarshallers.add<SigningKey>(SuspendApi::getSigningKey.name) {
-      SigningKey.fromJson(unmarshallString(ApiStrings.Outputs.getSigningKey::signingKey.name))
+      SigningKey.fromJson(unmarshallString(Outputs.getSigningKey::signingKey.name))
     }
 
 
@@ -117,12 +119,12 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     derivationOptionsJson: String
   ): Deferred<SealingKey> =
     getSealingKeyMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.getSealingKey::derivationOptionsJson.name, derivationOptionsJson)
+      marshallParameter(Inputs.getSealingKey::derivationOptionsJson.name, derivationOptionsJson)
     }
 
   private val getSealingKeyMarshaller =
     apiMarshallers.add<SealingKey>(SuspendApi::getSealingKey.name) {
-      SealingKey.fromJson(unmarshallString(ApiStrings.Outputs.getSealingKey::sealingKey.name))
+      SealingKey.fromJson(unmarshallString(Outputs.getSealingKey::sealingKey.name))
   }
 
 
@@ -139,12 +141,12 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     packagedSealedMessage: PackagedSealedMessage
   ): Deferred<ByteArray> =
     unsealWithUnsealingKeyMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.unsealWithUnsealingKey::packagedSealedMessage.name, packagedSealedMessage)
+      marshallParameter(Inputs.unsealWithUnsealingKey::packagedSealedMessage.name, packagedSealedMessage)
     }
 
   private val unsealWithUnsealingKeyMarshaller =
     apiMarshallers.add<ByteArray>(SuspendApi::unsealWithUnsealingKey.name) {
-      unmarshallByteArray(ApiStrings.Outputs.unsealWithUnsealingKey::plaintext.name)
+      unmarshallByteArray(Outputs.unsealWithUnsealingKey::plaintext.name)
    }
 
 
@@ -163,14 +165,14 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     unsealingInstructions: String
   ): Deferred<PackagedSealedMessage> =
     sealWithSymmetricKeyMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.sealWithSymmetricKey::derivationOptionsJson.name, derivationOptionsJson)
-      marshallParameter(ApiStrings.Inputs.sealWithSymmetricKey::plaintext.name, plaintext)
-      marshallParameter(ApiStrings.Inputs.sealWithSymmetricKey::unsealingInstructions.name, unsealingInstructions)
+      marshallParameter(Inputs.sealWithSymmetricKey::derivationOptionsJson.name, derivationOptionsJson)
+      marshallParameter(Inputs.sealWithSymmetricKey::plaintext.name, plaintext)
+      marshallParameter(Inputs.sealWithSymmetricKey::unsealingInstructions.name, unsealingInstructions)
     }
 
   private val sealWithSymmetricKeyMarshaller =
     apiMarshallers.add<PackagedSealedMessage>(SuspendApi::sealWithSymmetricKey.name) {
-      PackagedSealedMessage.fromJson(unmarshallString(ApiStrings.Outputs.sealWithSymmetricKey::packagedSealedMessage.name))
+      PackagedSealedMessage.fromJson(unmarshallString(Outputs.sealWithSymmetricKey::packagedSealedMessage.name))
     }
 
 
@@ -188,12 +190,12 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     packagedSealedMessage: PackagedSealedMessage
   ): Deferred<ByteArray> =
     unsealWithSymmetricKeyMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.unsealWithSymmetricKey::packagedSealedMessage.name, packagedSealedMessage)
+      marshallParameter(Inputs.unsealWithSymmetricKey::packagedSealedMessage.name, packagedSealedMessage)
     }
 
   private val unsealWithSymmetricKeyMarshaller =
     apiMarshallers.add<ByteArray>(SuspendApi::unsealWithSymmetricKey.name) {
-      unmarshallByteArray(ApiStrings.Outputs.unsealWithSymmetricKey::plaintext.name)
+      unmarshallByteArray(Outputs.unsealWithSymmetricKey::plaintext.name)
     }
 
 
@@ -205,12 +207,12 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     derivationOptionsJson: String
   ): Deferred<SignatureVerificationKey> =
     getSignatureVerificationKeyMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.getSignatureVerificationKey::derivationOptionsJson.name, derivationOptionsJson)
+      marshallParameter(Inputs.getSignatureVerificationKey::derivationOptionsJson.name, derivationOptionsJson)
     }
 
   private val getSignatureVerificationKeyMarshaller =
     apiMarshallers.add<SignatureVerificationKey>(SuspendApi::getSignatureVerificationKey.name) {
-      SignatureVerificationKey.fromJson(unmarshallString(ApiStrings.Outputs.getSignatureVerificationKey::signatureVerificationKey.name))
+      SignatureVerificationKey.fromJson(unmarshallString(Outputs.getSignatureVerificationKey::signatureVerificationKey.name))
     }
 
 
@@ -224,16 +226,16 @@ abstract class Api: AsyncApi, SuspendApi, CallbackApi {
     message: ByteArray
   ): Deferred<GenerateSignatureResult> =
     generateSignatureMarshaller.callAsync {
-      marshallParameter(ApiStrings.Inputs.generateSignature::derivationOptionsJson.name, derivationOptionsJson)
-      marshallParameter(ApiStrings.Inputs.generateSignature::message.name, message)
+      marshallParameter(Inputs.generateSignature::derivationOptionsJson.name, derivationOptionsJson)
+      marshallParameter(Inputs.generateSignature::message.name, message)
     }
 
   private val generateSignatureMarshaller =
     apiMarshallers.add<GenerateSignatureResult>(SuspendApi::generateSignature.name) {
       object : GenerateSignatureResult {
-        override val signature = unmarshallByteArray(ApiStrings.Outputs.generateSignature::signature.name)
+        override val signature = unmarshallByteArray(Outputs.generateSignature::signature.name)
         override val signatureVerificationKey =
-          SignatureVerificationKey.fromJson(unmarshallString(ApiStrings.Outputs.generateSignature::signatureVerificationKey.name))
+          SignatureVerificationKey.fromJson(unmarshallString(Outputs.generateSignature::signatureVerificationKey.name))
       }
    }
 

@@ -9,6 +9,9 @@ class ApiStrings {
   }
 
   class Inputs {
+    // For URL-based APIs, the command name and the https uri to respond to
+    val command = "command"
+    val respondTo = "respondTo"
 
     open class withDerivationOptions {
       val derivationOptionsJson = "derivationOptionsJson"
@@ -43,6 +46,7 @@ class ApiStrings {
   }
   class Outputs {
     val exception = "exception"
+    val exceptionMessage = "exceptionMessage"
 
     object generateSignature {
       const val signature = "signature"

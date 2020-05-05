@@ -30,7 +30,7 @@ open class ApiPermissionChecksForUrls(
   ): Unit {
     if (!isClientAuthorizedInFaceOfRestrictions(restrictions)) {
       // The client application id does not start with any of the specified prefixes
-      throw ClientUriNotAuthorizedException(clientsUrl, restrictions?.urlPrefixesAllowed)
+      throw ClientUriNotAuthorizedException(clientsUrl, restrictions?.urlPrefixesAllowed ?: listOf<String>())
     }
   }
 }
