@@ -3,61 +3,32 @@ package org.dicekeys.read
 import java.nio.ByteBuffer
 
 
-class ReadKeySqr {
-    init {
-        System.loadLibrary("jni-read-keysqr")
+class ReadKeySqr() {
+    companion object {
+        init {
+            System.loadLibrary("jni-read-keysqr")
+        }
     }
+    private var nativeObjectPtr: Long = constructJNI()
 
-    //
-    // JNI support functions
-    //
-    private external fun newKeySqrImageReaderJNI(): Long
-    private external fun processImageJNI(
-            reader: Long,
+    private external fun constructJNI(): Long
+    private external fun destructJNI()
+
+    fun finalize() = destructJNI()
+
+    external fun processImage(
             width: Int,
             height: Int,
             bytesPerRow: Int,
             byteBufferForGrayscaleChannel: ByteBuffer
     ): Boolean
-    private external fun renderAugmentationOverlayJNI(
-            reader: Long,
+
+    external fun renderAugmentationOverlay(
             width: Int,
             height: Int,
             byteBufferForOverlay: ByteBuffer
     )
-    private external fun deleteKeySqrImageReaderJNI(
-            reader: Long
-    )
-    private external fun jsonKeySqrReadJNI(
-            reader: Long
-    ): String
 
-    private var ptrToKeySqrImageReader: Long = newKeySqrImageReaderJNI()
+    external fun jsonKeySqrRead(): String
 
-    fun processImage(
-            width: Int,
-            height: Int,
-            bytesPerRow: Int,
-            byteBufferForGrayscaleChannel: ByteBuffer
-    ): Boolean  {
-        return  processImageJNI(ptrToKeySqrImageReader, width, height, bytesPerRow, byteBufferForGrayscaleChannel)
-    }
-
-    fun jsonKeySqrRead(): String
-    {
-        return jsonKeySqrReadJNI(ptrToKeySqrImageReader)
-    }
-
-    fun renderAugmentationOverlay(
-            width: Int,
-            height: Int,
-            byteBufferForOverlay: ByteBuffer
-    )
-    {
-        renderAugmentationOverlayJNI(ptrToKeySqrImageReader, width, height, byteBufferForOverlay)
-    }
-
-    fun finalize() {
-       deleteKeySqrImageReaderJNI(ptrToKeySqrImageReader)
-    }
 }
