@@ -14,21 +14,6 @@ open class Face(
         FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTRBL)
 
     companion object {
-        fun keySqrFromHumanReadableForm(hrf: String): KeySqr<Face> {
-            if (hrf.length == 75) {
-                // Human readable form with orientations (letter + digit + orientation) x 25
-                return KeySqr(
-                        (0..24).map { k -> Face(hrf[k * 3], hrf[k * 3 + 1], hrf[k * 3 + 2]) }
-                )
-            } else if (hrf.length == 50) {
-                // Human readable form without orientations (letter + digit) x 25
-                return KeySqr(
-                        (0..24).map { k -> Face(hrf[k * 2], hrf[k * 2 + 1], '?') }
-                )
-            } else throw InvalidParameterException("Invalid length")
-        }
-
-
         fun majorityOfThree(a: Char, b: Char, c: Char): Char {
             return when {
                 (a == b || a == c) -> a

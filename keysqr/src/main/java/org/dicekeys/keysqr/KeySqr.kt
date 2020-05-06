@@ -1,38 +1,55 @@
 package org.dicekeys.keysqr
 
+import java.security.InvalidParameterException
+
 open class KeySqr<F: Face>(val faces: List<F>) {
   companion object {
     const val NumberOfFacesInKey = 25
     val rotationIndexes = listOf<List<Byte>>(
       listOf<Byte>(
-              0,  1,  2,  3,  4,
-              5,  6,  7,  8,  9,
-              10, 11, 12, 13, 14,
-              15, 16, 17, 18, 19,
-              20, 21, 22, 23, 24
+        0, 1, 2, 3, 4,
+        5, 6, 7, 8, 9,
+        10, 11, 12, 13, 14,
+        15, 16, 17, 18, 19,
+        20, 21, 22, 23, 24
       ),
       listOf<Byte>(
-              20, 15, 10,  5,  0,
-              21, 16, 11,  6,  1,
-              22, 17, 12,  7,  2,
-              23, 18, 13,  8,  3,
-              24, 19, 14,  9,  4
+        20, 15, 10, 5, 0,
+        21, 16, 11, 6, 1,
+        22, 17, 12, 7, 2,
+        23, 18, 13, 8, 3,
+        24, 19, 14, 9, 4
       ),
       listOf<Byte>(
-              24, 23, 22, 21, 20,
-              19, 18, 17, 16, 15,
-              14, 13, 12, 11, 10,
-              9,  8,  7,  6,  5,
-              4,  3,  2,  1,  0
+        24, 23, 22, 21, 20,
+        19, 18, 17, 16, 15,
+        14, 13, 12, 11, 10,
+        9, 8, 7, 6, 5,
+        4, 3, 2, 1, 0
       ),
       listOf<Byte>(
-              4,  9, 14, 19, 24,
-              3,  8, 13, 18, 23,
-              2,  7, 12, 17, 22,
-              1,  6, 11, 16, 21,
-              0,  5, 10, 15, 20
+        4, 9, 14, 19, 24,
+        3, 8, 13, 18, 23,
+        2, 7, 12, 17, 22,
+        1, 6, 11, 16, 21,
+        0, 5, 10, 15, 20
       )
     )
+
+    @JvmStatic
+    fun fromHumanReadableForm(hrf: String): KeySqr<Face> {
+      return when (hrf.length) {
+        // Human readable form with orientations (letter + digit + orientation) x 25
+        75 -> KeySqr(
+          (0..24).map { k -> Face(hrf[k * 3], hrf[k * 3 + 1], hrf[k * 3 + 2]) }
+        )
+        // Human readable form without orientations (letter + digit) x 25
+        50 -> KeySqr(
+          (0..24).map { k -> Face(hrf[k * 2], hrf[k * 2 + 1], '?') }
+        )
+        else -> throw InvalidParameterException("Invalid length")
+      }
+    }
   }
 
   fun toHumanReadableForm(): String {

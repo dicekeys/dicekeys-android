@@ -42,7 +42,7 @@ open class PermissionCheckedSeedAccessor(
       loadDiceKey: () -> Deferred<DiceKey>,
       requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
         ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
-    ): PermissionCheckedSeedAccessor? = PermissionCheckedSeedAccessor(
+    ): PermissionCheckedSeedAccessor = PermissionCheckedSeedAccessor(
       ApiPermissionChecksForPackages(
         activity.callingActivity?.packageName ?: "",
         requestUsersConsent
@@ -51,13 +51,13 @@ open class PermissionCheckedSeedAccessor(
     )
 
     fun createForUrlApi(
-      activity: Activity,
+      respondTo: String,
       loadDiceKey: () -> Deferred<DiceKey>,
       requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
       ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
-    ): PermissionCheckedSeedAccessor? = PermissionCheckedSeedAccessor(
+    ): PermissionCheckedSeedAccessor = PermissionCheckedSeedAccessor(
       ApiPermissionChecksForUrls(
-        activity.intent.data!!.getQueryParameter("responseUrl")!!,
+        respondTo,
         requestUsersConsent
       ),
       loadDiceKey

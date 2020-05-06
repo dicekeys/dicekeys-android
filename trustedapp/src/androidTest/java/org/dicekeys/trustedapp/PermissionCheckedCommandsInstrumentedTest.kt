@@ -1,4 +1,4 @@
-package org.dicekeys.dicekeysapp
+package org.dicekeys.trustedapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.CompletableDeferred
@@ -8,7 +8,7 @@ import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
-import org.dicekeys.keysqr.Face
+import org.dicekeys.keysqr.DiceKey
 import org.dicekeys.trustedapp.apicommands.permissionchecked.ApiPermissionChecksForPackages
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedCommands
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedSeedAccessor
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class PermissionCheckedCommandsInstrumentedTest {
 
-  val diceKey = Face.keySqrFromHumanReadableForm(
+  val diceKey = DiceKey.fromHumanReadableForm(
     "A1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1t"
   )
 
@@ -33,7 +33,9 @@ class PermissionCheckedCommandsInstrumentedTest {
     runBlocking {
       PermissionCheckedCommands(PermissionCheckedSeedAccessor(
         ApiPermissionChecksForPackages("com.examplespoof")
-        { CompletableDeferred<Boolean>(true) })
+        { CompletableDeferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>(
+          UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow
+        ) })
       { CompletableDeferred(diceKey) })
         .sealWithSymmetricKey(
           ApiDerivationOptions().apply {
@@ -52,7 +54,9 @@ class PermissionCheckedCommandsInstrumentedTest {
     runBlocking {
       PermissionCheckedCommands(PermissionCheckedSeedAccessor(
         ApiPermissionChecksForPackages("com.examplespoof")
-        { CompletableDeferred<Boolean>(true) })
+        { CompletableDeferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>(
+          UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow
+        ) })
       { CompletableDeferred(diceKey) })
         .unsealWithSymmetricKey(PackagedSealedMessage(
           ByteArray(0),
@@ -71,7 +75,9 @@ class PermissionCheckedCommandsInstrumentedTest {
     runBlocking {
       val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor(
         ApiPermissionChecksForPackages("com.examplespoof")
-        { CompletableDeferred<Boolean>(true) })
+        { CompletableDeferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>(
+          UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow
+        ) })
       { CompletableDeferred(diceKey) })
       val publicKey = api.getSealingKey("")
       val packagedSealedMessage = publicKey.seal("The secret ingredient is eternal despair.",
@@ -91,7 +97,9 @@ class PermissionCheckedCommandsInstrumentedTest {
     runBlocking {
       val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor(
         ApiPermissionChecksForPackages("com.example")
-        { CompletableDeferred<Boolean>(true) })
+        { CompletableDeferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>(
+          UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow
+        ) })
       { CompletableDeferred(diceKey) })
       val privateKey = api.getUnsealingKey("")
       Assert.fail()
@@ -103,7 +111,9 @@ class PermissionCheckedCommandsInstrumentedTest {
     runBlocking {
       val api = PermissionCheckedCommands(PermissionCheckedSeedAccessor(
         ApiPermissionChecksForPackages("com.example")
-        { CompletableDeferred<Boolean>(true) })
+        { CompletableDeferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>(
+          UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow
+        ) })
       { CompletableDeferred(diceKey) })
       val privateKey = api.getUnsealingKey(
         ApiDerivationOptions().apply {

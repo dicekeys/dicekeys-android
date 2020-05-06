@@ -22,7 +22,11 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
   ) {
     super.onCreate(savedInstanceState) // , persistentState)
     setContentView(R.layout.activity_execute_api_command)
-    executeApiCommand()
+    if (intent.action == Intent.ACTION_VIEW && intent.data != null) {
+      executeWebApiCommand()
+    } else {
+      executeIntentApiCommand()
+    }
   }
 
   /**
@@ -75,8 +79,8 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
    * be performed.
    */
   private var loadDiceKeyCompletableDeferred : CompletableDeferred<DiceKey>? = null
-  private fun loadDiceKey(): Deferred<DiceKey> =
-    loadDiceKeyCompletableDeferred ?:
+  private fun loadDiceKeyAsync(): Deferred<DiceKey> =
+    loadDiceKeyCompletableDeferred ?: (
        CompletableDeferred<DiceKey>().also { completableDeferred ->
         val requestId = UUID.randomUUID().toString()
         loadDiceKeyCompletableDeferred = completableDeferred
@@ -89,31 +93,37 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
           loadDiceKeyCompletableDeferred = null
         }
       }
+    )
 
   /**
    * Execute the API request specified via an intent.
    */
-  private fun executeApiCommand() {
+  private fun executeIntentApiCommand() {
     // Get a permission-checked accessor for obtaining seeds from the DiceKey.
     // If the user doesn't have a DiceKey loaded into memory yet, this will trigger
     // a load request, return null, and cause this function to return null.
     // When a key is loaded, this function will be called again.
-    val permissionCheckedSeedAccessor =
-      PermissionCheckedSeedAccessor.createForIntentApi(
-        this,
-        ::loadDiceKey,
-        ::requestUsersConsentAsync
-      ) ?: return
-
     // Our API commands don't get a copy of the raw DiceKey seed, but only an accessor
     // which must be passed parameters to check.
-    val intentMarshalledApi = PermissionCheckedIntentCommands(
-      permissionCheckedSeedAccessor, this
+    val api = PermissionCheckedIntentCommands(
+      this, ::loadDiceKeyAsync, ::requestUsersConsentAsync
     )
 
     GlobalScope.launch {
       // Start the suspendable command in its own thread
-      intentMarshalledApi.executeCommand()
+      api.executeCommand()
+    }
+  }
+
+  private fun executeWebApiCommand() {
+    // Our API commands don't get a copy of the raw DiceKey seed, but only an accessor
+    // which must be passed parameters to check.
+    val api = PermissionCheckedUrlCommands(
+      intent.data!!, ::loadDiceKeyAsync, ::requestUsersConsentAsync, this
+    )
+    GlobalScope.launch {
+      // Start the suspendable command in its own thread
+      api.executeCommand()
     }
   }
 }

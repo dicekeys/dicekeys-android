@@ -2,13 +2,19 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiStrings
+import org.dicekeys.api.UnsealingInstructions
+import org.dicekeys.keysqr.DiceKey
 
 class PermissionCheckedIntentCommands(
-  permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor,
-  private val activity: Activity
-) : PermissionCheckedMarshalledCommands(permissionCheckedSeedAccessor) {
+  private val activity: Activity,
+  loadDiceKey: () -> Deferred<DiceKey>,
+  requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
+        ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
+) : PermissionCheckedMarshalledCommands(
+  PermissionCheckedSeedAccessor.createForIntentApi(activity, loadDiceKey, requestUsersConsent)
+) {
   private val requestIntent = activity.intent
   private val resultIntent = Intent()
 
@@ -28,22 +34,27 @@ class PermissionCheckedIntentCommands(
     return this
   }
 
-  override fun sendSuccess() {
-    super.sendSuccess()
-    // Return the result intent as a success response (OK)
-    activity.setResult(AppCompatActivity.RESULT_OK, resultIntent)
-    // Finish this activity, which exist(ed) only for the purpose of handling this API request
+   private fun sendResult(resultType: Int, intent: Intent) {
+    activity.setResult(resultType, intent)
     activity.finish()
   }
 
+  override fun sendSuccess() {
+    super.sendSuccess()
+    // Return the result intent as a success response (OK)
+    sendResult(Activity.RESULT_OK, resultIntent)
+  }
+
   override fun sendException(exception: Throwable) {
-    activity.setResult(Activity.RESULT_CANCELED, Intent().apply{
-      putExtra(ApiStrings::requestId.name,
-        unmarshallStringParameter(ApiStrings::requestId.name)
-      )
-      putExtra(ApiStrings.Outputs::exception.name, exception)
-    })
-    activity.finish()
+    sendResult(
+      Activity.RESULT_CANCELED,
+      Intent().apply{
+        putExtra(ApiStrings::requestId.name,
+          unmarshallStringParameter(ApiStrings::requestId.name)
+        )
+        putExtra(ApiStrings.Outputs::exception.name, exception)
+      }
+    )
   }
 
   override suspend fun executeCommand() {

@@ -3,7 +3,6 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
-import org.dicekeys.api.ClientUriNotAuthorizedException
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.crypto.seeded.ClientNotAuthorizedException
 

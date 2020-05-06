@@ -8,11 +8,11 @@ import androidx.fragment.app.Fragment
 import org.dicekeys.crypto.seeded.InvalidArgumentException
 import org.dicekeys.crypto.seeded.JsonSerializable
 
-abstract class DiceKeysWebApiClient(
-  private val respondToUriString: String
+class DiceKeysWebApiClient(
+  private val respondToUriString: String,
+  private val callUri: (uri: Uri) -> Unit
 ): Api() {
 
-  abstract protected fun callUri(uri: Uri)
 
   override fun call(command: String, marshallParameters: ApiMarshaller.ParameterMarshaller.() -> Unit) {
     callUri(
@@ -66,20 +66,19 @@ abstract class DiceKeysWebApiClient(
      * calling [Activity.startActivityForResult], but it needs your help
      * to relay the results. You must have your activity override
      * [Activity.onActivityResult] and pass the received intent to
-     * your [DiceKeysApiClient]'s [handleOnActivityResult] method.
+     * your [handleResult] method.
      */
     @JvmStatic
     fun create(
       activity: Activity,
       respondToUriString:String
-    ): DiceKeysWebApiClient = object : DiceKeysWebApiClient(respondToUriString) {
-      override fun callUri(uri: Uri) {
+    ): DiceKeysWebApiClient = DiceKeysWebApiClient(respondToUriString) { uri ->
         val intent = Intent(Intent.ACTION_VIEW, uri)
         if (intent.resolveActivity(activity.packageManager) != null) {
           activity.startActivity(intent)
         }
       }
-    }
+
 
     /**
      * Instantiate an API client for a use within a [Fragment].
@@ -91,20 +90,17 @@ abstract class DiceKeysWebApiClient(
      * calling [Fragment.startActivityForResult], but it needs your help
      * to relay the results. You must have your activity override
      * [Fragment.onActivityResult] and pass the received intent to
-     * your [DiceKeysApiClient]'s [handleOnActivityResult] method.
+     * your [handleResult] method.
      */
     @JvmStatic
     fun create(
       fragment: Fragment,
       respondToUriString:String
-    ): DiceKeysWebApiClient = object : DiceKeysWebApiClient(respondToUriString) {
-      override fun callUri(uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        if (intent.resolveActivity(fragment.activity!!.packageManager) != null) {
-          fragment.startActivity(intent)
-        }
+    ): DiceKeysWebApiClient = DiceKeysWebApiClient(respondToUriString) { uri ->
+      val intent = Intent(Intent.ACTION_VIEW, uri)
+      if (intent.resolveActivity(fragment.activity!!.packageManager) != null) {
+        fragment.startActivity(intent)
       }
-
     }
   }
 

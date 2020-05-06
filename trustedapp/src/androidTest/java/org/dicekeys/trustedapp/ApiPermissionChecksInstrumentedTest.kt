@@ -1,4 +1,4 @@
-package org.dicekeys.dicekeysapp
+package org.dicekeys.trustedapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.CompletableDeferred
