@@ -9,7 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.dicekeys.api.DiceKeysIntentApiClient
+import org.dicekeys.api.Api
+import org.dicekeys.api.DiceKeysWebApiClient
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
@@ -18,39 +19,45 @@ class MainActivity : AppCompatActivity() {
         const val RC_DISPLAY_DICE = 2
     }
     private lateinit var buttonStart: Button
-    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
     private lateinit var resultTextView: TextView
+    private lateinit var api : DiceKeysWebApiClient
     val derivationOptionsJson = "{}"
     val testMessage = "The secret ingredient is dihydrogen monoxide"
     val testMessageByteArray = testMessage.toByteArray(Charsets.UTF_8)
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.data?.let { api.handleResult( it ) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
+      // api = DiceKeysIntentApiClient.create(this)
+        api = DiceKeysWebApiClient.create(this, "https://test-app.dicekeys.org/api", "https://dicekeys.org/api")
         setContentView(R.layout.activity_main)
         resultTextView = findViewById(R.id.result_text)
         buttonStart = findViewById(R.id.btn_start)
 
         buttonStart.setOnClickListener{ GlobalScope.launch(Dispatchers.Main) { try {
-            val seed = diceKeysApiClient.getSecret(derivationOptionsJson)
+            val seed = api.getSecret(derivationOptionsJson)
             resultTextView.text = "Seed=${Base64.encodeToString(seed.secretBytes, Base64.DEFAULT)}"
-            val packagedSealedMessage = diceKeysApiClient.sealWithSymmetricKey(
+            val packagedSealedMessage = api.sealWithSymmetricKey(
                 derivationOptionsJson,
                 testMessageByteArray
             )
             resultTextView.text = "${resultTextView.text}\nSymmetrically sealed message '${testMessage}' as ciphertext '${Base64.encodeToString(packagedSealedMessage.ciphertext, Base64.DEFAULT)}'"
-            val plaintext = diceKeysApiClient.unsealWithSymmetricKey(packagedSealedMessage)
+            val plaintext = api.unsealWithSymmetricKey(packagedSealedMessage)
             resultTextView.text =
                 "${resultTextView.text}\nUnsealed '${String(plaintext, Charsets.UTF_8)}'"
-            val sig = diceKeysApiClient.generateSignature(derivationOptionsJson, testMessageByteArray)
+            val sig = api.generateSignature(derivationOptionsJson, testMessageByteArray)
             resultTextView.text =
                 "${resultTextView.text}\nSigned test message '${Base64.encodeToString(sig.signature, Base64.DEFAULT)}'"
-            val signatureVerificationKey = diceKeysApiClient.getSignatureVerificationKey(derivationOptionsJson)
+            val signatureVerificationKey = api.getSignatureVerificationKey(derivationOptionsJson)
             val keysMatch = signatureVerificationKey == sig.signatureVerificationKey
             val verified = signatureVerificationKey.verifySignature(testMessageByteArray, sig.signature)
             resultTextView.text =
                 "${resultTextView.text}\nVerification key match=${keysMatch}, verification result=${verified}"
-            val publicKey = diceKeysApiClient.getSealingKey(derivationOptionsJson)
+            val publicKey = api.getSealingKey(derivationOptionsJson)
             val packagedSealedPkMessage = publicKey.seal(testMessageByteArray, """{
                |  "requireUsersConsent": {
                |     "question": "Do you want use \"8fsd8pweDmqed\" as your SpoonerMail account password and remove your current password?",
@@ -61,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                |  }   
                |}""".trimMargin())
             resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedPkMessage.ciphertext, Base64.DEFAULT)}'"
-            val pkPlaintext = diceKeysApiClient.unsealWithUnsealingKey(packagedSealedPkMessage)
+            val pkPlaintext = api.unsealWithUnsealingKey(packagedSealedPkMessage)
             resultTextView.text = "${resultTextView.text}\nUnsealed '${String(pkPlaintext, Charsets.UTF_8)}'"
             resultTextView.text = "${resultTextView.text}\nTests complete"
         } catch (e: Exception) {
@@ -69,9 +76,10 @@ class MainActivity : AppCompatActivity() {
         }}}
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        data?.let { diceKeysApiClient.handleOnActivityResult(it) }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        // intent?.let { api.handleOnActivityResult(it) }
+        intent?.data?.let { api.handleResult( it ) }
     }
 
 

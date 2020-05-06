@@ -40,7 +40,8 @@ class EndToEndUrlApiTests {
   private val api : Api get() {
     var mockedWebApi : DiceKeysWebApiClient? = null
     mockedWebApi = DiceKeysWebApiClient(
-      "https://myapp/apiresponse/"
+      "https://ThisUriIsNotEventUsedBecauseWeAreMocking/",
+      "https://myapp.ThisUriIsNotEventUsedBecauseWeAreMocking/apiresponse/"
     ) { requestUri ->
       runBlocking {
         mockApiServerCall(requestUri) { responseUri -> mockedWebApi?.handleResult(responseUri) }

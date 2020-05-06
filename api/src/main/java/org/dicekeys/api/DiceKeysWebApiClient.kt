@@ -9,6 +9,7 @@ import org.dicekeys.crypto.seeded.InvalidArgumentException
 import org.dicekeys.crypto.seeded.JsonSerializable
 
 class DiceKeysWebApiClient(
+  private val apiUriString: String,
   private val respondToUriString: String,
   private val callUri: (uri: Uri) -> Unit
 ): Api() {
@@ -16,7 +17,7 @@ class DiceKeysWebApiClient(
 
   override fun call(command: String, marshallParameters: ApiMarshaller.ParameterMarshaller.() -> Unit) {
     callUri(
-      Uri.Builder().apply {
+      Uri.parse(apiUriString).buildUpon().apply {
         appendQueryParameter(ApiStrings.Inputs::command.name, command)
         appendQueryParameter(ApiStrings.Inputs::respondTo.name, respondToUriString)
         marshallParameters(
@@ -71,8 +72,9 @@ class DiceKeysWebApiClient(
     @JvmStatic
     fun create(
       activity: Activity,
-      respondToUriString:String
-    ): DiceKeysWebApiClient = DiceKeysWebApiClient(respondToUriString) { uri ->
+      respondToUriString:String,
+      apiUriString: String
+    ): DiceKeysWebApiClient = DiceKeysWebApiClient(apiUriString, respondToUriString) { uri ->
         val intent = Intent(Intent.ACTION_VIEW, uri)
         if (intent.resolveActivity(activity.packageManager) != null) {
           activity.startActivity(intent)
@@ -86,17 +88,26 @@ class DiceKeysWebApiClient(
      * The [Fragment] using the [DiceKeysApiClient] must pass a reference
      * to itself via the [fragment] parameter.
      *
-     * This client will send API requests to the DiceKeys app by creating intents and
-     * calling [Fragment.startActivityForResult], but it needs your help
-     * to relay the results. You must have your activity override
-     * [Fragment.onActivityResult] and pass the received intent to
-     * your [handleResult] method.
+     * Your activity must run in SingleTask mode (in your Manifest's activity tag,
+     * use the attribute android:launchMode="singleTask".
+     *
+     * Results Urls will arrive in new intents, so you must override your activity's
+     * onNewIntent() fun to read the Url.
+     *
+     * ```kotlin
+     *     override fun onNewIntent(intent: Intent?) {
+     *       super.onNewIntent(intent)
+     *       intent?.data?.let { api.handleResult( it ) }
+     *     }
+     * ```
+     *
      */
     @JvmStatic
     fun create(
       fragment: Fragment,
-      respondToUriString:String
-    ): DiceKeysWebApiClient = DiceKeysWebApiClient(respondToUriString) { uri ->
+      respondToUriString:String,
+      apiUriString: String
+    ): DiceKeysWebApiClient = DiceKeysWebApiClient(apiUriString, respondToUriString) { uri ->
       val intent = Intent(Intent.ACTION_VIEW, uri)
       if (intent.resolveActivity(fragment.activity!!.packageManager) != null) {
         fragment.startActivity(intent)
