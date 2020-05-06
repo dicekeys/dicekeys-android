@@ -2,7 +2,7 @@
 #include <jni.h>
 #include "native-object-jni.hpp"
 #include "./read-keysqr/lib-read-keysqr/graphics/cv.h"
-#include "./read-keysqr/lib-read-keysqr/read-keysqr.h"
+#include "./read-keysqr/lib-read-keysqr/read-keysqr.hpp"
 #include "./read-keysqr/lib-keysqr/lib-keysqr.hpp"
 
 extern "C" {
