@@ -44,8 +44,14 @@ abstract class PermissionCheckedMarshalledCommands(
   private fun getCommonDerivationOptionsJsonParameter() : String =
     unmarshallRequiredStringParameter((Inputs.withDerivationOptions::derivationOptionsJson.name))
 
-  private suspend fun getSecret(): Unit = marshallResult(Outputs.getSecret::secret.name,
-      api.getSecret(getCommonDerivationOptionsJsonParameter()).toJson()
+  private fun getAuthToken(): Unit = marshallResult(
+    Outputs.getAuthToken::authToken.name,
+    api.getAuthToken(unmarshallRequiredStringParameter(Inputs::respondTo.name))
+  ).sendSuccess()
+
+  private suspend fun getSecret(): Unit = marshallResult(
+    Outputs.getSecret::secret.name,
+    api.getSecret(getCommonDerivationOptionsJsonParameter()).toJson()
     ).sendSuccess()
 
   private suspend fun sealWithSymmetricKey(): Unit = marshallResult(
@@ -85,13 +91,6 @@ abstract class PermissionCheckedMarshalledCommands(
         .toJson()
     ).sendSuccess()
 
-  private fun getAuthToken(): Unit = marshallResult(
-    Outputs.getAuthToken::authToken.name,
-    api.getAuthToken().also{ authToken ->
-      AuthenticationTokens.add(authToken, unmarshallRequiredStringParameter(Inputs::respondTo.name))
-    }
-  ).sendSuccess()
-
   private suspend fun generateSignature(): Unit =
     api.generateSignature(
       getCommonDerivationOptionsJsonParameter(),
@@ -123,6 +122,7 @@ abstract class PermissionCheckedMarshalledCommands(
   protected suspend fun executeCommand(command: String) {
     try {
       when (command) {
+         ::getAuthToken.name -> getAuthToken()
         SuspendApi::generateSignature.name -> generateSignature()
         SuspendApi::getSealingKey.name -> getSealingKey()
         SuspendApi::getSecret.name -> getSecret()
@@ -137,7 +137,7 @@ abstract class PermissionCheckedMarshalledCommands(
           throw IllegalArgumentException("Invalid command for DiceKeys API")
         }
       }
-    }catch (e: Exception) {
+    } catch (e: Exception) {
       sendException(e)
     }
   }

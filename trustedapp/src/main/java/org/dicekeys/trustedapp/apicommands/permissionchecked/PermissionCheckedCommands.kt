@@ -19,8 +19,8 @@ import java.security.SecureRandom
 class PermissionCheckedCommands(
   private val permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
 ) {
-  fun getAuthToken(): String =
-    Base64.encodeToString(SecureRandom().generateSeed(20), Base64.URL_SAFE)
+  fun getAuthToken(respondToUrl: String): String =
+    AuthenticationTokens.add(respondToUrl)
 
   /**
    * Implement [DiceKeysIntentApiClient.getSecret] with the necessary permissions checks

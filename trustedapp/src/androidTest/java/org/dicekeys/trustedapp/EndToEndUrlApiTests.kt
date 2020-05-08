@@ -6,8 +6,10 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
 import org.dicekeys.api.Api
+import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.api.DiceKeysWebApiClient
+import org.dicekeys.crypto.seeded.DerivationOptions
 import org.dicekeys.keysqr.DiceKey
 import org.dicekeys.keysqr.KeySqr
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedUrlCommands
@@ -37,18 +39,17 @@ class EndToEndUrlApiTests {
     requestUri, ::mockLoadDiceKeyAsync, ::mockRequestUsersConsentAlwaysAsync, sendResponse
   )
 
+  private val apiUrlString: String = "https://ThisUriIsNotEventUsedBecauseWeAreMocking/"
+  private val respondToUrlString: String = "https://myapp.ThisUriIsNotEventUsedBecauseWeAreMocking/apiresponse/"
   private val api : Api get() {
     var mockedWebApi : DiceKeysWebApiClient? = null
-    mockedWebApi = DiceKeysWebApiClient(
-      "https://ThisUriIsNotEventUsedBecauseWeAreMocking/",
-      "https://myapp.ThisUriIsNotEventUsedBecauseWeAreMocking/apiresponse/"
-    ) { requestUri ->
+    mockedWebApi = DiceKeysWebApiClient(apiUrlString, respondToUrlString) { requestUri ->
       runBlocking {
         mockApiServerCall(requestUri) { responseUri -> mockedWebApi?.handleResult(responseUri) }
           .executeCommand()
       }
     }
-    return mockedWebApi!! as Api
+    return mockedWebApi!!
   }
 
   private val derivationOptionsJson = "{}"
@@ -92,6 +93,17 @@ class EndToEndUrlApiTests {
            |}""".trimMargin())
     val plaintext = api.unsealWithUnsealingKey(packagedSealedPkMessage)
     Assert.assertArrayEquals(plaintext, testMessageByteArray)
+  }}
+
+  @Test
+  fun getSecretWithHandshake() { runBlocking {
+    val derivationOptions = ApiDerivationOptions().apply {
+      requireAuthenticationHandshake = true
+      urlPrefixesAllowed = listOf(respondToUrlString)
+      lengthInBytes = 13
+    }
+    val secret = api.getSecret(derivationOptions.toJson())
+    Assert.assertEquals(13, secret.secretBytes.size)
   }}
 
 }
