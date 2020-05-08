@@ -12,7 +12,7 @@ class DiceKeysWebApiClient(
   private val apiUriString: String,
   private val respondToUriString: String,
   private val callUri: (uri: Uri) -> Unit
-): Api() {
+): Api(true) {
 
 
   override fun call(command: String, marshallParameters: ApiMarshaller.ParameterMarshaller.() -> Unit) {

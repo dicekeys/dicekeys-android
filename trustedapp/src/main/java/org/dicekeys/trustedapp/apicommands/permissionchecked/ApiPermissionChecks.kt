@@ -2,6 +2,7 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
+import org.dicekeys.api.AuthenticationRequirements
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.crypto.seeded.ClientNotAuthorizedException
@@ -24,12 +25,12 @@ abstract class ApiPermissionChecks(
    * Those inheriting this class must implement this test of whether
    * a client is authorized.
    */
-  abstract fun isClientAuthorizedInFaceOfRestrictions(
-    restrictions: ApiDerivationOptions.Restrictions?
+  abstract fun doesClientMeetAuthenticationRequirements(
+    authenticationRequirements: AuthenticationRequirements
   ): Boolean
 
-  protected abstract fun throwIfClientNotAuthorized(
-    restrictions: ApiDerivationOptions.Restrictions?
+  abstract fun throwIfClientNotAuthorized(
+    authenticationRequirements: AuthenticationRequirements
   )
 
   /**
@@ -39,9 +40,9 @@ abstract class ApiPermissionChecks(
    *
    * @throws ClientNotAuthorizedException
    */
-  fun throwIfClientNotAuthorized(
-    derivationOptions: ApiDerivationOptions
-  ): Unit = throwIfClientNotAuthorized(derivationOptions.restrictions)
+//  fun throwIfClientNotAuthorized(
+//    derivationOptions: ApiDerivationOptions
+//  ): Unit = throwIfClientNotAuthorized(derivationOptions)
 
 
   /**
@@ -54,7 +55,7 @@ abstract class ApiPermissionChecks(
   suspend fun throwIfUnsealingInstructionsViolated(
     unsealingInstructions: UnsealingInstructions
   ) {
-    throwIfClientNotAuthorized(unsealingInstructions.restrictions)
+    throwIfClientNotAuthorized(unsealingInstructions)
     val requireUsersConsent = unsealingInstructions.requireUsersConsent ?: return;
     if (requestUsersConsent(requireUsersConsent).await() != UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow) {
       throw ClientMayNotRetrieveKeyException("Operation declined by user")

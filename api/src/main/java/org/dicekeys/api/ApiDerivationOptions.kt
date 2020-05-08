@@ -2,23 +2,6 @@ package org.dicekeys.api
 
 import org.dicekeys.crypto.seeded.*
 import org.json.JSONArray
-import org.json.JSONObject
-
-internal fun jsonArrayToStringList(jsonArray: JSONArray) : List<String> {
-    val list: MutableList<String> = ArrayList(jsonArray.length())
-    for (i in 0 until jsonArray.length()) {
-        list.add(jsonArray.getString(i))
-    }
-    return list.toList()
-
-}
-
-internal fun getJsonObjectsStringListOrNull(
-        jsonObj: JSONObject,
-        fieldName: String
-): List<String>? =
-        if (jsonObj.has(fieldName)) jsonArrayToStringList(jsonObj.getJSONArray(fieldName)) else null
-
 
 
 /**
@@ -61,55 +44,10 @@ internal fun getJsonObjectsStringListOrNull(
 open class ApiDerivationOptions constructor(
   derivationOptionsJson: String? = null,
   requiredType: Type? = null
-): DerivationOptions(
-    derivationOptionsJson, requiredType
+):  AuthenticationRequirements,
+    DerivationOptions(
+      derivationOptionsJson, requiredType
 ) {
-
-    /**
-     * This subclass is used to determine which clients/sites are permitted to use keys
-     * derived from a derivationOptionsJson string.
-     */
-    class Restrictions(
-            var jsonObj: JSONObject = JSONObject()
-    ) {
-        /**
-         * In Android, client applications are identified by their package name,
-         * which must be cryptographically signed before an application can enter the
-         * Google play store.
-         *
-         * If this value is specified, Android apps must have a package name that begins
-         * with one of the provided prefixes if they are to use a derived key.
-         *
-         * Note that all prefixes, and the client package names they are compared to,
-         * have an implicit '.' appended to to prevent attackers from registering the
-         * suffix of a package name.  Hence the package name "com.example.app" is treated
-         * as "com.example.app." and the prefix "com.example" is treated as
-         * "com.example." so that an attacker cannot generate a key by registering
-         * "com.examplesignedbyattacker".
-         */
-        var androidPackagePrefixesAllowed: List<String>?
-            get() = getJsonObjectsStringListOrNull(
-                    jsonObj, Restrictions::androidPackagePrefixesAllowed.name)
-            set(value) { jsonObj.put(
-                    Restrictions::androidPackagePrefixesAllowed.name, JSONArray(value) ) }
-
-        /**
-         * On Apple platforms, applications are specified by a URL containing a domain name
-         * from the Internet's Domain Name System (DNS).
-         *
-         * If this value is specified, applications must come from clients that have a URL prefix
-         * starting with one of the items on this list if they are to use a derived key.
-         *
-         * Since some platforms, including iOS, do not allow the DiceKeys app to authenticate
-         * the sender of an API request, the app may perform a cryptographic operation
-         * only if it has been instructed to send the result to a URL that starts with
-         * one of the permitted prefixes.
-         */
-        var urlPrefixesAllowed: List<String>?
-            get() = getJsonObjectsStringListOrNull(jsonObj,
-                    Restrictions::urlPrefixesAllowed.name)
-            set(value) { jsonObj.put(Restrictions::urlPrefixesAllowed.name, JSONArray(value) )}
-    }
 
     /**
      * Unless this value is explicitly set to _true_, the DiceKeys may prevent
@@ -129,21 +67,49 @@ open class ApiDerivationOptions constructor(
         get () = optBoolean(ApiDerivationOptions::clientMayRetrieveKey.name, false)
         set(value)  { put(ApiDerivationOptions::clientMayRetrieveKey.name, value) }
 
+
     /**
-     * Restrict which clients are permitted to use the API to work with the derived key.
-     * See the documentation for [Restrictions].
+     * In Android, client applications are identified by their package name,
+     * which must be cryptographically signed before an application can enter the
+     * Google play store.
+     *
+     * If this value is specified, Android apps must have a package name that begins
+     * with one of the provided prefixes if they are to use a derived key.
+     *
+     * Note that all prefixes, and the client package names they are compared to,
+     * have an implicit '.' appended to to prevent attackers from registering the
+     * suffix of a package name.  Hence the package name "com.example.app" is treated
+     * as "com.example.app." and the prefix "com.example" is treated as
+     * "com.example." so that an attacker cannot generate a key by registering
+     * "com.examplesignedbyattacker".
      */
-    var restrictions: Restrictions?
-        get() =
-            if (has(ApiDerivationOptions::restrictions.name))
-                Restrictions(getJSONObject(ApiDerivationOptions::restrictions.name))
-            else null
-        set(value) {
-            if (value == null)
-                remove(ApiDerivationOptions::restrictions.name)
-            else
-                put(ApiDerivationOptions::restrictions.name, value.jsonObj)
-        }
+    override var androidPackagePrefixesAllowed: List<String>?
+        get() = JsonStringListHelpers.getJsonObjectsStringListOrNull(
+          this, ApiDerivationOptions::androidPackagePrefixesAllowed.name)
+        set(value) { put(
+          ApiDerivationOptions::androidPackagePrefixesAllowed.name, JSONArray(value) ) }
+
+    /**
+     * On Apple platforms, applications are specified by a URL containing a domain name
+     * from the Internet's Domain Name System (DNS).
+     *
+     * If this value is specified, applications must come from clients that have a URL prefix
+     * starting with one of the items on this list if they are to use a derived key.
+     *
+     * Since some platforms, including iOS, do not allow the DiceKeys app to authenticate
+     * the sender of an API request, the app may perform a cryptographic operation
+     * only if it has been instructed to send the result to a URL that starts with
+     * one of the permitted prefixes.
+     */
+    override var urlPrefixesAllowed: List<String>?
+        get() = JsonStringListHelpers.getJsonObjectsStringListOrNull(this,
+          ApiDerivationOptions::urlPrefixesAllowed.name)
+        set(value) { put(ApiDerivationOptions::urlPrefixesAllowed.name, JSONArray(value) )}
+
+
+  override var requireAuthenticationHandshake: Boolean
+      get() = optBoolean(ApiDerivationOptions::requireAuthenticationHandshake.name, false)
+      set(value) { put(ApiDerivationOptions::requireAuthenticationHandshake.name, value) }
 
     /**
      * When using a DiceKey as a seed, setting this value to true will exclude the orientation

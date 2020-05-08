@@ -51,13 +51,15 @@ open class PermissionCheckedSeedAccessor(
     )
 
     fun createForUrlApi(
-      respondTo: String,
+      respondToUrl: String,
+      handshakeAuthenticatedUrl: String?,
       loadDiceKey: () -> Deferred<DiceKey>,
       requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
       ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
     ): PermissionCheckedSeedAccessor = PermissionCheckedSeedAccessor(
       ApiPermissionChecksForUrls(
-        respondTo,
+        respondToUrl,
+        handshakeAuthenticatedUrl,
         requestUsersConsent
       ),
       loadDiceKey

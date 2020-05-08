@@ -1,7 +1,9 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
+import android.util.Base64
 import org.dicekeys.crypto.seeded.*
 import org.dicekeys.api.*
+import java.security.SecureRandom
 
 /**
  * Implements the server-side API calls and the necessary permission checks,
@@ -17,6 +19,9 @@ import org.dicekeys.api.*
 class PermissionCheckedCommands(
   private val permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
 ) {
+  fun getAuthToken(): String =
+    Base64.encodeToString(SecureRandom().generateSeed(20), Base64.URL_SAFE)
+
   /**
    * Implement [DiceKeysIntentApiClient.getSecret] with the necessary permissions checks
    */

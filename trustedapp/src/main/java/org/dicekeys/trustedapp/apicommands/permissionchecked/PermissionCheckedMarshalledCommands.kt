@@ -85,6 +85,13 @@ abstract class PermissionCheckedMarshalledCommands(
         .toJson()
     ).sendSuccess()
 
+  private fun getAuthToken(): Unit = marshallResult(
+    Outputs.getAuthToken::authToken.name,
+    api.getAuthToken().also{ authToken ->
+      AuthenticationTokens.add(authToken, unmarshallRequiredStringParameter(Inputs::respondTo.name))
+    }
+  ).sendSuccess()
+
   private suspend fun generateSignature(): Unit =
     api.generateSignature(
       getCommonDerivationOptionsJsonParameter(),

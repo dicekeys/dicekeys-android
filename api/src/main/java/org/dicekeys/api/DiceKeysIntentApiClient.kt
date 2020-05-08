@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import org.dicekeys.crypto.seeded.InvalidArgumentException
 import org.dicekeys.crypto.seeded.JsonSerializable
 
-abstract class DiceKeysIntentApiClient: Api() {
+abstract class DiceKeysIntentApiClient: Api(false) {
 
   abstract fun callIntent(intent: Intent)
 

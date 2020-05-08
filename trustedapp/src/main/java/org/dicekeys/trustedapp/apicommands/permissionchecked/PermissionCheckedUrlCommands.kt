@@ -3,6 +3,7 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.util.Base64
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiStrings
 import org.dicekeys.api.UnsealingInstructions
@@ -15,9 +16,10 @@ class PermissionCheckedUrlCommands(
       UnsealingInstructions.RequestForUsersConsent
     ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>,
   private val sendResponse: (Uri) -> Unit
-) : PermissionCheckedCommandsWithUrlSafeBase64Encodings(
+) : PermissionCheckedMarshalledCommands(
   PermissionCheckedSeedAccessor.createForUrlApi(
     getRespondToFieldFromFromUri(requestUri),
+    getHandshakeAuthenticatedUrl(requestUri),
     loadDiceKey,
     requestUsersConsent
   )
@@ -31,6 +33,12 @@ class PermissionCheckedUrlCommands(
   companion object {
     fun getRespondToFieldFromFromUri(uri: Uri): String =
       uri.getQueryParameter(ApiStrings.Inputs::respondTo.name)!!
+
+    fun getAuthTokenFieldFromUri(uri: Uri): String? =
+      uri.getQueryParameter(ApiStrings.Inputs::authToken.name)
+
+    fun getHandshakeAuthenticatedUrl(uri: Uri) : String? =
+      getAuthTokenFieldFromUri(uri)?.let { AuthenticationTokens.getUrlForAuthToken(it) }
   }
 
   constructor(
@@ -56,8 +64,18 @@ class PermissionCheckedUrlCommands(
   override fun unmarshallStringParameter(parameterName: String): String? =
     requestUri.getQueryParameter(parameterName)
 
+  override fun unmarshallBinaryParameter(parameterName: String): ByteArray? =
+    unmarshallStringParameter(parameterName)?.let{
+      Base64.decode(unmarshallRequiredStringParameter(parameterName), Base64.URL_SAFE)
+    }
+
   override fun marshallResult(responseParameterName: String, value: String): PermissionCheckedMarshalledCommands {
     responseUriBuilder.appendQueryParameter(responseParameterName, value)
+    return this
+  }
+
+  override fun marshallResult(responseParameterName: String, value: ByteArray): PermissionCheckedMarshalledCommands {
+    marshallResult(responseParameterName, Base64.encodeToString(value, Base64.URL_SAFE))
     return this
   }
 

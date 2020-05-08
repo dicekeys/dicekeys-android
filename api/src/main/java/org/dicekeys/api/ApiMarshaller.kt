@@ -1,12 +1,16 @@
 package org.dicekeys.api
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
+import android.util.Base64
 import org.dicekeys.crypto.seeded.JsonSerializable
+import java.security.SecureRandom
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class ApiMarshaller<T>(
   private val commandName: String,
-  private val sendCommand: (command: String, marshallParameters: ApiMarshaller.ParameterMarshaller.() -> Unit) -> Unit,
+  private val sendCommand: (command: String, marshallParameters: ParameterMarshaller.() -> Unit) -> Unit,
   private val getResult: (ParameterUnmarshaller) -> T
 ) {
   interface ParameterMarshaller {
@@ -21,38 +25,55 @@ class ApiMarshaller<T>(
     fun unmarshallByteArray(name: String): ByteArray
   }
 
-  private val requestIdToDeferredApiResult = mutableMapOf<String, CompletableDeferred<T>>()
+  private val requestIdToDeferredApiResult = mutableMapOf<String, Continuation<T>>()
 
-  private fun getRequestId() = "$commandName:${java.util.UUID.randomUUID()}"
+  /**
+   * Generate a request ID that contains the command name and also contains a
+   * 128-bit cryptographically-secure random value -- strong enough to prevent
+   * brute-forcing attacks.
+   */
+  private fun getRequestId() = "$commandName:${
+    Base64.encodeToString(SecureRandom().generateSeed(16), Base64.URL_SAFE)
+  }"
 
-  fun callAsync(
-    marshallParameters: ApiMarshaller.ParameterMarshaller.() -> Unit
-  ): Deferred<T> = CompletableDeferred<T>().also { deferredApiResult ->
+  private var authToken: String? = null
+  fun setAuthToken(authToken: String) {
+    this.authToken = authToken
+  }
+
+  suspend fun call(
+    authToken: String?,
+    marshallParameters: ParameterMarshaller.() -> Unit
+  ): T = suspendCoroutine{ apiResultContinuation ->
     sendCommand(commandName) {
       val requestId = getRequestId()
-      requestIdToDeferredApiResult[requestId] = deferredApiResult
+      requestIdToDeferredApiResult[requestId] = apiResultContinuation
+      if (authToken != null) {
+        marshallParameter(ApiStrings.Inputs::authToken.name, authToken!!)
+      }
       marshallParameter(ApiStrings::requestId.name, requestId)
       marshallParameters(this)
     }
   }
 
+  suspend fun call(
+    marshallParameters: ParameterMarshaller.() -> Unit
+  ) = call(null, marshallParameters)
+
   fun handleResponse(
     requestId: String,
     unmarshaller: ParameterUnmarshaller
   ): Boolean {
-    val deferredResult = requestIdToDeferredApiResult.get(requestId)
-    if (deferredResult == null) {
-      // We're not handling this response
-      return false
-    }
+    val deferredResult = requestIdToDeferredApiResult[requestId]
+      ?: return false // We're not handling this response
     // We're handling the response to this request, so we no longer need to track it
     requestIdToDeferredApiResult.remove(requestId)
     // If an exception was returned, throw it
-    unmarshaller.unmarshallExceptionIfPresent()?.let { deferredResult.completeExceptionally(it) } ?: try {
+    unmarshaller.unmarshallExceptionIfPresent()?.let { deferredResult.resumeWithException(it) } ?: try {
       val result = getResult(unmarshaller)
-      deferredResult.complete(result)
+      deferredResult.resume(result)
     } catch (e: Throwable) {
-      deferredResult.completeExceptionally(e)
+      deferredResult.resumeWithException(e)
     }
     return true
   }

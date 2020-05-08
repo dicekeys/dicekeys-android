@@ -1,5 +1,6 @@
 package org.dicekeys.api
 
+import org.json.JSONArray
 import org.json.JSONObject
 
 
@@ -28,7 +29,7 @@ import org.json.JSONObject
  */
 open class UnsealingInstructions(
     unsealingInstructions: String? = null
-): JSONObject(
+): AuthenticationRequirements, JSONObject(
         if (unsealingInstructions == null || unsealingInstructions.isEmpty())
             "{}"
         else unsealingInstructions
@@ -82,25 +83,35 @@ open class UnsealingInstructions(
         val actionButtonLabels: ActionButtonLabels = ActionButtonLabels()
     }
 
-//    val alsoPostToUrl: String? = null,
-//    val onlyPostToUrl: String? = null,
 //    val reEncryptWithPublicKey: String? = null // hex bytes
 
+    override var androidPackagePrefixesAllowed: List<String>?
+        get() = JsonStringListHelpers.getJsonObjectsStringListOrNull(
+          this, ApiDerivationOptions::androidPackagePrefixesAllowed.name)
+        set(value) { put(
+          ApiDerivationOptions::androidPackagePrefixesAllowed.name, JSONArray(value) ) }
+
     /**
-     * The restrictions field is the same as is used for derivation options in the
-     * [ApiDerivationOptions] class
+     * On Apple platforms, applications are specified by a URL containing a domain name
+     * from the Internet's Domain Name System (DNS).
+     *
+     * If this value is specified, applications must come from clients that have a URL prefix
+     * starting with one of the items on this list if they are to use a derived key.
+     *
+     * Since some platforms, including iOS, do not allow the DiceKeys app to authenticate
+     * the sender of an API request, the app may perform a cryptographic operation
+     * only if it has been instructed to send the result to a URL that starts with
+     * one of the permitted prefixes.
      */
-    var restrictions: ApiDerivationOptions.Restrictions?
-        get() =
-            if (has(ApiDerivationOptions::restrictions.name))
-                ApiDerivationOptions.Restrictions(getJSONObject(ApiDerivationOptions::restrictions.name))
-            else null
-        set(value) {
-            if (value == null)
-                remove(ApiDerivationOptions::restrictions.name)
-            else
-                put(ApiDerivationOptions::restrictions.name, value.jsonObj)
-        }
+    override var urlPrefixesAllowed: List<String>?
+        get() = JsonStringListHelpers.getJsonObjectsStringListOrNull(this,
+          ApiDerivationOptions::urlPrefixesAllowed.name)
+        set(value) { put(ApiDerivationOptions::urlPrefixesAllowed.name, JSONArray(value) )}
+
+
+    override var requireAuthenticationHandshake: Boolean
+        get() = optBoolean(ApiDerivationOptions::requireAuthenticationHandshake.name, false)
+        set(value) { put(ApiDerivationOptions::requireAuthenticationHandshake.name, value) }
 
     /**
      * This optional field can be set to require the user to consent to the unsealing operation.

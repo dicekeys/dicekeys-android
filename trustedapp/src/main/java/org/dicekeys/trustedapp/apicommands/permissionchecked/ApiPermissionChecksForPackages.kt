@@ -1,7 +1,7 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
 import kotlinx.coroutines.Deferred
-import org.dicekeys.api.ApiDerivationOptions
+import org.dicekeys.api.AuthenticationRequirements
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.UnsealingInstructions
 
@@ -24,24 +24,27 @@ open class ApiPermissionChecksForPackages(
     else
       "${prefix}."
 
-  override fun isClientAuthorizedInFaceOfRestrictions(
-    restrictions: ApiDerivationOptions.Restrictions?
-  ): Boolean = restrictions == null ||
-    restrictions.androidPackagePrefixesAllowed.let { androidPackagePrefixesAllowed ->
+  override fun doesClientMeetAuthenticationRequirements(
+    authenticationRequirements: AuthenticationRequirements
+  ): Boolean =
+    // Authorized by default if no requirements set
+    (authenticationRequirements.urlPrefixesAllowed == null && authenticationRequirements.androidPackagePrefixesAllowed == null) ||
+    authenticationRequirements.androidPackagePrefixesAllowed.let { androidPackagePrefixesAllowed ->
       androidPackagePrefixesAllowed != null &&
         terminateWithDot(clientsApplicationId).let { clientsApplicationIdWithTrailingDot ->
           androidPackagePrefixesAllowed.any { prefix ->
+            // Authorized if one of the authorized prefixes is a prefix of the client's package
             clientsApplicationIdWithTrailingDot.startsWith(terminateWithDot(prefix))
           }
         }
     }
 
   public override fun throwIfClientNotAuthorized(
-    restrictions: ApiDerivationOptions.Restrictions?
+    authenticationRequirements: AuthenticationRequirements
   ): Unit {
-    if (!isClientAuthorizedInFaceOfRestrictions(restrictions)) {
+    if (!doesClientMeetAuthenticationRequirements(authenticationRequirements)) {
       // The client application id does not start with any of the specified prefixes
-      throw ClientPackageNotAuthorizedException(clientsApplicationId, restrictions?.androidPackagePrefixesAllowed)
+      throw ClientPackageNotAuthorizedException(clientsApplicationId, authenticationRequirements.androidPackagePrefixesAllowed)
     }
   }
 

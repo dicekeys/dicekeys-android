@@ -39,9 +39,7 @@ class PermissionCheckedCommandsInstrumentedTest {
       { CompletableDeferred(diceKey) })
         .sealWithSymmetricKey(
           ApiDerivationOptions().apply {
-            restrictions = ApiDerivationOptions.Restrictions().apply {
-              androidPackagePrefixesAllowed = listOf("com.example")
-            }
+            androidPackagePrefixesAllowed = listOf("com.example")
           }.toJson(),
           "The secret ingredient is sarcasm.".toByteArray(),
           UnsealingInstructions().toJson()
@@ -61,9 +59,7 @@ class PermissionCheckedCommandsInstrumentedTest {
         .unsealWithSymmetricKey(PackagedSealedMessage(
           ByteArray(0),
           ApiDerivationOptions().apply {
-            restrictions = ApiDerivationOptions.Restrictions().apply {
-              androidPackagePrefixesAllowed = listOf("com.example")
-            }
+            androidPackagePrefixesAllowed = listOf("com.example")
           }.toJson(),
           UnsealingInstructions().toJson()
         ))
@@ -82,9 +78,7 @@ class PermissionCheckedCommandsInstrumentedTest {
       val publicKey = api.getSealingKey("")
       val packagedSealedMessage = publicKey.seal("The secret ingredient is eternal despair.",
         UnsealingInstructions().apply {
-          restrictions = ApiDerivationOptions.Restrictions().apply {
-            androidPackagePrefixesAllowed = listOf("com.example")
-          }
+          androidPackagePrefixesAllowed = listOf("com.example")
         }.toJson()
       )
       val plaintextNotFoundBecauseOfException = api.unsealWithUnsealingKey(packagedSealedMessage)
@@ -118,9 +112,7 @@ class PermissionCheckedCommandsInstrumentedTest {
       val privateKey = api.getUnsealingKey(
         ApiDerivationOptions().apply {
           clientMayRetrieveKey = true
-          restrictions = ApiDerivationOptions.Restrictions().apply {
-            androidPackagePrefixesAllowed = listOf("com.example")
-          }
+          androidPackagePrefixesAllowed = listOf("com.example")
         }.toJson()
       )
     }

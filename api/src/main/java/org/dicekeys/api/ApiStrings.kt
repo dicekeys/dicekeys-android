@@ -12,6 +12,7 @@ class ApiStrings {
     // For URL-based APIs, the command name and the https uri to respond to
     val command = "command"
     val respondTo = "respondTo"
+    val authToken = "authToken"
 
     open class withDerivationOptions {
       val derivationOptionsJson = "derivationOptionsJson"
@@ -51,6 +52,10 @@ class ApiStrings {
     object generateSignature {
       const val signature = "signature"
       const val signatureVerificationKey = "signatureVerificationKey"
+    }
+
+    object getAuthToken {
+      const val authToken = "authToken"
     }
 
     object getSealingKey {
