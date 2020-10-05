@@ -46,14 +46,6 @@ class KeySqrRenderer(private val typeface: Typeface?) {
                         FaceDimensionsFractional.underlineDotTop
                     ) * faceSize
             val undoverlineDotBottom = undoverlineDotTop + undoverlineDotHeight
-//            // Draw a white box representing a pixel at a given position with the [und|ov]erline
-//            fun renderUndoverlineBit(pos: Int) {
-//                val undoverlineDotLeft = x +
-//                        FaceDimensionsFractional.undoverlineFirstDotLeftEdge * faceSize +
-//                        undoverlineDotWidth * pos
-//                val undoverlineDotRight = undoverlineDotLeft + undoverlineDotWidth
-//                canvas.drawRect(undoverlineDotLeft, undoverlineDotTop, undoverlineDotRight, undoverlineDotBottom, whitePaint)
-//            }
 
             // Calculate the coordinates of the black [und|ov]erline rectangle
             val left = x + FaceDimensionsFractional.undoverlineLeftEdge * faceSize

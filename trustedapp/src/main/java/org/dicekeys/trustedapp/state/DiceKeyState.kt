@@ -1,10 +1,9 @@
 package org.dicekeys.trustedapp.state
 
 import kotlinx.coroutines.*
-import org.dicekeys.keysqr.DiceKey
-import org.dicekeys.keysqr.Face
-import org.dicekeys.keysqr.FaceRead
-import org.dicekeys.keysqr.KeySqr
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.FaceRead
+import org.dicekeys.dicekey.KeySqr
 
 object KeySqrState {
   private var _diceKeyRead: KeySqr<FaceRead>? = null

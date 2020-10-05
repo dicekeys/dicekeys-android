@@ -11,7 +11,7 @@ JNIEXPORT jlong Java_org_dicekeys_read_ReadKeySqr_constructJNI(
 	JNIEnv* env,
 	jobject obj
 ) {
-	return (jlong)(new KeySqrImageReader());
+	return (jlong)(new DiceKeyImageProcessor());
 }
 
 JNIEXPORT jboolean Java_org_dicekeys_read_ReadKeySqr_processImage(
@@ -25,7 +25,7 @@ JNIEXPORT jboolean Java_org_dicekeys_read_ReadKeySqr_processImage(
 	void *pointerToByteArrayForGrayscaleChannel = env->GetDirectBufferAddress(byteBufferForGrayscaleChannel);
 	return (jboolean) (
 		pointerToByteArrayForGrayscaleChannel != NULL &&
-		getNativeObjectPtr<KeySqrImageReader>(env,obj)->
+		getNativeObjectPtr<DiceKeyImageProcessor>(env,obj)->
 		  processImage((int)width, (int)height, (size_t)bytesPerRow, pointerToByteArrayForGrayscaleChannel)
 	);
 }
@@ -39,7 +39,7 @@ JNIEXPORT void Java_org_dicekeys_read_ReadKeySqr_renderAugmentationOverlay(
 	) {
 	void *pointerToByteArrayForOverlay = env->GetDirectBufferAddress(byteBufferForOverlay);
 	if (pointerToByteArrayForOverlay != NULL) {
-		getNativeObjectPtr<KeySqrImageReader>(env,obj)->renderAugmentationOverlay((int)width, (int)height, (uint32_t*)pointerToByteArrayForOverlay);
+		getNativeObjectPtr<DiceKeyImageProcessor>(env,obj)->renderAugmentationOverlay((int)width, (int)height, (uint32_t*)pointerToByteArrayForOverlay);
 	}
 }
 
@@ -47,14 +47,14 @@ JNIEXPORT jstring Java_org_dicekeys_read_ReadKeySqr_jsonKeySqrRead(
 	JNIEnv* env,
 	jobject  obj
 ) {
-	return stringToJString(env, getNativeObjectPtr<KeySqrImageReader>(env, obj)->jsonKeySqrRead());
+	return stringToJString(env, getNativeObjectPtr<DiceKeyImageProcessor>(env, obj)->jsonKeySqrRead());
 }
 
 JNIEXPORT void Java_org_dicekeys_read_ReadKeySqr_destructJNI(
 	JNIEnv* env,
 	jobject  obj
 ) {
-	deleteNativeObjectPtr<KeySqrImageReader>(env, obj);
+	deleteNativeObjectPtr<DiceKeyImageProcessor>(env, obj);
 }
 
 } // extern c
