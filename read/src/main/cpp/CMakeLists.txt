@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(jni-read-keysqr
-    VERSION 0.10
+project(jni-read-dicekey
+    VERSION 0.11
     DESCRIPTION "JNI Library."
     LANGUAGES CXX
 )
 
-add_subdirectory("read-keysqr")
+add_subdirectory("read-dicekey")
 
 add_library(
-    jni-read-keysqr
+    jni-read-dicekey
     SHARED
-    "read-keysqr-jni.cpp"
+    "read-dicekey-jni.cpp"
 )
 
-target_link_libraries( jni-read-keysqr
+target_link_libraries( jni-read-dicekey
     PRIVATE
-    lib-read-keysqr
-    lib-keysqr
+    lib-read-dicekey
+    lib-dicekey
 )

@@ -10,7 +10,7 @@ import java.security.SecureRandom
  * using a structure that's locally testable
  * (all intent marshalling and unmarshalling occurs outside this library.)
  *
- * Internally, this class does not have access to the user's raw DiceKey (KeySqrState).
+ * Internally, this class does not have access to the user's raw DiceKey (DiceKeyState).
  * The only way it can get seeds is by calling the [PermissionCheckedSeedAccessor]
  * to get the seeds. ([PermissionCheckedSeedAccessor] acts as a reference monitor.)
  *
@@ -75,7 +75,7 @@ class PermissionCheckedCommands(
         DerivationOptions.Type.UnsealingKey
       ),
       derivationOptionsJson
-    ).getPublicKey()
+    ).getSealingkey()
 
   /**
    * Implement [DiceKeysIntentApiClient.getUnsealingKey] with the necessary permissions checks

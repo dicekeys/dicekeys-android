@@ -2,9 +2,9 @@
 
 This *sample* application seeds FIDO security keys with cryptographic keys derived from the user's DiceKey.
 
-# org.dicekeys.keysqr
+# org.dicekeys.dicekey
 This *primarily internal* library is used by the DiceKeys app to represent DiceKeys as a square of
-faces (or KeySqr), which can not only represent boxes of six-sided dice but also square of
+faces, which can not only represent boxes of six-sided dice but also square of
 two-sided chips.
 
 # org.dicekeys.read
@@ -19,8 +19,8 @@ and cryptographic operations using those keys.
 
 It includes support for
 symmetric keys ([SymmetricKey]);
-assymetric key pairs for public-key encryption ([PublicKey]) and decryption ([PrivateKey]);
-assymetric key pairs for digital signatures ([SigningKey]) and their verification [SignatureVerificationKey]),
+asymmetric key pairs for public-key encryption ([PublicKey]) and decryption ([PrivateKey]);
+asymmetric key pairs for digital signatures ([SigningKey]) and their verification [SignatureVerificationKey]),
 as well as a general-purpose derived [Secret].
 When messages are sealed with the _seal_ operation of [SymmetricKey] or [PublicKey], the ciphertext
 is stored within a [PackagedSealedMessage].
@@ -36,7 +36,7 @@ with fields that would not apply to other seeded cryptography applications (e.g.
 ignoring the orientation of the faces of dice within a DiceKey).
 It also includes the format for unsealing_instructions instructions [UnsealingInstructions]
 used by DiceKeys, allowing this library to remain format agnostic (as well as
-agnostic to whether sealed messages should include post-decyrption instructions).
+agnostic to whether sealed messages should include post-decryption instructions).
 
 # org.dicekeys.api
 Your can use the [DiceKeysIntentApiClient] in this package to ask the DiceKeys app
@@ -44,7 +44,7 @@ to derive keys from the user's DiceKey, and to perform cryptographic operations
 on your application's behalf.
 This package uses and returns keys from the [org.dicekeys.crypto.seeded] package.
 
-You specify how keys are derived, and place restrictions on thier use, via the
+You specify how keys are derived, and place restrictions on their use, via the
 [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html/),
 which you can construct and parse using [ApiKeyDerivationOptions].
 

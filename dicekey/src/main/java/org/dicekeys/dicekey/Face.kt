@@ -1,17 +1,16 @@
-package org.dicekeys.keysqr
+package org.dicekeys.dicekey
 
 import com.squareup.moshi.JsonClass
-import java.security.InvalidParameterException
 
 
 @JsonClass(generateAdapter = true)
 open class Face(
     open val letter: Char,
     open val digit: Char,
-    open val orientationAsLowercaseLetterTRBL: Char = '?'
+    open val orientationAsLowercaseLetterTrbl: Char = '?'
 ) {
     val clockwise90DegreeRotationsFromUpright: Byte? get()  =
-        FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTRBL)
+        FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTrbl)
 
     companion object {
         fun majorityOfThree(a: Char, b: Char, c: Char): Char {
@@ -27,7 +26,7 @@ open class Face(
     fun toHumanReadableForm(includeFaceOrientations: Boolean): String =
         String(
             if (includeFaceOrientations)
-                charArrayOf(letter, digit, orientationAsLowercaseLetterTRBL)
+                charArrayOf(letter, digit, orientationAsLowercaseLetterTrbl)
             else
                 charArrayOf(letter, digit)
         )

@@ -7,11 +7,12 @@ import android.util.Base64
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiStrings
 import org.dicekeys.api.UnsealingInstructions
-import org.dicekeys.keysqr.DiceKey
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.SimpleDiceKey
 
 class PermissionCheckedUrlCommands(
   private val requestUri: Uri,
-  loadDiceKey: () -> Deferred<DiceKey>,
+  loadDiceKey: () -> Deferred<SimpleDiceKey>,
   requestUsersConsent: (
       UnsealingInstructions.RequestForUsersConsent
     ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>,
@@ -43,7 +44,7 @@ class PermissionCheckedUrlCommands(
 
   constructor(
     requestUri: Uri,
-    loadDiceKey: () -> Deferred<DiceKey>,
+    loadDiceKey: () -> Deferred<SimpleDiceKey>,
     requestUsersConsent: (
         UnsealingInstructions.RequestForUsersConsent
       ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>,

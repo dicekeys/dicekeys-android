@@ -8,7 +8,7 @@ import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
-import org.dicekeys.keysqr.DiceKey
+import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.trustedapp.apicommands.permissionchecked.ApiPermissionChecksForPackages
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedCommands
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedSeedAccessor

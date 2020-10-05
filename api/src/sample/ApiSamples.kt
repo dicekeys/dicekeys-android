@@ -45,7 +45,7 @@ class SampleActivity: AppCompatActivity() {
             }.toJson()
             // Get a public key derived form the user's DiceKey.
             // (Most apps will get this once and store it, rather than ask for it every time.)
-            val publicKey = diceKeysApiClient.getPublicKey(derivationOptionsJson)
+            val publicKey = diceKeysApiClient.getSealingkey(derivationOptionsJson)
             // With public key cryptoraphy, sealing a message does not require an API call
             // and is a fully synchronous operation (no waiting needed).
             val packagedSealedMessage = publicKey.seal("You call this a plaintext?")

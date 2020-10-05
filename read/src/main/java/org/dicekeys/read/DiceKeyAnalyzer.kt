@@ -7,13 +7,13 @@ import androidx.camera.core.ImageProxy
 import java.nio.ByteBuffer
 import java.lang.Exception
 
-class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer {
+class DiceKeyAnalyzer(val activity: ReadDiceKeyActivity) : ImageAnalysis.Analyzer {
 
     var onActionOverlay = fun(overlay: Bitmap): Unit = null!!
-    var onActionDone = fun(keySqrAsJson: String): Unit = null!!
+    var onActionDone = fun(diceKeyAsJson: String): Unit = null!!
     var done: Boolean = false
 
-    private val reader = ReadKeySqr()
+    private val reader = ReadDiceKey()
 
     override fun analyze(image: ImageProxy) {
         if (done) {
@@ -57,12 +57,12 @@ class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer 
 
             if(res)
             {
-                val keySqrAsJson = reader.jsonKeySqrRead()
-                if (keySqrAsJson != "null")
+                val diceKeyAsJson = reader.jsonDiceKeyRead()
+                if (diceKeyAsJson != "null")
                 {
                     done = true
                     activity.runOnUiThread{
-                        onActionDone(keySqrAsJson)
+                        onActionDone(diceKeyAsJson)
                     }
                 }
             }
@@ -70,7 +70,7 @@ class KeySqrAnalyzer(val activity: ReadKeySqrActivity) : ImageAnalysis.Analyzer 
         }
         catch (ex: Exception)
         {
-            Log.e("KeySqrAnalyzer", ex.message!!)
+            Log.e("DiceKeyAnalyzer", ex.message!!)
             if (!imageClosed) {
                 image.close()
             }

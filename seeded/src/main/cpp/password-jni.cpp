@@ -9,13 +9,13 @@ extern "C" {
 
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_Secret_toJson(
+Java_org_dicekeys_crypto_seeded_Password_toJson(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<Secret>(env, thiz)->toJson()
+      getNativeObjectPtr<Password>(env, thiz)->toJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -24,13 +24,13 @@ Java_org_dicekeys_crypto_seeded_Secret_toJson(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_Secret_derivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_Password_derivationOptionsJsonGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<Secret>(env, thiz)->derivationOptionsJson
+      getNativeObjectPtr<Password>(env, thiz)->derivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -38,15 +38,15 @@ Java_org_dicekeys_crypto_seeded_Secret_derivationOptionsJsonGetterJNI(
   }
 }
 
-JNIEXPORT jbyteArray JNICALL
-Java_org_dicekeys_crypto_seeded_Secret_secretBytesGetterJNI(
+JNIEXPORT jstring JNICALL
+Java_org_dicekeys_crypto_seeded_Password_passwordGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
-    return sodiumBufferToJbyteArray(
+    return stringToJString(
       env,
-      getNativeObjectPtr<Secret>(env, thiz)->secretBytes
+      getNativeObjectPtr<Password>(env, thiz)->password
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -55,25 +55,25 @@ Java_org_dicekeys_crypto_seeded_Secret_secretBytesGetterJNI(
 }
 
 JNIEXPORT void JNICALL
-Java_org_dicekeys_crypto_seeded_Secret_deleteNativeObjectPtrJNI(
+Java_org_dicekeys_crypto_seeded_Password_deleteNativeObjectPtrJNI(
   JNIEnv *env,
 jobject thiz
 ) {
   try {
-    delete getNativeObjectPtr<Secret>(env, thiz);
+    delete getNativeObjectPtr<Password>(env, thiz);
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
   }
 }
 
 JNIEXPORT jlong JNICALL
-  Java_org_dicekeys_crypto_seeded_Secret_fromJsonJNI(
+  Java_org_dicekeys_crypto_seeded_Password_fromJsonJNI(
   JNIEnv *env,
   jclass clazz,
   jstring seed_json
 ) {
   try {
-    return (jlong) new Secret(Secret::fromJson(
+    return (jlong) new Password(Password::fromJson(
       jstringToString(env, seed_json)
     ));
   } catch (...) {
@@ -83,17 +83,19 @@ JNIEXPORT jlong JNICALL
 }
 
 JNIEXPORT jlong JNICALL
-  Java_org_dicekeys_crypto_seeded_Secret_deriveFromSeedJNI(
+  Java_org_dicekeys_crypto_seeded_Password_deriveFromSeedJNI(
   JNIEnv *env,
   jclass clazz,
   jstring seed_string,
-  jstring key_derivation_options_json
+  jstring key_derivation_options_json,
+  jstring word_list_as_string
 ) {
   try {
-    return (jlong) new Secret(
-      jstringToString(env, seed_string),
-      jstringToString(env, key_derivation_options_json)
-    );
+    return (jlong) new Password(Password::deriveFromSeedAndWordList(
+        jstringToString(env, seed_string),
+        jstringToString(env, key_derivation_options_json),
+        jstringToString(env, word_list_as_string)
+    ));
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
     return 0L;
@@ -101,15 +103,15 @@ JNIEXPORT jlong JNICALL
 }
 
 JNIEXPORT jlong JNICALL
-  Java_org_dicekeys_crypto_seeded_Secret_constructJNI(
+  Java_org_dicekeys_crypto_seeded_Password_constructJNI(
   JNIEnv *env,
   jclass clazz,
-  jbyteArray seed_bytes,
+  jstring password,
   jstring key_derivation_options_json
 ) {
   try {
-    return (jlong) new Secret(
-      jbyteArrayToVector(env, seed_bytes),
+    return (jlong) new Password(
+      jstringToString(env, password),
       jstringToString(env, key_derivation_options_json)
     );
   } catch (...) {
@@ -119,14 +121,14 @@ JNIEXPORT jlong JNICALL
 }
 
 JNIEXPORT jbyteArray JNICALL
-Java_org_dicekeys_crypto_seeded_Secret_toSerializedBinaryForm(
+Java_org_dicekeys_crypto_seeded_Password_toSerializedBinaryForm(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return sodiumBufferToJbyteArray(
       env,
-      getNativeObjectPtr<Secret>(env, thiz)->toSerializedBinaryForm()
+      getNativeObjectPtr<Password>(env, thiz)->toSerializedBinaryForm()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -135,12 +137,12 @@ Java_org_dicekeys_crypto_seeded_Secret_toSerializedBinaryForm(
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_dicekeys_crypto_seeded_Secret_fromSerializedBinaryFormJNI(
+Java_org_dicekeys_crypto_seeded_Password_fromSerializedBinaryFormJNI(
   JNIEnv *env,
   jclass clazz,
   jbyteArray as_serialized_binary_form) {
   try {
-    return (jlong) new Secret(Secret::fromSerializedBinaryForm(
+    return (jlong) new Password(Password::fromSerializedBinaryForm(
       jbyteArrayToSodiumBuffer(env, as_serialized_binary_form)
     ));
   } catch (...) {

@@ -22,12 +22,12 @@ import java.util.concurrent.Executors
 // FIXME - resolve API update: Moved rotationDegrees from class Analyzer to ImageInfo.
 
 
-class ReadKeySqrActivity : AppCompatActivity() {
+class ReadDiceKeyActivity : AppCompatActivity() {
     companion object {
         object Parameters {
             const val requestId = "requestId"
             object Response {
-                const val keySqrAsJson = "keySqrAsJson"
+                const val diceKeyAsJson = "diceKeyAsJson"
             }
         }
     }
@@ -132,36 +132,36 @@ class ReadKeySqrActivity : AppCompatActivity() {
                 else
                 // Taller than 1x1, or 1x1, so fix width at 1080 and calculate height 1080<=x<=1920
                     Size(1080, (1080 * pHeight / pWidth) )
-        val keySqrImageAnalyzerUseCase = ImageAnalysis.Builder()
+        val diceKeyImageAnalyzerUseCase = ImageAnalysis.Builder()
                 // In our analysis, we care more about the latest image than
                 // analyzing *every* image
                 .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
                 .setTargetResolution(analyzerSize)
                 .build()
 
-        var analyzeKeySqr = KeySqrAnalyzer(this)
-        keySqrImageAnalyzerUseCase.setAnalyzer(
+        var analyzeDiceKey = DiceKeyAnalyzer(this)
+        diceKeyImageAnalyzerUseCase.setAnalyzer(
                 // Stuart is guessing with this next parameter
                 executor, // ContextCompat.getMainExecutor(this),
-                analyzeKeySqr
+                analyzeDiceKey
         )
         // analyzerConfig.setTargetRotation()
 
-        analyzeKeySqr.onActionOverlay = fun(overlayBitmap){
+        analyzeDiceKey.onActionOverlay = fun(overlayBitmap){
             val matrix = Matrix()
             // FIXME - not sure this will be correct if scanning in landscape.
             // I'd assume this angle should be derived/read from somewhere.
-            // https://github.com/dicekeys/read-keysqr-android/issues/18
+            // https://github.com/dicekeys/read-dicekey-android/issues/18
             matrix.postRotate(90f)
             val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.getWidth(), overlayBitmap.getHeight(), matrix, true);
 
             imageView.setImageBitmap(rotatedBitmap)
         }
 
-        analyzeKeySqr.onActionDone = fun(keySqrAsJson){
+        analyzeDiceKey.onActionDone = fun(diceKeyAsJson){
             var newIntent = Intent()
             newIntent.putExtra(Parameters.requestId, intent.getStringExtra(Parameters.requestId))
-            newIntent.putExtra(Parameters.Response.keySqrAsJson, keySqrAsJson)
+            newIntent.putExtra(Parameters.Response.diceKeyAsJson, diceKeyAsJson)
             setResult(RESULT_OK, newIntent)
             cameraProviderFuture.get().unbindAll()
             finish()
@@ -169,10 +169,11 @@ class ReadKeySqrActivity : AppCompatActivity() {
 
         // Bind the camera selector use case, the preview, and the image analyzer use case
         // to this activity class
-        var camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, keySqrImageAnalyzerUseCase)
+        var camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, diceKeyImageAnalyzerUseCase)
 //        var camera = cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview)
 
-        preview.setSurfaceProvider(previewView.createSurfaceProvider(camera.cameraInfo))
+//        preview.setSurfaceProvider(previewView.createSurfaceProvider(camera.cameraInfo))
+        preview.setSurfaceProvider(previewView.surfaceProvider)
 
     }
 

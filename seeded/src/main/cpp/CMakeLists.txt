@@ -16,6 +16,7 @@ add_library(
     sealing-key-jni.cpp
     unsealing-key-jni.cpp
     secret-jni.cpp
+    password-jni.cpp
     signature-verification-key-jni.cpp
     signing-key-jni.cpp
     symmetric-key-jni.cpp

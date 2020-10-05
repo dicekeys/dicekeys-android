@@ -19,8 +19,8 @@ The API builds on the the cross-platform
 [Seeded Cryptography C++ Library](https://dicekeys.github.io/seeded-crypto/).
 That library implements seeded
 symmetric keys ([SymmetricKey]);
-assymetric key pairs for public-key encryption ([PublicKey]) and decryption ([PrivateKey]);
-assymetric key pairs for digital signatures ([SigningKey]) and their verification [SignatureVerificationKey]),
+asymmetric key pairs for public-key encryption ([PublicKey]) and decryption ([PrivateKey]);
+asymmetric key pairs for digital signatures ([SigningKey]) and their verification [SignatureVerificationKey]),
 as well as a general-purpose derived [Secret].
 When messages are sealed with the _seal_ operation of [SymmetricKey] or [PublicKey],
 the ciphertext is stored within a [PackagedSealedMessage].
@@ -36,7 +36,7 @@ of the security key they lost.
 
 <!-- #### Packages primarily intended for internal use by the DiceKeys App
 The DiceKeys app itself uses the [org.dicekeys.read] package to scan in a DiceKey via the
-Android devices camera, representing the result in a format represented by [org.dicekeys.keysqr].
+Android devices camera, representing the result in a format represented by [org.dicekeys.dicekey].
 They are included here for transparency. -->
 
 ### Example
@@ -83,8 +83,8 @@ class SampleActivity: AppCompatActivity() {
             }.toJson()
             // Get a public key derived form the user's DiceKey.
             // (Most apps will get this once and store it, rather than ask for it every time.)
-            val publicKey = diceKeysApiClient.getPublicKey(keyDerivationOptionsJson)
-            // With public key cryptoraphy, sealing a message does not require an API call
+            val publicKey = diceKeysApiClient.getSealingKey(keyDerivationOptionsJson)
+            // With public key cryptography, sealing a message does not require an API call
             // and is a fully synchronous operation (no waiting needed).
             val packagedSealedMessage = publicKey.seal("You call this a plaintext?")
             // The DiceKeys app will re-derive your private key and unseal data for you.

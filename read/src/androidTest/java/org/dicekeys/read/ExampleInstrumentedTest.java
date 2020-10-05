@@ -1,4 +1,4 @@
-package org.dicekeys.readkeysqr;
+package org.dicekeys.read;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.keysqr.readkeysqr.test", appContext.getPackageName());
+        assertEquals("com.dicekeys.read.test", appContext.getPackageName());
     }
 }

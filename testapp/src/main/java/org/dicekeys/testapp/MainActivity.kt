@@ -15,7 +15,7 @@ import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        const val RC_READ_KEYSQR = 1
+        const val RC_READ_DICEKEY = 1
         const val RC_DISPLAY_DICE = 2
     }
     private lateinit var buttonStart: Button
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                |     }
                |  }   
                |}""".trimMargin())
-            resultTextView.text = "${resultTextView.text}\ngetPublicKey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedPkMessage.ciphertext, Base64.DEFAULT)}'"
+            resultTextView.text = "${resultTextView.text}\ngetSealingkey publicKey='${publicKey.toJson()}' as ciphertext='${Base64.encodeToString(packagedSealedPkMessage.ciphertext, Base64.DEFAULT)}'"
             val pkPlaintext = api.unsealWithUnsealingKey(packagedSealedPkMessage)
             resultTextView.text = "${resultTextView.text}\nUnsealed '${String(pkPlaintext, Charsets.UTF_8)}'"
             resultTextView.text = "${resultTextView.text}\nTests complete"

@@ -2,7 +2,7 @@
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.3.72'
+    ext.kotlin_version = '1.4.10'
     ext.dokka_version = '0.10.1'
     repositories {
         google()
@@ -10,7 +10,7 @@ buildscript {
         
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
 
@@ -33,7 +33,7 @@ dokka {
 
     // In case of a Gradle multiproject build, you can include subprojects here to get merged documentation
     // Note however, that you have to have the Kotlin plugin available in the root project and in the subprojects
-    subProjects = ["seeded", "api", "fidowriter"] //, "trustedapp", "keysqr", "read", 
+    subProjects = ["seeded", "api", "fidowriter"] //, "trustedapp", "dicekey", "read", 
 
     configuration {
         // Use to include or exclude non public members.
@@ -65,7 +65,7 @@ dokka {
 task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'gfm'
     outputDirectory = "docs"
-    subProjects = ["seeded", "api", "fidowriter"] //, "trustedapp", "keysqr", "read", 
+    subProjects = ["seeded", "api", "fidowriter"] //, "trustedapp", "dicekey", "read", 
 
     configuration {
         samples = ["api/src/sample"]

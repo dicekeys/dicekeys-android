@@ -47,7 +47,7 @@ class SealingKeyTests {
     fun testPrivateKeys() {
         val derivationOptionsJson = """{"type": "UnsealingKey"}"""
         val sk = UnsealingKey.deriveFromSeed(seed, derivationOptionsJson)
-        val pk = sk.getPublicKey()
+        val pk = sk.getSealingkey()
         val testMessage = "some message to test"
         val packagedSealedMessage = pk.seal( testMessage );
         val decryptedBytes = UnsealingKey.unseal(seed, packagedSealedMessage )

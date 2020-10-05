@@ -12,7 +12,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
  *
  * To derive a public key from a seed, first derive the corresponding
- * [UnsealingKey] and then call [UnsealingKey.getPublicKey].
+ * [UnsealingKey] and then call [UnsealingKey.getSealingkey].
  *
  * Sealing a message (_plaintext_) creates a _ciphertext which contains
  * the message but from which observers who do not have the PrivateKey

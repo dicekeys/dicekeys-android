@@ -3,10 +3,10 @@ package org.dicekeys.read
 import java.nio.ByteBuffer
 
 
-class ReadKeySqr() {
+class ReadDiceKey() {
     companion object {
         init {
-            System.loadLibrary("jni-read-keysqr")
+            System.loadLibrary("jni-read-dicekey")
         }
     }
     private var nativeObjectPtr: Long = constructJNI()
@@ -29,6 +29,6 @@ class ReadKeySqr() {
             byteBufferForOverlay: ByteBuffer
     )
 
-    external fun jsonKeySqrRead(): String
+    external fun jsonDiceKeyRead(): String
 
 }

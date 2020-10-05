@@ -5,11 +5,12 @@ import android.content.Intent
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiStrings
 import org.dicekeys.api.UnsealingInstructions
-import org.dicekeys.keysqr.DiceKey
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.SimpleDiceKey
 
 class PermissionCheckedIntentCommands(
   private val activity: Activity,
-  loadDiceKey: () -> Deferred<DiceKey>,
+  loadDiceKey: () -> Deferred<SimpleDiceKey>,
   requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
         ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
 ) : PermissionCheckedMarshalledCommands(

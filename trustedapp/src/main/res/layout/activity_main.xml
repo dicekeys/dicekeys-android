@@ -18,7 +18,7 @@
     <!--        app:layout_constraintBottom_toTopOf="@id/buttons"-->
 
     <ImageView
-        android:id="@+id/keysqr_view"
+        android:id="@+id/dice_key_view"
         android:layout_width="match_parent"
         android:contentDescription="Dice"
         app:layout_constraintBottom_toTopOf="@+id/dd_buttons"

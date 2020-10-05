@@ -13,7 +13,7 @@ package org.dicekeys.crypto.seeded
  * This class wraps the native c++ Secret class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
  */
-class Secret private constructor(
+class Password private constructor(
   internal val nativeObjectPtr: Long
 ): BinarySerializable,JsonSerializable {
 
@@ -23,39 +23,43 @@ class Secret private constructor(
         }
 
         @JvmStatic private external fun constructJNI(
-                seedBytes: ByteArray,
+                password: String,
                 derivationOptionsJson: String
         ) : Long
 
         @JvmStatic private external fun deriveFromSeedJNI(
                 seedString: String,
-                derivationOptionsJson: String
+                derivationOptionsJson: String,
+                wordListAsSingleString: String = ""
         ) : Long
 
         /**
-         * Derive a new [Secret] from a secret seed string and a
+         * Derive a new [Password] from a secret seed string and a
          * set of key-derivation options specified in JSON format.
+         * May include a word list as a single string delimited by tabs,
+         * spaces, commas, or any non-letter character.
          */
         @JvmStatic
         fun deriveFromSeed(
                 seedString: String,
-                derivationOptionsJson: String
-        ) = Secret(deriveFromSeedJNI(seedString, derivationOptionsJson))
+                derivationOptionsJson: String,
+                wordListAsSingleString: String = ""
+        ) = Password(deriveFromSeedJNI(seedString, derivationOptionsJson, wordListAsSingleString))
 
 
         @JvmStatic private external fun fromJsonJNI(
-            json: String
+                json: String
         ) : Long
 
         /**
-         * Construct a [Secret] from a JSON format string,
-         * replicating the [Secret] on which [toJson]
-         * was called to generate [seedAsJson]
+         * Construct a [Password] from a JSON format string,
+         * replicating the [Password] on which [toJson]
+         * was called to generate [json]
          */
         @JvmStatic fun fromJson(
-            seedAsJson: String
-        ): Secret =
-            Secret(fromJsonJNI(seedAsJson)
+            json: String
+        ): Password =
+            Password(fromJsonJNI(json)
         )
 
         @JvmStatic private external fun fromSerializedBinaryFormJNI(
@@ -68,7 +72,7 @@ class Secret private constructor(
          */
         @JvmStatic fun fromSerializedBinaryForm(
                 asSerializedBinaryForm: ByteArray
-        ) : Secret = Secret(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
+        ) : Password = Password(fromSerializedBinaryFormJNI(asSerializedBinaryForm))
 
     }
 
@@ -79,11 +83,11 @@ class Secret private constructor(
     external override fun toSerializedBinaryForm(): ByteArray
 
     private external fun deleteNativeObjectPtrJNI()
-    private external fun secretBytesGetterJNI(): ByteArray
+    private external fun passwordGetterJNI(): String
     private external fun derivationOptionsJsonGetterJNI(): String
 
     /**
-     * Serialize the object to a JSON format that stores both the [secretBytes]
+     * Serialize the object to a JSON format that stores both the [password]
      * and the [derivationOptionsJson] used to generate it.
      * (The secret seed string used to generate it is not stored, as it is
      * not kept after the object is constructed.)
@@ -91,15 +95,9 @@ class Secret private constructor(
     external override fun toJson(): String
 
     /**
-     * The secret as a byte array.
-     *
-     * Unlike the raw byte arrays generated for keys (e.g. [UnsealingKey]s and [SigningKey]s),
-     * which perform operations on internal binary keys and discourage callers from accessing
-     * them directly,
-     * the purpose of the [Secret] class is to expose this array of [secretBytes] to the
-     * creator of this object.
+     * The password as a string.
      */
-    val secretBytes: ByteArray get() = secretBytesGetterJNI()
+    val password: String get() = passwordGetterJNI()
 
     /**
      * The options that guided the derivation of this key from the raw seed that was
@@ -112,16 +110,16 @@ class Secret private constructor(
      * to a use-after-dereference pointer vulnerability
      */
     constructor(
-            other: Secret
-    ) : this(other.secretBytes, other.derivationOptionsJson)
+            other: Password
+    ) : this(other.password, other.derivationOptionsJson)
 
     /**
      * Construct this object from its member values
      */
     internal constructor(
-            secretBytes: ByteArray,
+            password: String,
             derivationOptionsJson: String
-    ) : this( constructJNI(secretBytes, derivationOptionsJson) )
+    ) : this( constructJNI(password, derivationOptionsJson) )
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()

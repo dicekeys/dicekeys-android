@@ -7,21 +7,21 @@ import android.graphics.PixelFormat
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
-import org.dicekeys.keysqr.Face
-import org.dicekeys.keysqr.KeySqr
+import org.dicekeys.dicekey.Face
+import org.dicekeys.dicekey.DiceKey
 
 
-class KeySqrDrawable(
+class DiceKeyDrawable(
         private val context: Context,
-        private val keySqr: KeySqr<Face>
+        private val diceKey: DiceKey<Face>
 ) : Drawable() {
 
     private val inconsolataBold: Typeface? = ResourcesCompat.getFont(context, R.font.inconsolata_bold)
-    private val renderer = KeySqrRenderer(inconsolataBold)
+    private val renderer = DiceKeyRenderer(inconsolataBold)
 
     override fun draw(canvas: Canvas) {
-        // https://github.com/dicekeys/read-keysqr-android/issues/18
-        renderer.renderKeySqr(keySqr.rotate(1), canvas)
+        // https://github.com/dicekeys/read-dicekey-android/issues/18
+        renderer.renderDiceKey(diceKey.rotate(1), canvas)
     }
 
     override fun setAlpha(alpha: Int) {

@@ -79,7 +79,7 @@ class ApiStrings {
     }
 
     object getUnsealingKey {
-      const val unsealingKey = "symmetricKey"
+      const val unsealingKey = "unsealingKey"
     }
 
     object sealWithSymmetricKey {

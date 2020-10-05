@@ -7,39 +7,40 @@ import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.crypto.seeded.DerivationOptions
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
-import org.dicekeys.keysqr.DiceKey
-import org.dicekeys.trustedapp.state.KeySqrState
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.SimpleDiceKey
+import org.dicekeys.trustedapp.state.DiceKeyState
 
 /**
- * This class abstracts away all permissions checks AND all access to the keySqr seed,
+ * This class abstracts away all permissions checks AND all access to the diceKey seed,
  * so that the only way the API which inherits from it can get to the seed is by
  * going through the permission checks.
  */
 open class PermissionCheckedSeedAccessor(
   private val permissionChecks: ApiPermissionChecks,
-  private val loadDiceKey: () -> Deferred<DiceKey>
+  private val loadDiceKey: () -> Deferred<SimpleDiceKey>
 ) {
 
-  private suspend fun getDiceKey(): DiceKey =
-    KeySqrState.diceKey ?:
-      loadDiceKey().await().also { diceKey -> KeySqrState.setDiceKey(diceKey) }
+  private suspend fun getDiceKey(): SimpleDiceKey =
+    DiceKeyState.diceKey ?:
+      loadDiceKey().await().also { diceKey -> DiceKeyState.setDiceKey(diceKey) }
 
   companion object {
     /**
      * Try to construct a permission-checked accessor for DiceKey seeds.
      *
-     * If there is a DiceKey loaded into the KeySqrState, this function returns a
+     * If there is a DiceKey loaded into the DiceKeyState, this function returns a
      * PermissionCheckedSeedAccessor which will generate seeds for the API while
      * protecting the raw DiceKey.
      *
      * If there is no DiceKey loaded into memory, this function will launch
      * an activity to load the DiceKey into memory.  The caller should
      * wait for the result with onActivityResult, put the loaded DiceKey
-     * into the KeySqrState, and try to create the seed accessor again.
+     * into the DiceKeyState, and try to create the seed accessor again.
      */
     fun createForIntentApi(
       activity: Activity,
-      loadDiceKey: () -> Deferred<DiceKey>,
+      loadDiceKey: () -> Deferred<SimpleDiceKey>,
       requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
         ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
     ): PermissionCheckedSeedAccessor = PermissionCheckedSeedAccessor(
@@ -53,7 +54,7 @@ open class PermissionCheckedSeedAccessor(
     fun createForUrlApi(
       respondToUrl: String,
       handshakeAuthenticatedUrl: String?,
-      loadDiceKey: () -> Deferred<DiceKey>,
+      loadDiceKey: () -> Deferred<SimpleDiceKey>,
       requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
       ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
     ): PermissionCheckedSeedAccessor = PermissionCheckedSeedAccessor(
@@ -125,11 +126,11 @@ open class PermissionCheckedSeedAccessor(
     derivationOptionsJson: String?,
     type: DerivationOptions.Type
   ) : String =
-    with(ApiDerivationOptions(derivationOptionsJson, type), {
-      if (!clientMayRetrieveKey) {
+    ApiDerivationOptions(derivationOptionsJson, type).let { derivationOptions ->
+      if (!derivationOptions.clientMayRetrieveKey) {
         throw ClientMayNotRetrieveKeyException(type.name)
       }
-      return getSeedOrThrowIfClientNotAuthorized(this)
-    })
+      return getSeedOrThrowIfClientNotAuthorized(derivationOptions)
+    }
 
 }

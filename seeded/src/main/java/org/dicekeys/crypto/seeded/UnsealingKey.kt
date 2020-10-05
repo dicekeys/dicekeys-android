@@ -11,7 +11,7 @@ package org.dicekeys.crypto.seeded
  * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
  *
  * The [UnsealingKey] includes a copy of the public key in binary format, which can be
- * reconstituted as a [SealingKey] object via the [getPublicKey] method.
+ * reconstituted as a [SealingKey] object via the [getSealingkey] method.
  *
  * This class wraps the native c++ PrivateKey class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
@@ -127,7 +127,7 @@ class UnsealingKey private constructor(
      * Get the corresponding [SealingKey] that can seal messages such that they can only
      * be unsealed with the [UnsealingKey].
      */
-    fun getPublicKey(): SealingKey {
+    fun getSealingkey(): SealingKey {
         return SealingKey(getSealingKeyPtrJNI())
     }
 

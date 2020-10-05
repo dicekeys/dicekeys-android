@@ -1,11 +1,10 @@
-package org.dicekeys.keysqr
+package org.dicekeys.dicekey
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import org.dicekeys.keysqr.KeySqr
 
 @JsonClass(generateAdapter = true)
 class Point(
@@ -25,11 +24,12 @@ class Undoverline(
         val code: Int
 )
 
+
 @JsonClass(generateAdapter = true)
 class FaceRead(
         val underline: Undoverline?,
         val overline: Undoverline?,
-        override val orientationAsLowercaseLetterTRBL: Char,
+        override val orientationAsLowercaseLetterTrbl: Char,
         val ocrLetterCharsFromMostToLeastLikely: String,
         val ocrDigitCharsFromMostToLeastLikely: String,
         val center: Point
@@ -46,7 +46,7 @@ class FaceRead(
                 overline?.let { decodeUndoverlineByte(true, it.code).digit }
                         ?: '?',
                 ocrDigitCharsFromMostToLeastLikely[0]),
-        orientationAsLowercaseLetterTRBL
+        orientationAsLowercaseLetterTrbl
 )
  {
 
@@ -58,17 +58,17 @@ class FaceRead(
                 moshi.adapter(Types.newParameterizedType(List::class.java, FaceRead::class.java))
 
 
-        fun keySqrFromListOfFacesRead(facesRead: List<FaceRead>): KeySqr<FaceRead> {
-            return KeySqr<FaceRead>(facesRead)
+        fun diceKeyFromListOfFacesRead(facesRead: List<FaceRead>): DiceKey<FaceRead> {
+            return DiceKey<FaceRead>(facesRead)
         }
 
-        fun keySqrFromJsonFacesRead(json: String): KeySqr<FaceRead>? {
+        fun diceKeyFromJsonFacesRead(json: String): DiceKey<FaceRead>? {
             try {
 
                 if (json == "null" || json[0] != '[')
                     return null
                 val faces = faceReadJsonAdapter.fromJson(json)
-                return if (faces == null) null else keySqrFromListOfFacesRead(faces)
+                return if (faces == null) null else diceKeyFromListOfFacesRead(faces)
             } catch (e: Exception) {
                 return null
             }

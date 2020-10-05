@@ -1,4 +1,4 @@
-package org.dicekeys.readkeysqr;
+package org.dicekeys.read;
 
 import org.junit.Test;
 

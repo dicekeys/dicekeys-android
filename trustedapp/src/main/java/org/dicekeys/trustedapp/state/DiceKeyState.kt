@@ -3,21 +3,21 @@ package org.dicekeys.trustedapp.state
 import kotlinx.coroutines.*
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.FaceRead
-import org.dicekeys.dicekey.KeySqr
+import org.dicekeys.dicekey.SimpleDiceKey
 
-object KeySqrState {
-  private var _diceKeyRead: KeySqr<FaceRead>? = null
-  private var _diceKey: DiceKey? = null
+object DiceKeyState {
+  private var _diceKeyRead: DiceKey<FaceRead>? = null
+  private var _diceKey: SimpleDiceKey? = null
 
-  val diceKeyRead: KeySqr<FaceRead>? get() { return _diceKeyRead
+  val diceKeyRead: DiceKey<FaceRead>? get() { return _diceKeyRead
   }
-  val diceKey: DiceKey? get() { return _diceKey
+  val diceKey: SimpleDiceKey? get() { return _diceKey
   }
 
-  var deferredLoadDiceKey: Deferred<DiceKey>? = null
+  var deferredLoadDiceKey: Deferred<SimpleDiceKey>? = null
   suspend fun getDiceKey(
-    loadDiceKey: () -> Deferred<DiceKey>
-  ): DiceKey =
+    loadDiceKey: () -> Deferred<SimpleDiceKey>
+  ): SimpleDiceKey =
     // If the diceKey is already loaded, return it.
     _diceKey ?:
     // If  a load has already been set underway, wait for it
@@ -33,11 +33,11 @@ object KeySqrState {
       setDiceKey(this)
     }
 
-  fun setDiceKeyRead(newKeySqrRead: KeySqr<FaceRead>) {
-    _diceKeyRead = newKeySqrRead
-    _diceKey = DiceKey(newKeySqrRead.faces)
+  fun setDiceKeyRead(newDiceKeyRead: DiceKey<FaceRead>) {
+    _diceKeyRead = newDiceKeyRead
+    _diceKey = DiceKey(newDiceKeyRead.faces)
   }
-  fun setDiceKey(newDiceKey: DiceKey) {
+  fun setDiceKey(newDiceKey: SimpleDiceKey) {
     _diceKeyRead = null
     _diceKey = newDiceKey
   }

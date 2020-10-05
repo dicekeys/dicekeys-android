@@ -37,7 +37,7 @@ open class ApiPermissionChecksForUrls(
       // The client application id does not start with any of the specified prefixes
       throw ClientUriNotAuthorizedException(
         if (authenticationRequirements.requireAuthenticationHandshake) (handshakeAuthenticatedUrl ?: "") else replyToUrl,
-        authenticationRequirements?.urlPrefixesAllowed ?: listOf<String>())
+        authenticationRequirements.urlPrefixesAllowed ?: listOf<String>())
     }
   }
 }

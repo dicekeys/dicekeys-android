@@ -7,10 +7,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
 import org.dicekeys.api.UnsealingInstructions.RequestForUsersConsent
-import org.dicekeys.keysqr.DiceKey
 import org.dicekeys.trustedapp.R
-import org.dicekeys.keysqr.FaceRead
-import org.dicekeys.read.ReadKeySqrActivity
+import org.dicekeys.dicekey.FaceRead
+import org.dicekeys.dicekey.SimpleDiceKey
+import org.dicekeys.read.ReadDiceKeyActivity
 import org.dicekeys.trustedapp.apicommands.permissionchecked.*
 import java.lang.Exception
 import java.util.*
@@ -42,11 +42,11 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
       loadDiceKeyCompletableDeferred?.completeExceptionally(Exception("Failed to read DiceKey"))
     }
     // If we've gotten this far, this must be the result of trying to read in the DiceKey
-    data?.getStringExtra(ReadKeySqrActivity.Companion.Parameters.Response.keySqrAsJson)?.let { keySqrAsJson ->
-      FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
+    data?.getStringExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)?.let { diceKeyAsJson ->
+      FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
         // Complete the deferred load operation
-        val diceKey = DiceKey(keySqr.faces)
-        loadDiceKeyCompletableDeferred?.complete(diceKey)
+        val simpleDiceKey = SimpleDiceKey(diceKey.faces)
+        loadDiceKeyCompletableDeferred?.complete(simpleDiceKey)
         return@onActivityResult
       }
     }
@@ -78,15 +78,15 @@ class ExecuteApiCommandActivity : AppCompatActivity() {
    * Start an action to load in the user's DiceKey so that the requested operation can
    * be performed.
    */
-  private var loadDiceKeyCompletableDeferred : CompletableDeferred<DiceKey>? = null
-  private fun loadDiceKeyAsync(): Deferred<DiceKey> =
+  private var loadDiceKeyCompletableDeferred : CompletableDeferred<SimpleDiceKey>? = null
+  private fun loadDiceKeyAsync(): Deferred<SimpleDiceKey> =
     loadDiceKeyCompletableDeferred ?: (
-       CompletableDeferred<DiceKey>().also { completableDeferred ->
+       CompletableDeferred<SimpleDiceKey>().also { completableDeferred ->
         val requestId = UUID.randomUUID().toString()
         loadDiceKeyCompletableDeferred = completableDeferred
         // Start the load activity
-        startActivityForResult(Intent(this, ReadKeySqrActivity::class.java).apply{
-          this.putExtra( ReadKeySqrActivity.Companion.Parameters.Response.keySqrAsJson, requestId)
+        startActivityForResult(Intent(this, ReadDiceKeyActivity::class.java).apply{
+          this.putExtra( ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson, requestId)
         }, 0)
         completableDeferred.invokeOnCompletion {
           // When this completes, no new threads should start waiting on it

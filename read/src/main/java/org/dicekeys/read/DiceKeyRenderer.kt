@@ -1,15 +1,12 @@
 package org.dicekeys.read
 
-import android.content.Context
 import android.graphics.*
-import android.graphics.drawable.Drawable
-import androidx.core.content.res.ResourcesCompat
-import org.dicekeys.keysqr.Face
-import org.dicekeys.keysqr.FaceDimensionsFractional
-import org.dicekeys.keysqr.KeySqr
+import org.dicekeys.dicekey.Face
+import org.dicekeys.dicekey.FaceDimensionsFractional
+import org.dicekeys.dicekey.DiceKey
 
 
-class KeySqrRenderer(private val typeface: Typeface?) {
+class DiceKeyRenderer(private val typeface: Typeface?) {
     // Typeface inconsolata = Typeface.createFromAsset(assetManager, pathToFont) / ResourcesCompat.getFont(context, R.font.Inconsolata700)
     private fun textPaintForFaceSize(faceSize: Float): Paint {
         val paint = Paint()
@@ -109,8 +106,8 @@ class KeySqrRenderer(private val typeface: Typeface?) {
 
     }
 
-    fun renderKeySqr(
-            keySqr: KeySqr<Face>,
+    fun renderDiceKey(
+            diceKey: DiceKey<Face>,
             canvas: Canvas,
             size: Float = minOf(canvas.width, canvas.height).toFloat(),
             x: Float = (canvas.width - size) / 2,
@@ -122,7 +119,7 @@ class KeySqrRenderer(private val typeface: Typeface?) {
         val top = y + (faceDist - faceSize) / 2f
         val textPaint: Paint = textPaintForFaceSize(faceSize)
 
-        keySqr.faces.forEachIndexed { index, face ->
+        diceKey.faces.forEachIndexed { index, face ->
             run {
                 renderFace(
                         face,

@@ -1,20 +1,20 @@
 #include <string>
 #include <jni.h>
 #include "native-object-jni.hpp"
-#include "./read-keysqr/lib-read-keysqr/graphics/cv.h"
-#include "./read-keysqr/lib-read-keysqr/read-keysqr.hpp"
-#include "./read-keysqr/lib-keysqr/lib-keysqr.hpp"
+#include "./read-dicekey/lib-read-dicekey/graphics/cv.h"
+#include "./read-dicekey/lib-read-dicekey/read-dicekey.hpp"
+#include "./read-dicekey/lib-dicekey/lib-dicekey.hpp"
 
 extern "C" {
 
-JNIEXPORT jlong Java_org_dicekeys_read_ReadKeySqr_constructJNI(
+JNIEXPORT jlong Java_org_dicekeys_read_ReadDiceKey_constructJNI(
 	JNIEnv* env,
 	jobject obj
 ) {
 	return (jlong)(new DiceKeyImageProcessor());
 }
 
-JNIEXPORT jboolean Java_org_dicekeys_read_ReadKeySqr_processImage(
+JNIEXPORT jboolean Java_org_dicekeys_read_ReadDiceKey_processImage(
 	JNIEnv* env,
 	jobject obj,
 	jint width,
@@ -30,7 +30,7 @@ JNIEXPORT jboolean Java_org_dicekeys_read_ReadKeySqr_processImage(
 	);
 }
 
-JNIEXPORT void Java_org_dicekeys_read_ReadKeySqr_renderAugmentationOverlay(
+JNIEXPORT void Java_org_dicekeys_read_ReadDiceKey_renderAugmentationOverlay(
 	JNIEnv* env,
 	jobject  obj,
 	jint width,
@@ -43,14 +43,14 @@ JNIEXPORT void Java_org_dicekeys_read_ReadKeySqr_renderAugmentationOverlay(
 	}
 }
 
-JNIEXPORT jstring Java_org_dicekeys_read_ReadKeySqr_jsonKeySqrRead(
+JNIEXPORT jstring Java_org_dicekeys_read_ReadDiceKey_jsonDiceKeyRead(
 	JNIEnv* env,
 	jobject  obj
 ) {
-	return stringToJString(env, getNativeObjectPtr<DiceKeyImageProcessor>(env, obj)->jsonKeySqrRead());
+	return stringToJString(env, getNativeObjectPtr<DiceKeyImageProcessor>(env, obj)->jsonDiceKeyRead());
 }
 
-JNIEXPORT void Java_org_dicekeys_read_ReadKeySqr_destructJNI(
+JNIEXPORT void Java_org_dicekeys_read_ReadDiceKey_destructJNI(
 	JNIEnv* env,
 	jobject  obj
 ) {

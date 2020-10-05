@@ -9,9 +9,8 @@ import org.dicekeys.api.Api
 import org.dicekeys.api.ApiDerivationOptions
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.api.DiceKeysWebApiClient
-import org.dicekeys.crypto.seeded.DerivationOptions
-import org.dicekeys.keysqr.DiceKey
-import org.dicekeys.keysqr.KeySqr
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedUrlCommands
 import org.junit.Assert
 import org.junit.Test
@@ -21,7 +20,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class EndToEndUrlApiTests {
   private fun mockLoadDiceKeyAsync(): Deferred<DiceKey> = CompletableDeferred<DiceKey>().apply {
-    complete(KeySqr.fromHumanReadableForm(
+    complete(DiceKey.fromHumanReadableForm(
       "A1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1t"))
   }
 
