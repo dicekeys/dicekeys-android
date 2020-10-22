@@ -50,10 +50,10 @@ class PermissionCheckedIntentCommands(
     sendResult(
       Activity.RESULT_CANCELED,
       Intent().apply{
-        putExtra(ApiStrings::requestId.name,
-          unmarshallStringParameter(ApiStrings::requestId.name)
+        putExtra(ApiStrings.MetaOutputs.requestId,
+          unmarshallStringParameter(ApiStrings.MetaInputs.requestId)
         )
-        putExtra(ApiStrings.Outputs::exception.name, exception)
+        putExtra(ApiStrings.ExceptionMetaOutputs.exception, exception)
       }
     )
   }

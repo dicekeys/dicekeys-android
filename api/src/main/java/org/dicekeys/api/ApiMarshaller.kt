@@ -49,9 +49,9 @@ class ApiMarshaller<T>(
       val requestId = getRequestId()
       requestIdToDeferredApiResult[requestId] = apiResultContinuation
       if (authToken != null) {
-        marshallParameter(ApiStrings.Inputs::authToken.name, authToken!!)
+        marshallParameter(ApiStrings.UrlMetaInputs.authToken, authToken)
       }
-      marshallParameter(ApiStrings::requestId.name, requestId)
+      marshallParameter(ApiStrings.MetaInputs.requestId, requestId)
       marshallParameters(this)
     }
   }

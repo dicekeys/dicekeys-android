@@ -1,3 +1,5 @@
+@file:Suppress("RemoveExplicitTypeArguments")
+
 package org.dicekeys.api
 
 import kotlinx.coroutines.*
@@ -34,7 +36,7 @@ abstract class Api(
      */
     fun handleResult(result: ApiMarshaller.ParameterUnmarshaller) : Boolean =
       apiMarshallers.handleResponse(
-        result.unmarshallString(ApiStrings::requestId.name),
+        result.unmarshallString(ApiStrings.MetaInputs.requestId),
         result
       )
 
@@ -51,7 +53,7 @@ abstract class Api(
 
     private val getAuthTokenMarshaller =
       apiMarshallers.add<String>(::getAuthToken.name) {
-        unmarshallString(Outputs.getAuthToken::authToken.name)
+        unmarshallString(ApiStrings.UrlMetaInputs.authToken)
       }
 
     /**
@@ -73,7 +75,7 @@ abstract class Api(
         object : GenerateSignatureResult {
           override val signature = unmarshallByteArray(Outputs.generateSignature::signature.name)
           override val signatureVerificationKey =
-            SignatureVerificationKey.fromJson(unmarshallString(Outputs.generateSignature::signatureVerificationKey.name))
+            SignatureVerificationKey.fromJson(unmarshallString(Outputs.generateSignature.signatureVerificationKeyJson))
         }
       }
 
@@ -92,7 +94,7 @@ abstract class Api(
 
     private val getSecretMarshaller =
       apiMarshallers.add<Secret>(SuspendApi::getSecret.name) {
-        Secret.fromJson(unmarshallString(Outputs.getSecret::secret.name))
+        Secret.fromJson(unmarshallString(Outputs.getSecret.secretJson))
       }
 
 
@@ -112,7 +114,7 @@ abstract class Api(
 
     private val getUnsealingKeyMarshaller =
       apiMarshallers.add<UnsealingKey>(SuspendApi::getUnsealingKey.name) {
-        UnsealingKey.fromJson(unmarshallString(Outputs.getUnsealingKey::unsealingKey.name))
+        UnsealingKey.fromJson(unmarshallString(Outputs.getUnsealingKey.unsealingKeyJson))
       }
 
 
@@ -132,7 +134,7 @@ abstract class Api(
 
     private val getSymmetricKeyMarshaller =
       apiMarshallers.add(SuspendApi::getSymmetricKey.name) {
-        SymmetricKey.fromJson(unmarshallString(Outputs.getSymmetricKey::symmetricKey.name))
+        SymmetricKey.fromJson(unmarshallString(Outputs.getSymmetricKey.symmetricKeyJson))
       }
 
     /**
@@ -151,7 +153,7 @@ abstract class Api(
 
     private val getSigningKeyMarshaller =
       apiMarshallers.add<SigningKey>(SuspendApi::getSigningKey.name) {
-        SigningKey.fromJson(unmarshallString(Outputs.getSigningKey::signingKey.name))
+        SigningKey.fromJson(unmarshallString(Outputs.getSigningKey.signingKeyJson))
       }
 
 
@@ -169,7 +171,7 @@ abstract class Api(
 
     private val getSealingKeyMarshaller =
       apiMarshallers.add<SealingKey>(SuspendApi::getSealingKey.name) {
-        SealingKey.fromJson(unmarshallString(Outputs.getSealingKey::sealingKey.name))
+        SealingKey.fromJson(unmarshallString(Outputs.getSealingKey.sealingKeyJson))
       }
 
 
@@ -189,7 +191,7 @@ abstract class Api(
         authTokenIfRequired(ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson)) ?:
         authTokenIfRequired(UnsealingInstructions(packagedSealedMessage.unsealingInstructions))
       ) {
-        marshallParameter(Inputs.unsealWithUnsealingKey::packagedSealedMessage.name, packagedSealedMessage)
+        marshallParameter(Inputs.unsealWithUnsealingKey.packagedSealedMessageJson, packagedSealedMessage)
       }
 
     private val unsealWithUnsealingKeyMarshaller =
@@ -220,7 +222,7 @@ abstract class Api(
 
     private val sealWithSymmetricKeyMarshaller =
       apiMarshallers.add<PackagedSealedMessage>(SuspendApi::sealWithSymmetricKey.name) {
-        PackagedSealedMessage.fromJson(unmarshallString(Outputs.sealWithSymmetricKey::packagedSealedMessage.name))
+        PackagedSealedMessage.fromJson(unmarshallString(Outputs.sealWithSymmetricKey.packagedSealedMessageJson))
       }
 
 
@@ -241,7 +243,7 @@ abstract class Api(
         authTokenIfRequired(ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson)) ?:
         authTokenIfRequired(UnsealingInstructions(packagedSealedMessage.unsealingInstructions))
       ) {
-        marshallParameter(Inputs.unsealWithSymmetricKey::packagedSealedMessage.name, packagedSealedMessage)
+        marshallParameter(Inputs.unsealWithSymmetricKey.packagedSealedMessageJson, packagedSealedMessage)
       }
 
     private val unsealWithSymmetricKeyMarshaller =
@@ -263,7 +265,7 @@ abstract class Api(
 
     private val getSignatureVerificationKeyMarshaller =
       apiMarshallers.add<SignatureVerificationKey>(SuspendApi::getSignatureVerificationKey.name) {
-        SignatureVerificationKey.fromJson(unmarshallString(Outputs.getSignatureVerificationKey::signatureVerificationKey.name))
+        SignatureVerificationKey.fromJson(unmarshallString(Outputs.getSignatureVerificationKey.signatureVerificationKeyJson))
       }
 
     /**

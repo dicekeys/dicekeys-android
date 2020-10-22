@@ -33,10 +33,10 @@ class PermissionCheckedUrlCommands(
 
   companion object {
     fun getRespondToFieldFromFromUri(uri: Uri): String =
-      uri.getQueryParameter(ApiStrings.Inputs::respondTo.name)!!
+      uri.getQueryParameter(ApiStrings.UrlMetaInputs.respondTo)!!
 
     fun getAuthTokenFieldFromUri(uri: Uri): String? =
-      uri.getQueryParameter(ApiStrings.Inputs::authToken.name)
+      uri.getQueryParameter(ApiStrings.UrlMetaInputs.authToken)
 
     fun getHandshakeAuthenticatedUrl(uri: Uri) : String? =
       getAuthTokenFieldFromUri(uri)?.let { AuthenticationTokens.getUrlForAuthToken(it) }
@@ -89,13 +89,13 @@ class PermissionCheckedUrlCommands(
 
   override fun sendException(exception: Throwable) = sendResponse(
     Uri.parse(respondTo).buildUpon()
-      .appendQueryParameter(ApiStrings::requestId.name, unmarshallStringParameter(ApiStrings::requestId.name))
-      .appendQueryParameter(ApiStrings.Outputs::exception.name, exception::class.qualifiedName)
-      .appendQueryParameter(ApiStrings.Outputs::exceptionMessage.name, exception.message)
+      .appendQueryParameter(ApiStrings.MetaOutputs.requestId, unmarshallStringParameter(ApiStrings.MetaInputs.requestId))
+      .appendQueryParameter(ApiStrings.ExceptionMetaOutputs.exception, exception::class.qualifiedName)
+      .appendQueryParameter(ApiStrings.ExceptionMetaOutputs.message, exception.message)
   )
 
   override suspend fun executeCommand() {
-    val command: String = unmarshallRequiredStringParameter(ApiStrings.Inputs::command.name)
+    val command: String = unmarshallRequiredStringParameter(ApiStrings.MetaInputs.command)
     executeCommand(command)
   }
 
