@@ -13,14 +13,14 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_unseal(
   JNIEnv *env,
   jobject thiz,
   jbyteArray ciphertext,
-  jstring post_decryption_instructions_json
+  jstring unsealing_instructions
 ) {
   try {
     return sodiumBufferToJbyteArray(
       env,
       getNativeObjectPtr<SymmetricKey>(env, thiz)->unseal(
         jbyteArrayToVector(env, ciphertext),
-        jstringToString(env, post_decryption_instructions_json)
+        jstringToString(env, unsealing_instructions)
       )
     );
   } catch (...) {
@@ -34,14 +34,14 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_sealToCiphertextOnly(
   JNIEnv *env,
   jobject thiz,
   jbyteArray plaintext,
-  jstring post_decryption_instructions_json
+  jstring unsealing_instructions
 ) {
   try {
     return byteVectorToJbyteArray(
       env,
       getNativeObjectPtr<SymmetricKey>(env, thiz)->sealToCiphertextOnly(
         jbyteArrayToSodiumBuffer(env, plaintext),
-        jstringToString(env, post_decryption_instructions_json)
+        jstringToString(env, unsealing_instructions)
       )
     );
   } catch (...) {
@@ -54,13 +54,13 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_sealJNI(
   JNIEnv *env,
   jobject thiz,
   jbyteArray plaintext,
-  jstring post_decryption_instructions_json
+  jstring unsealing_instructions
 ) {
   try {
     return (jlong) new PackagedSealedMessage(
       getNativeObjectPtr<SymmetricKey>(env, thiz)->seal(
         jbyteArrayToSodiumBuffer(env, plaintext),
-        jstringToString(env, post_decryption_instructions_json)
+        jstringToString(env, unsealing_instructions)
       )
     );
   } catch (...) {
@@ -85,13 +85,13 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_toJson(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_SymmetricKey_keyDerivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_SymmetricKey_derivationOptionsJsonGetterJNI(
     JNIEnv *env,
     jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<SymmetricKey>(env, thiz)->keyDerivationOptionsJson
+      getNativeObjectPtr<SymmetricKey>(env, thiz)->derivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

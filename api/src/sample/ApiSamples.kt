@@ -7,12 +7,12 @@
  * A sample Android activity using the DiceKeys Client API to seal/unseal a message.
  */
 class SampleActivity: AppCompatActivity() {
-    private lateinit var diceKeysApiClient: DiceKeysApiClient
+    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Create a client for access the DiceKeys API
-        diceKeysApiClient = DiceKeysApiClient.create(this)
+        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
         // Use the API to perform cryptographic operations
         sealAndUnsealASillyMessage()
     }
@@ -37,15 +37,15 @@ class SampleActivity: AppCompatActivity() {
         try {
             // Derive keys that other application are forbidden from using.
             // (The DiceKeys app will refuse to (re)derive this key for other apps.)
-            val keyDerivationOptionsJson = ApiKeyDerivationOptions().apply {
-                restrictions = ApiKeyDerivationOptions.Restrictions().apply {
+            val derivationOptionsJson = ApiDerivationOptions().apply {
+                restrictions = ApiDerivationOptions.Restrictions().apply {
                     // The activity's packageName field contains the name of this package
                     androidPackagePrefixesAllowed = listOf(packageName)
                 }
             }.toJson()
             // Get a public key derived form the user's DiceKey.
             // (Most apps will get this once and store it, rather than ask for it every time.)
-            val publicKey = diceKeysApiClient.getPublicKey(keyDerivationOptionsJson)
+            val publicKey = diceKeysApiClient.getSealingkey(derivationOptionsJson)
             // With public key cryptoraphy, sealing a message does not require an API call
             // and is a fully synchronous operation (no waiting needed).
             val packagedSealedMessage = publicKey.seal("You call this a plaintext?")
@@ -68,16 +68,16 @@ class SampleActivity: AppCompatActivity() {
  */
 class ApiSamples {
 
-fun sampleOfApiKeyDerivationOptions() {
-    val keyDerivationOptionsJson: String =
-            ApiKeyDerivationOptions.Symmetric().apply {
+fun sampleOfApiDerivationOptions() {
+    val derivationOptionsJson: String =
+            ApiDerivationOptions.Symmetric().apply {
                 // Ensure the JSON format has the "keyType" field specified
                 keyType = requiredKeyType  // sets "keyType": "Symmetric" since this class type is Symmetric
                 algorithm = defaultAlgorithm // sets "algorithm": "XSalsa20Poly1305"
                 // Set other fields in the spec in a Kotlin/Java friendly way
                 clientMayRetrieveKey = true // sets "clientMayRetrieveKey": true
                 // The restrictions subclass can be constructed
-                restrictions = ApiKeyDerivationOptions.Restrictions().apply {
+                restrictions = ApiDerivationOptions.Restrictions().apply {
                     androidPackagePrefixesAllowed = listOf("com.example.app")
                     urlPrefixesAllowed = listOf("https://example.com/app/")
                 }
@@ -89,10 +89,10 @@ fun sampleOfApiKeyDerivationOptions() {
                 put("salt", "S0d1um Chl0r1d3")
             }.toJson()
     // Use this class to parse a JSON string specifying the derivation of a public/private key
-    if (ApiKeyDerivationOptions.Public(keyDerivationOptionsJson).clientMayRetrieveKey) {
-        // The keyDerivationOptionsJson allows clients not just to use the derived key,
+    if (ApiDerivationOptions.Public(derivationOptionsJson).clientMayRetrieveKey) {
+        // The derivationOptionsJson allows clients not just to use the derived key,
         // but also to retrieve a copy of it (conditional on evaluation of 'requirements')
-    } // Converts KeyDerivationOptions to JSON string format
+    } // Converts DerivationOptions to JSON string format
 }
 
 }

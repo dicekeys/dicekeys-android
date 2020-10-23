@@ -2,8 +2,9 @@ package org.dicekeys.api
 
 import java.lang.IllegalArgumentException
 
+
 /**
- * Thrown when a key to be derived has requirements in keyDerivationOptionsJson that disallow
+ * Thrown when a key to be derived has requirements in derivationOptionsJson that disallow
  * the calling client application from accessing or using the key.
  */
 class ClientPackageNotAuthorizedException(
@@ -17,8 +18,25 @@ class ClientPackageNotAuthorizedException(
             authorizedPrefixes.joinToString(",", "'", "'" )}")
 )
 
-class ClientMayNotRetrieveKeyException(keyName: String) :
-        IllegalArgumentException("You cannot generate a $keyName without including clientMayRetrieveKey in your key derivation options.")
+open class ClientUriNotAuthorizedException(
+  message: String?
+) : Exception(message) {
 
-class DiceKeysAppNotPresentException() :
-  IllegalArgumentException("The DiceKeys App is not installed")
+  constructor(
+    clientsUri: String,
+    authorizedPrefixes: List<String>
+  ) : this(
+    "Client is not authorized " +
+      if (authorizedPrefixes == null)
+        "as no Uri prefixes have been specified in the key derivation options"
+      else ("as no prefix in {${
+      authorizedPrefixes.joinToString(",", "'", "'")
+      }) matches $clientsUri")
+  ) {
+  }
+}
+
+class ClientMayNotRetrieveKeyException(keyName: String) :
+  ClientUriNotAuthorizedException("You cannot generate a $keyName without including clientMayRetrieveKey in your key derivation options.")
+
+class UnknownApiException(message: String?): java.lang.Exception(message) {}

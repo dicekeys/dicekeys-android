@@ -7,20 +7,20 @@
 The DiceKeys app enables mutually-distrusting applications to derive keys and
 other secrets from the user's DiceKey without actually seeing the DiceKey.
 
-Your applications can communicate with the DiceKeys app via the [DiceKeysApiClient].
+Your applications can communicate with the DiceKeys app via the [DiceKeysIntentApiClient].
 You can ask the DiceKeys app to derive cryptographic keys seeded by the user's DiceKey,
 to perform cryptographic operations using the derived keys,
 and to give those keys to your application if it is authorized to receive them.
 You specify how keys are derived and who can access them via the
-[Key-Derivation Options JSON Format](https://dicekeys.github.io/seeded-crypto/key_derivation_options_format.html/),
+[Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html/),
 which you can construct and parse using the [ApiKeyDerivationOptions] class.
 
 The API builds on the the cross-platform
 [Seeded Cryptography C++ Library](https://dicekeys.github.io/seeded-crypto/).
 That library implements seeded
 symmetric keys ([SymmetricKey]);
-assymetric key pairs for public-key encryption ([PublicKey]) and decryption ([PrivateKey]);
-assymetric key pairs for digital signatures ([SigningKey]) and their verification [SignatureVerificationKey]),
+asymmetric key pairs for public-key encryption ([PublicKey]) and decryption ([PrivateKey]);
+asymmetric key pairs for digital signatures ([SigningKey]) and their verification [SignatureVerificationKey]),
 as well as a general-purpose derived [Secret].
 When messages are sealed with the _seal_ operation of [SymmetricKey] or [PublicKey],
 the ciphertext is stored within a [PackagedSealedMessage].
@@ -36,7 +36,7 @@ of the security key they lost.
 
 <!-- #### Packages primarily intended for internal use by the DiceKeys App
 The DiceKeys app itself uses the [org.dicekeys.read] package to scan in a DiceKey via the
-Android devices camera, representing the result in a format represented by [org.dicekeys.keysqr].
+Android devices camera, representing the result in a format represented by [org.dicekeys.dicekey].
 They are included here for transparency. -->
 
 ### Example
@@ -45,12 +45,12 @@ They are included here for transparency. -->
  * A sample Android activity using the DiceKeys Client API to seal/unseal a message.
  */
 class SampleActivity: AppCompatActivity() {
-    private lateinit var diceKeysApiClient: DiceKeysApiClient
+    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Create a client for access the DiceKeys API
-        diceKeysApiClient = DiceKeysApiClient.create(this)
+        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
         // Use the API to perform cryptographic operations
         sealAndUnsealASillyMessage()
     }
@@ -83,8 +83,8 @@ class SampleActivity: AppCompatActivity() {
             }.toJson()
             // Get a public key derived form the user's DiceKey.
             // (Most apps will get this once and store it, rather than ask for it every time.)
-            val publicKey = diceKeysApiClient.getPublicKey(keyDerivationOptionsJson)
-            // With public key cryptoraphy, sealing a message does not require an API call
+            val publicKey = diceKeysApiClient.getSealingKey(keyDerivationOptionsJson)
+            // With public key cryptography, sealing a message does not require an API call
             // and is a fully synchronous operation (no waiting needed).
             val packagedSealedMessage = publicKey.seal("You call this a plaintext?")
             // The DiceKeys app will re-derive your private key and unseal data for you.

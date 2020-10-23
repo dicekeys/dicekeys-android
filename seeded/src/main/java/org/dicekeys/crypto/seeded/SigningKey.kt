@@ -10,31 +10,33 @@ package org.dicekeys.crypto.seeded
  * [getSignatureVerificationKey].
  * 
  * The key pair of the [SigningKey] and [SignatureVerificationKey] is generated
- * from a seed and a set of key-derivation specified options in [keyDerivationOptionsJson]
+ * from a seed and a set of key-derivation specified options in [derivationOptionsJson]
  *
  * This class wraps the native c++ SigningKey class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
 
  */
-class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
+class SigningKey internal constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable,JsonSerializable  {
     companion object {
         init {
             ensureJniLoaded()
         }
         @JvmStatic private external fun constructJNI(
                 signingKeyBytes: ByteArray,
-                keyDerivationOptionsJson: String
+                derivationOptionsJson: String
         ) : Long
 
         @JvmStatic private external fun constructJNI(
                 signingKeyBytes: ByteArray,
                 signatureVerificationKeyBytes: ByteArray,
-                keyDerivationOptionsJson: String
+                derivationOptionsJson: String
         ) : Long
 
         @JvmStatic private external fun deriveFromSeedJNI(
                 seedString: String,
-                keyDerivationOptionsJson: String
+                derivationOptionsJson: String
         ) : Long
 
         /**
@@ -43,8 +45,8 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
          */
         fun deriveFromSeed(
                 seedString: String,
-                keyDerivationOptionsJson: String
-        ) = SigningKey (deriveFromSeedJNI(seedString, keyDerivationOptionsJson))
+                derivationOptionsJson: String
+        ) = SigningKey (deriveFromSeedJNI(seedString, derivationOptionsJson))
 
 
         @JvmStatic private external fun fromJsonJNI(signingKeyAsJson: String) : Long
@@ -78,7 +80,7 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
      * Convert this object to serialized binary form so that this object
      * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
      */
-    external fun toSerializedBinaryForm(): ByteArray
+    external override fun toSerializedBinaryForm(): ByteArray
 
     /**
      * This constructor ensures copying does not copy the underlying pointer, which could
@@ -87,7 +89,7 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
     constructor(other: SigningKey) : this(
             other.signingKeyBytes,
             other.signatureVerificationKeyBytes,
-            other.keyDerivationOptionsJson)
+            other.derivationOptionsJson)
 
     /**
      * Construct by reconstituting its members (including [signatureVerificationKeyBytes])
@@ -95,8 +97,8 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
     internal constructor(
             signingKeyBytes: ByteArray,
             signatureVerificationKeyBytes: ByteArray,
-            keyDerivationOptionsJson: String
-    ) : this(constructJNI(signingKeyBytes, signatureVerificationKeyBytes, keyDerivationOptionsJson))
+            derivationOptionsJson: String
+    ) : this(constructJNI(signingKeyBytes, signatureVerificationKeyBytes, derivationOptionsJson))
 
     /**
      * Construct by reconstituting its members (excluding [signatureVerificationKeyBytes], which
@@ -104,14 +106,14 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
      */
     internal constructor(
             signingKeyBytes: ByteArray,
-            keyDerivationOptionsJson: String
-    ) : this(constructJNI(signingKeyBytes, keyDerivationOptionsJson))
+            derivationOptionsJson: String
+    ) : this(constructJNI(signingKeyBytes, derivationOptionsJson))
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun getSignatureVerificationKeyJNI() : Long
     private external fun signatureVerificationKeyBytesGetterJNI(): ByteArray
     private external fun signingKeyBytesGetterJNI(): ByteArray
-    private external fun keyDerivationOptionsJsonGetterJNI(): String
+    private external fun derivationOptionsJsonGetterJNI(): String
     external fun generateSignature(message: ByteArray): ByteArray
 
     /**
@@ -132,8 +134,9 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
       */
     external fun toJson(
         minimizeSizeByRemovingTheSignatureVerificationKeyBytesWhichCanBeRegeneratedLater: Boolean
-            = true
     ): String
+
+    override fun toJson(): String = toJson(true)
 
     /**
     * Generate a signature for a message, which can be used
@@ -177,11 +180,11 @@ class SigningKey internal constructor(internal val nativeObjectPtr: Long) {
     /**
      * Get the key-derivation options used to generate this [SigningKey]
      */
-    val keyDerivationOptionsJson get() = keyDerivationOptionsJsonGetterJNI()
+    val derivationOptionsJson get() = derivationOptionsJsonGetterJNI()
 
     override fun equals(other: Any?): Boolean =
             (other is SigningKey) &&
-                    keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
+                    derivationOptionsJson == other.derivationOptionsJson &&
                     signingKeyBytes.contentEquals(other.signingKeyBytes) &&
                     signatureVerificationKeyBytes.contentEquals(other.signatureVerificationKeyBytes)
 

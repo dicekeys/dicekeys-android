@@ -24,7 +24,19 @@
         <activity
             android:name="org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity"
             android:theme="@style/AppTheme"
-            android:exported="true"/>
+            android:exported="true">
+            <intent-filter android:label="web-filter">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="dicekeys.org"
+                    android:pathPrefix="/api"
+                />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

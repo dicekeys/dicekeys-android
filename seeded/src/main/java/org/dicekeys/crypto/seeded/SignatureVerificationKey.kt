@@ -19,7 +19,9 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * This class wraps the native c++ SignatureVerificationKey class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
  */
- class SignatureVerificationKey internal constructor(internal val nativeObjectPtr: Long) {
+ class SignatureVerificationKey internal constructor(
+  internal val nativeObjectPtr: Long
+): BinarySerializable,JsonSerializable {
     companion object {
         init {
             ensureJniLoaded()
@@ -39,7 +41,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
 
         @JvmStatic private external fun constructJNI(
                 keyBytes: ByteArray,
-                keyDerivationOptionsJson: String
+                derivationOptionsJson: String
         ) : Long
 
        @JvmStatic private external fun fromSerializedBinaryFormJNI(
@@ -60,7 +62,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
     * Convert this object to serialized binary form so that this object
     * can be replicated/reconstituted via a call to [fromSerializedBinaryForm]
     */
-   external fun toSerializedBinaryForm(): ByteArray
+   external override fun toSerializedBinaryForm(): ByteArray
 
 
    /**
@@ -68,8 +70,8 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
      * lead to a use-after-free vulnerability or an exception on the second deletion.
      */
     constructor(
-            other: PublicKey
-    ) : this(other.keyBytes, other.keyDerivationOptionsJson)
+            other: SealingKey
+    ) : this(other.keyBytes, other.derivationOptionsJson)
 
 
     /**
@@ -77,10 +79,10 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
      */
     constructor(
             keyBytes: ByteArray,
-            keyDerivationOptionsJson: String = ""
+            derivationOptionsJson: String = ""
     ) : this ( constructJNI(
             keyBytes,
-            keyDerivationOptionsJson
+            derivationOptionsJson
     ) )
 
     protected fun finalize() {
@@ -88,13 +90,13 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
     }
     private external fun deleteNativeObjectPtrJNI()
     private external fun keyBytesGetterJNI(): ByteArray
-    private external fun keyDerivationOptionsJsonGetterJNI(): String
+    private external fun derivationOptionsJsonGetterJNI(): String
 
     /**
      * Serialize the object to JSON format so that it can later be
      * reconstituted via a call to [fromJson],
      */
-    external fun toJson(): String
+    external override fun toJson(): String
 
     /**
      * The binary representation of the signature-verification key.
@@ -109,11 +111,11 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
      * The key-derivation options used to derive this [SigningKey] and its corresponding
      * [SignatureVerificationKey]
      */
-    val keyDerivationOptionsJson get() = keyDerivationOptionsJsonGetterJNI()
+    val derivationOptionsJson get() = derivationOptionsJsonGetterJNI()
 
     override fun equals(other: Any?): Boolean =
         (other is SignatureVerificationKey) &&
-        keyDerivationOptionsJson == other.keyDerivationOptionsJson &&
+        derivationOptionsJson == other.derivationOptionsJson &&
         keyBytes.contentEquals(other.keyBytes)
 
     /**

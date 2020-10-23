@@ -12,7 +12,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import org.dicekeys.api.DiceKeysApiClient
+import org.dicekeys.api.DiceKeysIntentApiClient
 import kotlinx.coroutines.launch
 
 /**
@@ -20,14 +20,14 @@ import kotlinx.coroutines.launch
  * seeds obtained from a DiceKey using a DiceKeys API.
  */
 class MainActivity : AppCompatActivity() {
-    private lateinit var diceKeysApiClient: DiceKeysApiClient
+    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
 
 
     private val INTENT_ACTION_USB_PERMISSION_EVENT = "org.dicekeys.intents.USB_PERMISSION_EVENT"
 
-    private val seedKeyDerivationOptionsJson : String = """{
-            |"keyType":"Secret",
-            |"keyLengthInBytes":96,
+    private val seedDerivationOptionsJson : String = """{
+            |"type":"Secret",
+            |"lengthInBytes":96,
             |"hashFunction": "Argon2id",
             |"restrictions": {
             |       "androidPackagePrefixesAllowed":["com.dicekeys.fidowriter."]
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diceKeysApiClient = DiceKeysApiClient.create(this)
+        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
         setContentView(R.layout.activity_main)
         secretTextView = findViewById(R.id.edit_text_secret)
         buttonWriteSecretToFidoToken = findViewById(R.id.btn_write_secret_to_fido_token)
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         btn_generate_secret_from_dicekey.setOnClickListener {
             GlobalScope.launch(Dispatchers.Main) {
                 try {
-                    val seed = diceKeysApiClient.getSecret(seedKeyDerivationOptionsJson)
+                    val seed = diceKeysApiClient.getSecret(seedDerivationOptionsJson)
                     edit_text_secret.text.clear()
                     edit_text_secret.text.insert(0, seed.secretBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
                     render()
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        diceKeysApiClient.handleOnActivityResult(data)
+        data?.let { diceKeysApiClient.handleOnActivityResult(it) }
         render()
     }
 

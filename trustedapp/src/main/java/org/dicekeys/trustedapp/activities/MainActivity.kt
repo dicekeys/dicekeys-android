@@ -2,17 +2,15 @@ package org.dicekeys.trustedapp.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import org.dicekeys.keysqr.Face
-import org.dicekeys.keysqr.FaceRead
-import org.dicekeys.keysqr.KeySqr
-import org.dicekeys.trustedapp.state.KeySqrState
-import org.dicekeys.read.KeySqrDrawable
-import org.dicekeys.read.ReadKeySqrActivity
-import org.dicekeys.trustedapp.R
+import org.dicekeys.dicekey.Face
+import org.dicekeys.dicekey.FaceRead
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.trustedapp.state.DiceKeyState
+import org.dicekeys.read.DiceKeyDrawable
+import org.dicekeys.read.ReadDiceKey
+import org.dicekeys.read.ReadDiceKeyActivity
 import org.dicekeys.trustedapp.databinding.ActivityMainBinding
 
 
@@ -36,41 +34,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun forget() {
-        KeySqrState.clear()
+        DiceKeyState.clear()
         render()
     }
 
-    private var keySqrReadActivityStarted = false
-    private fun getDiceKeyOrTriggerRead(): KeySqr<Face>? {
-        val keySqr = KeySqrState.keySqr
-        if (keySqr == null && !keySqrReadActivityStarted) {
+    private var diceKeyReadActivityStarted = false
+    private fun getDiceKeyOrTriggerRead(): DiceKey<Face>? {
+        val diceKey = DiceKeyState.diceKey
+        if (diceKey == null && !diceKeyReadActivityStarted) {
             // We need to first trigger an action to load the key square, then come back to this
             // intent.
-            keySqrReadActivityStarted = true
-            val intent = Intent(this, ReadKeySqrActivity::class.java)
+            diceKeyReadActivityStarted = true
+            val intent = Intent(this, ReadDiceKeyActivity::class.java)
             startActivityForResult(intent, 0)
         }
-        return keySqr
+        return diceKey
     }
 
     private fun render() {
         try {
             // Render button changes
-            val diceKeyPresent = KeySqrState.keySqr != null
+            val diceKeyPresent = DiceKeyState.diceKey != null
             val visibleIfDiceKeyPresent = if (diceKeyPresent) android.view.View.VISIBLE else android.view.View.GONE
             val visibleIfDiceKeyAbsent = if (!diceKeyPresent) android.view.View.VISIBLE else android.view.View.GONE
             binding.btnReadDicekey.visibility = visibleIfDiceKeyAbsent
             binding.btnForget.visibility = visibleIfDiceKeyPresent
             binding.btnViewPublicKey.visibility = visibleIfDiceKeyPresent
-            val keySqr = KeySqrState.keySqr
-            if (keySqr == null) {
-                binding.keysqrView.setImageDrawable(null)
-                binding.keysqrView.contentDescription = ""
+            val diceKey = DiceKeyState.diceKey
+            if (diceKey == null) {
+                binding.diceKeyView.setImageDrawable(null)
+                binding.diceKeyView.contentDescription = ""
             } else {
-                val humanReadableForm: String = keySqr.toCanonicalRotation().toHumanReadableForm()
-                val myDrawing = KeySqrDrawable(this, keySqr)
-                binding.keysqrView.setImageDrawable(myDrawing)
-                binding.keysqrView.contentDescription = humanReadableForm
+                val humanReadableForm: String = diceKey.toCanonicalRotation().toHumanReadableForm()
+                val myDrawing = DiceKeyDrawable(this, diceKey)
+                binding.diceKeyView.setImageDrawable(myDrawing)
+                binding.diceKeyView.contentDescription = humanReadableForm
             }
         } catch (e: Exception) {
             val sw = java.io.StringWriter()
@@ -83,15 +81,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        keySqrReadActivityStarted = false
+        diceKeyReadActivityStarted = false
         if (
                 resultCode == Activity.RESULT_OK &&
                 data != null &&
-                data.hasExtra("keySqrAsJson")
+                data.hasExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)
         ) {
-            data.getStringExtra("keySqrAsJson")?.let { keySqrAsJson ->
-                FaceRead.keySqrFromJsonFacesRead(keySqrAsJson)?.let { keySqr ->
-                    KeySqrState.setKeySquareRead(keySqr)
+            data.getStringExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)?.let { diceKeyAsJson ->
+                FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
+                    DiceKeyState.setDiceKeyRead(diceKey)
                 }
             }
         }

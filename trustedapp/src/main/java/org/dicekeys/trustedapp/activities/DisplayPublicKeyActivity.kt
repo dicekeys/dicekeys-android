@@ -6,10 +6,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
-import org.dicekeys.crypto.seeded.PrivateKey
-import org.dicekeys.crypto.seeded.PublicKey
+import org.dicekeys.crypto.seeded.UnsealingKey
 import org.dicekeys.trustedapp.R
-import org.dicekeys.trustedapp.state.KeySqrState
+import org.dicekeys.trustedapp.state.DiceKeyState
 
 
 class DisplayPublicKeyActivity : AppCompatActivity() {
@@ -35,12 +34,12 @@ class DisplayPublicKeyActivity : AppCompatActivity() {
     }
 
         private fun render() {
-        KeySqrState.keySqr?.let{ Thread(Runnable {
+        DiceKeyState.diceKey?.let{ Thread(Runnable {
             try {
-                val publicKey = PrivateKey.deriveFromSeed(
+                val publicKey = UnsealingKey.deriveFromSeed(
                         it.toKeySeed(false),
                         ""//""""{"keyType":"Public"}"""
-                ).getPublicKey()
+                ).getSealingkey()
                 val publicKeyJson = publicKey.toJson()
                 runOnUiThread {
                     image.setImageDrawable(publicKey.getJsonQrCode().toDrawable(resources))

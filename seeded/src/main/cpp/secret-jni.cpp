@@ -19,22 +19,22 @@ Java_org_dicekeys_crypto_seeded_Secret_toJson(
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
-    return NULL;
+    return nullptr;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_Secret_keyDerivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_Secret_derivationOptionsJsonGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<Secret>(env, thiz)->keyDerivationOptionsJson
+      getNativeObjectPtr<Secret>(env, thiz)->derivationOptionsJson
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -50,7 +50,7 @@ Java_org_dicekeys_crypto_seeded_Secret_secretBytesGetterJNI(
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -130,7 +130,7 @@ Java_org_dicekeys_crypto_seeded_Secret_toSerializedBinaryForm(
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
-    return NULL;
+    return nullptr;
   }
 }
 

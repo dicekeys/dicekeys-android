@@ -1,5 +1,5 @@
 include ':seeded'
-include ':keysqr'
+include ':dicekey'
 include ':read'
 include ':api'
 include ':trustedapp'

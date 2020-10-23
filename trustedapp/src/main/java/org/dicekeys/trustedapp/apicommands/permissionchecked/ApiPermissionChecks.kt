@@ -1,78 +1,79 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
-import org.dicekeys.api.ApiKeyDerivationOptions
-import org.dicekeys.api.ClientPackageNotAuthorizedException
-import org.dicekeys.api.PostDecryptionInstructions
-import org.dicekeys.crypto.seeded.PackagedSealedMessage
+import kotlinx.coroutines.Deferred
+import org.dicekeys.api.ApiDerivationOptions
+import org.dicekeys.api.AuthenticationRequirements
+import org.dicekeys.api.ClientMayNotRetrieveKeyException
+import org.dicekeys.api.UnsealingInstructions
+import org.dicekeys.crypto.seeded.ClientNotAuthorizedException
 
 /**
- * This class performs permission checks
+ * Abstract away all permissions checks for the DiceKeys API
+ *
+ * @param requestUsersConsent You must pass this function, which is
+ * called if a message must be shown to the user which will allow them to choose whether
+ * to return unsealed data or not.  Your function should return true if the user has
+ * already authorized the action, false if they rejected the action, or throw an exception
+ * if waiting for the action to complete.
  */
-open class ApiPermissionChecks(
-  private val clientsApplicationId: String,
-  private val askUserForApprovalOrReturnResultIfReady: (message: String) -> Boolean?
+abstract class ApiPermissionChecks(
+  private val requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
+    ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
 ) {
+
   /**
-   * Ensure any non-empty string ends in a "." by appending one if necessary
+   * Those inheriting this class must implement this test of whether
+   * a client is authorized.
    */
-  private fun terminateWithDot(prefix: String): String =
-    if (prefix.isEmpty() || prefix.lastOrNull() == '.')
-      prefix
-    else
-      "${prefix}."
+  abstract fun doesClientMeetAuthenticationRequirements(
+    authenticationRequirements: AuthenticationRequirements
+  ): Boolean
+
+  abstract fun throwIfClientNotAuthorized(
+    authenticationRequirements: AuthenticationRequirements
+  )
+
+  /**
+   * Verify that the client is authorized to use a key or secret derived using
+   * the [derivationOptions] and, if the client is not authorized,
+   * throw a [ClientNotAuthorizedException].
+   *
+   * @throws ClientNotAuthorizedException
+   */
+//  fun throwIfClientNotAuthorized(
+//    derivationOptions: ApiDerivationOptions
+//  ): Unit = throwIfClientNotAuthorized(derivationOptions)
 
 
-  internal fun isClientAuthorizedInFaceOfRestrictions(
-    restrictions: ApiKeyDerivationOptions.Restrictions?
-  ): Boolean = restrictions == null ||
-    restrictions.androidPackagePrefixesAllowed.let { androidPackagePrefixesAllowed ->
-      androidPackagePrefixesAllowed != null &&
-        terminateWithDot(clientsApplicationId).let { clientsApplicationIdWithTrailingDot ->
-          androidPackagePrefixesAllowed.any { prefix ->
-            clientsApplicationIdWithTrailingDot.startsWith(terminateWithDot(prefix))
-          }
-        }
-    }
-
-  internal fun throwIfClientNotAuthorized(
-    restrictions: ApiKeyDerivationOptions.Restrictions?
+  /**
+   * Verify that UnsealingInstructions do not forbid the client from using
+   * unsealing a message.  If the client is not authorized,
+   * throw a [ClientNotAuthorizedException].
+   *
+   * @throws ClientNotAuthorizedException
+   */
+  suspend fun throwIfUnsealingInstructionsViolated(
+    unsealingInstructions: UnsealingInstructions
   ) {
-    if (!isClientAuthorizedInFaceOfRestrictions(restrictions)) {
-      // The client application id does not start with any of the specified prefixes
-      throw ClientPackageNotAuthorizedException(clientsApplicationId, restrictions?.androidPackagePrefixesAllowed)
+    throwIfClientNotAuthorized(unsealingInstructions)
+    val requireUsersConsent = unsealingInstructions.requireUsersConsent ?: return;
+    if (requestUsersConsent(requireUsersConsent).await() != UnsealingInstructions.RequestForUsersConsent.UsersResponse.Allow) {
+      throw ClientMayNotRetrieveKeyException("Operation declined by user")
     }
   }
 
   /**
-   * Verify that either no Android prefixes were specified, or that the
+   * Verify that UnsealingInstructions do not forbid the client from using
+   * unsealing a message.  If the client is not authorized,
+   * throw a [ClientNotAuthorizedException].
+   *
+   * @throws ClientNotAuthorizedException
    */
-  internal fun throwIfClientNotAuthorized(
-    keyDerivationOptions: ApiKeyDerivationOptions
-  ): Unit = throwIfClientNotAuthorized(keyDerivationOptions.restrictions)
+  suspend fun throwIfUnsealingInstructionsViolated(
+    unsealingInstructions: String?
+  ) : Unit = throwIfUnsealingInstructionsViolated(
+      UnsealingInstructions(unsealingInstructions)
+    )
 
 
-  internal fun throwIfPostDecryptionInstructionsViolated(
-    postDecryptionInstructions: PostDecryptionInstructions
-  ) : Unit = throwIfClientNotAuthorized(postDecryptionInstructions.restrictions)
-
-  /**
-   * Return true if unsealing is allowed
-   * Throw if it is forbidden
-   * Return false if waiting on the user to make this choice
-   */
-  internal fun isUnsealingAllowedByPostDecryptionInstructions(
-    postDecryptionInstructions: PostDecryptionInstructions
-  ) : Boolean? = postDecryptionInstructions.userMustAcknowledgeThisMessage.let { message ->
-    throwIfPostDecryptionInstructionsViolated(postDecryptionInstructions)
-    if (message == null) return true
-    return askUserForApprovalOrReturnResultIfReady(message)
-  }
-
-  internal fun isUnsealingAllowedByPostDecryptionInstructions(
-    postDecryptionInstructions: String
-  ) = isUnsealingAllowedByPostDecryptionInstructions(PostDecryptionInstructions(postDecryptionInstructions))
-
-  internal fun isUnsealingAllowedByPostDecryptionInstructions(
-    packagedSealedMessage: PackagedSealedMessage
-  ) = isUnsealingAllowedByPostDecryptionInstructions(packagedSealedMessage.postDecryptionInstructions)
 }
