@@ -2,6 +2,7 @@ package org.dicekeys.api
 
 import org.dicekeys.crypto.seeded.*
 import org.json.JSONArray
+import org.json.JSONObject
 
 
 /**
@@ -63,53 +64,51 @@ open class ApiDerivationOptions constructor(
      * In other words, access is forbidden if the [restrictions] field is set and the
      * specified [Restrictions] are not met.
      */
-    var clientMayRetrieveKey: Boolean
+    var clientMayRetrieveKey: Boolean?
         get () = optBoolean(ApiDerivationOptions::clientMayRetrieveKey.name, false)
         set(value)  { put(ApiDerivationOptions::clientMayRetrieveKey.name, value) }
 
 
-    /**
-     * In Android, client applications are identified by their package name,
-     * which must be cryptographically signed before an application can enter the
-     * Google play store.
-     *
-     * If this value is specified, Android apps must have a package name that begins
-     * with one of the provided prefixes if they are to use a derived key.
-     *
-     * Note that all prefixes, and the client package names they are compared to,
-     * have an implicit '.' appended to to prevent attackers from registering the
-     * suffix of a package name.  Hence the package name "com.example.app" is treated
-     * as "com.example.app." and the prefix "com.example" is treated as
-     * "com.example." so that an attacker cannot generate a key by registering
-     * "com.examplesignedbyattacker".
-     */
-    override var androidPackagePrefixesAllowed: List<String>?
-        get() = JsonStringListHelpers.getJsonObjectsStringListOrNull(
-          this, ApiDerivationOptions::androidPackagePrefixesAllowed.name)
-        set(value) { put(
-          ApiDerivationOptions::androidPackagePrefixesAllowed.name, JSONArray(value) ) }
 
-    /**
-     * On Apple platforms, applications are specified by a URL containing a domain name
-     * from the Internet's Domain Name System (DNS).
-     *
-     * If this value is specified, applications must come from clients that have a URL prefix
-     * starting with one of the items on this list if they are to use a derived key.
-     *
-     * Since some platforms, including iOS, do not allow the DiceKeys app to authenticate
-     * the sender of an API request, the app may perform a cryptographic operation
-     * only if it has been instructed to send the result to a URL that starts with
-     * one of the permitted prefixes.
-     */
-    override var urlPrefixesAllowed: List<String>?
-        get() = JsonStringListHelpers.getJsonObjectsStringListOrNull(this,
-          ApiDerivationOptions::urlPrefixesAllowed.name)
-        set(value) { put(ApiDerivationOptions::urlPrefixesAllowed.name, JSONArray(value) )}
+  /**
+   * On Apple platforms, applications are specified by a URL containing a domain name
+   * from the Internet's Domain Name System (DNS).
+   *
+   * If this value is specified, applications must come from clients that have a URL prefix
+   * starting with one of the items on this list if they are to use a derived key.
+   *
+   * Since some platforms, including iOS, do not allow the DiceKeys app to authenticate
+   * the sender of an API request, the app may perform a cryptographic operation
+   * only if it has been instructed to send the result to a URL that starts with
+   * one of the permitted prefixes.
+   */
+  override var allow: List<WebBasedApplicationIdentity>?
+    get() = getAllow(this)
+    set(value) { setAllow(this, value) }
 
+  /**
+   * In Android, client applications are identified by their package name,
+   * which must be cryptographically signed before an application can enter the
+   * Google play store.
+   *
+   * If this value is specified, Android apps must have a package name that begins
+   * with one of the provided prefixes if they are to use a derived key.
+   *
+   * Note that all prefixes, and the client package names they are compared to,
+   * have an implicit '.' appended to to prevent attackers from registering the
+   * suffix of a package name.  Hence the package name "com.example.app" is treated
+   * as "com.example.app." and the prefix "com.example" is treated as
+   * "com.example." so that an attacker cannot generate a key by registering
+   * "com.examplesignedbyattacker".
+   */
+  override var allowAndroidPrefixes: List<String>?
+    get() = getAndroidApplicationPrefixes(this)
+    set(value) { setAndroidApplicationPrefixes( this, value) }
 
-  override var requireAuthenticationHandshake: Boolean
-      get() = optBoolean(ApiDerivationOptions::requireAuthenticationHandshake.name, false)
-      set(value) { put(ApiDerivationOptions::requireAuthenticationHandshake.name, value) }
+  override var requireAuthenticationHandshake: Boolean?
+    get() = optBoolean(AuthenticationRequirements::requireAuthenticationHandshake.name, false)
+    set(value) { put(AuthenticationRequirements::requireAuthenticationHandshake.name, value) }
+
 
     /**
      * When using a DiceKey as a seed, setting this value to true will exclude the orientation
@@ -131,7 +130,15 @@ open class ApiDerivationOptions constructor(
     class UnsealingKey(derivationOptionsJson: String? = null) :
             ApiDerivationOptions(derivationOptionsJson,  Type.UnsealingKey)
 
+
     /**
+     * An extension class that must represent a specification for a derived seed
+     */
+    class Password(derivationOptionsJson: String? = null) :
+      ApiDerivationOptions(derivationOptionsJson,  Type.Password)
+
+
+  /**
      * An extension class that must represent a specification for a derived seed
      */
     class Secret(derivationOptionsJson: String? = null) :

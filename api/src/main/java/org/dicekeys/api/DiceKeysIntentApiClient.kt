@@ -41,7 +41,7 @@ abstract class DiceKeysIntentApiClient: Api(false) {
       override fun unmarshallString(name: String): String = intent.getStringExtra(name)
         ?: throw InvalidArgumentException("Parameter $name not found")
 
-      override fun unmarshallExceptionIfPresent(): Throwable? = intent.getSerializableExtra(ApiStrings.Outputs::exception.name) as Throwable?
+      override fun unmarshallExceptionIfPresent(): Throwable? = intent.getSerializableExtra(ApiStrings.ExceptionMetaOutputs.exception) as Throwable?
     })
   }
 

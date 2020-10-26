@@ -1,97 +1,132 @@
 package org.dicekeys.api
 
 class ApiStrings {
-  val requestId = "requestId"
 
   object AndroidIntent {
     const val packageName = "org.dicekeys.trustedapp"
     const val className = "org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity"
   }
 
-  class Inputs {
-    // For URL-based APIs, the command name and the https uri to respond to
-    val command = "command"
-    val respondTo = "respondTo"
-    val authToken = "authToken"
-
-    open class withDerivationOptions {
-      val derivationOptionsJson = "derivationOptionsJson"
-    }
-
-    open class getObject : withDerivationOptions() {}
-
-
-    open class unseal {
-      val packagedSealedMessage = "packagedSealedMessage"
-    }
-
-    open class generateSignature: withDerivationOptions() {
-      val message = "message"
-    }
-
-    object getSealingKey : getObject() {}
-    object getSecret : getObject() {}
-    object getSignatureVerificationKey : getObject() {}
-    object getSigningKey : getObject() {}
-    object getSymmetricKey : getObject() {}
-    object getUnsealingKey : getObject() {}
-
-    object sealWithSymmetricKey : withDerivationOptions() {
-      val plaintext = "plaintext"
-      val unsealingInstructions = "unsealingInstructions"
-    }
-
-    object unsealWithSymmetricKey: unseal() {}
-    object unsealWithUnsealingKey: unseal() {}
-
+  object Commands {
+    const val generateSignature = "generateSignature"
+    const val getPassword = "getPassword"
+    const val getSealingKey = "getSealingKey"
+    const val getSecret = "getSecret"
+    const val getSigningKey = "getSigningKey"
+    const val getSignatureVerificationKey = "getSignatureVerificationKey"
+    const val getSymmetricKey = "getSymmetricKey"
+    const val getUnsealingKey = "getUnsealingKey"
+    const val sealWithSymmetricKey = "sealWithSymmetricKey"
+    const val unsealWithSymmetricKey = "unsealWithSymmetricKey"
+    const val unsealWithUnsealingKey = "unsealWithUnsealingKey"
   }
-  class Outputs {
-    val exception = "exception"
-    val exceptionMessage = "exceptionMessage"
 
+  object MetaCommands {
+    const val getAuthToken = "getAuthToken"
+  }
+
+  object Inputs {
+    object generateSignature {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val message = "message"
+    }
+    object getPassword {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val derivationOptionsJsonMayBeModified = "derivationOptionsJsonMayBeModified"
+    }
+    object getSealingKey {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val derivationOptionsJsonMayBeModified = "derivationOptionsJsonMayBeModified"
+    }
+    object getSecret {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val derivationOptionsJsonMayBeModified = "derivationOptionsJsonMayBeModified"
+    }
+    object getSigningKey {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val derivationOptionsJsonMayBeModified = "derivationOptionsJsonMayBeModified"
+    }
+    object getSignatureVerificationKey {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val derivationOptionsJsonMayBeModified = "derivationOptionsJsonMayBeModified"
+    }
+    object getSymmetricKey {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val derivationOptionsJsonMayBeModified = "derivationOptionsJsonMayBeModified"
+    }
+    object getUnsealingKey {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val derivationOptionsJsonMayBeModified = "derivationOptionsJsonMayBeModified"
+    }
+    object sealWithSymmetricKey {
+      const val derivationOptionsJson = "derivationOptionsJson"
+      const val derivationOptionsJsonMayBeModified = "derivationOptionsJsonMayBeModified"
+      const val plaintext = "plaintext"
+      const val unsealingInstructions = "unsealingInstructions"
+    }
+    object unsealWithSymmetricKey {
+      const val packagedSealedMessageJson = "packagedSealedMessageJson"
+    }
+    object unsealWithUnsealingKey {
+      const val packagedSealedMessageJson = "packagedSealedMessageJson"
+    }
+  }
+
+  object MetaInputs {
+    const val command = "command"
+    const val requestId = "requestId"
+  }
+
+  object UrlMetaInputs {
+    const val authToken = "authToken"
+    const val respondTo = "respondTo"
+  }
+
+  object Outputs {
     object generateSignature {
       const val signature = "signature"
-      const val signatureVerificationKey = "signatureVerificationKey"
+      const val signatureVerificationKeyJson = "signatureVerificationKeyJson"
     }
-
-    object getAuthToken {
-      const val authToken = "authToken"
+    object getPassword {
+      const val passwordJson = "passwordJson"
     }
-
     object getSealingKey {
-      const val sealingKey = "sealingKey"
+      const val sealingKeyJson = "sealingKeyJson"
     }
-
     object getSecret {
-      const val secret = "secret"
+      const val secretJson = "secretJson"
     }
-
-    object getSignatureVerificationKey {
-      const val signatureVerificationKey = "signatureVerificationKey"
-    }
-
     object getSigningKey {
-      const val signingKey = "signingKey"
+      const val signingKeyJson = "signingKeyJson"
     }
-
+    object getSignatureVerificationKey {
+      const val signatureVerificationKeyJson = "signatureVerificationKeyJson"
+    }
     object getSymmetricKey {
-      const val symmetricKey = "symmetricKey"
+      const val symmetricKeyJson = "symmetricKeyJson"
     }
-
     object getUnsealingKey {
-      const val unsealingKey = "unsealingKey"
+      const val unsealingKeyJson = "unsealingKeyJson"
     }
-
     object sealWithSymmetricKey {
-      const val packagedSealedMessage = "packagedSealedMessage"
+      const val packagedSealedMessageJson = "packagedSealedMessageJson"
     }
-
     object unsealWithSymmetricKey {
       const val plaintext = "plaintext"
     }
-
     object unsealWithUnsealingKey {
       const val plaintext = "plaintext"
     }
   }
+
+  object MetaOutputs {
+    const val requestId = "requestId"
+  }
+
+  object ExceptionMetaOutputs {
+    const val exception = "exception"
+    const val message = "message"
+    const val stack = "stack"
+  }
+
 }

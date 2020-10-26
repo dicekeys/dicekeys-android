@@ -83,13 +83,6 @@ open class UnsealingInstructions(
         val actionButtonLabels: ActionButtonLabels = ActionButtonLabels()
     }
 
-//    val reEncryptWithPublicKey: String? = null // hex bytes
-
-    override var androidPackagePrefixesAllowed: List<String>?
-        get() = JsonStringListHelpers.getJsonObjectsStringListOrNull(
-          this, ApiDerivationOptions::androidPackagePrefixesAllowed.name)
-        set(value) { put(
-          ApiDerivationOptions::androidPackagePrefixesAllowed.name, JSONArray(value) ) }
 
     /**
      * On Apple platforms, applications are specified by a URL containing a domain name
@@ -103,15 +96,17 @@ open class UnsealingInstructions(
      * only if it has been instructed to send the result to a URL that starts with
      * one of the permitted prefixes.
      */
-    override var urlPrefixesAllowed: List<String>?
-        get() = JsonStringListHelpers.getJsonObjectsStringListOrNull(this,
-          ApiDerivationOptions::urlPrefixesAllowed.name)
-        set(value) { put(ApiDerivationOptions::urlPrefixesAllowed.name, JSONArray(value) )}
+    override var allow: List<WebBasedApplicationIdentity>?
+        get() = getAllow(this)
+        set(value) { setAllow(this, value) }
 
+    override var allowAndroidPrefixes: List<String>?
+        get() = getAndroidApplicationPrefixes(this)
+        set(value) { setAndroidApplicationPrefixes( this, value) }
 
-    override var requireAuthenticationHandshake: Boolean
-        get() = optBoolean(ApiDerivationOptions::requireAuthenticationHandshake.name, false)
-        set(value) { put(ApiDerivationOptions::requireAuthenticationHandshake.name, value) }
+    override var requireAuthenticationHandshake: Boolean?
+        get() = optBoolean(AuthenticationRequirements::requireAuthenticationHandshake.name, false)
+        set(value) { put(AuthenticationRequirements::requireAuthenticationHandshake.name, value) }
 
     /**
      * This optional field can be set to require the user to consent to the unsealing operation.

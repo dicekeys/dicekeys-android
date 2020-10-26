@@ -24,13 +24,13 @@ open class ClientUriNotAuthorizedException(
 
   constructor(
     clientsUri: String,
-    authorizedPrefixes: List<String>
+    allowClause: List<WebBasedApplicationIdentity>?
   ) : this(
     "Client is not authorized " +
-      if (authorizedPrefixes == null)
-        "as no Uri prefixes have been specified in the key derivation options"
+      if (allowClause == null)
+        "as no allow clause is present in the key derivation options"
       else ("as no prefix in {${
-      authorizedPrefixes.joinToString(",", "'", "'")
+        allowClause.joinToString(",", "'", "'") { wbai -> "$wbai.host : ${wbai.paths?.joinToString { "," }}" }
       }) matches $clientsUri")
   ) {
   }

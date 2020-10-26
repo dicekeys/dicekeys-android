@@ -18,8 +18,8 @@ class DiceKeysWebApiClient(
   override fun call(command: String, marshallParameters: ApiMarshaller.ParameterMarshaller.() -> Unit) {
     callUri(
       Uri.parse(apiUriString).buildUpon().apply {
-        appendQueryParameter(ApiStrings.Inputs::command.name, command)
-        appendQueryParameter(ApiStrings.Inputs::respondTo.name, respondToUriString)
+        appendQueryParameter(ApiStrings.MetaInputs.command, command)
+        appendQueryParameter(ApiStrings.UrlMetaInputs.respondTo, respondToUriString)
         marshallParameters(
             object: ApiMarshaller.ParameterMarshaller {
               override fun marshallParameter(name: String, value: ByteArray): Unit {
@@ -46,8 +46,8 @@ class DiceKeysWebApiClient(
         ?: throw InvalidArgumentException("Parameter $name not found")
 
       override fun unmarshallExceptionIfPresent(): Throwable? =
-        uri.getQueryParameter(ApiStrings.Outputs::exception.name)?.let { exceptionName ->
-          val message = uri.getQueryParameter(ApiStrings.Outputs::exceptionMessage.name)
+        uri.getQueryParameter(ApiStrings.ExceptionMetaOutputs.exception)?.let { exceptionName ->
+          val message = uri.getQueryParameter(ApiStrings.ExceptionMetaOutputs.exception)
           when (exceptionName) {
             ClientUriNotAuthorizedException::class.qualifiedName -> ClientUriNotAuthorizedException(message)
             else -> return UnknownApiException("$exceptionName: $message")

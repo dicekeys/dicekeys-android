@@ -39,7 +39,7 @@ class PermissionCheckedCommandsInstrumentedTest {
       { CompletableDeferred(diceKey) })
         .sealWithSymmetricKey(
           ApiDerivationOptions().apply {
-            androidPackagePrefixesAllowed = listOf("com.example")
+            allowAndroidPrefixes = listOf("com.example")
           }.toJson(),
           "The secret ingredient is sarcasm.".toByteArray(),
           UnsealingInstructions().toJson()
@@ -59,7 +59,7 @@ class PermissionCheckedCommandsInstrumentedTest {
         .unsealWithSymmetricKey(PackagedSealedMessage(
           ByteArray(0),
           ApiDerivationOptions().apply {
-            androidPackagePrefixesAllowed = listOf("com.example")
+            allowAndroidPrefixes = listOf("com.example")
           }.toJson(),
           UnsealingInstructions().toJson()
         ))
@@ -78,7 +78,7 @@ class PermissionCheckedCommandsInstrumentedTest {
       val publicKey = api.getSealingKey("")
       val packagedSealedMessage = publicKey.seal("The secret ingredient is eternal despair.",
         UnsealingInstructions().apply {
-          androidPackagePrefixesAllowed = listOf("com.example")
+          allowAndroidPrefixes = listOf("com.example")
         }.toJson()
       )
       val plaintextNotFoundBecauseOfException = api.unsealWithUnsealingKey(packagedSealedMessage)
@@ -112,7 +112,7 @@ class PermissionCheckedCommandsInstrumentedTest {
       val privateKey = api.getUnsealingKey(
         ApiDerivationOptions().apply {
           clientMayRetrieveKey = true
-          androidPackagePrefixesAllowed = listOf("com.example")
+          allowAndroidPrefixes = listOf("com.example")
         }.toJson()
       )
     }

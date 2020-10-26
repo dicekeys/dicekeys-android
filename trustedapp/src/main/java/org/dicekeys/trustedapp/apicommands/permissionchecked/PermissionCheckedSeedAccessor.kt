@@ -3,6 +3,7 @@ package org.dicekeys.trustedapp.apicommands.permissionchecked
 import android.app.Activity
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiDerivationOptions
+import org.dicekeys.api.ApiStrings
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.crypto.seeded.DerivationOptions
@@ -22,8 +23,8 @@ open class PermissionCheckedSeedAccessor(
 ) {
 
   private suspend fun getDiceKey(): SimpleDiceKey =
-    DiceKeyState.diceKey ?:
-      loadDiceKey().await().also { diceKey -> DiceKeyState.setDiceKey(diceKey) }
+    DiceKeyState.diceKey
+      ?: loadDiceKey().await().also { diceKey -> DiceKeyState.setDiceKey(diceKey) }
 
   companion object {
     /**
@@ -42,7 +43,7 @@ open class PermissionCheckedSeedAccessor(
       activity: Activity,
       loadDiceKey: () -> Deferred<SimpleDiceKey>,
       requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
-        ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
+      ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
     ): PermissionCheckedSeedAccessor = PermissionCheckedSeedAccessor(
       ApiPermissionChecksForPackages(
         activity.callingActivity?.packageName ?: "",
@@ -69,7 +70,7 @@ open class PermissionCheckedSeedAccessor(
 
 
   private suspend fun getSeedOrThrowIfClientNotAuthorized(
-    derivationOptions: ApiDerivationOptions
+    derivationOptions: ApiDerivationOptions,
   ): String {
     permissionChecks.throwIfClientNotAuthorized(derivationOptions)
     return getDiceKey().toKeySeed(derivationOptions.excludeOrientationOfFaces)
@@ -84,10 +85,24 @@ open class PermissionCheckedSeedAccessor(
    */
   internal suspend fun getSeedOrThrowIfClientNotAuthorized(
     derivationOptionsJson: String?,
-    type: DerivationOptions.Type
-  ): String = getSeedOrThrowIfClientNotAuthorized(
-    ApiDerivationOptions(derivationOptionsJson, type)
-  )
+    type: DerivationOptions.Type,
+    command: String
+  ): String {
+    val derivationOptions = ApiDerivationOptions(derivationOptionsJson, type)
+    if (command == ApiStrings.Commands.getSealingKey  &&  (derivationOptionsJson == null || derivationOptionsJson.isEmpty())) {
+      // No permission check is needed in this special case for global sealing/unsealing keys,
+      // for which there's no derivationOptionSpecified, indicating a request for any _public_ unsealing key
+      // which the user may choose.
+    } else if (command == ApiStrings.Commands.unsealWithUnsealingKey && derivationOptions.allow == null) {
+      // Attempt to unseal a message with a public key, so we can re-derive the private key
+      // since it won't be shared with client and unsealingInstructions can be applied.
+    } else {
+      // Perform the permission check before returning the seed.
+      permissionChecks.throwIfClientNotAuthorized(derivationOptions)
+    }
+    return getDiceKey().toKeySeed(derivationOptions.excludeOrientationOfFaces)
+  }
+
 
   /**
    * Used to guard calls to the unseal operation of SymmetricKey and PrivateKey,
@@ -102,11 +117,14 @@ open class PermissionCheckedSeedAccessor(
    */
   internal suspend fun getSeedOrThrowIfClientNotAuthorizedToUnseal(
     packagedSealedMessage: PackagedSealedMessage,
-    type: DerivationOptions.Type
+    type: DerivationOptions.Type,
+    command: String
   ): String {
     permissionChecks.throwIfUnsealingInstructionsViolated(packagedSealedMessage.unsealingInstructions)
     return getSeedOrThrowIfClientNotAuthorized(
-      ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson, type)
+      packagedSealedMessage.derivationOptionsJson,
+      type,
+      command
     )
   }
 
@@ -127,7 +145,7 @@ open class PermissionCheckedSeedAccessor(
     type: DerivationOptions.Type
   ) : String =
     ApiDerivationOptions(derivationOptionsJson, type).let { derivationOptions ->
-      if (!derivationOptions.clientMayRetrieveKey) {
+      if (derivationOptions.clientMayRetrieveKey != true) {
         throw ClientMayNotRetrieveKeyException(type.name)
       }
       return getSeedOrThrowIfClientNotAuthorized(derivationOptions)

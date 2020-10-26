@@ -14,24 +14,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import org.dicekeys.api.DiceKeysIntentApiClient
 import kotlinx.coroutines.launch
+import org.dicekeys.api.DiceKeysWebApiClient
 
 /**
  * The main activity for an application that seeds FIDO security keys using
  * seeds obtained from a DiceKey using a DiceKeys API.
  */
 class MainActivity : AppCompatActivity() {
-    private lateinit var diceKeysApiClient: DiceKeysIntentApiClient
+    private lateinit var diceKeysApiClient: DiceKeysWebApiClient
 
 
     private val INTENT_ACTION_USB_PERMISSION_EVENT = "org.dicekeys.intents.USB_PERMISSION_EVENT"
 
     private val seedDerivationOptionsJson : String = """{
-            |"type":"Secret",
-            |"lengthInBytes":96,
             |"hashFunction": "Argon2id",
-            |"restrictions": {
-            |       "androidPackagePrefixesAllowed":["com.dicekeys.fidowriter."]
-            |  }
+            |"allow": [{"host": "fidowriter.dicekeys.com"}],
+            |"androidPackagePrefixesAllowed":["com.dicekeys.fidowriter."]
             |}""".trimMargin("|")
 
     private val REQUEST_CODE_PUBLIC_KEY = 3
@@ -47,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diceKeysApiClient = DiceKeysIntentApiClient.create(this)
+        diceKeysApiClient = DiceKeysWebApiClient.create(this, "https://fidowriter.dicekeys.com/--derived-secret-api--/", "https://dicekeys.app/")
         setContentView(R.layout.activity_main)
         secretTextView = findViewById(R.id.edit_text_secret)
         buttonWriteSecretToFidoToken = findViewById(R.id.btn_write_secret_to_fido_token)
@@ -111,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun isSeedValid(s: ByteArray? = getSeed()) : Boolean {
-        return s != null && s.size == 96
+        return s != null && s.size == 32
     }
 
     fun deviceReadyToWrite(): Boolean =
@@ -119,10 +117,16 @@ class MainActivity : AppCompatActivity() {
             deviceList.hasPermission(it)
         } ?: false
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        data?.let { diceKeysApiClient.handleOnActivityResult(it) }
-        render()
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+////        data?.let { diceKeysApiClient.handleOnActivityResult(it) }
+//        intent?.data?.let { diceKeysApiClient.handleResult( it ) }
+//        render()
+//    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.data?.let { diceKeysApiClient.handleResult( it ) }
     }
 
     private val usbReceiver = object : android.content.BroadcastReceiver() {

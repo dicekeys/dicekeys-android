@@ -34,28 +34,28 @@ abstract class PermissionCheckedMarshalledCommands(
 
   protected open fun sendSuccess() {
     marshallResult(
-      ApiStrings::requestId.name,
-      unmarshallRequiredStringParameter(ApiStrings::requestId.name)
+      ApiStrings.MetaInputs.requestId,
+      unmarshallRequiredStringParameter(ApiStrings.MetaInputs.requestId)
     )
   }
 
   abstract fun sendException(exception: Throwable)
 
   private fun getCommonDerivationOptionsJsonParameter() : String =
-    unmarshallRequiredStringParameter((Inputs.withDerivationOptions::derivationOptionsJson.name))
+    unmarshallRequiredStringParameter((Inputs.getSecret.derivationOptionsJson))
 
   private fun getAuthToken(): Unit = marshallResult(
-    Outputs.getAuthToken::authToken.name,
-    api.getAuthToken(unmarshallRequiredStringParameter(Inputs::respondTo.name))
+    ApiStrings.UrlMetaInputs.authToken,
+    api.getAuthToken(unmarshallRequiredStringParameter(ApiStrings.UrlMetaInputs.respondTo))
   ).sendSuccess()
 
   private suspend fun getSecret(): Unit = marshallResult(
-    Outputs.getSecret::secret.name,
+    Outputs.getSecret.secretJson,
     api.getSecret(getCommonDerivationOptionsJsonParameter()).toJson()
     ).sendSuccess()
 
   private suspend fun sealWithSymmetricKey(): Unit = marshallResult(
-      Outputs.sealWithSymmetricKey::packagedSealedMessage.name,
+      Outputs.sealWithSymmetricKey.packagedSealedMessageJson,
       api.sealWithSymmetricKey(
         getCommonDerivationOptionsJsonParameter(),
         unmarshallRequiredBinaryParameter(Inputs.sealWithSymmetricKey::plaintext.name),
@@ -67,12 +67,12 @@ abstract class PermissionCheckedMarshalledCommands(
       Outputs.unsealWithSymmetricKey::plaintext.name,
       api.unsealWithSymmetricKey(
         PackagedSealedMessage.fromJson(
-        unmarshallRequiredStringParameter(Inputs.unsealWithSymmetricKey::packagedSealedMessage.name)
+        unmarshallRequiredStringParameter(Inputs.unsealWithSymmetricKey.packagedSealedMessageJson)
       )
     )).sendSuccess()
 
   private suspend fun getSealingKey(): Unit = marshallResult(
-      Outputs.getSealingKey::sealingKey.name,
+      Outputs.getSealingKey.sealingKeyJson,
       api.getSealingKey(getCommonDerivationOptionsJsonParameter()).toJson()
     ).sendSuccess()
 
@@ -80,13 +80,13 @@ abstract class PermissionCheckedMarshalledCommands(
       Outputs.unsealWithUnsealingKey::plaintext.name,
       api.unsealWithUnsealingKey(
         PackagedSealedMessage.fromJson(
-          unmarshallRequiredStringParameter(Inputs.unsealWithUnsealingKey::packagedSealedMessage.name)
+          unmarshallRequiredStringParameter(Inputs.unsealWithUnsealingKey.packagedSealedMessageJson)
         )
       )
     ).sendSuccess()
 
   private suspend fun getSignatureVerificationKey(): Unit = marshallResult(
-      Outputs.getSignatureVerificationKey::signatureVerificationKey.name,
+      Outputs.getSignatureVerificationKey.signatureVerificationKeyJson,
       api.getSignatureVerificationKey(getCommonDerivationOptionsJsonParameter())
         .toJson()
     ).sendSuccess()
@@ -99,23 +99,23 @@ abstract class PermissionCheckedMarshalledCommands(
       marshallResult(
         Outputs.generateSignature::signature.name, resultPair.first
       ).marshallResult(
-        Outputs.generateSignature::signatureVerificationKey.name,
+        Outputs.generateSignature.signatureVerificationKeyJson,
         resultPair.second.toJson()
       ).sendSuccess()
     }
 
   private suspend fun getUnsealingKey(): Unit = marshallResult(
-    Outputs.getUnsealingKey::unsealingKey.name,
+    Outputs.getUnsealingKey.unsealingKeyJson,
     api.getUnsealingKey(getCommonDerivationOptionsJsonParameter()).toJson()
   ).sendSuccess()
 
   private suspend fun getSigningKey(): Unit = marshallResult(
-    Outputs.getSigningKey::signingKey.name,
+    Outputs.getSigningKey.signingKeyJson,
     api.getSigningKey(getCommonDerivationOptionsJsonParameter()).toJson()
   ).sendSuccess()
 
   private suspend fun getSymmetricKey(): Unit = marshallResult(
-    Outputs.getSymmetricKey::symmetricKey.name,
+    Outputs.getSymmetricKey.symmetricKeyJson,
     api.getSymmetricKey(getCommonDerivationOptionsJsonParameter()).toJson()
   ).sendSuccess()
 

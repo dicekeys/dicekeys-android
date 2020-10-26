@@ -445,30 +445,25 @@ open class ConnectionToWritableUsbFidoKey internal constructor(
     }
 
     /**
-     * Issue the command to re-seed the security key with [keySeedAs96Bytes].
+     * Issue the command to re-seed the security key with [keySeedAs32Bytes].
      */
     fun loadKeySeed(
-            keySeedAs96Bytes: ByteArray,
-            // Default the FIDO counter to the number of 10-second intervals since Jan 1, 2020 UTC
-            fidoCounter: UInt = ( (
-                    System.currentTimeMillis() -
-                            GregorianCalendar(2020, 0, 0, 0, 0, 0).timeInMillis
-                    ) / 10).toUInt(),
-            commandVersion: UInt = 0u
+      keySeedAs32Bytes: ByteArray,
+      extState: ByteArray = ByteArray(0),
+      commandVersion: Byte = 1
     ) {
-        if (keySeedAs96Bytes.size != 96)
-            throw java.lang.IllegalArgumentException("Key seed must be 96 bytes")
+        if (keySeedAs32Bytes.size != 32)
+            throw java.lang.IllegalArgumentException("Key seed must be 32 bytes")
+        if (extState.size > 256)
+            throw java.lang.IllegalArgumentException("ExtState may not exceed 256 bytes")
 
         val loadKeySeedData: ByteArray =
-                java.nio.ByteBuffer.allocate(4 + 4 + keySeedAs96Bytes.size)
-                        .order(java.nio.ByteOrder.BIG_ENDIAN)
-                        // 4 byte command version
-                        .putInt(commandVersion.toInt())
-                        // 4 byte FIDO counter
-                        .putInt(fidoCounter.toInt())
-                        // This version uses a 96-byte FIDO key seed
-                        .put(keySeedAs96Bytes)
-                        .array()
+                java.nio.ByteBuffer.allocate(1 + keySeedAs32Bytes.size + extState.size)
+                  .order(java.nio.ByteOrder.BIG_ENDIAN)
+                  .put(commandVersion)
+                  .put(keySeedAs32Bytes)
+                  .put(extState)
+                  .array()
         val response = sendCommand(Commands.CTAPHID_LOADKEY, loadKeySeedData, 14000)
         if (response.cmd == Commands.CTAPHID_LOADKEY && response.dataLength == 0.toUShort()) {
             // Success.
