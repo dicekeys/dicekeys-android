@@ -71,9 +71,10 @@ abstract class ApiPermissionChecks(
    */
   suspend fun throwIfUnsealingInstructionsViolated(
     unsealingInstructions: String?
-  ) : Unit = throwIfUnsealingInstructionsViolated(
-      UnsealingInstructions(unsealingInstructions)
+  ): Unit {
+    if (unsealingInstructions != null && unsealingInstructions.isNotEmpty())
+      throwIfUnsealingInstructionsViolated(UnsealingInstructions(unsealingInstructions)
     )
-
+  }
 
 }

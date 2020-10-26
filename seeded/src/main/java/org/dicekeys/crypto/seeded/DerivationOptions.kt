@@ -45,12 +45,18 @@ open class DerivationOptions(
      * with names matching the string values in the JSON format.
      */
     enum class Type {
-        Secret, SymmetricKey, UnsealingKey, SigningKey;
+        Password, Secret, SymmetricKey, UnsealingKey, SigningKey;
+    }
+
+    enum class WordList {
+        EN_512_words_5_chars_max_ed_4_20200917,
+        EN_1024_words_6_chars_max_ed_4_20200917,
+        EN_2048_BIPS_39;
     }
 
     /**
      * Specify whether this JSON object should be used to construct a
-     * [Secret], [SymmetricKey], [UnsealingKey], or [SigningKey].
+     * [Password], ][Secret], [SymmetricKey], [UnsealingKey], or [SigningKey].
      */
     var type: Type?
     get() = optString(DerivationOptions::type.name, "").let{
@@ -97,23 +103,51 @@ open class DerivationOptions(
         set(value) { put(DerivationOptions::lengthInBytes.name, value) }
 
     /**
+     * Specifies the password length in bits for
+     * if `"keyType": "Password"`.
+     */
+    var lengthInBits: Int?
+        get() = if (has(DerivationOptions::lengthInBits.name))
+            getInt(DerivationOptions::lengthInBits.name) else null
+        set(value) { put(DerivationOptions::lengthInBits.name, value) }
+
+    /**
+     * Specifies the password length in words for
+     * if `"keyType": "Password"`.
+     */
+    var lengthInWords: Int?
+        get() = if (has(DerivationOptions::lengthInWords.name))
+            getInt(DerivationOptions::lengthInWords.name) else null
+        set(value) { put(DerivationOptions::lengthInWords.name, value) }
+
+    /**
+     * Specify the word list for a password
+     */
+    var wordList: WordList?
+        get() = optString(DerivationOptions::wordList.name, "").let{
+            WordList.valueOf(it)
+        }
+        set(value) { put(DerivationOptions::wordList.name, value?.name) }
+
+
+    /**
      * The key-derivation hash functions currently supported by this library,
      * with names matching the string values in the JSON format.
      */
     enum class HashFunction {
-        BLAKE2b, SHA256, Argon2id, Scrypt
+        BLAKE2b, Argon2id
     }
 
     /**
      * The default hash function is SHA256
      */
-    val defaultHashFunction = HashFunction.SHA256
+    val defaultHashFunction = HashFunction.BLAKE2b
 
     /**
      * The hash function the use to derive the secret or the key seed.
      */
     var hashFunction: HashFunction
-        get() = HashFunction.valueOf(optString(DerivationOptions::hashFunction.name, HashFunction.SHA256.name))
+        get() = HashFunction.valueOf(optString(DerivationOptions::hashFunction.name, HashFunction.BLAKE2b.name))
         set(value) { put(DerivationOptions::hashFunction.name, value.name) }
 
     /**
@@ -123,14 +157,14 @@ open class DerivationOptions(
     var hashFunctionMemoryLimitInBytes: Long
         get() =
             when(hashFunction) {
-                HashFunction.Argon2id, HashFunction.Scrypt ->
+                HashFunction.Argon2id ->
                     optLong(DerivationOptions::hashFunctionMemoryLimitInBytes.name, 67108864L)
                 else -> throw InvalidDerivationOptionValueException(
                     "hashFunctionMemoryLimit not defined for hash function ${hashFunction.name}")
             }
         set(value) {
             when(hashFunction) {
-                HashFunction.Argon2id, HashFunction.Scrypt ->
+                HashFunction.Argon2id ->
                     put(DerivationOptions::hashFunctionMemoryLimitInBytes.name, value)
             else -> throw InvalidDerivationOptionValueException(
                 "hashFunctionMemoryLimit cannot be set for hash function ${hashFunction.name}")
@@ -144,14 +178,14 @@ open class DerivationOptions(
     var hashFunctionMemoryPasses: Long
         get() =
             when(hashFunction) {
-                HashFunction.Argon2id, HashFunction.Scrypt ->
+                HashFunction.Argon2id ->
                     optLong(DerivationOptions::hashFunctionMemoryPasses.name, 2L)
                 else -> throw InvalidDerivationOptionValueException(
                     "hashFunctionIterations not defined for hash function ${hashFunction.name}")
             }
         set(value) {
             when(hashFunction) {
-                HashFunction.Argon2id, HashFunction.Scrypt ->
+                HashFunction.Argon2id ->
                     put(DerivationOptions::hashFunctionMemoryPasses.name, value)
                 else -> throw InvalidDerivationOptionValueException(
                     "hashFunctionIterations cannot be set for hash function ${hashFunction.name}")
@@ -188,6 +222,9 @@ open class DerivationOptions(
 
     class UnsealingKey(derivationOptionsJson: String? = null) :
         DerivationOptions(derivationOptionsJson,  Type.UnsealingKey)
+
+    class Password(derivationOptionsJson: String? = null) :
+      DerivationOptions(derivationOptionsJson,  Type.Password)
 
     class Secret(derivationOptionsJson: String? = null) :
         DerivationOptions(derivationOptionsJson,  Type.Secret)

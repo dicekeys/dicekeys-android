@@ -22,7 +22,7 @@ abstract class Api(
   private suspend fun authTokenIfRequired(
     authenticationRequirements: AuthenticationRequirements
   ): String? =
-    if (protocolMayRequireHandshakes && authenticationRequirements.requireAuthenticationHandshake) {
+    if (protocolMayRequireHandshakes && authenticationRequirements.requireAuthenticationHandshake == true) {
       getAuthToken()
     } else null
 

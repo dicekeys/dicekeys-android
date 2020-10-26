@@ -29,28 +29,28 @@ class ApiPermissionChecksInstrumentedTest {
     Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
         ApiDerivationOptions().apply {
-          androidPackagePrefixesAllowed = listOf("com.example", "com.other")
+          allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       ))
 
     Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
         ApiDerivationOptions().apply {
-          androidPackagePrefixesAllowed = listOf("com.example.", "com.other")
+          allowAndroidPrefixes = listOf("com.example.", "com.other")
         }
       ))
 
       Assert.assertTrue(ApiPermissionChecksForPackages("com.example."){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
         ApiDerivationOptions().apply {
-          androidPackagePrefixesAllowed = listOf("com.example", "com.other")
+          allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       ))
 
       Assert.assertFalse(ApiPermissionChecksForPackages("com.examplespoof"){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
         ApiDerivationOptions().apply {
-          androidPackagePrefixesAllowed = listOf("com.example", "com.other")
+          allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       ))
 
@@ -61,7 +61,7 @@ class ApiPermissionChecksInstrumentedTest {
     ApiPermissionChecksForPackages("com.examplespoof"){ deferredAllow }
       .throwIfClientNotAuthorized(
         ApiDerivationOptions().apply {
-          androidPackagePrefixesAllowed = listOf("com.example", "com.other")
+          allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       )
   }
@@ -71,7 +71,7 @@ class ApiPermissionChecksInstrumentedTest {
     ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .throwIfClientNotAuthorized(
         ApiDerivationOptions().apply{
-          urlPrefixesAllowed =listOf("https://someplaceotherthanhere.com/")
+          allowAndroidPrefixes =listOf("https://someplaceotherthanhere.com/")
         }
       )
   }

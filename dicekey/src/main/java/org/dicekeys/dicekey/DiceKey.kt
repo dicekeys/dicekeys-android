@@ -44,7 +44,7 @@ open class DiceKey<F: Face>(val faces: List<F>) {
         )
         // Human readable form without orientations (letter + digit) x 25
         50 -> DiceKey(
-          (0..24).map { k -> Face(hrf[k * 2], hrf[k * 2 + 1], '?') }
+          (0..24).map { k -> Face(hrf[k * 2], hrf[k * 2 + 1], 't') }
         )
         else -> throw InvalidParameterException("Invalid length")
       }

@@ -5,12 +5,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
-import org.dicekeys.api.Api
-import org.dicekeys.api.ApiDerivationOptions
-import org.dicekeys.api.UnsealingInstructions
-import org.dicekeys.api.DiceKeysWebApiClient
+import org.dicekeys.api.*
 import org.dicekeys.dicekey.DiceKey
-import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 import org.dicekeys.trustedapp.apicommands.permissionchecked.PermissionCheckedUrlCommands
 import org.junit.Assert
 import org.junit.Test
@@ -19,7 +16,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class EndToEndUrlApiTests {
-  private fun mockLoadDiceKeyAsync(): Deferred<DiceKey> = CompletableDeferred<DiceKey>().apply {
+  private fun mockLoadDiceKeyAsync(): Deferred<DiceKey<Face>> = CompletableDeferred<DiceKey<Face>>().apply {
     complete(DiceKey.fromHumanReadableForm(
       "A1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1tA1t"))
   }
@@ -38,8 +35,8 @@ class EndToEndUrlApiTests {
     requestUri, ::mockLoadDiceKeyAsync, ::mockRequestUsersConsentAlwaysAsync, sendResponse
   )
 
-  private val apiUrlString: String = "https://ThisUriIsNotEventUsedBecauseWeAreMocking/"
-  private val respondToUrlString: String = "https://myapp.ThisUriIsNotEventUsedBecauseWeAreMocking/apiresponse/"
+  private val apiUrlString: String = "https://dicekeys.app/"
+  private val respondToUrlString: String = "https://my.app/--derived-secret-api--/"
   private val api : Api get() {
     var mockedWebApi : DiceKeysWebApiClient? = null
     mockedWebApi = DiceKeysWebApiClient(apiUrlString, respondToUrlString) { requestUri ->
@@ -51,7 +48,7 @@ class EndToEndUrlApiTests {
     return mockedWebApi!!
   }
 
-  private val derivationOptionsJson = "{}"
+  private val derivationOptionsJson = "{ \"allow\": [{\"host\": \"my.app\"}] }"
   private val testMessage = "The secret ingredient is dihydrogen monoxide"
   private val testMessageByteArray = testMessage.toByteArray(Charsets.UTF_8)
 
@@ -80,16 +77,8 @@ class EndToEndUrlApiTests {
 
   @Test
   fun asymmetricSealAndUnseal() { runBlocking {
-    val publicKey = api.getSealingKey(derivationOptionsJson)
-    val packagedSealedPkMessage = publicKey.seal(testMessageByteArray, """{
-           |  "requireUsersConsent": {
-           |     "question": "Do you want use \"8fsd8pweDmqed\" as your SpoonerMail account password and remove your current password?",
-           |     "actionButtonLabels": {
-           |         "allow": "Make my password \"8fsd8pweDmqed\"",
-           |         "deny": "No"
-           |     }
-           |  }
-           |}""".trimMargin())
+    val publicKey = api.getSealingKey("")
+    val packagedSealedPkMessage = publicKey.seal(testMessageByteArray, "{ \"allow\": [{\"host\": \"my.app\"}] }")
     val plaintext = api.unsealWithUnsealingKey(packagedSealedPkMessage)
     Assert.assertArrayEquals(plaintext, testMessageByteArray)
   }}
@@ -98,7 +87,7 @@ class EndToEndUrlApiTests {
   fun getSecretWithHandshake() { runBlocking {
     val derivationOptions = ApiDerivationOptions().apply {
       requireAuthenticationHandshake = true
-      urlPrefixesAllowed = listOf(respondToUrlString)
+      allow = listOf(WebBasedApplicationIdentity("my.app", null))
       lengthInBytes = 13
     }
     val secret = api.getSecret(derivationOptions.toJson())

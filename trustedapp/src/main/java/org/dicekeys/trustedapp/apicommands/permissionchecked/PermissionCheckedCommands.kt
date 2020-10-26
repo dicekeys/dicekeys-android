@@ -29,7 +29,8 @@ class PermissionCheckedCommands(
     Secret.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.Secret
+        DerivationOptions.Type.Secret,
+        ApiStrings.Commands.getSecret
       ),
       derivationOptionsJson
     )
@@ -45,7 +46,8 @@ class PermissionCheckedCommands(
     SymmetricKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.SymmetricKey
+        DerivationOptions.Type.SymmetricKey,
+        ApiStrings.Commands.sealWithSymmetricKey
       ),
       derivationOptionsJson
     ).seal(plaintext, unsealingInstructions ?: "")
@@ -59,7 +61,8 @@ class PermissionCheckedCommands(
       packagedSealedMessage,
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorizedToUnseal(
         packagedSealedMessage,
-        DerivationOptions.Type.SymmetricKey
+        DerivationOptions.Type.SymmetricKey,
+        ApiStrings.Commands.unsealWithSymmetricKey
       )
     )
 
@@ -72,7 +75,8 @@ class PermissionCheckedCommands(
     UnsealingKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.UnsealingKey
+        DerivationOptions.Type.UnsealingKey,
+        ApiStrings.Commands.getSealingKey
       ),
       derivationOptionsJson
     ).getSealingkey()
@@ -125,7 +129,8 @@ class PermissionCheckedCommands(
     SigningKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.SigningKey
+        DerivationOptions.Type.SigningKey,
+        ApiStrings.Commands.getSignatureVerificationKey
       ),
       derivationOptionsJson
     ).getSignatureVerificationKey()
@@ -139,7 +144,8 @@ class PermissionCheckedCommands(
       UnsealingKey.deriveFromSeed(
         permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorizedToUnseal(
           packagedSealedMessage,
-          DerivationOptions.Type.UnsealingKey
+          DerivationOptions.Type.UnsealingKey,
+          ApiStrings.Commands.unsealWithUnsealingKey
         ),
         packagedSealedMessage.derivationOptionsJson
       ).unseal(packagedSealedMessage)
@@ -153,7 +159,8 @@ class PermissionCheckedCommands(
   ): Pair<ByteArray, SignatureVerificationKey> = SigningKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
         derivationOptionsJson,
-        DerivationOptions.Type.SigningKey
+        DerivationOptions.Type.SigningKey,
+        ApiStrings.Commands.generateSignature
       ),
       derivationOptionsJson
     ).let{ signingKey ->

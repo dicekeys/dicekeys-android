@@ -28,8 +28,8 @@ open class ApiPermissionChecksForPackages(
     authenticationRequirements: AuthenticationRequirements
   ): Boolean =
     // Authorized by default if no requirements set
-    (authenticationRequirements.urlPrefixesAllowed == null && authenticationRequirements.androidPackagePrefixesAllowed == null) ||
-    authenticationRequirements.androidPackagePrefixesAllowed.let { androidPackagePrefixesAllowed ->
+    (authenticationRequirements.allow == null && authenticationRequirements.allowAndroidPrefixes == null) ||
+    authenticationRequirements.allowAndroidPrefixes.let { androidPackagePrefixesAllowed ->
       androidPackagePrefixesAllowed != null &&
         terminateWithDot(clientsApplicationId).let { clientsApplicationIdWithTrailingDot ->
           androidPackagePrefixesAllowed.any { prefix ->
@@ -44,7 +44,7 @@ open class ApiPermissionChecksForPackages(
   ): Unit {
     if (!doesClientMeetAuthenticationRequirements(authenticationRequirements)) {
       // The client application id does not start with any of the specified prefixes
-      throw ClientPackageNotAuthorizedException(clientsApplicationId, authenticationRequirements.androidPackagePrefixesAllowed)
+      throw ClientPackageNotAuthorizedException(clientsApplicationId, authenticationRequirements.allowAndroidPrefixes)
     }
   }
 
