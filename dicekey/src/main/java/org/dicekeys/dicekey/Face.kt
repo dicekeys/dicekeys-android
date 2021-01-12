@@ -64,25 +64,25 @@ open class Face(
 
     open val underlineCode11Bits: UShort?
         get() {
-            val underlineCode = undoverlineCodes?.underlineCode
-            return if (underlineCode != null) {
+            val value = undoverlineCodes?.underlineCode
+            return if (value != null) {
                 ((1 shl  10) or
                         // set the next high-order bit on overlines
-                        (1 shl 9) or
+                        0 or
                         // shift the face code 1 to the left to leave the 0th bit empty
-                        (underlineCode.toUShort().toInt() shl 1)).toUShort()
+                        (value.toUShort().toInt() shl 1)).toUShort()
             } else null
         }
 
     open val overlineCode11Bits: UShort?
         get() {
-            val overlineCode = undoverlineCodes?.overlineCode
-            return if (overlineCode != null) {
-                ((1 ushr  10) or
+            val value = undoverlineCodes?.overlineCode
+            return if (value != null) {
+                ((1 shl  10) or
                         // set the next high-order bit on overlines
-                        (1 ushr 9) or
+                        (1 shl 9) or
                         // shift the face code 1 to the left to leave the 0th bit empty
-                        overlineCode.toUShort().toInt() ushr 1).toUShort()
+                        (value.toUShort().toInt() shl 1)).toUShort()
             } else null
         }
 
