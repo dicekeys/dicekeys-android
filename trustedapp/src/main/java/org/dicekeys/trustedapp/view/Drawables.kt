@@ -2,6 +2,7 @@ package org.dicekeys.trustedapp.view
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import androidx.core.content.res.ResourcesCompat
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceDimensionsFractional
 
@@ -53,37 +54,27 @@ class Undoverline(val face: Face,
     }
 
     override fun draw(canvas: Canvas) {
-        val colors = listOf(
-                Color.WHITE,
-                Color.BLUE,
-                Color.CYAN,
-                Color.GREEN,
-                Color.MAGENTA,
-                Color.LTGRAY,
-                Color.RED,
-                Color.YELLOW,
-                Color.GRAY,
-                Color.BLUE,
-                Color.CYAN)
         val width = width
         val height = height
         val dotStep = dotStep
-        val dotWidth = dotWidth
-        val dotHeight = dotHeight
-        val bitSet = bitPositionsSet
         canvas.drawRect(0F, 0F, width, height, penPaint)
-        for (i in bitSet) {
+        for (i in bitPositionsSet) {
             val offsetX = marginAtStartAndEnd + i * dotStep
             val offsetY = dotTop
-            holePaint.color = colors[i]
             canvas.drawRect(offsetX, offsetY, offsetX + dotWidth, offsetY + dotHeight, holePaint)
             canvas.drawText(i.toString(), offsetX, offsetY, penPaint)
         }
     }
 
-    override fun setAlpha(alpha: Int) {}
+    override fun setAlpha(alpha: Int) {
+        penPaint.alpha = alpha
+        holePaint.alpha = alpha
+    }
 
-    override fun setColorFilter(colorFilter: ColorFilter?) {}
+    override fun setColorFilter(colorFilter: ColorFilter?) {
+        penPaint.colorFilter = colorFilter
+        holePaint.colorFilter = colorFilter
+    }
 
     override fun getOpacity(): Int = PixelFormat.OPAQUE
 }
@@ -91,6 +82,7 @@ class Undoverline(val face: Face,
 class DieFaceUpright(val face: Face,
                      val dieSize: Float,
                      val linearFractionOfFaceRenderedToDieSize: Float,
+                     val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
                      penColor: Int = Color.BLACK,
                      faceSurfaceColor: Int = Color.WHITE,
                      faceBorderColor: Int? = null) : Drawable() {
@@ -106,6 +98,8 @@ class DieFaceUpright(val face: Face,
     val textPaint = Paint().apply {
         typeface = font
         textSize = fontSize
+        textAlign = Paint.Align.CENTER
+        letterSpacing = FaceDimensionsFractional.spaceBetweenLetterAndDigit
     }
 
     val sizeOfRenderedFace: Float
@@ -121,7 +115,7 @@ class DieFaceUpright(val face: Face,
         get() = dieSize / 2f
 
     val vCenter: Float
-        get() = dieSize / 2
+        get() = dieSize / 2f
 
     val textBaseline: Float
         get() = top + FaceDimensionsFractional.textBaselineY * sizeOfRenderedFace
@@ -132,11 +126,8 @@ class DieFaceUpright(val face: Face,
     val digitLeft: Float
         get() = left + (1 + FaceDimensionsFractional.spaceBetweenLetterAndDigit) * sizeOfRenderedFace / 2
 
-    val underlineVCenter: Float
-        get() = top + ( FaceDimensionsFractional.underlineTop + FaceDimensionsFractional.undoverlineThickness / 2) * sizeOfRenderedFace
-
-    val overlineVCenter: Float
-        get() = top + ( FaceDimensionsFractional.overlineTop + FaceDimensionsFractional.undoverlineThickness / 2) * sizeOfRenderedFace
+    val underlineTop: Float
+        get() = top + FaceDimensionsFractional.underlineTop * sizeOfRenderedFace
 
     val overlineTop: Float
         get() = top + FaceDimensionsFractional.overlineTop * sizeOfRenderedFace
@@ -144,41 +135,44 @@ class DieFaceUpright(val face: Face,
     val fontSize: Float
         get() = FaceDimensionsFractional.fontSize * sizeOfRenderedFace
 
-    val font = Typeface.SANS_SERIF
-
     val halfTextRegionWidth: Float
         get() = FaceDimensionsFractional.textRegionWidth * sizeOfRenderedFace / 2
 
     val textCenterY: Float
         get() = (
-                dieSize
-                        // Move down to remove region above capital letter
-                        + textPaint.fontMetrics.ascent
-                        // Move up to remove region below capital letter
-                        - textPaint.fontMetrics.descent
-                ) / 2 // take center
+                (dieSize / 2) - ((textPaint.descent() + textPaint.ascent()) / 2))
+
+    val text: String
+        get() = String.format("%c%c", face.letter, face.digit)
 
     override fun draw(canvas: Canvas) {
-//        canvas.drawRoundRect(0F, 0F, dieSize, dieSize, dieSize / 8, dieSize / 8, penPaint)
-//        canvas.drawText(face.letter.toString(), (dieSize - halfTextRegionWidth) / 2, textCenterY, faceSurfacePaint)
-//        canvas.drawText(face.digit.toString(), (dieSize + halfTextRegionWidth) / 2, textCenterY, faceSurfacePaint)
+        canvas.drawRoundRect(0F, 0F, dieSize, dieSize, dieSize / 8, dieSize / 8, faceSurfacePaint)
+        canvas.drawText(text, dieSize / 2, textCenterY, textPaint)
 
         canvas.save()
-        canvas.translate(hCenter, underlineVCenter)
+        canvas.translate(left, underlineTop)
         Undoverline(face, sizeOfRenderedFace, false, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
                 .draw(canvas)
         canvas.restore()
 
         canvas.save()
-        canvas.translate(hCenter, overlineVCenter)
+        canvas.translate(left, overlineTop)
         Undoverline(face, sizeOfRenderedFace, true, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
                 .draw(canvas)
         canvas.restore()
     }
 
-    override fun setAlpha(alpha: Int) {}
+    override fun setAlpha(alpha: Int) {
+        penPaint.alpha = alpha
+        faceSurfacePaint.alpha = alpha
+        textPaint.alpha = alpha
+    }
 
-    override fun setColorFilter(colorFilter: ColorFilter?) {}
+    override fun setColorFilter(colorFilter: ColorFilter?) {
+        penPaint.colorFilter = colorFilter
+        faceSurfacePaint.colorFilter = colorFilter
+        textPaint.colorFilter = colorFilter
+    }
 
     override fun getOpacity(): Int = PixelFormat.OPAQUE
 }

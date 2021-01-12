@@ -27,9 +27,12 @@ class DieFaceView @JvmOverloads constructor(
 
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
-        val drawable = DieFaceUpright(face, dieSize, linearFractionOfFaceRenderedToDieSize)
         if (canvas != null) {
+            val drawable = DieFaceUpright(face, dieSize, linearFractionOfFaceRenderedToDieSize, penColor = penPaint.color, faceSurfaceColor = faceSurfacePaint.color)
+            canvas.save()
+            canvas.rotate(face.orientationAsDegrees, dieSize / 2, dieSize / 2)
             drawable.draw(canvas)
+            canvas.restore()
         }
     }
 

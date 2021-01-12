@@ -12,6 +12,15 @@ open class Face(
     val clockwise90DegreeRotationsFromUpright: Byte? get()  =
         FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTrbl)
 
+    val orientationAsDegrees: Float
+        get() = when(orientationAsLowercaseLetterTrbl) {
+            't' -> 0f
+            'r' -> 90f
+            'b' -> 180f
+            'l' -> 270f
+            else -> 0f
+        }
+
     companion object {
         fun majorityOfThree(a: Char, b: Char, c: Char): Char {
             return when {
