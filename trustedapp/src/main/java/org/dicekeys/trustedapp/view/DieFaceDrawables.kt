@@ -62,7 +62,6 @@ class Undoverline(val face: Face,
             val offsetX = marginAtStartAndEnd + i * dotStep
             val offsetY = dotTop
             canvas.drawRect(offsetX, offsetY, offsetX + dotWidth, offsetY + dotHeight, holePaint)
-            canvas.drawText(i.toString(), offsetX, offsetY, penPaint)
         }
     }
 
@@ -81,11 +80,20 @@ class Undoverline(val face: Face,
 
 class DieFaceUpright(val face: Face,
                      val dieSize: Float,
-                     val linearFractionOfFaceRenderedToDieSize: Float,
+                     val linearFractionOfFaceRenderedToDieSize: Float = 5f/8f,
                      val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
                      penColor: Int = Color.BLACK,
                      faceSurfaceColor: Int = Color.WHITE,
                      faceBorderColor: Int? = null) : Drawable() {
+
+    val borderPaint: Paint?
+
+    init {
+        borderPaint = if (faceBorderColor != null) Paint().apply {
+            color = faceBorderColor
+            style = Paint.Style.STROKE
+        } else null
+    }
 
     val penPaint = Paint().apply {
         color = penColor
@@ -111,21 +119,6 @@ class DieFaceUpright(val face: Face,
     val top: Float
         get() = (dieSize - sizeOfRenderedFace) / 2
 
-    val hCenter: Float
-        get() = dieSize / 2f
-
-    val vCenter: Float
-        get() = dieSize / 2f
-
-    val textBaseline: Float
-        get() = top + FaceDimensionsFractional.textBaselineY * sizeOfRenderedFace
-
-    val letterLeft: Float
-        get() = left + (1 - FaceDimensionsFractional.textRegionWidth) * sizeOfRenderedFace / 2
-
-    val digitLeft: Float
-        get() = left + (1 + FaceDimensionsFractional.spaceBetweenLetterAndDigit) * sizeOfRenderedFace / 2
-
     val underlineTop: Float
         get() = top + FaceDimensionsFractional.underlineTop * sizeOfRenderedFace
 
@@ -135,9 +128,6 @@ class DieFaceUpright(val face: Face,
     val fontSize: Float
         get() = FaceDimensionsFractional.fontSize * sizeOfRenderedFace
 
-    val halfTextRegionWidth: Float
-        get() = FaceDimensionsFractional.textRegionWidth * sizeOfRenderedFace / 2
-
     val textCenterY: Float
         get() = (
                 (dieSize / 2) - ((textPaint.descent() + textPaint.ascent()) / 2))
@@ -146,7 +136,13 @@ class DieFaceUpright(val face: Face,
         get() = String.format("%c%c", face.letter, face.digit)
 
     override fun draw(canvas: Canvas) {
+        canvas.save()
+        canvas.rotate(face.orientationAsDegrees, dieSize / 2, dieSize / 2)
+
         canvas.drawRoundRect(0F, 0F, dieSize, dieSize, dieSize / 8, dieSize / 8, faceSurfacePaint)
+        if (borderPaint != null) {
+            canvas.drawRoundRect(1F, 1F, dieSize - 1, dieSize - 1, dieSize / 8, dieSize / 8, borderPaint)
+        }
         canvas.drawText(text, dieSize / 2, textCenterY, textPaint)
 
         canvas.save()
@@ -159,6 +155,8 @@ class DieFaceUpright(val face: Face,
         canvas.translate(left, overlineTop)
         Undoverline(face, sizeOfRenderedFace, true, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
                 .draw(canvas)
+        canvas.restore()
+
         canvas.restore()
     }
 

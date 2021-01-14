@@ -1,12 +1,10 @@
 package org.dicekeys.trustedapp.activities
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import org.dicekeys.dicekey.Face
-import org.dicekeys.trustedapp.DieFaceView
-import org.dicekeys.trustedapp.R
+import org.dicekeys.trustedapp.DiceKeyView
 import org.dicekeys.trustedapp.databinding.ActivityDiceViewBinding
-import org.dicekeys.trustedapp.databinding.ActivityMainBinding
 
 class DiceViewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDiceViewBinding
@@ -15,9 +13,8 @@ class DiceViewActivity : AppCompatActivity() {
         binding = ActivityDiceViewBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        val dieFaceView = DieFaceView(this)
-        dieFaceView.face = Face('A', '3')
-        dieFaceView.dieSize = 300F
-        binding.content.addView(dieFaceView)
+        val diceKeyView = DiceKeyView(this)
+        diceKeyView.setBackgroundColor(Color.YELLOW)
+        binding.content.addView(diceKeyView)
     }
 }

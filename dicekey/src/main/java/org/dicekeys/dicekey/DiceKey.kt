@@ -35,6 +35,11 @@ open class DiceKey<F: Face>(val faces: List<F>) {
       )
     )
 
+    val example: DiceKey<Face>
+      get() = DiceKey(faces = (0 until 25).map { index ->
+        Face(FaceLetters[index], FaceDigits[index % 6], orientationAsLowercaseLetterTrbl = FaceRotationLetters[index % 4])
+      })
+
     @JvmStatic
     fun fromHumanReadableForm(hrf: String): DiceKey<Face> {
       return when (hrf.length) {
