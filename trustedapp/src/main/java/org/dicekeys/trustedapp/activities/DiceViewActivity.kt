@@ -1,6 +1,5 @@
 package org.dicekeys.trustedapp.activities
 
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import org.dicekeys.trustedapp.DiceKeyView
@@ -13,8 +12,5 @@ class DiceViewActivity : AppCompatActivity() {
         binding = ActivityDiceViewBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        val diceKeyView = DiceKeyView(this)
-        diceKeyView.setBackgroundColor(Color.YELLOW)
-        binding.content.addView(diceKeyView)
     }
 }

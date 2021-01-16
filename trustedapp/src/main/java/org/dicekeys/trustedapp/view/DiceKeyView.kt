@@ -6,19 +6,17 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
+import android.util.SizeF
 import android.view.View
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.SimpleDiceKey
-import org.dicekeys.trustedapp.view.Colors
-import org.dicekeys.trustedapp.view.DiceKeySizeModel
-import org.dicekeys.trustedapp.view.DieFaceUpright
-import org.dicekeys.trustedapp.view.DieLidShape
+import org.dicekeys.trustedapp.view.*
 
 class DiceKeyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
+        defStyleAttr: Int = 0) : DiceKeyBaseView(context, attrs, defStyleAttr) {
 
     companion object {
         val TAG = DiceKeyView::class.java.simpleName
@@ -29,6 +27,13 @@ class DiceKeyView @JvmOverloads constructor(
     var showLidTab: Boolean = false
     var leaveSpaceForTab: Boolean = false
     var showDiceAtIndexes: Set<Int>? = null
+
+    init {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.DiceKeyView)
+        leaveSpaceForTab = typedArray.getBoolean(R.styleable.DiceKeyView_leaveSpaceForTab, false)
+        showLidTab = typedArray.getBoolean(R.styleable.DiceKeyView_showLidTab, false)
+        typedArray.recycle()
+    }
 
     val computedDiceKeyToRender: DiceKey<Face>
         get() = diceKey ?: // If the caller specified a diceKey, use that
@@ -49,8 +54,6 @@ class DiceKeyView @JvmOverloads constructor(
             listOf(12).toSet() else
             // all 25 dice
             (0 until 25).toSet()
-
-    val sizeModel = DiceKeySizeModel(420f, hasTab = showLidTab || leaveSpaceForTab)
 
     data class DiePosition(val indexInArray: Int, val face: Face) {
         val id: Int get() = indexInArray
@@ -76,10 +79,6 @@ class DiceKeyView @JvmOverloads constructor(
     val faceSurfacePaint = Paint().apply {
         color = Color.WHITE
     }
-
-    val linearSizeOfBox: Float get() = sizeModel.linearSizeOfBox
-    val dieStepSize: Float get() = sizeModel.stepSize
-    val faceSize: Float get() = sizeModel.faceSize
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
@@ -116,13 +115,5 @@ class DiceKeyView @JvmOverloads constructor(
             }
             canvas.restore()
         }
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        setMeasuredDimension(
-                linearSizeOfBox.toInt(),
-                if (showLidTab) (linearSizeOfBox / sizeModel.aspectRatio).toInt() else linearSizeOfBox.toInt()
-        )
     }
 }
