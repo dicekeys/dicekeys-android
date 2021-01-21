@@ -24,9 +24,26 @@ class DiceKeyView @JvmOverloads constructor(
 
     var diceKey: SimpleDiceKey? = null
     var centerFace: Face? = null
-    var showLidTab: Boolean = false
-    var leaveSpaceForTab: Boolean = false
+    var showLidTab: Boolean = true
+    var leaveSpaceForTab: Boolean = true
     var showDiceAtIndexes: Set<Int>? = null
+    override val sizeModel = DiceKeySizeModel(1f, leaveSpaceForTab)
+
+    val diceBoxPaint = Paint().apply {
+        color = Colors.diceColor
+    }
+
+    val diceBoxDieSlotPaint = Paint().apply {
+        color = Colors.diceBoxDieSlot
+    }
+
+    val diePenPaint = Paint().apply {
+        color = Color.BLACK
+    }
+
+    val faceSurfacePaint = Paint().apply {
+        color = Color.WHITE
+    }
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.DiceKeyView)
@@ -55,44 +72,31 @@ class DiceKeyView @JvmOverloads constructor(
             // all 25 dice
             (0 until 25).toSet()
 
-    data class DiePosition(val indexInArray: Int, val face: Face) {
-        val id: Int get() = indexInArray
-        val column: Int get() = indexInArray % 5
-        val row: Int get() = indexInArray / 5
-    }
 
     val facePositions: List<DiePosition>
-        get() = (0 until 25).map { DiePosition(it, computedDiceKeyToRender.faces[it]) }
+        get() = (0 until 25).map {
+            DiePosition(indexInArray =  it,
+                    face =  computedDiceKeyToRender.faces[it],
+                    column = it % sizeModel.columns,
+                    row = it / sizeModel.rows,
+                    drawable = DieFaceUpright(computedDiceKeyToRender.faces[it], faceSize))
+        }
 
-    val diceBoxPaint = Paint().apply {
-        color = Colors.diceColor
-    }
-
-    val diceBoxDieSlotPaint = Paint().apply {
-        color = Colors.diceBoxDieSlot
-    }
-
-    val diePenPaint = Paint().apply {
-        color = Color.BLACK
-    }
-
-    val faceSurfacePaint = Paint().apply {
-        color = Color.WHITE
-    }
+    val dieLidShape = DieLidShape(sizeModel.lidTabRadius, diceBoxPaint.color)
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (canvas != null) {
-            canvas.drawRoundRect(0f, 0f, linearSizeOfBox, linearSizeOfBox,
+            canvas.drawRoundRect(0f, 0f, sizeModel.boxHeight, sizeModel.boxWidth,
                     sizeModel.boxCornerRadius, sizeModel.boxCornerRadius, diceBoxPaint)
 
             if (showLidTab) {
                 canvas.save()
-                canvas.translate(linearSizeOfBox / 2f - sizeModel.lidTabRadius, linearSizeOfBox)
-                val dieLid = DieLidShape(sizeModel.lidTabRadius, diceBoxPaint.color)
-                dieLid.draw(canvas)
+                canvas.translate(linearSizeOfBox / 2f - sizeModel.lidTabRadius, sizeModel.bounds.height - sizeModel.lidTabRadius)
+                dieLidShape.draw(canvas)
                 canvas.restore()
             }
+
             canvas.save()
             canvas.translate(
                     sizeModel.marginOfBoxEdgeAsFractionOfDieSize * faceSize,
@@ -105,7 +109,7 @@ class DiceKeyView @JvmOverloads constructor(
                         dieStepSize * facePosition.row
                 )
                 if (computedShowDiceAtIndexes.contains(facePosition.id)) {
-                    val dieFace = DieFaceUpright(facePosition.face, faceSize)
+                    val dieFace = facePosition.drawable
                     dieFace.draw(canvas)
                 } else {
                     canvas.drawRoundRect(0f, 0f, faceSize, faceSize,

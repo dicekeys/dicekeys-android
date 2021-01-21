@@ -2,19 +2,31 @@ package org.dicekeys.trustedapp.view
 
 import android.util.SizeF
 
-class DiceKeySizeModel(var bounds: SizeF, val hasTab: Boolean = false) {
+class DiceKeySizeModel(
+        var bounds: SizeF,
+        val hasTab: Boolean = false,
+        val columns: Int = 5,
+        val rows: Int = 5) {
     constructor(size1d: Float, hasTab: Boolean) : this(SizeF(size1d, size1d), hasTab) {}
 
     val fractionOfVerticalSpaceRequiredForTab = 0.1F
 
     val aspectRatio: Float
-        get() = if (hasTab) 1 - this.fractionOfVerticalSpaceRequiredForTab else 1F
+        get() = if (hasTab)
+            rows.toFloat()/columns.toFloat() + this.fractionOfVerticalSpaceRequiredForTab
+            else rows.toFloat()/columns.toFloat()
 
     val width: Float
         get() = Math.min(bounds.width, bounds.width * aspectRatio)
 
     val height: Float
         get() = Math.min(bounds.height, bounds.height * aspectRatio)
+
+    val boxWidth: Float
+        get() = bounds.width * rows.toFloat()/columns.toFloat()
+
+    val boxHeight: Float
+        get() = bounds.height * rows.toFloat()/columns.toFloat()
 
     val size: SizeF
         get() = SizeF(width, height)

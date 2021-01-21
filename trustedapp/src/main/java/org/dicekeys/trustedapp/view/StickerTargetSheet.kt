@@ -11,6 +11,8 @@ class StickerTargetSheet @JvmOverloads constructor(
         defStyleAttr: Int = 0) : DiceKeyBaseView(context, attrs, defStyleAttr) {
 
 
+    override val sizeModel = DiceKeySizeModel(1f, false)
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
     }

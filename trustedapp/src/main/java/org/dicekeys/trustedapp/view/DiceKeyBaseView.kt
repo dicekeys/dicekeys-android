@@ -1,21 +1,30 @@
 package org.dicekeys.trustedapp.view
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.SizeF
 import android.view.View
+import org.dicekeys.dicekey.Face
 
 abstract class DiceKeyBaseView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
-    val sizeModel = DiceKeySizeModel(0f, false)
+    data class DiePosition(
+            val indexInArray: Int,
+            val face: Face,
+            val column: Int,
+            val row: Int,
+            val drawable: Drawable) {
+        val id: Int get() = indexInArray
+    }
+
+    abstract val sizeModel: DiceKeySizeModel
     val linearSizeOfBox: Float get() = sizeModel.linearSizeOfBox
     val dieStepSize: Float get() = sizeModel.stepSize
     val faceSize: Float get() = sizeModel.faceSize
-
-    open fun hasSpaceForTab() = false
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -29,8 +38,8 @@ abstract class DiceKeyBaseView @JvmOverloads constructor(
         }
 
         setMeasuredDimension(
-                linearSizeOfBox.toInt(),
-                if (hasSpaceForTab()) (linearSizeOfBox / sizeModel.aspectRatio).toInt() else linearSizeOfBox.toInt()
-        )
+                sizeModel.width.toInt(),
+                sizeModel.height.toInt()
+         )
     }
 }
