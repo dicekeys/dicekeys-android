@@ -1,16 +1,14 @@
-package org.dicekeys.trustedapp
+package org.dicekeys.trustedapp.view
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
-import android.util.SizeF
-import android.view.View
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.SimpleDiceKey
+import org.dicekeys.trustedapp.R
 import org.dicekeys.trustedapp.view.*
 
 class DiceKeyView @JvmOverloads constructor(
@@ -73,7 +71,7 @@ class DiceKeyView @JvmOverloads constructor(
             (0 until 25).toSet()
 
 
-    val facePositions: List<DiePosition>
+    override val facePositions: List<DiePosition>
         get() = (0 until 25).map {
             DiePosition(indexInArray =  it,
                     face =  computedDiceKeyToRender.faces[it],
@@ -86,7 +84,7 @@ class DiceKeyView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        if (canvas != null) {
+        canvas?.let {
             canvas.drawRoundRect(0f, 0f, sizeModel.boxHeight, sizeModel.boxWidth,
                     sizeModel.boxCornerRadius, sizeModel.boxCornerRadius, diceBoxPaint)
 
@@ -98,10 +96,7 @@ class DiceKeyView @JvmOverloads constructor(
             }
 
             canvas.save()
-            canvas.translate(
-                    sizeModel.marginOfBoxEdgeAsFractionOfDieSize * faceSize,
-                    sizeModel.marginOfBoxEdgeAsFractionOfDieSize * faceSize
-            )
+            canvas.translate(sizeModel.marginLeft, sizeModel.marginTop)
             for (facePosition in facePositions) {
                 canvas.save()
                 canvas.translate(

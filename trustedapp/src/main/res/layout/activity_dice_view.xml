@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<org.dicekeys.trustedapp.view.TwoDiceViewLayout
     android:id="@+id/content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="@dimen/fab_margin"
+    android:gravity="center_horizontal"
+    app:leftDiceViewId="@id/sticker_sheet_view"
+    app:rightDiceViewId="@id/sticker_target_sheet_view"
     tools:context=".activities.DiceViewActivity">
     <org.dicekeys.trustedapp.view.StickerSheetView
-        android:layout_width="240dp"
-        android:layout_height="240dp"
-        app:leaveSpaceForTab="true"
-        app:showLidTab="true"/>
+        android:id="@+id/sticker_sheet_view"
+        android:layout_gravity="start"
+        app:pageIndex="4"
+        android:layout_width="180dp"
+        android:layout_height="180dp"/>
 
-    <org.dicekeys.trustedapp.DiceKeyView
-        android:layout_marginTop="@dimen/fab_margin"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:background="@color/colorAccent"
-        app:leaveSpaceForTab="false"
-        app:showLidTab="false"/>
-</LinearLayout>
+    <org.dicekeys.trustedapp.view.StickerTargetSheetView
+        android:id="@+id/sticker_target_sheet_view"
+        android:layout_marginLeft="@dimen/fab_margin"
+        android:layout_gravity="end"
+        android:layout_width="180dp"
+        android:layout_height="180dp"/>
+</org.dicekeys.trustedapp.view.TwoDiceViewLayout>

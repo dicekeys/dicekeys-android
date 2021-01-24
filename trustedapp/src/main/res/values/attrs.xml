@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DiceKeyView">>
+    <declare-styleable name="DiceKeyView">
         <attr name="showLidTab" format="boolean" />
         <attr name="leaveSpaceForTab" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="TwoDiceViewLayout">
+        <attr name="leftDiceViewId" format="reference" />
+        <attr name="rightDiceViewId" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="StickerSheetView">
+        <attr name="pageIndex" format="integer" />
     </declare-styleable>
 </resources>

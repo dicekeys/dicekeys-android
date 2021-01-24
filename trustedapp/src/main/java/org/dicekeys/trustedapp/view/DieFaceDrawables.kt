@@ -79,7 +79,7 @@ class Undoverline(val face: Face,
 }
 
 class DieFaceUpright(val face: Face,
-                     val dieSize: Float,
+                     var dieSize: Float,
                      val linearFractionOfFaceRenderedToDieSize: Float = 5f/8f,
                      val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
                      penColor: Int = Color.BLACK,
@@ -105,7 +105,6 @@ class DieFaceUpright(val face: Face,
 
     val textPaint = Paint().apply {
         typeface = font
-        textSize = fontSize
         textAlign = Paint.Align.CENTER
         letterSpacing = FaceDimensionsFractional.spaceBetweenLetterAndDigit
     }
@@ -143,6 +142,7 @@ class DieFaceUpright(val face: Face,
         if (borderPaint != null) {
             canvas.drawRoundRect(1F, 1F, dieSize - 1, dieSize - 1, dieSize / 8, dieSize / 8, borderPaint)
         }
+        textPaint.textSize = fontSize
         canvas.drawText(text, dieSize / 2, textCenterY, textPaint)
 
         canvas.save()

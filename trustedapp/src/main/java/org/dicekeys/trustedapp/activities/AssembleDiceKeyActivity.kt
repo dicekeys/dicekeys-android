@@ -7,10 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.viewpager.widget.ViewPager
 import org.dicekeys.trustedapp.R
 import org.dicekeys.trustedapp.databinding.ActivityAssembleDiceKeyBinding
 
-class AssembleDiceKeyActivity : AppCompatActivity(), View.OnClickListener {
+class AssembleDiceKeyActivity : AppCompatActivity(), View.OnClickListener, ViewPager.OnPageChangeListener {
     private lateinit var binding: ActivityAssembleDiceKeyBinding
     private lateinit var pagerAdapter: AssemblePagerAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,20 +21,13 @@ class AssembleDiceKeyActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(view)
         pagerAdapter = AssemblePagerAdapter(supportFragmentManager)
         binding.viewPager.adapter = pagerAdapter
+        binding.viewPager.addOnPageChangeListener(this)
+        binding.progressBar.max = pagerAdapter.count - 1
+        binding.viewPager.currentItem = 4
     }
 
     override fun onClick(view: View?) {
-        if (view == binding.btnNext) {
-            binding.viewPager.currentItem = binding.viewPager.currentItem + 1
-        } else if (view == binding.btnPrev) {
-            binding.viewPager.currentItem = binding.viewPager.currentItem - 1
-        }
-        updateUIState()
-    }
 
-    private fun updateUIState() {
-        binding.btnNext.isEnabled = binding.viewPager.currentItem < pagerAdapter.count - 1
-        binding.btnPrev.isEnabled = binding.viewPager.currentItem > 0
     }
 
     private class AssemblePagerAdapter(fm: FragmentManager)
@@ -55,6 +49,19 @@ class AssembleDiceKeyActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     class AssembleFragment(@LayoutRes contentLayoutId: Int): Fragment(contentLayoutId) {
+
+    }
+
+    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+    }
+
+    override fun onPageSelected(position: Int) {
+        binding.progressBar.progress = position
+        binding.textWarning.visibility = if (position == 0) View.INVISIBLE else View.VISIBLE
+    }
+
+    override fun onPageScrollStateChanged(state: Int) {
 
     }
 }

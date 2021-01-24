@@ -53,7 +53,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startAssembleWizard() {
-        val intent = Intent(this, DiceViewActivity::class.java)
+        val intent = Intent(this, AssembleDiceKeyActivity::class.java)
+        //val intent = Intent(this, DiceViewActivity::class.java)
         startActivity(intent)
     }
 

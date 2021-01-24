@@ -1,6 +1,8 @@
 package org.dicekeys.trustedapp.view
 
 import android.content.Context
+import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.SizeF
@@ -17,14 +19,18 @@ abstract class DiceKeyBaseView @JvmOverloads constructor(
             val face: Face,
             val column: Int,
             val row: Int,
-            val drawable: Drawable) {
+            val drawable: DieFaceUpright) {
         val id: Int get() = indexInArray
     }
 
     abstract val sizeModel: DiceKeySizeModel
-    val linearSizeOfBox: Float get() = sizeModel.linearSizeOfBox
-    val dieStepSize: Float get() = sizeModel.stepSize
-    val faceSize: Float get() = sizeModel.faceSize
+    abstract val facePositions: List<DiePosition>
+    protected val linearSizeOfBox: Float get() = sizeModel.linearSizeOfBox
+    protected val dieStepSize: Float get() = sizeModel.stepSize
+    protected val faceSize: Float get() = sizeModel.faceSize
+
+    open fun highlightedIndex(): Int? = null
+    open fun highlightedFace(): Face? = null
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -41,5 +47,11 @@ abstract class DiceKeyBaseView @JvmOverloads constructor(
                 sizeModel.width.toInt(),
                 sizeModel.height.toInt()
          )
+    }
+
+    fun getDieBounds(col: Int, row: Int): RectF {
+        val left = sizeModel.marginLeft + col * sizeModel.stepSize
+        val top = sizeModel.marginTop + row * sizeModel.stepSize
+        return RectF(left, top, left + sizeModel.faceSize, top + sizeModel.faceSize)
     }
 }

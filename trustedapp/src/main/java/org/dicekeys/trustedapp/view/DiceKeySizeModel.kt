@@ -6,15 +6,16 @@ class DiceKeySizeModel(
         var bounds: SizeF,
         val hasTab: Boolean = false,
         val columns: Int = 5,
-        val rows: Int = 5) {
+        val rows: Int = 5,
+        val extraVerticalMarginOfBoxEdgeAsFractionOfDieSize: Float = 0f) {
     constructor(size1d: Float, hasTab: Boolean) : this(SizeF(size1d, size1d), hasTab) {}
 
     val fractionOfVerticalSpaceRequiredForTab = 0.1F
 
     val aspectRatio: Float
         get() = if (hasTab)
-            rows.toFloat()/columns.toFloat() + this.fractionOfVerticalSpaceRequiredForTab
-            else rows.toFloat()/columns.toFloat()
+            (rows + extraVerticalMarginOfBoxEdgeAsFractionOfDieSize * 2f)/columns.toFloat() + this.fractionOfVerticalSpaceRequiredForTab
+            else (rows + extraVerticalMarginOfBoxEdgeAsFractionOfDieSize * 2f)/columns.toFloat()
 
     val width: Float
         get() = Math.min(bounds.width, bounds.width * aspectRatio)
@@ -73,4 +74,9 @@ class DiceKeySizeModel(
 
     val stepSize: Float
         get() =  (1 + distanceBetweenFacesAsFractionOfFaceSize) * faceSize
+
+    val marginLeft: Float get() = marginOfBoxEdgeAsFractionOfDieSize * faceSize
+
+    val marginTop: Float get() = (marginOfBoxEdgeAsFractionOfDieSize + extraVerticalMarginOfBoxEdgeAsFractionOfDieSize) * faceSize
+
 }

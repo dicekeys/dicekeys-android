@@ -11,6 +11,7 @@ import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceDigits
 import org.dicekeys.dicekey.FaceLetters
+import org.dicekeys.trustedapp.R
 
 class StickerSheetView @JvmOverloads constructor(
         context: Context,
@@ -19,17 +20,25 @@ class StickerSheetView @JvmOverloads constructor(
 
     override val sizeModel = DiceKeySizeModel(SizeF(1f, 1f), false, columns = 5, rows = 6)
 
-    val borderPaint = Paint().apply {
+    private val borderPaint = Paint().apply {
         color = Color.BLACK
         style = Paint.Style.STROKE
     }
 
-    val facePositions: List<DiePosition>
+    var pageIndex: Int = 0
+
+    init {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.StickerSheetView)
+        pageIndex = typedArray.getInteger(R.styleable.StickerSheetView_pageIndex, 0)
+        typedArray.recycle()
+    }
+
+    override val facePositions: List<DiePosition>
         get() {
             val posiotions = mutableListOf<DiePosition>()
             for (i in 0 until sizeModel.columns) {
                 for (j in 0 until sizeModel.rows) {
-                    val face = Face(letter = FaceLetters[i], digit = FaceDigits[j])
+                    val face = Face(letter = FaceLetters[pageIndex * sizeModel.columns + i], digit = FaceDigits[j])
                     val position = DiePosition(
                             indexInArray = i * sizeModel.columns + j,
                             face = face,
