@@ -20,7 +20,7 @@ fun addSequenceNumberToDerivationOptionsJson(derivationOptionsWithoutSequenceNum
     return addFieldToEndOfJsonObjectString(derivationOptionsWithoutSequenceNumber, "#", sequenceNumber.toString())
 }
 
-private fun augmentRecipeJson(template: DerivationRecipeTemplate, sequenceNumber: Int, lengthInChars: Int): String {
+private fun augmentRecipeJson(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int): String {
     var derivationOptionsJson = template.derivationOptionsJson
     if (template.type == DerivationOptions.Type.Password && lengthInChars > 0) {
         derivationOptionsJson = addLengthInCharsToDerivationOptionsJson(derivationOptionsJson, lengthInChars)
@@ -36,8 +36,7 @@ class DerivationRecipe(
         val derivationOptionsJson: String
 ) {
 
-
-    constructor(template: DerivationRecipeTemplate, sequenceNumber: Int, lengthInChars: Int = 0):
+    constructor(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0):
         this(
             template.type,
         template.name +
