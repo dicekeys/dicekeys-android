@@ -19,10 +19,10 @@ if (keystorePropertiesFile.exists()){
 
 
 android {
-    ndkVersion '21.0.6113669'
+    ndkVersion '21.3.6528147' // Latest LTS
 
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     signingConfigs {
         release {
