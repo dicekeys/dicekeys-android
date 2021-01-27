@@ -46,6 +46,7 @@ ANDROID_HOME should be set to $HOME/Library/Android/sdk
 `TwoDiceViewLayout` is child class of `LinearLayout`. It displays relations between dice views. `TwoDiceViewLayout` has 2 dice properties:
 * sourceDiceView
 * targetDiceView
+
 When you set both references to sourceDiceView and targetDiceView it will display a connection line of highlighted items with a "hand with a sticker". If you set reference to targetDiceView only it will display a "hand with a sticker" only at highlighted item.
 
 ### Other important classes
