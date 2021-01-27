@@ -59,7 +59,7 @@ open class DiceKey<F: Face>(val faces: List<F>) {
     return faces.joinToString(separator = "") {it.toHumanReadableForm(allOrientationsAreDefined)}
   }
 
- val allOrientationsAreDefined: Boolean get() = faces.all { it.clockwise90DegreeRotationsFromUpright != null }
+  val allOrientationsAreDefined: Boolean get() = faces.all { it.clockwise90DegreeRotationsFromUpright != null }
   val allLettersAreDefined: Boolean get() = faces.all { it.letter != '?' }
   val allDigitsAreDefined: Boolean get() = faces.all { it.digit != '?' }
   val allLettersAndDigitsAreDefined: Boolean get() = allLettersAreDefined && allDigitsAreDefined
