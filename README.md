@@ -34,16 +34,19 @@ ANDROID_HOME should be set to $HOME/Library/Android/sdk
 ## UI Widgets
 
 ### DieFaceView
-DieView uses DieFaceUpright drawable which contains 2 Undoverline drawables.
+`DieFaceView` uses DieFaceUpright drawable which contains 2 Undoverline drawables.
 
 ### Dice Views
-DiceBaseView is base class for dice views. There are several types of dice views:
-* DiceKeyView
-* StickerSheetView
-* StickerTargetSheetView
+`DiceBaseView` is base class for dice views. There are several types of dice views:
+* `DiceKeyView`
+* `StickerSheetView`
+* `StickerTargetSheetView`
 
-### Dive Views Helper Layout
-TwoDiceViewLayout is child class of LinearLayout. It displays relations between dice views. TwoDiceViewLayout has 2 dice properties:
+### Dice Views Helper Layouts
+`TwoDiceViewLayout` is child class of `LinearLayout`. It displays relations between dice views. `TwoDiceViewLayout` has 2 dice properties:
 * sourceDiceView
 * targetDiceView
-When you set both references to sourceDiceView and targetDiceView it will display a connection line of highlighted items with a "hand with a sticker". If you set reference to targetDiceView only it will display a "hand with a sticker" only.
+When you set both references to sourceDiceView and targetDiceView it will display a connection line of highlighted items with a "hand with a sticker". If you set reference to targetDiceView only it will display a "hand with a sticker" only at highlighted item.
+
+### Other important classes
+`DiceSizeModel` describes layouts, sizes, proportions of dice views.
