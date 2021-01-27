@@ -1,5 +1,9 @@
 package org.dicekeys.dicekey
+import android.os.Build
 import java.security.InvalidParameterException
+import org.dicekeys.crypto.seeded.Secret
+import android.util.Base64
+import androidx.annotation.RequiresApi
 
 open class DiceKey<F: Face>(val faces: List<F>) {
   companion object {
@@ -55,7 +59,7 @@ open class DiceKey<F: Face>(val faces: List<F>) {
     return faces.joinToString(separator = "") {it.toHumanReadableForm(allOrientationsAreDefined)}
   }
 
-  val allOrientationsAreDefined: Boolean get() = faces.all { it.clockwise90DegreeRotationsFromUpright != null }
+ val allOrientationsAreDefined: Boolean get() = faces.all { it.clockwise90DegreeRotationsFromUpright != null }
   val allLettersAreDefined: Boolean get() = faces.all { it.letter != '?' }
   val allDigitsAreDefined: Boolean get() = faces.all { it.digit != '?' }
   val allLettersAndDigitsAreDefined: Boolean get() = allLettersAreDefined && allDigitsAreDefined
@@ -94,6 +98,13 @@ open class DiceKey<F: Face>(val faces: List<F>) {
     (if (excludeOrientationOfFaces) removeOrientations() else this)
       .toCanonicalRotation()
       .toHumanReadableForm()
+
+  private val recipeFor16ByteUniqueIdentifier = "{\"purpose\":\"a unique identifier for this DiceKey\",\"lengthInBytes\":16}"
+
+  val seed: String get () = toKeySeed(false)
+  val keyIdBytes: ByteArray get () = Secret.deriveFromSeed(seed, recipeFor16ByteUniqueIdentifier).secretBytes
+  val keyId: String @RequiresApi(Build.VERSION_CODES.FROYO)
+      get() = Base64.encodeToString(keyIdBytes, Base64.URL_SAFE)
 
 }
 
