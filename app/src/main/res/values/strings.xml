@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">DiceKeys</string>
+    <string name="error">Error</string>
+    <string name="delete">Delete</string>
+    <string name="your_dicekeys">Your DiceKeys</string>
+
+
+    <string name="biometrics_encryption_title">Encrypt your DiceKey</string>
+    <string name="biometrics_decryption_title">Decrypt your DiceKey</string>
+
+    <string name="biometrics_encryption_subtitle">Use your biometrics to encrypt your DiceKey and safely store it on your device.</string>
+    <string name="biometrics_decryption_subtitle">Use your biometrics to decrypt your DiceKey</string>
+
+    <string name="biometrics_unavailable_message">You have to enable Biometrics (Fingerprint Lock) to use this feature.</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listDiceKeysFragment">
+
+    <fragment
+        android:id="@+id/listDiceKeysFragment"
+        android:name="org.dicekeys.app.fragments.ListDiceKeysFragment"
+        android:label="@string/your_dicekeys"
+        tools:layout="@layout/list_dicekeys_fragment">
+
+        <action
+            android:id="@+id/action_listDiceKeysFragment_to_diceKeyFragment"
+            app:destination="@id/diceKeyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/diceKeyFragment"
+        android:name="org.dicekeys.app.fragments.DiceKeyFragment"
+        android:label=""
+        tools:layout="@layout/dicekey_fragment" >
+        <argument
+            android:name="diceKeyId"
+            app:argType="string" />
+    </fragment>
+</navigation>

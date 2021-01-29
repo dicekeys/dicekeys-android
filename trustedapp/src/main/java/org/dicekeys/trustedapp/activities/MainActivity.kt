@@ -2,22 +2,26 @@ package org.dicekeys.trustedapp.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
+import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceRead
-import org.dicekeys.dicekey.DiceKey
-import org.dicekeys.trustedapp.state.DiceKeyState
 import org.dicekeys.read.DiceKeyDrawable
-import org.dicekeys.read.ReadDiceKey
 import org.dicekeys.read.ReadDiceKeyActivity
 import org.dicekeys.trustedapp.databinding.ActivityMainBinding
+import org.dicekeys.trustedapp.state.DiceKeyState
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var sharedPreferenceManager : SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedPreferenceManager = PreferenceManager.getDefaultSharedPreferences(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -60,6 +64,7 @@ class MainActivity : AppCompatActivity() {
             binding.btnReadDicekey.visibility = visibleIfDiceKeyAbsent
             binding.btnForget.visibility = visibleIfDiceKeyPresent
             binding.btnViewPublicKey.visibility = visibleIfDiceKeyPresent
+
             val diceKey = DiceKeyState.diceKey
             if (diceKey == null) {
                 binding.diceKeyView.setImageDrawable(null)
