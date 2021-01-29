@@ -1,9 +1,6 @@
 package org.dicekeys.app.viewmodels
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.dicekeys.app.encryption.EncryptedDiceKey
@@ -12,34 +9,24 @@ import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.dicekey.DiceKey
 
 
-class DiceKeyViewModel @AssistedInject constructor(val encryptedStorage: EncryptedStorage, val diceKeyRepository: DiceKeyRepository, @Assisted val keyId: String) : ViewModel() {
-    val isSaved = MutableLiveData<Boolean>(false)
-    val diceKey = MutableLiveData<DiceKey<*>>()
+class DiceKeyViewModel @AssistedInject constructor(private val encryptedStorage: EncryptedStorage, private val diceKeyRepository: DiceKeyRepository, @Assisted val diceKey: DiceKey<*>) : ViewModel() {
+    val isSaved = MutableLiveData(false)
 
-    private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> {
-        diceKey.value?.let { diceKey ->
-            isSaved.postValue(it.find { it.keyId == diceKey.keyId } != null)
-        }
+    private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> { list ->
+        isSaved.postValue(list.find { it.keyId == diceKey.keyId } != null)
     }
 
     init {
-        diceKeyRepository.get(keyId)?.let {
-            diceKey.value = it
-        }
-
+        // Listen to EncryptedStorage change events
         encryptedStorage.getDiceKeysLiveData().observeForever(encryptedStorageObserver)
     }
 
     fun remove() {
-        diceKey.value?.let { encryptedStorage.remove(it) }
+        encryptedStorage.remove(diceKey)
     }
 
     fun forget() {
-        diceKey.value?.let { diceKeyRepository.remove(it) }
-    }
-
-    fun save(encryptedDiceKey: EncryptedDiceKey) {
-        diceKey.value?.let { encryptedStorage.save(it, encryptedDiceKey.encryptedData) }
+        diceKeyRepository.remove(diceKey)
     }
 
     override fun onCleared() {
@@ -49,17 +36,17 @@ class DiceKeyViewModel @AssistedInject constructor(val encryptedStorage: Encrypt
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
-        fun create(keyId: String): DiceKeyViewModel
+        fun create(diceKey: DiceKey<*>): DiceKeyViewModel
     }
 
     companion object {
         fun provideFactory(
                 assistedFactory: AssistedFactory,
-                keyId: String
+                diceKey: DiceKey<*>
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(keyId) as T
+                return assistedFactory.create(diceKey) as T
             }
         }
     }

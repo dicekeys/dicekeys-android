@@ -13,6 +13,13 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
+/*
+ * AppKeystore
+ *
+ * AppKeystore it's a wrapper around Android Keystore.
+ * You can encrypt/decrypt data using private keys backed by different keystore settings.
+ *
+ */
 
 class AppKeystore {
     private var keyStore: KeyStore

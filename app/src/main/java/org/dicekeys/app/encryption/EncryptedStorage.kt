@@ -9,6 +9,13 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.dicekeys.dicekey.DiceKey
 
+/*
+ * EncryptedStorage
+ *
+ * A SharedPreferences-backed storage for EncryptedDiceKey.
+ *
+ */
+
 class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
     private val diceKeysLiveData : MutableLiveData<List<EncryptedDiceKey>> = MutableLiveData(listOf())
 

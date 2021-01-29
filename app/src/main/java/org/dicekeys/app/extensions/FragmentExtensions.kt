@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ShareCompat
@@ -72,6 +73,10 @@ fun Fragment.dialog(title: String, message: String, listener: (() -> Unit)? = nu
                 listener?.invoke()
             }
             .show()
+}
+
+fun Fragment.toast(@StringRes stringRes: Int, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(requireContext(), stringRes, duration).show()
 }
 
 fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {

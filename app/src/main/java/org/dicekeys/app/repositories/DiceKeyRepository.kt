@@ -4,8 +4,13 @@ import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.dicekey.DiceKey
 
 /*
-    A Repo to store DiceKeys. DiceKeys can be only in memory or backed by encrypted storage
+ * DiceKeyRepository
+ *
+ * A Repository handling in-memory DiceKeys.
+ * The app currently allows only one unlocked (in-memory) DiceKey, the repo can handle multiple.
+ *
  */
+
 class DiceKeyRepository {
     private var diceKeys = mutableMapOf<String, DiceKey<*>>()
 

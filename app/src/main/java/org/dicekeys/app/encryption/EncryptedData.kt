@@ -8,6 +8,13 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/*
+ * EncryptedData
+ *
+ * A Serializable class representing encrypted payload and the IV used to encrypt it.
+ * For space reasons data are Base64 encoded
+ */
+
 @Serializable
 data class EncryptedData(
         @SerialName("encrypted_data")

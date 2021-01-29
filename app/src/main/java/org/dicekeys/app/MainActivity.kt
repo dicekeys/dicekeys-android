@@ -44,7 +44,14 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
+
+            /*
+             * ListDiceKeysFragment is considered the top level navigation,
+             * so when navigating to it, its good idea to clear all DiceKeys from memory.
+             * Using this method we are capturing navigation from both keyboard back press and toolbar back button.
+             */
             if(destination.id == R.id.listDiceKeysFragment){
                 // Clear the repository
                 diceKeyRepository.clear()
