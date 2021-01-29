@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.dicekeys.dicekey.DiceKey
-import org.dicekeys.dicekey.Face
 
 class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
     private val diceKeysLiveData : MutableLiveData<List<EncryptedDiceKey>> = MutableLiveData(listOf())
