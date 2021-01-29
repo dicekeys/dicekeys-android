@@ -1,13 +1,14 @@
-package org.dicekeys.app
+package org.dicekeys.app.fragments
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import org.dicekeys.app.databinding.AddFragmentBinding
+import org.dicekeys.app.AppFragment
+import org.dicekeys.app.MainActivity
+import org.dicekeys.app.R
+import org.dicekeys.app.databinding.AddDicekeyFragmentBinding
 import org.dicekeys.app.encryption.BiometricsHelper
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.dicekey.FaceRead
@@ -15,15 +16,13 @@ import org.dicekeys.read.ReadDiceKeyActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddFragment: AppFragment<AddFragmentBinding>(R.layout.add_fragment) {
+class AddDiceKeyFragment: AppFragment<AddDicekeyFragmentBinding>(R.layout.add_dicekey_fragment) {
 
     @Inject
     lateinit var biometricsHelper : BiometricsHelper
 
     @Inject
     lateinit var encryptedStorage: EncryptedStorage
-
-    val mainViewModel : MainViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,8 +51,5 @@ class AddFragment: AppFragment<AddFragmentBinding>(R.layout.add_fragment) {
 
             }
         }
-
-        println("result" + data.toString())
     }
-
 }

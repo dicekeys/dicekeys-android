@@ -64,15 +64,13 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
                 e.printStackTrace()
             }
 
-
         } else {
-            fragment.toast("You have to enable Biometrics to securely use this feature.")
+            fragment.toast("You have to enable Biometrics to use this feature.")
         }
     }
 
     fun decrypt(encryptedDiceKey: EncryptedDiceKey, fragment: Fragment, success: (diceKey: DiceKey<*>)->Unit) {
         // TODO change texts
-
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Biometric Decryption")
                 .setSubtitle("Log in using your biometric credential")
@@ -89,7 +87,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
                             errString: CharSequence
                     ) {
                         super.onAuthenticationError(errorCode, errString)
-                        fragment.toast("Authentication error:$errorCode $errString")
+                        fragment.toast("$errString")
 
                     }
 

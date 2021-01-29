@@ -9,8 +9,8 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class EncryptedDiceKey(
-        @SerialName("id")
-        val id: String,
+        @SerialName("key_id")
+        val keyId: String,
         @SerialName("center_face")
         val centerFace: String,
         @SerialName("encrypted_data")

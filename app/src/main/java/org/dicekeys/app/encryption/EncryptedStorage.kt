@@ -38,16 +38,20 @@ class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
 
     fun save(diceKey: DiceKey<*>, encryptedData: EncryptedData){
         // TODO add center face
-        val encryptedDiceKey = EncryptedDiceKey(id = diceKey.keyId, centerFace = diceKey.centerFace().toHumanReadableForm(true), encryptedData = encryptedData)
+        val encryptedDiceKey = EncryptedDiceKey(keyId = diceKey.keyId, centerFace = diceKey.centerFace().toHumanReadableForm(true), encryptedData = encryptedData)
 
         sharedPreferences
                 .edit()
-                .putString(encryptedDiceKey.id, encryptedDiceKey.toString())
+                .putString(encryptedDiceKey.keyId, encryptedDiceKey.toString())
                 .apply()
     }
 
-    fun remove(diceKey: EncryptedDiceKey){
-        remove(diceKey.id)
+    fun remove(encryptedDiceKey: EncryptedDiceKey){
+        remove(encryptedDiceKey.keyId)
+    }
+
+    fun remove(diceKey: DiceKey<*>){
+        remove(diceKey.keyId)
     }
 
     private fun remove(id: String){

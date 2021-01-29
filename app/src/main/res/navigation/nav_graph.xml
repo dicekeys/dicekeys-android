@@ -6,26 +6,26 @@
     app:startDestination="@id/listDiceKeysFragment">
 
     <fragment
-        android:id="@+id/introFragment"
-        android:name="org.dicekeys.app.AddFragment"
+        android:id="@+id/addFragment"
+        android:name="org.dicekeys.app.fragments.AddDiceKeyFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/add_fragment" />
+        tools:layout="@layout/add_dicekey_fragment" />
 
     <fragment
         android:id="@+id/listDiceKeysFragment"
-        android:name="org.dicekeys.app.ListDiceKeysFragment"
+        android:name="org.dicekeys.app.fragments.ListDiceKeysFragment"
         android:label="@string/your_dicekeys"
         tools:layout="@layout/list_dicekeys_fragment">
         <action
-            android:id="@+id/action_listDiceKeysFragment_to_introFragment"
-            app:destination="@id/introFragment" />
+            android:id="@+id/action_listDiceKeysFragment_to_addFragment"
+            app:destination="@id/addFragment" />
         <action
             android:id="@+id/action_listDiceKeysFragment_to_diceKeyFragment"
             app:destination="@id/diceKeyFragment" />
     </fragment>
     <fragment
         android:id="@+id/diceKeyFragment"
-        android:name="org.dicekeys.app.DiceKeyFragment"
+        android:name="org.dicekeys.app.fragments.DiceKeyFragment"
         android:label=""
         tools:layout="@layout/dicekey_fragment" >
         <argument

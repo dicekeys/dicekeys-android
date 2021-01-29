@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="org.dicekeys.app.viewmodels.DiceKeyViewModel" />
     </data>
 
 
@@ -13,6 +16,7 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="32dp"
@@ -30,26 +34,66 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="24dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="24dp">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@color/purple_700"
-                android:src="@drawable/ic_scanning_side_view" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@color/purple_700"
+                    android:src="@drawable/ic_scanning_side_view" />
+
                 <TextView
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:text="This is your DiceKey"
                     android:textAlignment="center"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                    android:text="This is your DiceKey"/>
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView">
+
+            <Button
+                android:id="@+id/buttonForget"
+                android:layout_margin="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{vm.isSaved() ? &quot;Lock&quot; : &quot;Forget&quot;}" />
+
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_margin="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                isVisible="@{!vm.isSaved()}"
+                android:text="Save Dice" />
+
+            <Button
+                android:id="@+id/buttonDelete"
+                android:layout_margin="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                isVisible="@{vm.isSaved()}"
+                android:text="Delete" />
+
+
+
+        </LinearLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

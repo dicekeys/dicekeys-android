@@ -10,9 +10,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.databinding.ActivityMainBinding
+import org.dicekeys.app.repositories.DiceKeyRepository
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var diceKeyRepository: DiceKeyRepository
 
     companion object{
         const val READ_DICE_REQUEST_CODE = 1
@@ -22,7 +27,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // Make the window Secure
-        window?.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        // Postpone after V2
+        // window?.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
@@ -39,14 +45,10 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            // binding.appBarLayout.isInvisible = (destination.id == R.id.introFragment)
+            if(destination.id == R.id.listDiceKeysFragment){
+                // Clear the repository
+                diceKeyRepository.clear()
+            }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-
-        // pass data to
     }
 }
