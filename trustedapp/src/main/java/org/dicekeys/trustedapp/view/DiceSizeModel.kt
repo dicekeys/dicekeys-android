@@ -2,7 +2,7 @@ package org.dicekeys.trustedapp.view
 
 import android.util.SizeF
 
-class DiceKeySizeModel(
+class DiceSizeModel(
         var bounds: SizeF,
         val hasTab: Boolean = false,
         val columns: Int = 5,

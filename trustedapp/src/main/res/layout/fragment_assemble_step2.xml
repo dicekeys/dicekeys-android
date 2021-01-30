@@ -24,7 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content" />
     <androidx.appcompat.widget.AppCompatImageView
-        android:src="@drawable/box_bottom_after_roll"
+        app:srcCompat="@drawable/box_bottom_after_roll"
         app:layout_constraintTop_toBottomOf="@id/text_top"
         app:layout_constraintBottom_toTopOf="@id/text_bottom"
         app:layout_constraintLeft_toLeftOf="parent"

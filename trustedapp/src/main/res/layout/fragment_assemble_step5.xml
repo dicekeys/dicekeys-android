@@ -21,6 +21,7 @@
         android:layout_marginTop="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
         android:background="?attr/selectableItemBackground"
+        android:onClick="onUseStickeysKit"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
@@ -30,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="128dp"
             android:gravity="center"
-            app:rightDiceViewId="@id/sticker_target_sheet_view1"
+            app:targetDiceViewId="@id/sticker_target_sheet_view1"
             android:orientation="horizontal">
 
             <org.dicekeys.trustedapp.view.DiceKeyView
@@ -62,6 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:background="?attr/selectableItemBackground"
+        android:onClick="onUseDiceKeyKit"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
@@ -71,9 +73,11 @@
             android:layout_width="match_parent"
             android:layout_height="128dp"
             android:gravity="center"
+            app:targetDiceViewId="@id/dice_key_view2"
             android:orientation="horizontal">
 
             <org.dicekeys.trustedapp.view.DiceKeyView
+                android:id="@+id/dice_key_view1"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
 
@@ -83,6 +87,7 @@
                 app:srcCompat="@android:drawable/ic_media_play" />
 
             <org.dicekeys.trustedapp.view.DiceKeyView
+                android:id="@+id/dice_key_view2"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
         </org.dicekeys.trustedapp.view.TwoDiceViewLayout>
@@ -97,12 +102,12 @@
 
     <Button
         android:id="@+id/btn_skip"
+        android:onClick="onSkipStep"
         android:text="Let me skip this step"
         style="?borderlessButtonStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="@dimen/fab_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

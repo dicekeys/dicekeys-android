@@ -9,12 +9,11 @@ import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.SimpleDiceKey
 import org.dicekeys.trustedapp.R
-import org.dicekeys.trustedapp.view.*
 
 class DiceKeyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0) : DiceKeyBaseView(context, attrs, defStyleAttr) {
+        defStyleAttr: Int = 0) : DiceBaseView(context, attrs, defStyleAttr) {
 
     companion object {
         val TAG = DiceKeyView::class.java.simpleName
@@ -25,7 +24,7 @@ class DiceKeyView @JvmOverloads constructor(
     var showLidTab: Boolean = true
     var leaveSpaceForTab: Boolean = true
     var showDiceAtIndexes: Set<Int>? = null
-    override val sizeModel = DiceKeySizeModel(1f, leaveSpaceForTab)
+    override val sizeModel = DiceSizeModel(1f, leaveSpaceForTab)
 
     val diceBoxPaint = Paint().apply {
         color = Colors.diceColor

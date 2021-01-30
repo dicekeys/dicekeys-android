@@ -6,8 +6,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.SizeF
-import android.view.View
-import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceDigits
 import org.dicekeys.dicekey.FaceLetters
@@ -16,9 +14,9 @@ import org.dicekeys.trustedapp.R
 class StickerSheetView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0) : DiceKeyBaseView(context, attrs, defStyleAttr) {
+        defStyleAttr: Int = 0) : DiceBaseView(context, attrs, defStyleAttr) {
 
-    override val sizeModel = DiceKeySizeModel(SizeF(1f, 1f), false, columns = 5, rows = 6)
+    override val sizeModel = DiceSizeModel(SizeF(1f, 1f), false, columns = 5, rows = 6)
 
     private val borderPaint = Paint().apply {
         color = Color.BLACK

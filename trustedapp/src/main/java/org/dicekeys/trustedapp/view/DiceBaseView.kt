@@ -1,15 +1,13 @@
 package org.dicekeys.trustedapp.view
 
 import android.content.Context
-import android.graphics.Rect
 import android.graphics.RectF
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.SizeF
 import android.view.View
 import org.dicekeys.dicekey.Face
 
-abstract class DiceKeyBaseView @JvmOverloads constructor(
+abstract class DiceBaseView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
@@ -23,7 +21,7 @@ abstract class DiceKeyBaseView @JvmOverloads constructor(
         val id: Int get() = indexInArray
     }
 
-    abstract val sizeModel: DiceKeySizeModel
+    abstract val sizeModel: DiceSizeModel
     abstract val facePositions: List<DiePosition>
     protected val linearSizeOfBox: Float get() = sizeModel.linearSizeOfBox
     protected val dieStepSize: Float get() = sizeModel.stepSize

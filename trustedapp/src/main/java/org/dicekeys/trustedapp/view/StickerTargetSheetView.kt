@@ -13,10 +13,10 @@ import org.dicekeys.trustedapp.R
 class StickerTargetSheetView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0) : DiceKeyBaseView(context, attrs, defStyleAttr) {
+        defStyleAttr: Int = 0) : DiceBaseView(context, attrs, defStyleAttr) {
 
 
-    override val sizeModel = DiceKeySizeModel(SizeF(0f, 0f), false, extraVerticalMarginOfBoxEdgeAsFractionOfDieSize = 0.5f)
+    override val sizeModel = DiceSizeModel(SizeF(0f, 0f), false, extraVerticalMarginOfBoxEdgeAsFractionOfDieSize = 0.5f)
 
     val borderPaint = Paint().apply {
         color = Color.BLACK

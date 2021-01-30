@@ -5,8 +5,8 @@
         <attr name="leaveSpaceForTab" format="boolean" />
     </declare-styleable>
     <declare-styleable name="TwoDiceViewLayout">
-        <attr name="leftDiceViewId" format="reference" />
-        <attr name="rightDiceViewId" format="reference" />
+        <attr name="sourceDiceViewId" format="reference" />
+        <attr name="targetDiceViewId" format="reference" />
     </declare-styleable>
     <declare-styleable name="StickerSheetView">
         <attr name="pageIndex" format="integer" />

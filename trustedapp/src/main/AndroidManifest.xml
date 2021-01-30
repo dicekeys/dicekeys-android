@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.dicekeys.trustedapp">
+    package="org.dicekeys.trustedapp" >
 
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -10,9 +10,9 @@
         android:label="DiceKeys Trusted App"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".activities.DiceViewActivity"></activity>
-        <activity android:name=".activities.MainActivity">
+        android:theme="@style/AppTheme" >
+        <activity android:name=".activities.DiceViewActivity" />
+        <activity android:name=".activities.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,10 +26,13 @@
             android:name=".activities.AssembleDiceKeyActivity"
             android:label="@string/title_activity_assemble_dice_key" />
         <activity
+            android:name=".activities.BackupActivity"
+            android:label="@string/title_activity_backup" />
+        <activity
             android:name=".activities.ExecuteApiCommandActivity"
             android:exported="true"
-            android:theme="@style/AppTheme">
-            <intent-filter android:label="web-filter">
+            android:theme="@style/AppTheme" >
+            <intent-filter android:label="web-filter" >
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />

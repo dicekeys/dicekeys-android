@@ -9,8 +9,8 @@
     android:orientation="horizontal"
     android:padding="@dimen/fab_margin"
     android:gravity="center_horizontal"
-    app:leftDiceViewId="@id/sticker_sheet_view"
-    app:rightDiceViewId="@id/sticker_target_sheet_view"
+    app:sourceDiceViewId="@id/sticker_sheet_view"
+    app:targetDiceViewId="@id/sticker_target_sheet_view"
     tools:context=".activities.DiceViewActivity">
     <org.dicekeys.trustedapp.view.StickerSheetView
         android:id="@+id/sticker_sheet_view"

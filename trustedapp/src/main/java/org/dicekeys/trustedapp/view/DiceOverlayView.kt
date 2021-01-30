@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import android.view.ViewGroup
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.dicekeys.dicekey.Face
 import org.dicekeys.trustedapp.R
@@ -14,8 +13,8 @@ class DiceOverlayView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
-    var diceView1: DiceKeyBaseView? = null
-    var diceView2: DiceKeyBaseView? = null
+    var diceView1: DiceBaseView? = null
+    var diceView2: DiceBaseView? = null
 
     val linePaint = Paint().apply {
         color = Color.BLUE
@@ -37,7 +36,7 @@ class DiceOverlayView @JvmOverloads constructor(
                 diceBounds.top - diceBounds.height() * 1.1f)
     }
 
-    fun getDieBounds(diceView: DiceKeyBaseView, col: Int, row: Int) : RectF {
+    fun getDieBounds(diceView: DiceBaseView, col: Int, row: Int) : RectF {
         val xOffset = diceView.left
         val yOffset = diceView.top
         val rect = diceView.getDieBounds(col, row)

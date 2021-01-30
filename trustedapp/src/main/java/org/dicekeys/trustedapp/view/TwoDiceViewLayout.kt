@@ -3,7 +3,6 @@ package org.dicekeys.trustedapp.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import org.dicekeys.trustedapp.R
 
@@ -13,14 +12,14 @@ class TwoDiceViewLayout @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
 
-    var leftDiceViewId: Int = 0
-    var rightDiceViewId: Int = 0
+    var sourceDiceViewId: Int = 0
+    var targetDiceViewId: Int = 0
     var diceOverlayView: DiceOverlayView? = null
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.TwoDiceViewLayout)
-        leftDiceViewId = typedArray.getResourceId(R.styleable.TwoDiceViewLayout_leftDiceViewId, 0)
-        rightDiceViewId = typedArray.getResourceId(R.styleable.TwoDiceViewLayout_rightDiceViewId, 0)
+        sourceDiceViewId = typedArray.getResourceId(R.styleable.TwoDiceViewLayout_sourceDiceViewId, 0)
+        targetDiceViewId = typedArray.getResourceId(R.styleable.TwoDiceViewLayout_targetDiceViewId, 0)
         typedArray.recycle()
 
         addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
@@ -43,9 +42,9 @@ class TwoDiceViewLayout @JvmOverloads constructor(
     override fun onViewAdded(child: View?) {
         super.onViewAdded(child)
         child?.let {
-            if (child.id == leftDiceViewId && child is DiceKeyBaseView) {
+            if (child.id == sourceDiceViewId && child is DiceBaseView) {
                 getOrCreateOverlay().diceView1 = child
-            } else if (child.id == rightDiceViewId && child is DiceKeyBaseView) {
+            } else if (child.id == targetDiceViewId && child is DiceBaseView) {
                 getOrCreateOverlay().diceView2 = child
             }
         }
@@ -54,9 +53,9 @@ class TwoDiceViewLayout @JvmOverloads constructor(
     override fun onViewRemoved(child: View?) {
         super.onViewRemoved(child)
         child?.let {
-            if (child.id == leftDiceViewId && child is DiceKeyBaseView) {
+            if (child.id == sourceDiceViewId && child is DiceBaseView) {
                 getOrCreateOverlay().diceView1 = null
-            } else if (child.id == rightDiceViewId && child is DiceKeyBaseView) {
+            } else if (child.id == targetDiceViewId && child is DiceBaseView) {
                 getOrCreateOverlay().diceView2 = null
             }
         }
