@@ -60,5 +60,5 @@ jobs:
       - name: Lint results
         uses: actions/upload-artifact@v1
         with:
-          name: app
+          name: lint-results
           path: app/build/reports/lint-results.html

@@ -32,4 +32,6 @@ class DiceKeyRepository {
     fun clear(){
         diceKeys.clear()
     }
+
+    fun size() = diceKeys.size
 }
