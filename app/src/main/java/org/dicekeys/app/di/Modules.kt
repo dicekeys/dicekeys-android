@@ -4,15 +4,15 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import org.dicekeys.app.encryption.AppKeystore
 import org.dicekeys.app.encryption.BiometricsHelper
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
 import javax.inject.Singleton
 
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
 class Modules {
 
@@ -36,7 +36,7 @@ class Modules {
 
     @Singleton
     @Provides
-    fun provideDiceKeyRepository(encryptedStorage: EncryptedStorage): DiceKeyRepository {
+    fun provideDiceKeyRepository(): DiceKeyRepository {
         return DiceKeyRepository()
     }
 }

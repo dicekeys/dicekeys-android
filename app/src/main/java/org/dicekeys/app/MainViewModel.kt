@@ -1,10 +1,12 @@
 package org.dicekeys.app
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import org.dicekeys.app.repositories.DiceKeyRepository
+import javax.inject.Inject
 
 
-class MainViewModel @ViewModelInject constructor(): ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(diceKeyRepository: DiceKeyRepository): ViewModel() {
 
 }
