@@ -19,7 +19,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
 
         if (appKeystore.canUseBiometrics(fragment.requireContext())) {
             try {
-                val promptInfo = createBiometricPrompt(false, fragment)
+                val promptInfo = createBiometricPrompt(true, fragment)
 
                 val biometricPrompt = BiometricPrompt(fragment, ContextCompat.getMainExecutor(fragment.requireContext()),
                         object : AuthenticationCallback(fragment) {
@@ -86,7 +86,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
             subtitle = fragment.getString(R.string.biometrics_encryption_subtitle)
         }else{
             title = fragment.getString(R.string.biometrics_decryption_title)
-            subtitle = fragment.getString(R.string.biometrics_decryption_title)
+            subtitle = fragment.getString(R.string.biometrics_decryption_subtitle)
         }
 
         return BiometricPrompt.PromptInfo.Builder()
