@@ -12,7 +12,7 @@ import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.dicekey.DiceKey
 
 
-class ListDiceKeysViewModel @AssistedInject constructor(val encryptedStorage: EncryptedStorage, val diceKeyRepository: DiceKeyRepository) : ViewModel() {
+class ListDiceKeysViewModel @AssistedInject constructor(private val encryptedStorage: EncryptedStorage, private val diceKeyRepository: DiceKeyRepository) : ViewModel() {
     fun remove(encryptedDiceKey: EncryptedDiceKey){
         encryptedStorage.remove(encryptedDiceKey)
         diceKeyRepository.remove(encryptedDiceKey.keyId)
