@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.dicekeys.app.recipes.DerivationRecipe
 
 /*
  * EncryptedDiceKey
@@ -22,7 +23,7 @@ data class EncryptedDiceKey(
         @SerialName("center_face")
         val centerFace: String,
         @SerialName("encrypted_data")
-        val encryptedData: EncryptedData
+        val encryptedData: EncryptedData,
 ){
 
     override fun toString(): String = Json.encodeToString(this)

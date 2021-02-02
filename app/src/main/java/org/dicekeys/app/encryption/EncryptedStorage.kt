@@ -69,6 +69,4 @@ class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
             return Json.decodeFromString(it)
         }
     }
-
-
 }
