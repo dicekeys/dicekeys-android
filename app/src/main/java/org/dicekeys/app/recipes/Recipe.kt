@@ -6,7 +6,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class DerivationRecipe(
+data class Recipe(
         @SerialName("allow")
         val allow: List<Host>,
 
