@@ -26,7 +26,7 @@ class DiceKeyFragment: AppFragment<DicekeyFragmentBinding>(R.layout.dicekey_frag
 
     lateinit var diceKey: DiceKey<*>
 
-    private val args: DiceKeyFragmentArgs by navArgs()
+//    private val args: DiceKeyFragmentArgs by navArgs()
 
     @Inject
     lateinit var viewModelFactory: DiceKeyViewModel.AssistedFactory
@@ -39,12 +39,12 @@ class DiceKeyFragment: AppFragment<DicekeyFragmentBinding>(R.layout.dicekey_frag
         super.onViewCreated(view, savedInstanceState)
 
         // Guard: If DiceKey is not available, return
-        repository.get(args.diceKeyId)?.also {
-            diceKey = it
-        } ?: run {
-            findNavController().popBackStack()
-            return
-        }
+//        repository.get(args.diceKeyId)?.also {
+//            diceKey = it
+//        } ?: run {
+//            findNavController().popBackStack()
+//            return
+//        }
 
         binding.vm = viewModel
 

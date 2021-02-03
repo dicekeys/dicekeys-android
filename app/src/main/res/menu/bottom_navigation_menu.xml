@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/seed_solokey"
+        android:icon="@drawable/ic_scanning_side_view"
+        android:title="@string/seed_solokey"/>
+
+    <item
+        android:id="@+id/derive_secret"
+        android:icon="@drawable/ic_scanning_side_view"
+        android:title="@string/derive_secret"/>
+
+    <item
+        android:id="@+id/backup_key"
+        android:icon="@drawable/ic_scanning_side_view"
+        android:title="@string/backup_key"/>
+
+</menu>

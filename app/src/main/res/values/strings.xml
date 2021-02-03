@@ -4,6 +4,10 @@
     <string name="delete">Delete</string>
     <string name="your_dicekeys">Your DiceKeys</string>
 
+    <string name="seed_solokey">Seed a SoloKey</string>
+    <string name="derive_secret">Derive  a Secret</string>
+    <string name="backup_key">Backup this Key</string>
+
 
     <string name="biometrics_encryption_title">Encrypt your DiceKey</string>
     <string name="biometrics_decryption_title">Decrypt your DiceKey</string>

@@ -7,17 +7,17 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import org.dicekeys.app.recipes.Recipe
+import org.dicekeys.api.DerivationRecipe
 
 /*
  * RecipeRepository
  *
- * A SharedPreferences-backed storage for Derivation Recipes.
+ * A SharedPreferences-backed storage for Recipes.
  *
  */
 
 class RecipeRepository(private val sharedPreferences: SharedPreferences) {
-    private val recipesLiveData: MutableLiveData<List<Recipe>> = MutableLiveData(listOf())
+    private val recipesLiveData: MutableLiveData<List<DerivationRecipe>> = MutableLiveData(listOf())
 
     private val sharedPreferencesListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         updateRecipes()
@@ -30,7 +30,7 @@ class RecipeRepository(private val sharedPreferences: SharedPreferences) {
 
     private fun updateRecipes() {
         GlobalScope.launch {
-            val list = mutableListOf<Recipe>()
+            val list = mutableListOf<DerivationRecipe>()
             for (key in sharedPreferences.all.keys) {
 
                 getRecipe(key)?.let {
@@ -41,29 +41,31 @@ class RecipeRepository(private val sharedPreferences: SharedPreferences) {
         }
     }
 
-    fun getRecipesLiveData(): LiveData<List<Recipe>> = recipesLiveData
+    fun getRecipesLiveData(): LiveData<List<DerivationRecipe>> = recipesLiveData
 
-    fun getRecipe(id: String): Recipe? {
+    fun getRecipe(id: String): DerivationRecipe? {
         return sharedPreferences.getString(id, null)?.let {
             return Json.decodeFromString(it)
         }
     }
 
-    fun save(recipe: Recipe) {
+    fun save(recipe: DerivationRecipe) {
         sharedPreferences
                 .edit()
                 .putString(recipe.id, recipe.toString())
                 .apply()
     }
 
-    fun remove(recipe: Recipe) {
+    fun remove(recipe: DerivationRecipe) {
         remove(recipe.id)
     }
 
-    fun exists(recipe: Recipe) = sharedPreferences.contains(recipe.id)
+    fun exists(recipe: DerivationRecipe) = sharedPreferences.contains(recipe.id)
 
 
     private fun remove(id: String) {
         sharedPreferences.edit().remove(id).apply()
     }
+
+    fun size() = sharedPreferences.all.size
 }
