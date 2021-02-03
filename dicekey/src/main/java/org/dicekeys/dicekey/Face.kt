@@ -21,6 +21,15 @@ open class Face(
             else -> 0f
         }
 
+    val orientationAsFacingString: String
+        get() = when(orientationAsLowercaseLetterTrbl) {
+            't' -> "upright"
+            'r' -> "right"
+            'b' -> "down"
+            'l' -> "left"
+            else -> "unknown"
+        }
+
     companion object {
         fun majorityOfThree(a: Char, b: Char, c: Char): Char {
             return when {

@@ -3,6 +3,7 @@ package org.dicekeys.trustedapp.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import androidx.annotation.LayoutRes
@@ -19,7 +20,7 @@ import org.dicekeys.trustedapp.R
 import org.dicekeys.trustedapp.databinding.ActivityAssembleDiceKeyBinding
 import org.dicekeys.trustedapp.state.DiceKeyState
 
-class AssembleDiceKeyActivity : AppCompatActivity(), View.OnClickListener, ViewPager.OnPageChangeListener {
+class AssembleDiceKeyActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
     private var diceKey: DiceKey<Face> = DiceKey.example
     private lateinit var binding: ActivityAssembleDiceKeyBinding
     private lateinit var pagerAdapter: AssemblePagerAdapter
@@ -28,14 +29,19 @@ class AssembleDiceKeyActivity : AppCompatActivity(), View.OnClickListener, ViewP
         binding = ActivityAssembleDiceKeyBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         pagerAdapter = AssemblePagerAdapter(supportFragmentManager)
         binding.viewPager.adapter = pagerAdapter
         binding.viewPager.addOnPageChangeListener(this)
         binding.progressBar.max = pagerAdapter.count - 1
     }
 
-    override fun onClick(view: View?) {
-
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private class AssemblePagerAdapter(fm: FragmentManager)
@@ -76,7 +82,9 @@ class AssembleDiceKeyActivity : AppCompatActivity(), View.OnClickListener, ViewP
         ) {
             data.getStringExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)?.let { diceKeyAsJson ->
                 FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
-
+                    this.diceKey = DiceKey(faces = diceKey.faces.map {
+                        Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
+                    })
                 }
             }
         }

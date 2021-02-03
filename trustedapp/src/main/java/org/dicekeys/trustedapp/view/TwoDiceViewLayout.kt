@@ -31,6 +31,14 @@ class TwoDiceViewLayout @JvmOverloads constructor(
         }
     }
 
+    var sourceDiceViewIndex: Int?
+        get() = diceOverlayView?.sourceDiceViewIndex
+        set(value) { diceOverlayView?.sourceDiceViewIndex = value }
+
+    var targetDiceViewIndex: Int?
+        get() = diceOverlayView?.targetDiceViewIndex
+        set(value) { diceOverlayView?.targetDiceViewIndex = value }
+
     private fun getOrCreateOverlay(): DiceOverlayView {
         if (diceOverlayView == null) {
             diceOverlayView = DiceOverlayView(context)
@@ -43,9 +51,9 @@ class TwoDiceViewLayout @JvmOverloads constructor(
         super.onViewAdded(child)
         child?.let {
             if (child.id == sourceDiceViewId && child is DiceBaseView) {
-                getOrCreateOverlay().diceView1 = child
+                getOrCreateOverlay().sourceDiceView = child
             } else if (child.id == targetDiceViewId && child is DiceBaseView) {
-                getOrCreateOverlay().diceView2 = child
+                getOrCreateOverlay().targetDiceView = child
             }
         }
     }
@@ -54,9 +62,9 @@ class TwoDiceViewLayout @JvmOverloads constructor(
         super.onViewRemoved(child)
         child?.let {
             if (child.id == sourceDiceViewId && child is DiceBaseView) {
-                getOrCreateOverlay().diceView1 = null
+                getOrCreateOverlay().sourceDiceView = null
             } else if (child.id == targetDiceViewId && child is DiceBaseView) {
-                getOrCreateOverlay().diceView2 = null
+                getOrCreateOverlay().targetDiceView = null
             }
         }
     }

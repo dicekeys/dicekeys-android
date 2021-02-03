@@ -53,10 +53,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startAssembleWizard() {
-        //val intent = Intent(this, AssembleDiceKeyActivity::class.java)
-        //val intent = Intent(this, DiceViewActivity::class.java)
-        val intent = Intent(this, BackupActivity::class.java)
-        startActivity(intent)
+//        val intent = Intent(this, AssembleDiceKeyActivity::class.java)
+//        startActivity(intent)
+//        //val intent = Intent(this, DiceViewActivity::class.java)
+        val diceKey = DiceKey.createFromRandom()
+        BackupActivity.startBackupWithStickeys(this, 0, diceKey)
     }
 
     private fun render() {

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingStart="@dimen/fab_margin"
+    android:paddingEnd="@dimen/fab_margin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open your DiceKey kit and take out the box bottom and the 25 dices"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_order_more"
+        android:onClick="onOrderMore"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Need another DiceKey? You can order more."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next, you will replicate the first DiceKey by copying the arrangement of dice."
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintBottom_toTopOf="@id/btn_order_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.dicekeys.trustedapp.view.DiceKeyView
+        app:layout_constraintTop_toBottomOf="@id/text_header"
+        app:layout_constraintBottom_toTopOf="@id/text_bottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:dicekey="empty"
+        android:layout_width="240dp"
+        android:layout_height="240dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

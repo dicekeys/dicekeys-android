@@ -2,6 +2,7 @@ package org.dicekeys.trustedapp.view
 
 import android.content.Context
 import android.graphics.RectF
+import android.util.ArraySet
 import android.util.AttributeSet
 import android.util.SizeF
 import android.view.View
@@ -21,14 +22,17 @@ abstract class DiceBaseView @JvmOverloads constructor(
         val id: Int get() = indexInArray
     }
 
+    enum class DiceKeyContent {
+        EXAMPLE, EMPTY, HALF_EMPTY, RANDOM
+    }
+
     abstract val sizeModel: DiceSizeModel
     abstract val facePositions: List<DiePosition>
     protected val linearSizeOfBox: Float get() = sizeModel.linearSizeOfBox
     protected val dieStepSize: Float get() = sizeModel.stepSize
     protected val faceSize: Float get() = sizeModel.faceSize
 
-    open fun highlightedIndex(): Int? = null
-    open fun highlightedFace(): Face? = null
+    var highlightedIndexes: Set<Int> = HashSet()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)

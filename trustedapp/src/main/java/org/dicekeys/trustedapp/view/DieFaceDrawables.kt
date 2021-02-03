@@ -84,6 +84,7 @@ class DieFaceUpright(val face: Face,
                      val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
                      penColor: Int = Color.BLACK,
                      faceSurfaceColor: Int = Color.WHITE,
+                     highlightSurfaceColor: Int = Color.YELLOW,
                      faceBorderColor: Int? = null) : Drawable() {
 
     val borderPaint: Paint?
@@ -101,6 +102,10 @@ class DieFaceUpright(val face: Face,
 
     val faceSurfacePaint = Paint().apply {
         color = faceSurfaceColor
+    }
+
+    val highlightSurfacePaint = Paint().apply {
+        color = highlightSurfaceColor
     }
 
     val textPaint = Paint().apply {
@@ -134,11 +139,17 @@ class DieFaceUpright(val face: Face,
     val text: String
         get() = String.format("%c%c", face.letter, face.digit)
 
+    var highlighted: Boolean = false
+
     override fun draw(canvas: Canvas) {
         canvas.save()
         canvas.rotate(face.orientationAsDegrees, dieSize / 2, dieSize / 2)
 
-        canvas.drawRoundRect(0F, 0F, dieSize, dieSize, dieSize / 8, dieSize / 8, faceSurfacePaint)
+        if (highlighted) {
+            canvas.drawRoundRect(0F, 0F, dieSize, dieSize, dieSize / 8, dieSize / 8, highlightSurfacePaint)
+        } else {
+            canvas.drawRoundRect(0F, 0F, dieSize, dieSize, dieSize / 8, dieSize / 8, faceSurfacePaint)
+        }
         if (borderPaint != null) {
             canvas.drawRoundRect(1F, 1F, dieSize - 1, dieSize - 1, dieSize / 8, dieSize / 8, borderPaint)
         }

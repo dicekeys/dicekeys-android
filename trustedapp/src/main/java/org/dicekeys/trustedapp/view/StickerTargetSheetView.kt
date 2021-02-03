@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.util.SizeF
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 import org.dicekeys.trustedapp.R
 
 class StickerTargetSheetView @JvmOverloads constructor(
@@ -15,6 +16,8 @@ class StickerTargetSheetView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : DiceBaseView(context, attrs, defStyleAttr) {
 
+    var diceKey: DiceKey<Face>
+    var showDiceAtIndexes: Set<Int>
 
     override val sizeModel = DiceSizeModel(SizeF(0f, 0f), false, extraVerticalMarginOfBoxEdgeAsFractionOfDieSize = 0.5f)
 
@@ -25,26 +28,45 @@ class StickerTargetSheetView @JvmOverloads constructor(
 
     val stickerTargetDrawable = VectorDrawableCompat.create(context.resources, R.drawable.sticker_target, null)
 
-    override val facePositions: MutableList<DiePosition> = ArrayList<DiePosition>().apply {
-        val faces = DiceKey.example.faces
-        for (index in 0 until 13) {
-            add(DiePosition(
-                    indexInArray = index,
-                    face = faces[index],
-                    column = index % sizeModel.columns,
-                    row = index / sizeModel.rows,
-                    drawable = DieFaceUpright(face = faces[index], dieSize = faceSize, faceBorderColor = Color.GRAY)
-            ))
+    init {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.StickerTargetSheetView)
+        val diceKeyContent = DiceKeyContent.values()[typedArray.getInt(R.styleable.StickerTargetSheetView_dicekey, DiceKeyContent.EMPTY.ordinal)]
+        diceKey = when(diceKeyContent) {
+            DiceKeyContent.RANDOM -> DiceKey.createFromRandom()
+            else -> DiceKey.example
         }
+        showDiceAtIndexes = when(diceKeyContent) {
+            DiceKeyContent.EMPTY -> listOf<Int>().toSet()
+            DiceKeyContent.HALF_EMPTY -> (0 until diceKey.faces.size / 2).toSet()
+            else -> (0 until diceKey.faces.size).toSet()
+        }
+        typedArray.recycle()
     }
+
+    val computedDiceKeyToRender: DiceKey<Face>
+        get() = diceKey
+
+    val computedShowDiceAtIndexes: Set<Int>
+        get() = showDiceAtIndexes
+
+
+    override val facePositions: List<DiePosition>
+        get() = (0 until sizeModel.columns * sizeModel.rows).map {
+            DiePosition(indexInArray =  it,
+                    face =  computedDiceKeyToRender.faces[it],
+                    column = it % sizeModel.columns,
+                    row = it / sizeModel.rows,
+                    drawable = DieFaceUpright(computedDiceKeyToRender.faces[it], faceSize))
+        }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (canvas != null) {
-
             canvas.drawRect(0f, 0f, (width - 1).toFloat(), (height - 1).toFloat() , borderPaint)
             canvas.save()
             canvas.translate(sizeModel.marginLeft, sizeModel.marginTop)
+
+            stickerTargetDrawable?.setBounds(0, 0, faceSize.toInt(), faceSize.toInt())
 
             for (facePosition in facePositions) {
                 canvas.save()
@@ -52,22 +74,14 @@ class StickerTargetSheetView @JvmOverloads constructor(
                         dieStepSize * facePosition.column,
                         dieStepSize * facePosition.row
                 )
-                val dieFace = facePosition.drawable
-                dieFace.dieSize = faceSize
-                dieFace.draw(canvas)
-                canvas.restore()
-            }
 
-            stickerTargetDrawable?.setBounds(0, 0, faceSize.toInt(), faceSize.toInt())
-            for (index in facePositions.size until sizeModel.columns * sizeModel.rows) {
-                val column = index % sizeModel.columns
-                val row = index / sizeModel.rows
-                canvas.save()
-                canvas.translate(
-                        dieStepSize * column,
-                        dieStepSize * row
-                )
-                stickerTargetDrawable?.draw(canvas)
+                if (computedShowDiceAtIndexes.contains(facePosition.id)) {
+                    val dieFace = facePosition.drawable
+                    dieFace.highlighted = highlightedIndexes.contains(facePosition.id)
+                    dieFace.draw(canvas)
+                } else {
+                    stickerTargetDrawable?.draw(canvas)
+                }
                 canvas.restore()
             }
 

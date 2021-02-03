@@ -31,6 +31,16 @@ class StickerSheetView @JvmOverloads constructor(
         typedArray.recycle()
     }
 
+    fun setPageIndexForFace(face: Face) {
+        pageIndex = FaceLetters.indexOf(face.letter) / sizeModel.columns
+    }
+
+    fun getIndexForFace(face: Face): Int {
+        val row = sizeModel.rows * FaceDigits.indexOf(face.digit)
+        val col = (FaceLetters.indexOf(face.letter) % sizeModel.columns) * sizeModel.columns
+        return sizeModel.columns * row + col
+    }
+
     override val facePositions: List<DiePosition>
         get() {
             val posiotions = mutableListOf<DiePosition>()
@@ -67,6 +77,7 @@ class StickerSheetView @JvmOverloads constructor(
                         dieStepSize * facePosition.row
                 )
                 val dieFace = facePosition.drawable
+                dieFace.highlighted = highlightedIndexes.contains(facePosition.id)
                 dieFace.draw(canvas)
                 canvas.restore()
             }

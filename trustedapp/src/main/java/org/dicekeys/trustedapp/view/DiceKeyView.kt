@@ -19,7 +19,7 @@ class DiceKeyView @JvmOverloads constructor(
         val TAG = DiceKeyView::class.java.simpleName
     }
 
-    var diceKey: SimpleDiceKey? = null
+    var diceKey: DiceKey<Face>
     var centerFace: Face? = null
     var showLidTab: Boolean = true
     var leaveSpaceForTab: Boolean = true
@@ -42,28 +42,36 @@ class DiceKeyView @JvmOverloads constructor(
         color = Color.WHITE
     }
 
+    val highlighterPaint = Paint().apply {
+        color = Colors.highlighter
+    }
+
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.DiceKeyView)
         leaveSpaceForTab = typedArray.getBoolean(R.styleable.DiceKeyView_leaveSpaceForTab, false)
         showLidTab = typedArray.getBoolean(R.styleable.DiceKeyView_showLidTab, false)
+        val diceKeyContent = DiceKeyContent.values()[typedArray.getInt(R.styleable.DiceKeyView_dicekey, 0)]
+        diceKey = when(diceKeyContent) {
+            DiceKeyContent.RANDOM -> DiceKey.createFromRandom()
+            else -> DiceKey.example
+        }
+        showDiceAtIndexes = when(diceKeyContent) {
+            DiceKeyContent.EMPTY -> listOf<Int>().toSet()
+            DiceKeyContent.HALF_EMPTY -> (0 until diceKey.faces.size / 2).toSet()
+            else -> (0 until diceKey.faces.size).toSet()
+        }
         typedArray.recycle()
     }
 
     val computedDiceKeyToRender: DiceKey<Face>
-        get() = diceKey ?: // If the caller specified a diceKey, use that
-            if (centerFace != null)
-            // If the caller specified a center face, create a
-            // diceKey with just that face for all dice
-            DiceKey(faces = (0 until 25).map { centerFace!! })
-            // If no diceKey was specified, we'll render the example diceKey
-            else DiceKey.example
+        get() = diceKey
 
     val computedShowDiceAtIndexes: Set<Int>
         get() = showDiceAtIndexes ?:
             // If the caller did not directly specify which indexes to show,
             // show only the center die if the diceKey is specified via centerFace,
             // and how all 25 dice otherwise
-            if  (diceKey == null && centerFace != null)
+            if  (centerFace != null)
             // Just the center die
             listOf(12).toSet() else
             // all 25 dice
@@ -71,7 +79,7 @@ class DiceKeyView @JvmOverloads constructor(
 
 
     override val facePositions: List<DiePosition>
-        get() = (0 until 25).map {
+        get() = (0 until sizeModel.columns * sizeModel.rows).map {
             DiePosition(indexInArray =  it,
                     face =  computedDiceKeyToRender.faces[it],
                     column = it % sizeModel.columns,
@@ -104,6 +112,7 @@ class DiceKeyView @JvmOverloads constructor(
                 )
                 if (computedShowDiceAtIndexes.contains(facePosition.id)) {
                     val dieFace = facePosition.drawable
+                    dieFace.highlighted = highlightedIndexes.contains(facePosition.id)
                     dieFace.draw(canvas)
                 } else {
                     canvas.drawRoundRect(0f, 0f, faceSize, faceSize,

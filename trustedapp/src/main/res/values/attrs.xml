@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="DiceBaseView">
+        <attr name="dicekey" format="enum">
+            <enum name="example" value="0" />
+            <enum name="empty" value="1" />
+            <enum name="half_empty" value="2" />
+            <enum name="random" value="3" />
+        </attr>
+    </declare-styleable>
     <declare-styleable name="DiceKeyView">
         <attr name="showLidTab" format="boolean" />
         <attr name="leaveSpaceForTab" format="boolean" />
+        <attr name="dicekey" />
     </declare-styleable>
     <declare-styleable name="TwoDiceViewLayout">
         <attr name="sourceDiceViewId" format="reference" />
@@ -10,5 +19,8 @@
     </declare-styleable>
     <declare-styleable name="StickerSheetView">
         <attr name="pageIndex" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="StickerTargetSheetView">
+        <attr name="dicekey" />
     </declare-styleable>
 </resources>

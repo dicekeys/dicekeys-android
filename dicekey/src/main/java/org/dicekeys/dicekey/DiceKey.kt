@@ -55,12 +55,16 @@ open class DiceKey<F: Face>(val faces: List<F>) {
       }
     }
 
-    fun createFromRandom(): DiceKey<Face> = DiceKey(faces = (1 until 25).map { Face(
+    fun createFromRandom(): DiceKey<Face> = DiceKey(faces = (0 until 25).map { Face(
             letter = FaceLetters.random(),
             digit = FaceDigits.random(),
             orientationAsLowercaseLetterTrbl = FaceRotationLetters.random()
         )
     })
+
+    fun clone(diceKey: DiceKey<Face>): DiceKey<Face> {
+       return fromHumanReadableForm(diceKey.toHumanReadableForm())
+    }
   }
 
   fun toHumanReadableForm(): String {

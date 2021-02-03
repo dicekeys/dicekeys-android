@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingStart="@dimen/fab_margin"
+    android:paddingEnd="@dimen/fab_margin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Unwrap your Stickeys kit."
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_order_more"
+        android:onClick="onOrderMore"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Out of Stickeys? You can order more."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next, you will create a copy of your DiceKey on the target seet by placing stickers."
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintBottom_toTopOf="@id/btn_order_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5 Sticker Sheets"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        app:layout_constraintTop_toBottomOf="@id/text_header" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1 Target Sheet"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        android:layout_marginStart="@dimen/fab_margin"
+        app:layout_constraintBaseline_toBaselineOf="@id/text_left" />
+
+    <org.dicekeys.trustedapp.view.TwoDiceViewLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/text_left">
+
+        <org.dicekeys.trustedapp.view.StickerSheetView
+            android:layout_width="180dp"
+            android:layout_height="180dp" />
+
+        <org.dicekeys.trustedapp.view.StickerTargetSheetView
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_marginStart="@dimen/fab_margin" />
+    </org.dicekeys.trustedapp.view.TwoDiceViewLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

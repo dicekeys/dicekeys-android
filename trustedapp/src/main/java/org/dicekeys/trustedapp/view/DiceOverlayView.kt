@@ -13,8 +13,10 @@ class DiceOverlayView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
-    var diceView1: DiceBaseView? = null
-    var diceView2: DiceBaseView? = null
+    var sourceDiceView: DiceBaseView? = null
+    var targetDiceView: DiceBaseView? = null
+    var sourceDiceViewIndex: Int? = null
+    var targetDiceViewIndex: Int? = null
 
     val linePaint = Paint().apply {
         color = Color.BLUE
@@ -48,14 +50,26 @@ class DiceOverlayView @JvmOverloads constructor(
         )
     }
 
+    fun getDieBounds(diceView: DiceBaseView, index: Int): RectF {
+        val col = index % diceView.sizeModel.columns
+        val row = index / diceView.sizeModel.rows
+        return getDieBounds(diceView, col, row)
+    }
+
+    fun getDieFace(diceView: DiceBaseView, index: Int): Face {
+        return diceView.facePositions[index].face
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.let {
-            val diceView1 = diceView1
-            val diceView2 = diceView2
+            val sourceDiceView = sourceDiceView
+            val targetDiceView = targetDiceView
+            val sourceDiceViewIndex = sourceDiceViewIndex
+            val targetDiceViewIndex = targetDiceViewIndex
 
-            if (diceView2 != null) {
-                val bounds2 = getDieBounds(diceView2, 2, 2)
+            if (targetDiceView != null && targetDiceViewIndex != null) {
+                val bounds2 = getDieBounds(targetDiceView, targetDiceViewIndex)
 
                 canvas.save()
                 val offset = calcHandWithStickerOffset(bounds2)
@@ -64,14 +78,17 @@ class DiceOverlayView @JvmOverloads constructor(
                 handWithStickerDrawable.draw(canvas)
                 canvas.restore()
 
-                val dieFaceUpright = DieFaceUpright(Face('H', '1'), dieSize = bounds2.width())
+                val dieFaceUpright = DieFaceUpright(
+                        getDieFace(targetDiceView, targetDiceViewIndex),
+                        dieSize = bounds2.width(),
+                        faceSurfaceColor = Color.TRANSPARENT)
                 canvas.save()
                 canvas.translate(bounds2.left, bounds2.top)
                 dieFaceUpright.draw(canvas)
                 canvas.restore()
 
-                if (diceView1 != null) {
-                    val bounds1 = getDieBounds(diceView1, 2, 2)
+                if (sourceDiceView != null && sourceDiceViewIndex != null) {
+                    val bounds1 = getDieBounds(sourceDiceView, sourceDiceViewIndex)
                     canvas.drawLine(bounds1.right, bounds1.centerY(),
                             bounds2.left, bounds2.centerY(), linePaint)
                 }
