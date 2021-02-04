@@ -7,11 +7,22 @@
             <enum name="half_empty" value="2" />
             <enum name="random" value="3" />
         </attr>
+        <attr name="boxColor" format="color" />
+        <attr name="slotColor" format="color" />
+        <attr name="penColor" format="color" />
+        <attr name="faceColor" format="color" />
+        <attr name="hightlighColor" format="color" />
+        <attr name="borderColor" format="color" />
     </declare-styleable>
     <declare-styleable name="DiceKeyView">
         <attr name="showLidTab" format="boolean" />
         <attr name="leaveSpaceForTab" format="boolean" />
         <attr name="dicekey" />
+        <attr name="boxColor" />
+        <attr name="slotColor" />
+        <attr name="penColor" />
+        <attr name="faceColor" />
+        <attr name="hightlighColor" />
     </declare-styleable>
     <declare-styleable name="TwoDiceViewLayout">
         <attr name="sourceDiceViewId" format="reference" />
@@ -19,8 +30,16 @@
     </declare-styleable>
     <declare-styleable name="StickerSheetView">
         <attr name="pageIndex" format="integer" />
+        <attr name="penColor" />
+        <attr name="faceColor" />
+        <attr name="hightlighColor" />
+        <attr name="borderColor" />
     </declare-styleable>
     <declare-styleable name="StickerTargetSheetView">
         <attr name="dicekey" />
+        <attr name="penColor" />
+        <attr name="faceColor" />
+        <attr name="hightlighColor" />
+        <attr name="borderColor" />
     </declare-styleable>
 </resources>

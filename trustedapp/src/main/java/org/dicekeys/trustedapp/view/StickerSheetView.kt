@@ -18,8 +18,10 @@ class StickerSheetView @JvmOverloads constructor(
 
     override val sizeModel = DiceSizeModel(SizeF(1f, 1f), false, columns = 5, rows = 6)
 
-    private val borderPaint = Paint().apply {
-        color = Color.BLACK
+    val diePenPaint = Paint()
+    val faceSurfacePaint = Paint()
+    val highlighterPaint = Paint()
+    val borderPaint = Paint().apply {
         style = Paint.Style.STROKE
     }
 
@@ -28,6 +30,10 @@ class StickerSheetView @JvmOverloads constructor(
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.StickerSheetView)
         pageIndex = typedArray.getInteger(R.styleable.StickerSheetView_pageIndex, 0)
+        diePenPaint.color = typedArray.getColor(R.styleable.StickerSheetView_penColor, Color.BLACK)
+        faceSurfacePaint.color = typedArray.getColor(R.styleable.StickerSheetView_faceColor, Color.WHITE)
+        highlighterPaint.color = typedArray.getColor(R.styleable.StickerSheetView_hightlighColor, Colors.highlighter)
+        borderPaint.color = typedArray.getColor(R.styleable.StickerSheetView_borderColor, Color.GRAY)
         typedArray.recycle()
     }
 
@@ -52,7 +58,13 @@ class StickerSheetView @JvmOverloads constructor(
                             face = face,
                             column = i,
                             row = j,
-                            drawable = DieFaceUpright(face, faceSize, faceBorderColor = Color.GRAY)
+                            drawable = DieFaceUpright(
+                                    face = face,
+                                    dieSize = faceSize,
+                                    penColor = diePenPaint.color,
+                                    faceSurfaceColor = faceSurfacePaint.color,
+                                    highlightSurfaceColor = highlighterPaint.color,
+                                    faceBorderColor = borderPaint.color)
                     )
                     posiotions.add(position)
                 }

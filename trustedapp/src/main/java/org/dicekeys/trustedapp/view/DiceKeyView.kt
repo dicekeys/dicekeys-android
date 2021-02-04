@@ -26,25 +26,11 @@ class DiceKeyView @JvmOverloads constructor(
     var showDiceAtIndexes: Set<Int>? = null
     override val sizeModel = DiceSizeModel(1f, leaveSpaceForTab)
 
-    val diceBoxPaint = Paint().apply {
-        color = Colors.diceColor
-    }
-
-    val diceBoxDieSlotPaint = Paint().apply {
-        color = Colors.diceBoxDieSlot
-    }
-
-    val diePenPaint = Paint().apply {
-        color = Color.BLACK
-    }
-
-    val faceSurfacePaint = Paint().apply {
-        color = Color.WHITE
-    }
-
-    val highlighterPaint = Paint().apply {
-        color = Colors.highlighter
-    }
+    val diceBoxPaint = Paint()
+    val diceBoxDieSlotPaint = Paint()
+    val diePenPaint = Paint()
+    val faceSurfacePaint = Paint()
+    val highlighterPaint = Paint()
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.DiceKeyView)
@@ -60,6 +46,11 @@ class DiceKeyView @JvmOverloads constructor(
             DiceKeyContent.HALF_EMPTY -> (0 until diceKey.faces.size / 2).toSet()
             else -> (0 until diceKey.faces.size).toSet()
         }
+        diceBoxPaint.color = typedArray.getColor(R.styleable.DiceKeyView_boxColor, Colors.diceColor)
+        diceBoxDieSlotPaint.color = typedArray.getColor(R.styleable.DiceKeyView_slotColor, Colors.diceBoxDieSlot)
+        diePenPaint.color = typedArray.getColor(R.styleable.DiceKeyView_penColor, Color.BLACK)
+        faceSurfacePaint.color = typedArray.getColor(R.styleable.DiceKeyView_faceColor, Color.WHITE)
+        highlighterPaint.color = typedArray.getColor(R.styleable.DiceKeyView_hightlighColor, Colors.highlighter)
         typedArray.recycle()
     }
 
@@ -84,7 +75,13 @@ class DiceKeyView @JvmOverloads constructor(
                     face =  computedDiceKeyToRender.faces[it],
                     column = it % sizeModel.columns,
                     row = it / sizeModel.rows,
-                    drawable = DieFaceUpright(computedDiceKeyToRender.faces[it], faceSize))
+                    drawable = DieFaceUpright(
+                            face = computedDiceKeyToRender.faces[it],
+                            dieSize = faceSize,
+                            penColor = diePenPaint.color,
+                            faceSurfaceColor = faceSurfacePaint.color,
+                            highlightSurfaceColor = highlighterPaint.color
+                    ))
         }
 
     val dieLidShape = DieLidShape(sizeModel.lidTabRadius, diceBoxPaint.color)

@@ -21,8 +21,10 @@ class StickerTargetSheetView @JvmOverloads constructor(
 
     override val sizeModel = DiceSizeModel(SizeF(0f, 0f), false, extraVerticalMarginOfBoxEdgeAsFractionOfDieSize = 0.5f)
 
+    val diePenPaint = Paint()
+    val faceSurfacePaint = Paint()
+    val highlighterPaint = Paint()
     val borderPaint = Paint().apply {
-        color = Color.BLACK
         style = Paint.Style.STROKE
     }
 
@@ -30,7 +32,7 @@ class StickerTargetSheetView @JvmOverloads constructor(
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.StickerTargetSheetView)
-        val diceKeyContent = DiceKeyContent.values()[typedArray.getInt(R.styleable.StickerTargetSheetView_dicekey, DiceKeyContent.EMPTY.ordinal)]
+        val diceKeyContent = DiceKeyContent.values()[typedArray.getInt(R.styleable.StickerTargetSheetView_dicekey, DiceKeyContent.HALF_EMPTY.ordinal)]
         diceKey = when(diceKeyContent) {
             DiceKeyContent.RANDOM -> DiceKey.createFromRandom()
             else -> DiceKey.example
@@ -40,6 +42,10 @@ class StickerTargetSheetView @JvmOverloads constructor(
             DiceKeyContent.HALF_EMPTY -> (0 until diceKey.faces.size / 2).toSet()
             else -> (0 until diceKey.faces.size).toSet()
         }
+        diePenPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_penColor, Color.BLACK)
+        faceSurfacePaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_faceColor, Color.WHITE)
+        highlighterPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_hightlighColor, Colors.highlighter)
+        borderPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_borderColor, Color.GRAY)
         typedArray.recycle()
     }
 
@@ -56,7 +62,14 @@ class StickerTargetSheetView @JvmOverloads constructor(
                     face =  computedDiceKeyToRender.faces[it],
                     column = it % sizeModel.columns,
                     row = it / sizeModel.rows,
-                    drawable = DieFaceUpright(computedDiceKeyToRender.faces[it], faceSize))
+                    drawable = DieFaceUpright(
+                            face = computedDiceKeyToRender.faces[it],
+                            dieSize = faceSize,
+                            penColor = diePenPaint.color,
+                            faceSurfaceColor = faceSurfacePaint.color,
+                            highlightSurfaceColor = highlighterPaint.color,
+                            faceBorderColor = borderPaint.color)
+            )
         }
 
     override fun onDraw(canvas: Canvas?) {
