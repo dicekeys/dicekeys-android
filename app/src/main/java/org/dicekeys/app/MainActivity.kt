@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration(
-                setOf(R.id.listDiceKeysFragment)
+                setOf(R.id.listDiceKeysFragment, R.id.mainDiceKeyRootFragment)
         )
 
         setSupportActionBar(binding.toolbar)

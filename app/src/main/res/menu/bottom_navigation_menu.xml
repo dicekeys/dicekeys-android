@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/dice_key"
+        android:icon="@drawable/ic_scanning_side_view"
+        android:title="@string/your_dicekeys"/>
+
+    <item
         android:id="@+id/seed_solokey"
         android:icon="@drawable/ic_scanning_side_view"
         android:title="@string/seed_solokey"/>
@@ -11,9 +16,5 @@
         android:icon="@drawable/ic_scanning_side_view"
         android:title="@string/derive_secret"/>
 
-    <item
-        android:id="@+id/backup_key"
-        android:icon="@drawable/ic_scanning_side_view"
-        android:title="@string/backup_key"/>
 
 </menu>

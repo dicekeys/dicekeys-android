@@ -2,12 +2,19 @@
     <string name="app_name">DiceKeys</string>
     <string name="error">Error</string>
     <string name="delete">Delete</string>
+    <string name="forget">forget</string>
     <string name="your_dicekeys">Your DiceKeys</string>
 
     <string name="seed_solokey">Seed a SoloKey</string>
+    <string name="solokey">SoloKey</string>
     <string name="derive_secret">Derive  a Secret</string>
-    <string name="backup_key">Backup this Key</string>
+    <string name="secrets">Secrets</string>
+    <string name="backup">Backup</string>
+    <string name="your_dicekey">Your DiceKey</string>
 
+    <string name="dicekey_with_center">DiceKey with %1$s in center</string>
+
+    <string name="ask_dicekey_delete">Are you sure you want to delete the DiceKey from the device?</string>
 
     <string name="biometrics_encryption_title">Encrypt your DiceKey</string>
     <string name="biometrics_decryption_title">Decrypt your DiceKey</string>

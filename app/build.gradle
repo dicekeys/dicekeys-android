@@ -77,12 +77,12 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-process:2.2.0'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Navigation ------------------------------------------------------------------------- */
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.3"
     implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
-    implementation 'androidx.lifecycle:lifecycle-process:2.2.0'
     testImplementation "androidx.navigation:navigation-testing:2.3.3"
     androidTestImplementation "androidx.navigation:navigation-testing:2.3.3"
     /** ----------------------------------------------------------------------------------------- */
