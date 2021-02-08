@@ -3,10 +3,9 @@ package org.dicekeys.trustedapp
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import org.dicekeys.dicekey.Face
-import org.dicekeys.trustedapp.view.DieFaceUpright
+import org.dicekeys.trustedapp.view.DieFace
 
 
 class DieFaceView @JvmOverloads constructor(
@@ -29,7 +28,7 @@ class DieFaceView @JvmOverloads constructor(
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
         if (canvas != null) {
-            val drawable = DieFaceUpright(face, dieSize, linearFractionOfFaceRenderedToDieSize, penColor = penPaint.color, faceSurfaceColor = faceSurfacePaint.color)
+            val drawable = DieFace(face, dieSize, linearFractionOfFaceRenderedToDieSize, penColor = penPaint.color, faceSurfaceColor = faceSurfacePaint.color)
             drawable.draw(canvas)
         }
     }

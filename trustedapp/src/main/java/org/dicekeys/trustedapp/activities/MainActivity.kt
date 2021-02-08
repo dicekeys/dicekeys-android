@@ -9,7 +9,6 @@ import org.dicekeys.dicekey.FaceRead
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.trustedapp.state.DiceKeyState
 import org.dicekeys.read.DiceKeyDrawable
-import org.dicekeys.read.ReadDiceKey
 import org.dicekeys.read.ReadDiceKeyActivity
 import org.dicekeys.trustedapp.databinding.ActivityMainBinding
 
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startAssembleWizard() {
-        val intent = Intent(this, AssembleDiceKeyActivity::class.java)
+        val intent = Intent(this, AssembleInstructionsActivity::class.java)
         startActivity(intent)
     }
 

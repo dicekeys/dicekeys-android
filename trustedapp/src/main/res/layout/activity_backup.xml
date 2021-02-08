@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AssembleDiceKeyActivity">
+    tools:context=".activities.AssembleInstructionsActivity">
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -29,25 +29,47 @@
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/btn_prev"
-        android:text="Previous"
-        android:onClick="onPrevPage"
+        android:id="@+id/btn_first"
+        android:text="&lt;&lt;"
+        android:onClick="onFirstPage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginStart="@dimen/fab_margin"
-        android:layout_width="120dp"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_last"
+        android:text="&gt;&gt;"
+        android:onClick="onLastPage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_prev"
+        android:text="Previous"
+        android:onClick="onPrevPage"
+        app:layout_constraintStart_toEndOf="@id/btn_first"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:layout_width="100dp"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/btn_next"
         android:text="Next"
         android:onClick="onNextPage"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_last"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_width="120dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content" />
 
     <androidx.viewpager.widget.ViewPager

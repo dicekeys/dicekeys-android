@@ -2,7 +2,6 @@ package org.dicekeys.trustedapp.view
 
 import android.content.Context
 import android.graphics.RectF
-import android.util.ArraySet
 import android.util.AttributeSet
 import android.util.SizeF
 import android.view.View
@@ -18,7 +17,7 @@ abstract class DiceBaseView @JvmOverloads constructor(
             val face: Face,
             val column: Int,
             val row: Int,
-            val drawable: DieFaceUpright) {
+            val drawable: DieFace) {
         val id: Int get() = indexInArray
     }
 

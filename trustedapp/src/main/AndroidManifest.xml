@@ -23,7 +23,7 @@
             android:name=".activities.DisplayPublicKeyActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activities.AssembleDiceKeyActivity"
+            android:name=".activities.AssembleInstructionsActivity"
             android:label="@string/title_activity_assemble_dice_key" />
         <activity
             android:name=".activities.BackupActivity"

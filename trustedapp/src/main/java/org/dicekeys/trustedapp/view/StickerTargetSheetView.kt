@@ -62,7 +62,7 @@ class StickerTargetSheetView @JvmOverloads constructor(
                     face =  computedDiceKeyToRender.faces[it],
                     column = it % sizeModel.columns,
                     row = it / sizeModel.rows,
-                    drawable = DieFaceUpright(
+                    drawable = DieFace(
                             face = computedDiceKeyToRender.faces[it],
                             dieSize = faceSize,
                             penColor = diePenPaint.color,

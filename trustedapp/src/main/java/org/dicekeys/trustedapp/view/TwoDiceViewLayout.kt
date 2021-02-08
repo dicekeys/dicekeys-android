@@ -20,6 +20,10 @@ class TwoDiceViewLayout @JvmOverloads constructor(
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.TwoDiceViewLayout)
         sourceDiceViewId = typedArray.getResourceId(R.styleable.TwoDiceViewLayout_sourceDiceViewId, 0)
         targetDiceViewId = typedArray.getResourceId(R.styleable.TwoDiceViewLayout_targetDiceViewId, 0)
+        val targetDiceViewIndex = typedArray.getInteger(R.styleable.TwoDiceViewLayout_targetDiceViewIndex, -1)
+        if (targetDiceViewIndex != -1) {
+            getOrCreateOverlay().targetDiceViewIndex = targetDiceViewIndex
+        }
         typedArray.recycle()
 
         addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->

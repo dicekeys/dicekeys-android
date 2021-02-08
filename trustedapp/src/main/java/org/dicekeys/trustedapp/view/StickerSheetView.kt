@@ -37,28 +37,34 @@ class StickerSheetView @JvmOverloads constructor(
         typedArray.recycle()
     }
 
+    val firstLetter: Char
+        get() = FaceLetters[pageIndex * sizeModel.columns]
+
+    val lastLetter: Char
+        get() = FaceLetters[pageIndex * sizeModel.columns + sizeModel.columns - 1]
+
     fun setPageIndexForFace(face: Face) {
         pageIndex = FaceLetters.indexOf(face.letter) / sizeModel.columns
     }
 
     fun getIndexForFace(face: Face): Int {
-        val row = sizeModel.rows * FaceDigits.indexOf(face.digit)
-        val col = (FaceLetters.indexOf(face.letter) % sizeModel.columns) * sizeModel.columns
+        val row = FaceDigits.indexOf(face.digit)
+        val col = (FaceLetters.indexOf(face.letter) % sizeModel.columns)
         return sizeModel.columns * row + col
     }
 
     override val facePositions: List<DiePosition>
         get() {
             val posiotions = mutableListOf<DiePosition>()
-            for (i in 0 until sizeModel.columns) {
-                for (j in 0 until sizeModel.rows) {
-                    val face = Face(letter = FaceLetters[pageIndex * sizeModel.columns + i], digit = FaceDigits[j])
+            for (i in 0 until sizeModel.rows) {
+                for (j in 0 until sizeModel.columns) {
+                    val face = Face(letter = FaceLetters[pageIndex * sizeModel.columns + j], digit = FaceDigits[i])
                     val position = DiePosition(
                             indexInArray = i * sizeModel.columns + j,
                             face = face,
-                            column = i,
-                            row = j,
-                            drawable = DieFaceUpright(
+                            column = j,
+                            row = i,
+                            drawable = DieFace(
                                     face = face,
                                     dieSize = faceSize,
                                     penColor = diePenPaint.color,

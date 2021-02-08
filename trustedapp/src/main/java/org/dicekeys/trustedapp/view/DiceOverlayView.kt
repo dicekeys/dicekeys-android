@@ -78,7 +78,7 @@ class DiceOverlayView @JvmOverloads constructor(
                 handWithStickerDrawable.draw(canvas)
                 canvas.restore()
 
-                val dieFaceUpright = DieFaceUpright(
+                val dieFaceUpright = DieFace(
                         getDieFace(targetDiceView, targetDiceViewIndex),
                         dieSize = bounds2.width(),
                         faceSurfaceColor = Color.TRANSPARENT)

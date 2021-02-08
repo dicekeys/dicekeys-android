@@ -11,7 +11,7 @@
         app:sourceDiceViewId="@id/sticker_sheet_view"
         app:targetDiceViewId="@id/sticker_target_sheet_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="220dp" >
         <org.dicekeys.trustedapp.view.StickerSheetView
             android:id="@+id/sticker_sheet_view"
             android:layout_width="160dp"

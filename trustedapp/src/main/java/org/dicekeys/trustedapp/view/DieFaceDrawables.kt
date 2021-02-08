@@ -40,7 +40,7 @@ class Undoverline(val face: Face,
     val bitPositionsSet: List<Int>
         get() {
             val code = this.code
-            return (0..10).filter {
+            return (0 until numberOfDots.toInt()).filter {
                 (code and (1 shl (10 - it))) != 0
             }
         }
@@ -54,9 +54,6 @@ class Undoverline(val face: Face,
     }
 
     override fun draw(canvas: Canvas) {
-        val width = width
-        val height = height
-        val dotStep = dotStep
         canvas.drawRect(0F, 0F, width, height, penPaint)
         for (i in bitPositionsSet) {
             val offsetX = marginAtStartAndEnd + i * dotStep
@@ -78,14 +75,14 @@ class Undoverline(val face: Face,
     override fun getOpacity(): Int = PixelFormat.OPAQUE
 }
 
-class DieFaceUpright(val face: Face,
-                     var dieSize: Float,
-                     val linearFractionOfFaceRenderedToDieSize: Float = 5f/8f,
-                     val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
-                     penColor: Int = Color.BLACK,
-                     faceSurfaceColor: Int = Color.WHITE,
-                     highlightSurfaceColor: Int = Color.YELLOW,
-                     faceBorderColor: Int? = null) : Drawable() {
+class DieFace(val face: Face,
+              var dieSize: Float,
+              val linearFractionOfFaceRenderedToDieSize: Float = 5f/8f,
+              val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
+              penColor: Int = Color.BLACK,
+              faceSurfaceColor: Int = Color.WHITE,
+              highlightSurfaceColor: Int = Color.YELLOW,
+              faceBorderColor: Int? = null) : Drawable() {
 
     val borderPaint: Paint?
 

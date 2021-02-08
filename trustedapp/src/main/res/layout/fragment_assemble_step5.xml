@@ -32,6 +32,7 @@
             android:layout_height="128dp"
             android:gravity="center"
             app:targetDiceViewId="@id/sticker_target_sheet_view1"
+            app:targetDiceViewIndex="12"
             android:orientation="horizontal">
 
             <org.dicekeys.trustedapp.view.DiceKeyView
@@ -45,6 +46,7 @@
 
             <org.dicekeys.trustedapp.view.StickerTargetSheetView
                 android:id="@+id/sticker_target_sheet_view1"
+                app:dicekey="half_empty"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
         </org.dicekeys.trustedapp.view.TwoDiceViewLayout>
@@ -74,6 +76,7 @@
             android:layout_height="128dp"
             android:gravity="center"
             app:targetDiceViewId="@id/dice_key_view2"
+            app:targetDiceViewIndex="12"
             android:orientation="horizontal">
 
             <org.dicekeys.trustedapp.view.DiceKeyView
@@ -88,6 +91,7 @@
 
             <org.dicekeys.trustedapp.view.DiceKeyView
                 android:id="@+id/dice_key_view2"
+                app:dicekey="half_empty"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
         </org.dicekeys.trustedapp.view.TwoDiceViewLayout>
@@ -105,6 +109,7 @@
         android:onClick="onSkipStep"
         android:text="Let me skip this step"
         style="?borderlessButtonStyle"
+        android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

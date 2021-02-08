@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
-import org.dicekeys.dicekey.SimpleDiceKey
 import org.dicekeys.trustedapp.R
 
 class DiceKeyView @JvmOverloads constructor(
@@ -46,6 +45,9 @@ class DiceKeyView @JvmOverloads constructor(
             DiceKeyContent.HALF_EMPTY -> (0 until diceKey.faces.size / 2).toSet()
             else -> (0 until diceKey.faces.size).toSet()
         }
+        if (diceKeyContent == DiceKeyContent.HALF_EMPTY) {
+            highlightedIndexes = listOf(diceKey.faces.size / 2 + 1).toSet()
+        }
         diceBoxPaint.color = typedArray.getColor(R.styleable.DiceKeyView_boxColor, Colors.diceColor)
         diceBoxDieSlotPaint.color = typedArray.getColor(R.styleable.DiceKeyView_slotColor, Colors.diceBoxDieSlot)
         diePenPaint.color = typedArray.getColor(R.styleable.DiceKeyView_penColor, Color.BLACK)
@@ -75,7 +77,7 @@ class DiceKeyView @JvmOverloads constructor(
                     face =  computedDiceKeyToRender.faces[it],
                     column = it % sizeModel.columns,
                     row = it / sizeModel.rows,
-                    drawable = DieFaceUpright(
+                    drawable = DieFace(
                             face = computedDiceKeyToRender.faces[it],
                             dieSize = faceSize,
                             penColor = diePenPaint.color,

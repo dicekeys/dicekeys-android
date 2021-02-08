@@ -27,6 +27,7 @@
         android:id="@+id/btn_order_more"
         android:onClick="onOrderMore"
         style="@style/Widget.AppCompat.Button.Borderless"
+        android:textColor="@color/colorAccent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Out of Stickeys? You can order more."
