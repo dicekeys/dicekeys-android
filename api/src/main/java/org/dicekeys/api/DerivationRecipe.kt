@@ -1,5 +1,8 @@
 package org.dicekeys.api
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.dicekeys.crypto.seeded.DerivationOptions
 
 fun addFieldToEndOfJsonObjectString(originalJsonObjectString: String, fieldName: String, fieldValue: String): String {
@@ -32,9 +35,12 @@ private fun augmentRecipeJson(template: DerivationRecipe, sequenceNumber: Int, l
 }
 
 @Serializable
-class DerivationRecipe(
+data class DerivationRecipe(
+        @SerialName("type")
         val type: DerivationOptions.Type,
+        @SerialName("name")
         val name: String,
+        @SerialName("derivation_options_json")
         val derivationOptionsJson: String
 ) {
 
@@ -57,5 +63,7 @@ class DerivationRecipe(
      * An easy way to have a unique identifier for this Recipe
      */
     val id
-        get() = hashCode().toString()
+        get() = derivationOptionsJson.hashCode().toString()
+
+    override fun toString(): String = Json.encodeToString(this)
 }

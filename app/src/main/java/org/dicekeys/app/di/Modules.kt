@@ -10,6 +10,7 @@ import org.dicekeys.app.encryption.AppKeystore
 import org.dicekeys.app.encryption.BiometricsHelper
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
+import org.dicekeys.app.repositories.RecipeRepository
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -26,6 +27,12 @@ class Modules {
     @Provides
     fun provideEncryptedStorage(@ApplicationContext context: Context): EncryptedStorage {
         return EncryptedStorage(context.getSharedPreferences("dice_keys", Context.MODE_PRIVATE))
+    }
+
+    @Singleton
+    @Provides
+    fun provideRecipesRepository(@ApplicationContext context: Context): RecipeRepository {
+        return RecipeRepository(context.getSharedPreferences("recipes", Context.MODE_PRIVATE))
     }
 
     @Singleton

@@ -2,7 +2,7 @@
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.4.21'
+    ext.kotlin_version = '1.4.30'
     ext.kotlinx_coroutines = '1.4.1'
     ext.kotlinx_serialization = '1.0.1'
     ext.dokka_version = '0.10.1'

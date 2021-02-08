@@ -57,7 +57,7 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
             when (position) {
                 0 -> {
                     tab.text = getString(R.string.solokey)
-                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_scanning_side_view)
+                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_usb_key)
                 }
                 1 -> {
                     tab.text = getString(R.string.your_dicekey)
@@ -65,7 +65,7 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
                 }
                 2 -> {
                     tab.text = getString(R.string.secrets)
-                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_scanning_side_view)
+                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_backup_to_dicekey)
                 }
             }
 
@@ -110,7 +110,7 @@ class FragmentAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         return when(position){
             0 -> SeedSoloKeyFragment()
             1 -> DiceKeyFragment()
-            else -> DeriveSecretFragment()
+            else -> SecretsFragment()
         }
     }
 }

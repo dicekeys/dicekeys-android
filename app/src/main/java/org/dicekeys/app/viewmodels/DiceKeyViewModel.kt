@@ -10,7 +10,7 @@ import org.dicekeys.dicekey.DiceKey
 
 
 class DiceKeyViewModel @AssistedInject constructor(private val encryptedStorage: EncryptedStorage, private val diceKeyRepository: DiceKeyRepository, @Assisted val diceKey: DiceKey<*>) : ViewModel() {
-    val isSaved = MutableLiveData(false)
+    val isSaved = MutableLiveData(encryptedStorage.exists(diceKey.keyId))
 
     private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> { list ->
         isSaved.postValue(list.find { it.keyId == diceKey.keyId } != null)
@@ -18,7 +18,9 @@ class DiceKeyViewModel @AssistedInject constructor(private val encryptedStorage:
 
     init {
         // Listen to EncryptedStorage change events
-        encryptedStorage.getDiceKeysLiveData().observeForever(encryptedStorageObserver)
+        encryptedStorage
+                .getDiceKeysLiveData()
+                .observeForever(encryptedStorageObserver)
     }
 
     fun remove() {

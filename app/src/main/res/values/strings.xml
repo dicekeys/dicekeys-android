@@ -12,7 +12,17 @@
     <string name="backup">Backup</string>
     <string name="your_dicekey">Your DiceKey</string>
 
+    <string name="save_the_dicekey">Save the DiceKey</string>
+    <string name="save_center_die_notice">The center die will appear in the home screen.</string>
+    <string name="save_dice_encryption_notice">The other 24 dice will be encrypted and your Biometrics will unlock them.</string>
+
+    <string name="custom_recipe">Custom Recipe</string>
+    <string name="common_password_recipes">Common password recipes</string>
+
+    <string name="assemble_a_dicekey">Assemble a DiceKey</string>
+    <string name="load_your_dicekey">Load your DiceKey</string>
     <string name="dicekey_with_center">DiceKey with %1$s in center</string>
+    <string name="unlock_dicekey_with_center">Unlock DiceKey with %1$s in center</string>
 
     <string name="ask_dicekey_delete">Are you sure you want to delete the DiceKey from the device?</string>
 
