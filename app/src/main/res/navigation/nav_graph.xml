@@ -12,14 +12,13 @@
         tools:layout="@layout/list_dicekeys_fragment">
 
         <action
-            android:id="@+id/action_listDiceKeysFragment_to_diceKeyFragment"
-            app:destination="@id/diceKeyFragment" />
+            android:id="@+id/action_listDiceKeysFragment_to_diceKeyRootFragment"
+            app:destination="@id/mainDiceKeyRootFragment" />
     </fragment>
     <fragment
-        android:id="@+id/diceKeyFragment"
-        android:name="org.dicekeys.app.fragments.DiceKeyFragment"
-        android:label=""
-        tools:layout="@layout/dicekey_fragment" >
+        android:id="@+id/mainDiceKeyRootFragment"
+        android:name="org.dicekeys.app.fragments.MainDiceKeyFragment"
+        tools:layout="@layout/main_dicekey_fragment">
         <argument
             android:name="diceKeyId"
             app:argType="string" />

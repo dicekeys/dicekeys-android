@@ -64,11 +64,12 @@ class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
         sharedPreferences.edit().remove(id).apply()
     }
 
+    fun exists(id: String): Boolean = sharedPreferences.contains(id)
+
+
     fun getEncryptedData(id: String): EncryptedDiceKey? {
         return sharedPreferences.getString(id, null)?.let{
             return Json.decodeFromString(it)
         }
     }
-
-
 }

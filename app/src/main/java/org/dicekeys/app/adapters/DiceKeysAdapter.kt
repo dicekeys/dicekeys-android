@@ -9,6 +9,9 @@ import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.SimpleDiceKey
 
+// Currently this adapter is not used, maybe will come in handy after v1
+// to have a scroll view for more that 4 elements
+@Deprecated("Not used")
 class DiceKeysAdapter : RecyclerView.Adapter<DiceKeysAdapter.DiceKeyViewHolder>() {
     private var diceKeys = listOf<EncryptedDiceKey>()
 

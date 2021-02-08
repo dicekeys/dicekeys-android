@@ -1,4 +1,4 @@
-package org.dicekeys.app.encryption
+package org.dicekeys.app.repositories
 
 import com.nhaarman.mockitokotlin2.whenever
 import org.dicekeys.app.repositories.DiceKeyRepository
