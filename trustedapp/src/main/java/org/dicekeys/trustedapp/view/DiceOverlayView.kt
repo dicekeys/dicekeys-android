@@ -17,6 +17,7 @@ class DiceOverlayView @JvmOverloads constructor(
     var targetDiceView: DiceBaseView? = null
     var sourceDiceViewIndex: Int? = null
     var targetDiceViewIndex: Int? = null
+    var handDieFaceColor: Int = Color.TRANSPARENT
 
     val linePaint = Paint().apply {
         color = Color.BLUE
@@ -52,7 +53,7 @@ class DiceOverlayView @JvmOverloads constructor(
 
     fun getDieBounds(diceView: DiceBaseView, index: Int): RectF {
         val col = index % diceView.sizeModel.columns
-        val row = index / diceView.sizeModel.rows
+        val row = index / diceView.sizeModel.columns
         return getDieBounds(diceView, col, row)
     }
 
@@ -81,7 +82,7 @@ class DiceOverlayView @JvmOverloads constructor(
                 val dieFaceUpright = DieFace(
                         getDieFace(targetDiceView, targetDiceViewIndex),
                         dieSize = bounds2.width(),
-                        faceSurfaceColor = Color.TRANSPARENT)
+                        faceSurfaceColor = handDieFaceColor)
                 canvas.save()
                 canvas.translate(bounds2.left, bounds2.top)
                 dieFaceUpright.draw(canvas)

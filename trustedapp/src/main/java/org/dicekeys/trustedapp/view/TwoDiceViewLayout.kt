@@ -1,6 +1,7 @@
 package org.dicekeys.trustedapp.view
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -15,11 +16,13 @@ class TwoDiceViewLayout @JvmOverloads constructor(
     var sourceDiceViewId: Int = 0
     var targetDiceViewId: Int = 0
     var diceOverlayView: DiceOverlayView? = null
+    val handDieFaceColor: Int
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.TwoDiceViewLayout)
         sourceDiceViewId = typedArray.getResourceId(R.styleable.TwoDiceViewLayout_sourceDiceViewId, 0)
         targetDiceViewId = typedArray.getResourceId(R.styleable.TwoDiceViewLayout_targetDiceViewId, 0)
+        handDieFaceColor = typedArray.getColor(R.styleable.TwoDiceViewLayout_handDieFaceColor, Color.TRANSPARENT)
         val targetDiceViewIndex = typedArray.getInteger(R.styleable.TwoDiceViewLayout_targetDiceViewIndex, -1)
         if (targetDiceViewIndex != -1) {
             getOrCreateOverlay().targetDiceViewIndex = targetDiceViewIndex
@@ -46,6 +49,7 @@ class TwoDiceViewLayout @JvmOverloads constructor(
     private fun getOrCreateOverlay(): DiceOverlayView {
         if (diceOverlayView == null) {
             diceOverlayView = DiceOverlayView(context)
+            diceOverlayView?.handDieFaceColor = handDieFaceColor
             overlay.add(diceOverlayView!!)
         }
         return diceOverlayView!!

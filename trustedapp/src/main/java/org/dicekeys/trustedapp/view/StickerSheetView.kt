@@ -50,7 +50,8 @@ class StickerSheetView @JvmOverloads constructor(
     fun getIndexForFace(face: Face): Int {
         val row = FaceDigits.indexOf(face.digit)
         val col = (FaceLetters.indexOf(face.letter) % sizeModel.columns)
-        return sizeModel.columns * row + col
+        val index = sizeModel.columns * row + col
+        return index
     }
 
     override val facePositions: List<DiePosition>

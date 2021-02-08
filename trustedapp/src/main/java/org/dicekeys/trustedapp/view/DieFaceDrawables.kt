@@ -81,8 +81,9 @@ class DieFace(val face: Face,
               val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
               penColor: Int = Color.BLACK,
               faceSurfaceColor: Int = Color.WHITE,
-              highlightSurfaceColor: Int = Color.YELLOW,
-              faceBorderColor: Int? = null) : Drawable() {
+              highlightSurfaceColor: Int = Colors.highlighter,
+              faceBorderColor: Int? = null,
+              var highlighted: Boolean = false) : Drawable() {
 
     val borderPaint: Paint?
 
@@ -135,8 +136,6 @@ class DieFace(val face: Face,
 
     val text: String
         get() = String.format("%c%c", face.letter, face.digit)
-
-    var highlighted: Boolean = false
 
     override fun draw(canvas: Canvas) {
         canvas.save()

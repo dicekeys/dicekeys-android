@@ -28,6 +28,7 @@
         <attr name="sourceDiceViewId" format="reference" />
         <attr name="targetDiceViewId" format="reference" />
         <attr name="targetDiceViewIndex" format="integer" />
+        <attr name="handDieFaceColor" format="color" />
     </declare-styleable>
     <declare-styleable name="StickerSheetView">
         <attr name="pageIndex" format="integer" />

@@ -102,7 +102,7 @@ class BackupActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
     }
 
     fun onSkipStep(view: View?) {
-
+        finish()
     }
 
     fun onScan(view: View?) {
@@ -175,6 +175,7 @@ class BackupActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
                 stickeysBinding?.stickerTargetSheetView?.diceKey = diceKey
                 stickeysBinding?.stickerTargetSheetView?.showDiceAtIndexes = (0..index-1).toSet()
                 stickeysBinding?.stickerSheetView?.setPageIndexForFace(face)
+                stickeysBinding?.stickerSheetView?.highlightedIndexes = listOf(stickeysBinding?.stickerSheetView?.getIndexForFace(face) ?: -1).toSet()
                 stickeysBinding?.twoDiceviewLayout?.sourceDiceViewIndex = stickeysBinding?.stickerSheetView?.getIndexForFace(face)
                 stickeysBinding?.twoDiceviewLayout?.targetDiceViewIndex = index
 
