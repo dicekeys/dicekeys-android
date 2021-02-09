@@ -10,33 +10,35 @@
         android:label="DiceKeys Trusted App"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-    >
-        <activity android:name="org.dicekeys.trustedapp.activities.MainActivity">
+        android:theme="@style/AppTheme">
+        <activity android:name=".activities.DiceKeyWithDerivedValue"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="org.dicekeys.trustedapp.activities.DisplayPublicKeyActivity"
+            android:name=".activities.DisplayPublicKeyActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="org.dicekeys.trustedapp.activities.ExecuteApiCommandActivity"
-            android:theme="@style/AppTheme"
-            android:exported="true">
+            android:name=".activities.ExecuteApiCommandActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
             <intent-filter android:label="web-filter">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
-                    android:scheme="https"
                     android:host="dicekeys.org"
                     android:pathPrefix="/api"
-                />
+                    android:scheme="https" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

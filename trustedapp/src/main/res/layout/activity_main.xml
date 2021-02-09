@@ -49,6 +49,14 @@
             app:layout_constraintRight_toRightOf="parent">
 
             <Button
+                android:id="@+id/btn_select_host"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:text="@string/common_password_recipe" />
+
+            <Button
                 android:id="@+id/btn_view_public_key"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -65,6 +73,7 @@
                 android:text="Read DiceKey" />
 
             <Button
+
                 android:id="@+id/btn_forget"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
