@@ -12,13 +12,13 @@
         android:layout_height="match_parent"
         tools:context="org.dicekeys.trustedapp.activities.DiceKeyWithDerivedValue">
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:ignore="MissingConstraints">
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -41,7 +41,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="22sp" />
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
@@ -148,12 +148,12 @@
                                 android:textSize="18sp"
                                 android:textStyle="normal" />
                         </LinearLayout>
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvDice"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -161,16 +161,16 @@
             android:padding="7dp"
             app:cardCornerRadius="7dp"
             app:layout_constraintBottom_toTopOf="@+id/cvPassword"
-            app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+            app:layout_constraintTop_toBottomOf="@+id/coLayout">
 
             <ImageView
                 android:id="@+id/dice_key_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="Dice" />
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -190,7 +190,7 @@
                 android:padding="7dp"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <Button
             android:id="@+id/btn_Copy_Password"
