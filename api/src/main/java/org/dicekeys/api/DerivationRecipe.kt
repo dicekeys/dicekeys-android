@@ -1,4 +1,6 @@
 package org.dicekeys.api
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -35,6 +37,7 @@ private fun augmentRecipeJson(template: DerivationRecipe, sequenceNumber: Int, l
 }
 
 @Serializable
+@Parcelize
 data class DerivationRecipe(
         @SerialName("type")
         val type: DerivationOptions.Type,
@@ -42,7 +45,7 @@ data class DerivationRecipe(
         val name: String,
         @SerialName("derivation_options_json")
         val derivationOptionsJson: String
-) {
+) : Parcelable {
 
     constructor(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0):
         this(

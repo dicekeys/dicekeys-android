@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.MainDicekeyFragmentBinding
+import org.dicekeys.app.openDialogDeleteDiceKey
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.viewmodels.DiceKeyViewModel
 import org.dicekeys.dicekey.DiceKey
@@ -73,10 +74,18 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
 
         binding.pager.setCurrentItem(1, false)
 
+        viewModel.isSaved.observe(viewLifecycleOwner){
+            activity?.invalidateOptionsMenu()
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_dicekey, menu)
+
+        viewModel.isSaved.value?.let {
+            menu.findItem(R.id.delete).isVisible = it;
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -84,7 +93,11 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
             R.id.forget -> {
                 lock()
             }
-
+            R.id.delete -> {
+                openDialogDeleteDiceKey(requireContext()) {
+                    viewModel.remove()
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
