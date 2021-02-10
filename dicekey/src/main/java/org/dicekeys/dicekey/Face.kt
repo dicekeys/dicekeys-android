@@ -104,6 +104,20 @@ open class Face(
             } else null
         }
 
+    fun numberOfFieldsDifferent(other: Face) : Int {
+        var numberOfFields: Int = 0
+        if (letter != other.letter) {
+            numberOfFields += 1
+        }
+        if (digit != other.digit) {
+            numberOfFields += 1
+        }
+        if (orientationAsLowercaseLetterTrbl != other.orientationAsLowercaseLetterTrbl) {
+            numberOfFields += 1
+        }
+        return numberOfFields
+    }
+
 }
 
 

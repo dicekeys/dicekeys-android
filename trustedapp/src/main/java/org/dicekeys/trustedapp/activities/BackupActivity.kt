@@ -1,13 +1,17 @@
 package org.dicekeys.trustedapp.activities
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -21,6 +25,9 @@ import org.dicekeys.trustedapp.R
 import org.dicekeys.trustedapp.databinding.ActivityBackupBinding
 import org.dicekeys.trustedapp.databinding.FragmentBackupDicekitBinding
 import org.dicekeys.trustedapp.databinding.FragmentBackupStickeysBinding
+import org.dicekeys.trustedapp.view.DiceBaseView
+import org.dicekeys.trustedapp.view.DiceKeyView
+import org.dicekeys.trustedapp.view.StickerTargetSheetView
 
 class BackupActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
     companion object {
@@ -127,6 +134,29 @@ class BackupActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
                     val scannedDiceKey = DiceKey(faces = diceKey.faces.map {
                         Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
                     })
+                    val backupDiceKey = diceKey.mostSimilarRotationOf(scannedDiceKey)
+                    val invalidIndexes = (0 until 25).filter {
+                        diceKey.faces[it].numberOfFieldsDifferent(backupDiceKey.faces[it]) > 0
+                    }.toSet()
+                    val perfectMatch = invalidIndexes.isEmpty()
+                    val totalMismatch = invalidIndexes.size > 5
+                    val builder = AlertDialog.Builder(this)
+                    builder.setTitle("Your scanned copy")
+                    if (perfectMatch) {
+                        builder.setMessage("You made a perfect copy!")
+                    } else if (totalMismatch) {
+                        builder.setMessage("That key doesn't look at all like the key you scanned before.")
+                    } else {
+                        val view = LayoutInflater.from(this).inflate(R.layout.dialog_backup_verify, null)
+                        view.findViewById<DiceKeyView>(R.id.dice_key).highlightedIndexes = invalidIndexes
+                        view.findViewById<TextView>(R.id.text).text = "You incorrectly copied the highlighted " + (if (invalidIndexes.size == 1) "die" else "dice") + ". You can fix the copy to match the original, or change the original to match the copy."
+                        builder.setView(view)
+                    }
+                    builder.setPositiveButton("OK") { dialog, _ ->
+                        dialog.cancel()
+                        finish()
+                    }
+                    builder.show()
                 }
             }
         }
@@ -168,7 +198,15 @@ class BackupActivity : AppCompatActivity(), ViewPager.OnPageChangeListener {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            if (position == 0 || position == diceKey.faces.size + 1) return
+            if (position == 0) return
+            if (position == diceKey.faces.size + 1) {
+                if (useStickeys) {
+                    view.findViewById<StickerTargetSheetView>(R.id.dice_view).diceKey = diceKey
+                } else {
+                    view.findViewById<DiceKeyView>(R.id.dice_view).diceKey = diceKey
+                }
+                return
+            }
             val index = position - 1
             val face = diceKey.faces[index]
             if (useStickeys) {

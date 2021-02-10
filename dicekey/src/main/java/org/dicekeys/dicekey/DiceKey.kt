@@ -111,6 +111,44 @@ open class DiceKey<F: Face>(val faces: List<F>) {
       .toCanonicalRotation()
       .toHumanReadableForm()
 
+  fun threeAlternativeRotations() : List<DiceKey<Face>> =
+          mutableListOf(
+            rotate(1),
+            rotate(2),
+            rotate(3)
+          )
+
+  fun differencesForFixedRotation(other: DiceKey<Face>) : Int {
+    var difference = 0
+    for (index in 0..24) {
+      difference += faces[index].numberOfFieldsDifferent(other.faces[index])
+    }
+    return difference
+  }
+
+  fun mostSimilarRotationWithDifference(other: DiceKey<Face>, maxDifferenceToRotateFor: Int = 12) : Pair<DiceKey<Face>, Int> {
+    var rotationWithSmallestDifference = other
+    var smallestDifference = differencesForFixedRotation(other)
+    if (smallestDifference == 0)
+      return Pair(rotationWithSmallestDifference, smallestDifference)
+    for (candidate in threeAlternativeRotations()) {
+      val difference = differencesForFixedRotation(candidate)
+      if (difference < smallestDifference && difference <= maxDifferenceToRotateFor) {
+        smallestDifference = difference
+        rotationWithSmallestDifference = candidate
+      }
+      if (smallestDifference == 0) {
+        // no need to look further
+        return Pair(rotationWithSmallestDifference, smallestDifference)
+      }
+    }
+    return Pair(rotationWithSmallestDifference, smallestDifference)
+  }
+
+  fun mostSimilarRotationOf(other: DiceKey<Face>, maxDifferenceToRotateFor: Int = 12) : DiceKey<Face> {
+    val (rotationWithSmallestDifference, _) = mostSimilarRotationWithDifference(other, maxDifferenceToRotateFor)
+    return rotationWithSmallestDifference
+  }
 }
 
 typealias SimpleDiceKey = DiceKey<Face>

@@ -24,9 +24,11 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.AssembleInstructionsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_assemble_dice_key" />
         <activity
             android:name=".activities.BackupActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_backup" />
         <activity
             android:name=".activities.ExecuteApiCommandActivity"

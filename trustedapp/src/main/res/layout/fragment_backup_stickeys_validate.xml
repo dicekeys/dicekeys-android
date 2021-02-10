@@ -25,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <org.dicekeys.trustedapp.view.StickerTargetSheetView
+            android:id="@+id/dice_view"
             android:layout_width="160dp"
             android:layout_height="160dp" />
         <androidx.appcompat.widget.AppCompatImageView
@@ -35,6 +36,7 @@
     </org.dicekeys.trustedapp.view.TwoDiceViewLayout>
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_scan_copy"
+        android:onClick="onScan"
         android:text="Scan copy to validate"
         style="@style/Widget.AppCompat.Button.Colored"
         app:layout_constraintTop_toBottomOf="@id/two_diceview_layout"
