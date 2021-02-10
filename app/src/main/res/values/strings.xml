@@ -38,4 +38,14 @@
     <string name="biometrics_decryption_subtitle">Use your biometrics to decrypt your DiceKey</string>
 
     <string name="biometrics_unavailable_message">You have to enable Biometrics (Fingerprint Lock) to use this feature.</string>
+
+    <string name="please_connect_a_solokey">Please connect a SoloKey.</string>
+    <string name="press_the_button_on_your_security_key_three_times">Press the button on your security key three times.</string>
+    <string name="you_have_seconds_to_do_so">You have %s seconds to do so</string>
+    <string name="sequence_number">Sequence Number</string>
+    <string name="internal_representation_of_the_recipe_used_to_derive_the_seed">Internal representation of the recipe used to derive the seed</string>
+    <string name="the_seed_to_be_written_to_the_security_key">The seed to be written to the security key</string>
+    <string name="seed_s_sn_s">Seed %s SN# %s</string>
+    <string name="str_multiple_passwords_info">if you need multiple passwords for a single website or service, change sequence number to create additional passowrd</string>
+    <string name="internal_representation_of_your_recipe">Internal Representation of your recipe</string>
 </resources>

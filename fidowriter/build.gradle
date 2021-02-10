@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
@@ -42,7 +42,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.dicekeys.fidowriter"
+        //applicationId "com.dicekeys.fidowriter"
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
