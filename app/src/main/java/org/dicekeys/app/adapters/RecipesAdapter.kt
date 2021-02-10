@@ -2,13 +2,14 @@ package org.dicekeys.app.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.ListItemRecipeBinding
 
 
-class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesViewHolder>() {
+class RecipesAdapter(private val clickListener: OnItemClickListener) : RecyclerView.Adapter<RecipesAdapter.RecipesViewHolder>() {
     private var recipes = listOf<DerivationRecipe>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipesViewHolder {
@@ -16,6 +17,7 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesViewHolder>() 
     }
 
     override fun onBindViewHolder(holder: RecipesViewHolder, position: Int) {
+        var recipe : DerivationRecipe? = null
         when (position) {
             0 -> {
                 holder.binding.name = holder.itemView.context.getString(R.string.custom_recipe)
@@ -26,9 +28,14 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesViewHolder>() 
             else -> {
                 // Get the actual position in the list minus the hardcoded elements
                 recipes[position - HARDCODED_ELEMENTS_SIZE].let {
+                    recipe = it
                     holder.binding.name = it.name
                 }
             }
+        }
+
+        holder.itemView.setOnClickListener {
+            clickListener.onItemClicked(position, recipe)
         }
     }
 
@@ -44,7 +51,11 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesViewHolder>() 
 
     class RecipesViewHolder(val binding: ListItemRecipeBinding) : RecyclerView.ViewHolder(binding.root)
 
-    companion object{
+    interface OnItemClickListener{
+        fun onItemClicked(position: Int, recipe: DerivationRecipe?)
+    }
+
+    companion object {
         const val HARDCODED_ELEMENTS_SIZE = 2
     }
 }

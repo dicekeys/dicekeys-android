@@ -14,13 +14,39 @@
         <action
             android:id="@+id/action_listDiceKeysFragment_to_diceKeyRootFragment"
             app:destination="@id/mainDiceKeyRootFragment" />
+        <action
+            android:id="@+id/action_listDiceKeysFragment_to_assembleFragment"
+            app:destination="@id/assembleFragment" />
     </fragment>
     <fragment
         android:id="@+id/mainDiceKeyRootFragment"
-        android:name="org.dicekeys.app.fragments.MainDiceKeyFragment"
+        android:name="org.dicekeys.app.fragments.dicekey.MainDiceKeyFragment"
         tools:layout="@layout/main_dicekey_fragment">
         <argument
             android:name="diceKeyId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_mainDiceKeyRootFragment_to_recipeFragment"
+            app:destination="@id/recipeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recipeFragment"
+        android:name="org.dicekeys.app.fragments.dicekey.RecipeFragment"
+        tools:layout="@layout/recipe_fragment"
+        android:label="">
+        <argument
+            android:name="diceKeyId"
+            app:argType="string" />
+        <argument
+            android:name="recipe"
+            app:argType="org.dicekeys.api.DerivationRecipe" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/assembleFragment"
+        android:name="org.dicekeys.app.fragments.AssembleFragment"
+        tools:layout="@layout/assemble_fragment"
+        android:label="@string/assemble_a_dicekey" >
+
     </fragment>
 </navigation>

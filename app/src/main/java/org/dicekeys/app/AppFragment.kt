@@ -1,19 +1,17 @@
 package org.dicekeys.app
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
-import androidx.annotation.MenuRes
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import javax.inject.Inject
+import org.dicekeys.app.fragments.dicekey.MainDiceKeyFragment
 
 /**
  * AppFragment
@@ -57,8 +55,10 @@ abstract class AppFragment<T : ViewDataBinding>(
         val navOptionsBuilder = NavOptions.Builder()
 
         // Add Animations
-
         findNavController().navigate(resId, args, navOptionsBuilder.build())
     }
 
+    fun getDiceKeyRootFragment(): MainDiceKeyFragment {
+        return ((parentFragment as NavHostFragment).parentFragment as MainDiceKeyFragment)
+    }
 }

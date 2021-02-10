@@ -1,7 +1,8 @@
-package org.dicekeys.app.fragments
+package org.dicekeys.app.fragments.dicekey
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
@@ -22,7 +23,8 @@ class DiceKeyFragment: AppFragment<DicekeyFragmentBinding>(R.layout.dicekey_frag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = (parentFragment as MainDiceKeyFragment).viewModel
+
+        viewModel = getDiceKeyRootFragment().viewModel
 
         binding.vm = viewModel
 
@@ -30,12 +32,6 @@ class DiceKeyFragment: AppFragment<DicekeyFragmentBinding>(R.layout.dicekey_frag
 
         binding.buttonSave.setOnClickListener {
             biometricsHelper.encrypt(viewModel.diceKey, this)
-        }
-
-        binding.buttonDelete.setOnClickListener {
-            openDialogDeleteDiceKey(requireContext()) {
-                viewModel.remove()
-            }
         }
     }
 }

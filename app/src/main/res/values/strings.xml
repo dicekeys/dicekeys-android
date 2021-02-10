@@ -11,6 +11,7 @@
     <string name="secrets">Secrets</string>
     <string name="backup">Backup</string>
     <string name="your_dicekey">Your DiceKey</string>
+    <string name="dicekey" translatable="false">DiceKey</string>
 
     <string name="save_the_dicekey">Save the DiceKey</string>
     <string name="save_center_die_notice">The center die will appear in the home screen.</string>
@@ -23,6 +24,10 @@
     <string name="load_your_dicekey">Load your DiceKey</string>
     <string name="dicekey_with_center">DiceKey with %1$s in center</string>
     <string name="unlock_dicekey_with_center">Unlock DiceKey with %1$s in center</string>
+
+    <string name="lock">Lock</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
 
     <string name="ask_dicekey_delete">Are you sure you want to delete the DiceKey from the device?</string>
 
