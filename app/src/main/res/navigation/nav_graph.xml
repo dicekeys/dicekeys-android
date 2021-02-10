@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_listDiceKeysFragment_to_diceKeyRootFragment"
             app:destination="@id/mainDiceKeyRootFragment" />
+        <action
+            android:id="@+id/action_listDiceKeysFragment_to_assembleFragment"
+            app:destination="@id/assembleFragment" />
     </fragment>
     <fragment
         android:id="@+id/mainDiceKeyRootFragment"
@@ -37,6 +40,13 @@
         <argument
             android:name="recipe"
             app:argType="org.dicekeys.api.DerivationRecipe" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/assembleFragment"
+        android:name="org.dicekeys.app.fragments.AssembleFragment"
+        tools:layout="@layout/assemble_fragment"
+        android:label="@string/assemble_a_dicekey" >
 
     </fragment>
 </navigation>

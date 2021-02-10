@@ -47,6 +47,10 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
             startActivityForResult(intent, MainActivity.READ_DICE_REQUEST_CODE)
         }
 
+        binding.assemble.setOnClickListener {
+            navigate(ListDiceKeysFragmentDirections.actionListDiceKeysFragmentToAssembleFragment())
+        }
+
         encryptedStorage.getDiceKeysLiveData().observe(viewLifecycleOwner) {
             it?.let {
                 updateDiceKeys(it)

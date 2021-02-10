@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -44,8 +45,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
+
+            // Hide the toolbar
+            binding.appBarLayout.isGone = (destination.id == R.id.listDiceKeysFragment || destination.id == R.id.mainDiceKeyRootFragment)
 
             /*
              * ListDiceKeysFragment is considered the top level navigation,
@@ -53,6 +56,7 @@ class MainActivity : AppCompatActivity() {
              * Using this method we are capturing navigation from both keyboard back press and toolbar back button.
              */
             if(destination.id == R.id.listDiceKeysFragment){
+
                 // Clear the repository
                 diceKeyRepository.clear()
             }

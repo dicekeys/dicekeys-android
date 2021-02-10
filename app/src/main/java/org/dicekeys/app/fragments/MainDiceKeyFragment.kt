@@ -57,27 +57,34 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             when (position) {
                 0 -> {
+                    tab.text = getString(R.string.dicekey)
+                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_scanning_side_view)
+                }
+                1 -> {
                     tab.text = getString(R.string.solokey)
                     tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_usb_key)
                 }
-                1 -> {
-                    tab.text = getString(R.string.your_dicekey)
-                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_scanning_side_view)
-                }
                 2 -> {
                     tab.text = getString(R.string.secrets)
+                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_backup_to_dicekey)
+                }
+                3 -> {
+                    tab.text = getString(R.string.backup)
                     tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_backup_to_dicekey)
                 }
             }
 
         }.attach()
 
-        binding.pager.setCurrentItem(1, false)
-
         viewModel.isSaved.observe(viewLifecycleOwner){
             activity?.invalidateOptionsMenu()
         }
 
+        binding.buttonLock.setOnClickListener {
+            lock()
+        }
+
+        binding.toolbarTitle.text = getString(R.string.dicekey_with_center, diceKey.centerFace().toHumanReadableForm(false))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -105,7 +112,6 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
 
     override fun onResume() {
         super.onResume()
-        activity?.title = getString(R.string.dicekey_with_center, diceKey.centerFace().toHumanReadableForm(false))
     }
 
     fun lock(){
@@ -116,14 +122,15 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
 
 class FragmentAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    override fun getItemCount(): Int = 3
+    override fun getItemCount(): Int = 4
 
     override fun createFragment(position: Int): Fragment {
         // Return a NEW fragment instance in createFragment(int)
         return when(position){
-            0 -> SeedSoloKeyFragment()
-            1 -> DiceKeyFragment()
-            else -> SecretsFragment()
+            0 -> DiceKeyFragment()
+            1 -> SeedSoloKeyFragment()
+            2 -> SecretsFragment()
+            else -> BackupFragment()
         }
     }
 }
