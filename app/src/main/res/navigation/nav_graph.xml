@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/mainDiceKeyRootFragment"
-        android:name="org.dicekeys.app.fragments.MainDiceKeyFragment"
+        android:name="org.dicekeys.app.fragments.dicekey.MainDiceKeyFragment"
         tools:layout="@layout/main_dicekey_fragment">
         <argument
             android:name="diceKeyId"
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/recipeFragment"
-        android:name="org.dicekeys.app.fragments.RecipeFragment"
+        android:name="org.dicekeys.app.fragments.dicekey.RecipeFragment"
         tools:layout="@layout/recipe_fragment"
         android:label="">
         <argument

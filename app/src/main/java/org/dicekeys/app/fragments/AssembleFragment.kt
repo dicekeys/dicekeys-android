@@ -6,7 +6,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.AssembleFragmentBinding
-import org.dicekeys.app.databinding.SeedSolokeyFragmentBinding
 import org.dicekeys.app.viewmodels.DiceKeyViewModel
 
 @AndroidEntryPoint

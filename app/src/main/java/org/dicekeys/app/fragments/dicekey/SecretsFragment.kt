@@ -1,4 +1,4 @@
-package org.dicekeys.app.fragments
+package org.dicekeys.app.fragments.dicekey
 
 import android.os.Bundle
 import android.view.View
@@ -25,7 +25,7 @@ class SecretsFragment : AppFragment<SecretsFragmentBinding>(R.layout.secrets_fra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = (parentFragment as MainDiceKeyFragment).viewModel
+        viewModel = getDiceKeyRootFragment().viewModel
 
         val adapter = RecipesAdapter(this)
 
@@ -51,7 +51,9 @@ class SecretsFragment : AppFragment<SecretsFragmentBinding>(R.layout.secrets_fra
             }
             else -> {
                 recipe?.let {
-                    navigate(MainDiceKeyFragmentDirections.actionMainDiceKeyRootFragmentToRecipeFragment(viewModel.diceKey.keyId, recipe = it))
+                    // navigate(MainDiceKeyFragmentDirections.actionMainDiceKeyRootFragmentToRecipeFragment(viewModel.diceKey.keyId, recipe = it))
+
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(viewModel.diceKey.keyId, recipe = it))
                 }
 
             }

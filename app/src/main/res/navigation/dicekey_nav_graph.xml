@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/dicekey">
+
+    <fragment
+        android:id="@+id/dicekey"
+        android:name="org.dicekeys.app.fragments.dicekey.DiceKeyFragment"
+        tools:layout="@layout/dicekey_fragment"/>
+
+    <fragment
+        android:id="@+id/backup"
+        android:name="org.dicekeys.app.fragments.dicekey.BackupFragment"
+        tools:layout="@layout/backup_fragment" />
+
+    <fragment
+        android:id="@+id/solokey"
+        android:name="org.dicekeys.app.fragments.dicekey.SoloKeyFragment"
+        tools:layout="@layout/solokey_fragment" />
+
+    <fragment
+        android:id="@+id/secrets"
+        android:name="org.dicekeys.app.fragments.dicekey.SecretsFragment"
+        tools:layout="@layout/secrets_fragment" >
+        <action
+            android:id="@+id/action_secrets_to_recipeFragment"
+            app:destination="@id/recipeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/save"
+        android:name="org.dicekeys.app.fragments.dicekey.SaveFragment"
+        tools:layout="@layout/save_fragment" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/recipeFragment"
+        android:name="org.dicekeys.app.fragments.dicekey.RecipeFragment"
+        tools:layout="@layout/recipe_fragment"
+        android:label="">
+        <argument
+            android:name="diceKeyId"
+            app:argType="string" />
+        <argument
+            android:name="recipe"
+            app:argType="org.dicekeys.api.DerivationRecipe" />
+
+    </fragment>
+</navigation>
