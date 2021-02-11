@@ -83,7 +83,8 @@ class DieFace(val face: Face,
               faceSurfaceColor: Int = Color.WHITE,
               highlightSurfaceColor: Int = Colors.highlighter,
               faceBorderColor: Int? = null,
-              var highlighted: Boolean = false) : Drawable() {
+              var highlighted: Boolean = false,
+              val faceBorderWidth: Float = 2f) : Drawable() {
 
     val borderPaint: Paint?
 
@@ -91,23 +92,27 @@ class DieFace(val face: Face,
         borderPaint = if (faceBorderColor != null) Paint().apply {
             color = faceBorderColor
             style = Paint.Style.STROKE
+            strokeWidth = faceBorderWidth
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
         } else null
     }
 
-    val penPaint = Paint().apply {
+    val penPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = penColor
     }
 
-    val faceSurfacePaint = Paint().apply {
+    val faceSurfacePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = faceSurfaceColor
     }
 
-    val highlightSurfacePaint = Paint().apply {
+    val highlightSurfacePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = highlightSurfaceColor
     }
 
-    val textPaint = Paint().apply {
+    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         typeface = font
+        color = penColor
         textAlign = Paint.Align.CENTER
         letterSpacing = FaceDimensionsFractional.spaceBetweenLetterAndDigit
     }
@@ -142,12 +147,12 @@ class DieFace(val face: Face,
         canvas.rotate(face.orientationAsDegrees, dieSize / 2, dieSize / 2)
 
         if (highlighted) {
-            canvas.drawRoundRect(0F, 0F, dieSize, dieSize, dieSize / 8, dieSize / 8, highlightSurfacePaint)
+            canvas.drawRoundRect(1F, 1F, dieSize - 1, dieSize - 1, dieSize / 8, dieSize / 8, highlightSurfacePaint)
         } else {
-            canvas.drawRoundRect(0F, 0F, dieSize, dieSize, dieSize / 8, dieSize / 8, faceSurfacePaint)
+            canvas.drawRoundRect(1F, 1F, dieSize - 1, dieSize - 1, dieSize / 8, dieSize / 8, faceSurfacePaint)
         }
         if (borderPaint != null) {
-            canvas.drawRoundRect(1F, 1F, dieSize - 1, dieSize - 1, dieSize / 8, dieSize / 8, borderPaint)
+            canvas.drawRoundRect(1F, 1F, dieSize - faceBorderWidth/2f, dieSize - faceBorderWidth/2, dieSize / 8, dieSize / 8, borderPaint)
         }
         textPaint.textSize = fontSize
         canvas.drawText(text, dieSize / 2, textCenterY, textPaint)

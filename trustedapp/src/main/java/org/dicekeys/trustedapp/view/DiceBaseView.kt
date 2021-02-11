@@ -35,13 +35,13 @@ abstract class DiceBaseView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val width = MeasureSpec.getSize(widthMeasureSpec)
-        val height = MeasureSpec.getSize(heightMeasureSpec)
-        val aspectRatio = width.toFloat() / height.toFloat()
-        if (aspectRatio < sizeModel.aspectRatio) {
-            sizeModel.bounds = SizeF(width.toFloat() / sizeModel.aspectRatio, width.toFloat())
+        val width = MeasureSpec.getSize(widthMeasureSpec).toFloat()
+        val height = MeasureSpec.getSize(heightMeasureSpec).toFloat()
+        val aspectRatio = width / height
+        if (aspectRatio <= sizeModel.aspectRatio) {
+            sizeModel.bounds = SizeF(width / sizeModel.aspectRatio, width)
         } else {
-            sizeModel.bounds = SizeF(height.toFloat(), height.toFloat() / sizeModel.aspectRatio)
+            sizeModel.bounds = SizeF(height, height / sizeModel.aspectRatio)
         }
 
         setMeasuredDimension(

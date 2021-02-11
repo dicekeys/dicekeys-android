@@ -25,8 +25,8 @@ class DiceKeyView @JvmOverloads constructor(
     var showDiceAtIndexes: Set<Int>? = null
     override val sizeModel = DiceSizeModel(1f, leaveSpaceForTab)
 
-    val diceBoxPaint = Paint()
-    val diceBoxDieSlotPaint = Paint()
+    val diceBoxPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val diceBoxDieSlotPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     val diePenPaint = Paint()
     val faceSurfacePaint = Paint()
     val highlighterPaint = Paint()

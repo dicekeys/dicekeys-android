@@ -24,8 +24,9 @@ class StickerTargetSheetView @JvmOverloads constructor(
     val diePenPaint = Paint()
     val faceSurfacePaint = Paint()
     val highlighterPaint = Paint()
-    val borderPaint = Paint().apply {
+    val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
+        strokeWidth = 2f
     }
 
     val stickerTargetDrawable = VectorDrawableCompat.create(context.resources, R.drawable.sticker_target, null)
@@ -75,7 +76,7 @@ class StickerTargetSheetView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (canvas != null) {
-            canvas.drawRect(0f, 0f, (width - 1).toFloat(), (height - 1).toFloat() , borderPaint)
+            canvas.drawRect(1f, 1f, (width - 1).toFloat(), (height - 1).toFloat() , borderPaint)
             canvas.save()
             canvas.translate(sizeModel.marginLeft, sizeModel.marginTop)
 
