@@ -6,23 +6,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="@dimen/fab_margin"
     android:gravity="center_horizontal"
     app:sourceDiceViewId="@id/sticker_sheet_view"
     app:targetDiceViewId="@id/sticker_target_sheet_view"
     tools:context=".activities.DiceViewActivity">
-    <org.dicekeys.trustedapp.view.StickerSheetView
-        android:id="@+id/sticker_sheet_view"
-        android:layout_gravity="start"
-        app:pageIndex="4"
-        android:layout_width="180dp"
-        android:layout_height="180dp"/>
+    <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
+        android:layout_width="200dp"
+        android:layout_height="300dp" />
+    <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
+        android:layout_marginTop="@dimen/fab_margin"
+        app:boxColor="@color/colorAccent"
+        android:layout_width="40dp"
+        android:layout_height="60dp" />
+    <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_width="80dp"
+        app:penColor="@color/colorAccent"
+        app:borderColor="@android:color/black"
+        android:layout_height="120dp" />
 
-    <org.dicekeys.trustedapp.view.StickerTargetSheetView
-        android:id="@+id/sticker_target_sheet_view"
-        android:layout_marginLeft="@dimen/fab_margin"
-        android:layout_gravity="end"
-        android:layout_width="180dp"
-        android:layout_height="180dp"/>
 </org.dicekeys.trustedapp.view.TwoDiceViewLayout>

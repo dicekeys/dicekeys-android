@@ -44,4 +44,11 @@
         <attr name="hightlighColor" />
         <attr name="borderColor" />
     </declare-styleable>
+    <declare-styleable name="DiceKeyCenterFaceOnlyView">
+        <attr name="penColor" />
+        <attr name="boxColor" />
+        <attr name="faceColor" />
+        <attr name="borderColor" />
+        <attr name="lineColor" format="color" />
+    </declare-styleable>
 </resources>
