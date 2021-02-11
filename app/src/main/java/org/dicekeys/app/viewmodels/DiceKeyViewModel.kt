@@ -1,6 +1,9 @@
 package org.dicekeys.app.viewmodels
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.dicekeys.app.encryption.EncryptedDiceKey
@@ -11,9 +14,6 @@ import org.dicekeys.dicekey.DiceKey
 
 class DiceKeyViewModel @AssistedInject constructor(private val encryptedStorage: EncryptedStorage, private val diceKeyRepository: DiceKeyRepository, @Assisted val diceKey: DiceKey<*>) : ViewModel() {
     val isSaved = MutableLiveData(encryptedStorage.exists(diceKey.keyId))
-    val isSoloKeyConnected = MutableLiveData(true)
-    val isWritingProcessUnderWay = MutableLiveData(false)
-    val isSoloKeyNotConnected = MutableLiveData(false)
     private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> { list ->
         isSaved.postValue(list.find { it.keyId == diceKey.keyId } != null)
     }
@@ -36,32 +36,6 @@ class DiceKeyViewModel @AssistedInject constructor(private val encryptedStorage:
     override fun onCleared() {
         super.onCleared()
         encryptedStorage.getDiceKeysLiveData().removeObserver(encryptedStorageObserver)
-    }
-    /**
-     * Show no solo key connect view and hide others views
-     */
-    fun noSidoConnected(){
-        isWritingProcessUnderWay.postValue(false)
-        isSoloKeyConnected.postValue(false)
-        isSoloKeyNotConnected.postValue(true);
-    }
-
-    /**
-     * show writing underway view and hide other views
-     */
-    fun writingUnderWay(){
-        isSoloKeyNotConnected.postValue(false);
-        isSoloKeyConnected.postValue(false)
-        isWritingProcessUnderWay.postValue(true)
-    }
-
-    /**
-     * Show solo key connected view and hide other views
-     */
-    fun soloKeyConnected(){
-        isSoloKeyNotConnected.postValue(false);
-        isWritingProcessUnderWay.postValue(false)
-        isSoloKeyConnected.postValue(true)
     }
 
     @dagger.assisted.AssistedFactory

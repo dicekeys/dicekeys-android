@@ -8,7 +8,9 @@
         <variable
             name="vm"
             type="org.dicekeys.app.viewmodels.DiceKeyViewModel" />
-
+        <variable
+            name="vmSodo"
+            type="org.dicekeys.app.viewmodels.SoloKeyViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +20,7 @@
 
         <TextView
             android:id="@+id/tvPleaseConnect"
-            isVisible="@{vm.isSoloKeyNotConnected()}"
+            isVisible="@{vmSodo.isSoloKeyNotConnected()}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -34,7 +36,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/coWritingView"
-            isVisible="@{vm.isWritingProcessUnderWay()}"
+            isVisible="@{vmSodo.isWritingProcessUnderWay()}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
@@ -70,7 +72,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
         </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
-            isVisible="@{vm.isSoloKeyConnected()}"
+            isVisible="@{vmSodo.isSoloKeyConnected()}"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -82,7 +85,6 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="7dp"
                 android:layout_margin="10dp"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -108,6 +110,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:padding="7dp"
+                        android:text=""
                         android:textColor="@android:color/holo_green_dark"
                         android:textSize="18sp"
                         android:visibility="gone"
@@ -132,7 +135,7 @@
                                 android:background="@android:color/transparent"
                                 android:gravity="center"
                                 android:inputType="number"
-                                android:text="1"
+                                android:text="@{vmSodo.sequenceNumber.toString()}"
                                 android:textColor="@color/cardview_dark_background"
                                 android:textSize="20sp" />
 
@@ -194,6 +197,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@android:color/background_dark"
                         android:textSize="12sp"
+                        android:text="@{vmSodo.derivationRecipe.derivationOptionsJson}"
                         app:layout_constraintTop_toBottomOf="@+id/textView6" />
                     <View
                         android:layout_width="match_parent"
@@ -216,7 +220,7 @@
                         android:id="@+id/tvSeedHexString"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text=""
+                        android:text="@{vmSodo.seedHaXString}"
                         android:textColor="@android:color/background_dark"
                         android:textSize="12sp" />
 
