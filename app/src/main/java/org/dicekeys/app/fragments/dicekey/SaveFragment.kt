@@ -18,14 +18,17 @@ class SaveFragment: AppFragment<SaveFragmentBinding>(R.layout.save_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.vm = getDiceKeyRootFragment().viewModel
+        val viewModel = getDiceKeyRootFragment().viewModel
 
-        binding.buttonSave.setOnClickListener {
+        binding.vm = viewModel
+
+        binding.buttonSave.setOnClickListener{
             biometricsHelper.encrypt(getDiceKeyRootFragment().viewModel.diceKey, this)
         }
 
-        binding.buttonDelete.setOnClickListener {
+        binding.buttonRemove.setOnClickListener{
             getDiceKeyRootFragment().viewModel.remove()
         }
+
     }
 }
