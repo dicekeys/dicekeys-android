@@ -1,30 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.dicekeys.trustedapp.view.TwoDiceViewLayout
-    android:id="@+id/content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/fab_margin"
-    android:gravity="center_horizontal"
-    app:sourceDiceViewId="@id/sticker_sheet_view"
-    app:targetDiceViewId="@id/sticker_target_sheet_view"
-    tools:context=".activities.DiceViewActivity">
-    <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
-        android:layout_width="200dp"
-        android:layout_height="300dp" />
-    <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
-        android:layout_marginTop="@dimen/fab_margin"
-        app:boxColor="@color/colorAccent"
-        android:layout_width="40dp"
-        android:layout_height="60dp" />
-    <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
-        android:layout_marginTop="@dimen/fab_margin"
-        android:layout_width="80dp"
-        app:penColor="@color/colorAccent"
-        app:borderColor="@android:color/black"
-        android:layout_height="120dp" />
+    xmlns:tools="http://schemas.android.com/tools">
 
-</org.dicekeys.trustedapp.view.TwoDiceViewLayout>
+    <data>
+
+    </data>
+
+    <org.dicekeys.trustedapp.view.TwoDiceViewLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/fab_margin"
+        app:sourceDiceViewId="@id/sticker_sheet_view"
+        app:targetDiceViewId="@id/sticker_target_sheet_view"
+        tools:context=".activities.DiceViewActivity">
+
+        <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
+            android:layout_width="200dp"
+            android:layout_height="300dp" />
+
+        <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
+            android:layout_width="40dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="@dimen/fab_margin"
+            app:boxColor="@color/colorAccent" />
+
+        <org.dicekeys.trustedapp.view.DiceKeyCenterFaceOnlyView
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="@dimen/fab_margin"
+            app:borderColor="@android:color/black"
+            app:penColor="@color/colorAccent" />
+
+    </org.dicekeys.trustedapp.view.TwoDiceViewLayout>
+</layout>

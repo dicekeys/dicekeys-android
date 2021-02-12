@@ -1,4 +1,6 @@
 package org.dicekeys.dicekey
+import android.util.Base64
+import org.dicekeys.crypto.seeded.Secret
 import java.security.InvalidParameterException
 
 open class DiceKey<F: Face>(val faces: List<F>) {
@@ -149,6 +151,18 @@ open class DiceKey<F: Face>(val faces: List<F>) {
     val (rotationWithSmallestDifference, _) = mostSimilarRotationWithDifference(other, maxDifferenceToRotateFor)
     return rotationWithSmallestDifference
   }
+
+  fun centerFace(): Face {
+    return faces[12]
+  }
+
+  private val recipeFor16ByteUniqueIdentifier = "{\"purpose\":\"a unique identifier for this DiceKey\",\"lengthInBytes\":16}"
+
+  val seed: String get () = toKeySeed(false)
+  val keyIdBytes: ByteArray get () = Secret.deriveFromSeed(seed, recipeFor16ByteUniqueIdentifier).secretBytes
+  val keyId: String
+      get() = Base64.encodeToString(keyIdBytes, Base64.URL_SAFE or Base64.NO_WRAP)
+
 }
 
 typealias SimpleDiceKey = DiceKey<Face>

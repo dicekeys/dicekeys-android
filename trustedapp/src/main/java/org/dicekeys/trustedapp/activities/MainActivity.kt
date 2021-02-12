@@ -2,21 +2,32 @@ package org.dicekeys.trustedapp.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.AdapterView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
+import androidx.preference.PreferenceManager
+import org.dicekeys.api.derivationRecipeTemplates
+import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceRead
-import org.dicekeys.dicekey.DiceKey
-import org.dicekeys.trustedapp.state.DiceKeyState
 import org.dicekeys.read.DiceKeyDrawable
 import org.dicekeys.read.ReadDiceKeyActivity
+import org.dicekeys.trustedapp.R
 import org.dicekeys.trustedapp.databinding.ActivityMainBinding
+import org.dicekeys.trustedapp.state.DiceKeyState
+
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var sharedPreferenceManager : SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedPreferenceManager = PreferenceManager.getDefaultSharedPreferences(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -26,8 +37,26 @@ class MainActivity : AppCompatActivity() {
         binding.btnForget.setOnClickListener{ forget() }
         binding.btnViewPublicKey.setOnClickListener{ viewPublicKey() }
         binding.btnAssembleFirstDicekey.setOnClickListener { startAssembleWizard() }
+        binding.btnSelectHost.setOnClickListener{ viewOptions()}
+
     }
 
+    private  fun viewOptions(){
+        val popupMenu: PopupMenu = PopupMenu(this,binding.btnSelectHost)
+        var i=0;
+        for (recepitemplate in derivationRecipeTemplates) {
+            popupMenu.menu.add(0,0,i++,recepitemplate.name)
+        }
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
+            val newIntent =Intent(this,DiceKeyWithDerivedValue::class.java)
+            newIntent.putExtra("derivationRecipeTemplateIndex",item.order)
+            startActivity(newIntent)
+            //Toast.makeText(this@MainActivity, "You Clicked : " + derivationRecipeTemplates.get(item.order).name, Toast.LENGTH_SHORT).show()
+
+            true
+        })
+        popupMenu.show()
+    }
     private fun viewPublicKey() {
         val newIntent = Intent(this, DisplayPublicKeyActivity::class.java)
         startActivityForResult(newIntent, 0)
@@ -66,6 +95,8 @@ class MainActivity : AppCompatActivity() {
             binding.btnAssembleFirstDicekey.visibility = visibleIfDiceKeyAbsent
             binding.btnForget.visibility = visibleIfDiceKeyPresent
             binding.btnViewPublicKey.visibility = visibleIfDiceKeyPresent
+            binding.btnSelectHost.visibility = visibleIfDiceKeyPresent
+
             val diceKey = DiceKeyState.diceKey
             if (diceKey == null) {
                 binding.diceKeyView.setImageDrawable(null)

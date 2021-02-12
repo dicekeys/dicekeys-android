@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/dicekey"
+        android:enabled="true"
+        android:icon="@drawable/ic_backup_to_dicekey"
+        android:title="@string/dicekey"/>
+
+    <item
+        android:id="@+id/solokey"
+        android:enabled="true"
+        android:icon="@drawable/ic_usb_key"
+        android:title="@string/solokey"/>
+    <item
+        android:id="@+id/secrets"
+        android:enabled="true"
+        android:icon="@drawable/ic_secret_with_arrow"
+        android:title="@string/secrets"/>
+
+    <item
+        android:id="@+id/backup"
+        android:enabled="true"
+        android:icon="@drawable/ic_backup_to_dicekey"
+        android:title="@string/backup"/>
+
+</menu>

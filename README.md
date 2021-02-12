@@ -1,6 +1,8 @@
 
 # DiceKeys for Android
 
+[![Unit Tests](https://github.com/dicekeys/dicekeys-android/workflows/Unit%20Tests/badge.svg)](https://github.com/dicekeys/dicekeys-android/actions)
+
 ```
 git clone --recursive https://github.com/dicekeys/dicekeys-android.git
 ```

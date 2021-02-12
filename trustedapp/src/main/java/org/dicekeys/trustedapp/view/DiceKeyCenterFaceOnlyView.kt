@@ -186,7 +186,7 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val width = MeasureSpec.getSize(widthMeasureSpec).toFloat()
         val height = MeasureSpec.getSize(heightMeasureSpec).toFloat()
-        
+
         size = SizeF(width, height)
 
         val totalWidth = totalWidth.toInt()

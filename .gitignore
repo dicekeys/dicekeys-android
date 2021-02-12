@@ -16,3 +16,4 @@ keystore.properties
 .keys
 keys.jks
 docs/
+app/build/

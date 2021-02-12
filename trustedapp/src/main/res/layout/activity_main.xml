@@ -1,78 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="org.dicekeys.trustedapp.activities.MainActivity">
-    <!--    <TextView-->
-    <!--        android:id="@+id/txt_json"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:padding="24dp"-->
-    <!--        android:textAlignment="center"-->
-    <!--        app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--        app:layout_constraintRight_toRightOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"-->
-    <!--    />-->
-    <!--        app:layout_constraintBottom_toTopOf="@id/buttons"-->
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/dice_key_view"
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:contentDescription="Dice"
-        app:layout_constraintBottom_toTopOf="@+id/dd_buttons"
-        android:layout_height="0dp"
-        android:layout_marginBottom="36dp"
+        android:layout_height="match_parent"
+        tools:context="org.dicekeys.trustedapp.activities.MainActivity">
+        <!--    <TextView-->
+        <!--        android:id="@+id/txt_json"-->
+        <!--        android:layout_width="wrap_content"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        android:padding="24dp"-->
+        <!--        android:textAlignment="center"-->
+        <!--        app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--        app:layout_constraintRight_toRightOf="parent"-->
+        <!--        app:layout_constraintTop_toTopOf="parent"-->
+        <!--    />-->
+        <!--        app:layout_constraintBottom_toTopOf="@id/buttons"-->
 
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        <ImageView
+            android:id="@+id/dice_key_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="36dp"
+            android:contentDescription="Dice"
+            app:layout_constraintBottom_toTopOf="@+id/dd_buttons"
 
-    <LinearLayout
-        android:id="@+id/dd_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="12dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
-        <Button
-            android:id="@+id/btn_view_public_key"
+        <LinearLayout
+            android:id="@+id/dd_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:text="View public key" />
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="12dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
 
-        <Button
-            android:id="@+id/btn_assemble_first_dicekey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:text="Assemble your First DiceKey" />
 
-        <Button
-            android:id="@+id/btn_read_dicekey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:text="Read DiceKey" />
-        <Button
-            android:id="@+id/btn_forget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:text="Forget DiceKey" />
+            <Button
+                android:id="@+id/btn_assemble_first_dicekey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:text="Assemble your First DiceKey" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/btn_select_host"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:text="@string/common_password_recipe" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/btn_view_public_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:text="View public key" />
+
+            <Button
+                android:id="@+id/btn_read_dicekey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:text="Read DiceKey" />
+
+            <Button
+
+                android:id="@+id/btn_forget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:text="Forget DiceKey" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

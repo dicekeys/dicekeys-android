@@ -2,7 +2,9 @@
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.4.30'
+    ext.kotlinx_coroutines = '1.4.1'
+    ext.kotlinx_serialization = '1.0.1'
     ext.dokka_version = '0.10.1'
     repositories {
         google()
@@ -10,9 +12,13 @@ buildscript {
         
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.3"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.31.2-alpha"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
+
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
