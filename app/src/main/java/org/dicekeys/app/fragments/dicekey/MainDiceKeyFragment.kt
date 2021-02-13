@@ -15,6 +15,7 @@ import org.dicekeys.app.databinding.MainDicekeyFragmentBinding
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.viewmodels.DiceKeyViewModel
 import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -23,7 +24,7 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
     @Inject
     lateinit var repository: DiceKeyRepository
 
-    lateinit var diceKey: DiceKey<*>
+    lateinit var diceKey: DiceKey<Face>
 
     private val args: MainDiceKeyFragmentArgs by navArgs()
 
@@ -39,7 +40,7 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
 
         // Guard: If DiceKey is not available, return
         repository.get(args.diceKeyId)?.also {
-            diceKey = it
+            diceKey = it as DiceKey<Face>
         } ?: run {
             findNavController().popBackStack()
             return

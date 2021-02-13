@@ -1,4 +1,4 @@
-package org.dicekeys.trustedapp.view
+package org.dicekeys.app.views
 
 import android.content.Context
 import android.graphics.RectF
@@ -7,7 +7,6 @@ import android.util.SizeF
 import android.view.View
 import org.dicekeys.dicekey.Face
 
-@Deprecated("Moved to :app")
 abstract class DiceBaseView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,

@@ -20,7 +20,8 @@
         <org.dicekeys.app.views.DiceKeyCenterFaceOnlyView
             android:id="@+id/centerView"
             android:layout_width="80dp"
-            android:layout_height="120dp"/>
+            android:layout_height="120dp"
+            android:layout_gravity="center"/>
 
         <TextView
             android:layout_width="match_parent"

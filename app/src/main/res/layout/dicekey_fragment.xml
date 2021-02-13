@@ -15,8 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/materialCardView"
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="24dp"
@@ -30,31 +29,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread">
 
-            <LinearLayout
+            <org.dicekeys.app.views.DiceKeyView
+                android:id="@+id/dicekey"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@color/purple_700"
-                    android:src="@drawable/ic_scanning_side_view" />
-
-                <TextView
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@{vm.diceKey.centerFace().toHumanReadableForm(true)}"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
+        </FrameLayout>
 
         <!--  Disable for now, after V1      -->
         <com.google.android.material.card.MaterialCardView

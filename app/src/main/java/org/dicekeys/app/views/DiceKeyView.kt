@@ -1,15 +1,15 @@
-package org.dicekeys.trustedapp.view
+package org.dicekeys.app.views
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import androidx.core.content.ContextCompat
+import org.dicekeys.app.R
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
-import org.dicekeys.trustedapp.R
 
-@Deprecated("Moved to :app")
 class DiceKeyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
@@ -49,11 +49,11 @@ class DiceKeyView @JvmOverloads constructor(
         if (diceKeyContent == DiceKeyContent.HALF_EMPTY) {
             highlightedIndexes = listOf(diceKey.faces.size / 2 + 1).toSet()
         }
-        diceBoxPaint.color = typedArray.getColor(R.styleable.DiceKeyView_boxColor, Colors.diceColor)
-        diceBoxDieSlotPaint.color = typedArray.getColor(R.styleable.DiceKeyView_slotColor, Colors.diceBoxDieSlot)
+        diceBoxPaint.color = typedArray.getColor(R.styleable.DiceKeyView_boxColor, ContextCompat.getColor(context, R.color.diceColor))
+        diceBoxDieSlotPaint.color = typedArray.getColor(R.styleable.DiceKeyView_slotColor, ContextCompat.getColor(context, R.color.diceBoxDieSlot))
         diePenPaint.color = typedArray.getColor(R.styleable.DiceKeyView_penColor, Color.BLACK)
         faceSurfacePaint.color = typedArray.getColor(R.styleable.DiceKeyView_faceColor, Color.WHITE)
-        highlighterPaint.color = typedArray.getColor(R.styleable.DiceKeyView_hightlighColor, Colors.highlighter)
+        highlighterPaint.color = typedArray.getColor(R.styleable.DiceKeyView_hightlighColor, ContextCompat.getColor(context, R.color.highlighter))
         typedArray.recycle()
     }
 
