@@ -2,8 +2,11 @@ package org.dicekeys.app.fragments.dicekey
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.core.view.iterator
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -21,6 +24,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.main_dicekey_fragment) {
 
+    private lateinit var innerNavController: NavController
+
     @Inject
     lateinit var repository: DiceKeyRepository
 
@@ -33,6 +38,13 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
 
     val viewModel: DiceKeyViewModel by viewModels {
         DiceKeyViewModel.provideFactory(viewModelFactory, diceKey)
+    }
+
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(false){
+        override fun handleOnBackPressed() {
+            innerNavController.popBackStack()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,21 +61,26 @@ class MainDiceKeyFragment : AppFragment<MainDicekeyFragmentBinding>(R.layout.mai
         binding.vm = viewModel
 
         val navHostFragment = childFragmentManager.findFragmentById(R.id.dicekey_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        binding.bottomNavigation.setupWithNavController(navController)
+
+        innerNavController = navHostFragment.navController
+        binding.bottomNavigation.setupWithNavController(innerNavController)
 
         binding.buttonLock.setOnClickListener {
             lock()
         }
 
         binding.buttonSave.setOnClickListener {
-            navController.navigate(R.id.save)
-
+            innerNavController.navigate(R.id.save)
         }
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+
+        innerNavController.addOnDestinationChangedListener { _, destination, _ ->
             // remove the highlight when on Save fragment
             binding.bottomNavigation.menu.setGroupCheckable(0, destination.id != R.id.save, true);
+
+            // handle Back navigation
+            onBackPressedCallback.isEnabled = innerNavController.previousBackStackEntry != null
         }
 
         binding.toolbarTitle.text = getString(R.string.dicekey_with_center, diceKey.centerFace().toHumanReadableForm(false))
