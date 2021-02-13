@@ -1,15 +1,14 @@
-package org.dicekeys.trustedapp.view
+package org.dicekeys.app.views
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Size
 import android.util.SizeF
 import android.view.View
+import androidx.core.content.ContextCompat
+import org.dicekeys.app.R
 import org.dicekeys.dicekey.Face
-import org.dicekeys.trustedapp.R
 
-@Deprecated("Moved to :app")
 class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
@@ -131,7 +130,7 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
         linePaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_lineColor,
                 Color.argb(255 / 2, 255, 255, 255))
         diceBoxPaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_boxColor,
-            Colors.alexandrasBlueLighter)
+            ContextCompat.getColor(context, R.color.alexandrasBlueLighter))
         diePenPaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_penColor, Color.BLACK)
         faceSurfacePaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_faceColor, Color.WHITE)
         borderColor.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_borderColor, Color.GRAY)

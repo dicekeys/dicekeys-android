@@ -21,6 +21,7 @@ import org.dicekeys.app.extensions.showPopupMenu
 import org.dicekeys.app.openDialogDeleteDiceKey
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.viewmodels.ListDiceKeysViewModel
+import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceRead
 import org.dicekeys.read.ReadDiceKeyActivity
 import javax.inject.Inject
@@ -68,6 +69,8 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
         for ((index, encryptedDiceKey) in list.withIndex()) {
             val diceKeyView = ListItemDicekeyBinding.inflate(LayoutInflater.from(requireContext()))
             diceKeyView.diceKey = encryptedDiceKey
+
+            diceKeyView.centerView.centerFace = encryptedDiceKey.centerFaceAsFace
 
             diceKeyView.root.layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,

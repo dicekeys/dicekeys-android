@@ -1,9 +1,11 @@
 package org.dicekeys.app.encryption
 
+import android.graphics.drawable.GradientDrawable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.dicekeys.dicekey.Face
 
 /*
  * EncryptedDiceKey
@@ -21,7 +23,11 @@ data class EncryptedDiceKey(
         val centerFace: String,
         @SerialName("encrypted_data")
         val encryptedData: EncryptedData,
-){
+) {
+
+    val centerFaceAsFace: Face by lazy {
+        Face(centerFace[0], centerFace[1], centerFace[2])
+    }
 
     override fun toString(): String = Json.encodeToString(this)
 }

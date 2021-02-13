@@ -26,7 +26,7 @@ class Undoverline(
 
 
 @JsonClass(generateAdapter = true)
-class FaceRead(
+class FaceRead constructor(
         val underline: Undoverline?,
         val overline: Undoverline?,
         override val orientationAsLowercaseLetterTrbl: Char,

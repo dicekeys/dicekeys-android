@@ -1,4 +1,4 @@
-package org.dicekeys.trustedapp.view
+package org.dicekeys.app.views
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
@@ -6,7 +6,6 @@ import androidx.core.content.res.ResourcesCompat
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceDimensionsFractional
 
-@Deprecated("Moved to :app")
 class Undoverline(val face: Face,
                   val faceSize: Float,
                   val isOverline: Boolean,
@@ -76,14 +75,13 @@ class Undoverline(val face: Face,
     override fun getOpacity(): Int = PixelFormat.OPAQUE
 }
 
-@Deprecated("Moved to :app")
 class DieFace(val face: Face,
               var dieSize: Float,
               val linearFractionOfFaceRenderedToDieSize: Float = 5f/8f,
               val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
               penColor: Int = Color.BLACK,
               faceSurfaceColor: Int = Color.WHITE,
-              highlightSurfaceColor: Int = Colors.highlighter,
+              highlightSurfaceColor: Int = Color.parseColor("#FEFF8A"),
               faceBorderColor: Int? = null,
               var highlighted: Boolean = false,
               val faceBorderWidth: Float = 2f) : Drawable() {
