@@ -1,4 +1,4 @@
-package org.dicekeys.trustedapp.view
+package org.dicekeys.app.views
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,12 +6,12 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.SizeF
+import androidx.core.content.ContextCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import org.dicekeys.app.R
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
-import org.dicekeys.trustedapp.R
 
-@Deprecated("Moved to :app")
 class StickerTargetSheetView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
@@ -46,7 +46,7 @@ class StickerTargetSheetView @JvmOverloads constructor(
         }
         diePenPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_penColor, Color.BLACK)
         faceSurfacePaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_faceColor, Color.WHITE)
-        highlighterPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_hightlighColor, Colors.highlighter)
+        highlighterPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_hightlighColor, ContextCompat.getColor(context, R.color.highlighter))
         borderPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_borderColor, Color.GRAY)
         typedArray.recycle()
     }

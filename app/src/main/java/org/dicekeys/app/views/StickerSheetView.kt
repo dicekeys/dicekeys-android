@@ -1,4 +1,4 @@
-package org.dicekeys.trustedapp.view
+package org.dicekeys.app.views
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,12 +6,12 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.SizeF
+import androidx.core.content.ContextCompat
+import org.dicekeys.app.R
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceDigits
 import org.dicekeys.dicekey.FaceLetters
-import org.dicekeys.trustedapp.R
 
-@Deprecated("Moved to :app")
 class StickerSheetView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
@@ -34,7 +34,7 @@ class StickerSheetView @JvmOverloads constructor(
         pageIndex = typedArray.getInteger(R.styleable.StickerSheetView_pageIndex, 0)
         diePenPaint.color = typedArray.getColor(R.styleable.StickerSheetView_penColor, Color.BLACK)
         faceSurfacePaint.color = typedArray.getColor(R.styleable.StickerSheetView_faceColor, Color.WHITE)
-        highlighterPaint.color = typedArray.getColor(R.styleable.StickerSheetView_hightlighColor, Colors.highlighter)
+        highlighterPaint.color = typedArray.getColor(R.styleable.StickerSheetView_hightlighColor, ContextCompat.getColor(context, R.color.highlighter))
         borderPaint.color = typedArray.getColor(R.styleable.StickerSheetView_borderColor, Color.GRAY)
         typedArray.recycle()
     }

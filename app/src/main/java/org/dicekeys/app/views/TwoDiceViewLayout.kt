@@ -1,13 +1,13 @@
-package org.dicekeys.trustedapp.view
+package org.dicekeys.app.views
 
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
-import org.dicekeys.trustedapp.R
+import org.dicekeys.app.R
 
-@Deprecated("Moved to :app")
+
 class TwoDiceViewLayout @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,

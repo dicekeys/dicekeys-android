@@ -11,9 +11,25 @@
         tools:layout="@layout/dicekey_fragment"/>
 
     <fragment
-        android:id="@+id/backup"
-        android:name="org.dicekeys.app.fragments.dicekey.BackupFragment"
-        tools:layout="@layout/backup_fragment" />
+        android:id="@+id/backupSelect"
+        android:name="org.dicekeys.app.fragments.dicekey.BackupSelectFragment"
+        tools:layout="@layout/backup_select_fragment" >
+
+        <action
+            android:id="@+id/action_backupSelect_to_backup_nav_graph"
+            app:destination="@id/backup_nav_graph" >
+
+            <argument
+                android:name="diceKeyId"
+                app:argType="string" />
+
+            <argument
+                android:name="useStickeys"
+                app:argType="boolean"
+                android:defaultValue="false"/>
+
+        </action>
+    </fragment>
 
     <fragment
         android:id="@+id/solokey"
@@ -48,4 +64,9 @@
             app:argType="org.dicekeys.api.DerivationRecipe" />
 
     </fragment>
+
+    <include
+        app:graph="@navigation/backup_nav_graph" />
+
+
 </navigation>

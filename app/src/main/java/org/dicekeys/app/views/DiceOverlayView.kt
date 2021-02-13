@@ -1,14 +1,13 @@
-package org.dicekeys.trustedapp.view
+package org.dicekeys.app.views
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import org.dicekeys.app.R
 import org.dicekeys.dicekey.Face
-import org.dicekeys.trustedapp.R
 
-@Deprecated("Moved to :app")
 class DiceOverlayView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,

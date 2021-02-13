@@ -10,7 +10,12 @@ import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 
 
-class DiceKeyViewModel @AssistedInject constructor(private val encryptedStorage: EncryptedStorage, private val diceKeyRepository: DiceKeyRepository, @Assisted val diceKey: DiceKey<Face>) : ViewModel() {
+class DiceKeyViewModel @AssistedInject constructor(
+        private val encryptedStorage: EncryptedStorage,
+        private val diceKeyRepository: DiceKeyRepository,
+        @Assisted val diceKey: DiceKey<Face>
+) : ViewModel() {
+
     val isSaved = MutableLiveData(encryptedStorage.exists(diceKey.keyId))
 
     private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> { list ->
