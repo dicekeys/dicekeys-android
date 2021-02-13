@@ -12,6 +12,24 @@ open class Face(
     val clockwise90DegreeRotationsFromUpright: Byte? get()  =
         FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTrbl)
 
+    val orientationAsDegrees: Float
+        get() = when(orientationAsLowercaseLetterTrbl) {
+            't' -> 0f
+            'r' -> 90f
+            'b' -> 180f
+            'l' -> 270f
+            else -> 0f
+        }
+
+    val orientationAsFacingString: String
+        get() = when(orientationAsLowercaseLetterTrbl) {
+            't' -> "upright"
+            'r' -> "right"
+            'b' -> "down"
+            'l' -> "left"
+            else -> "unknown"
+        }
+
     companion object {
         fun majorityOfThree(a: Char, b: Char, c: Char): Char {
             return when {
@@ -61,6 +79,44 @@ open class Face(
         get() {
             return undoverlineCodes?.overlineCode
         }
+
+    open val underlineCode11Bits: UShort?
+        get() {
+            val value = undoverlineCodes?.underlineCode
+            return if (value != null) {
+                ((1 shl  10) or
+                        // set the next high-order bit on overlines
+                        0 or
+                        // shift the face code 1 to the left to leave the 0th bit empty
+                        (value.toUShort().toInt() shl 1)).toUShort()
+            } else null
+        }
+
+    open val overlineCode11Bits: UShort?
+        get() {
+            val value = undoverlineCodes?.overlineCode
+            return if (value != null) {
+                ((1 shl  10) or
+                        // set the next high-order bit on overlines
+                        (1 shl 9) or
+                        // shift the face code 1 to the left to leave the 0th bit empty
+                        (value.toUShort().toInt() shl 1)).toUShort()
+            } else null
+        }
+
+    fun numberOfFieldsDifferent(other: Face) : Int {
+        var numberOfFields: Int = 0
+        if (letter != other.letter) {
+            numberOfFields += 1
+        }
+        if (digit != other.digit) {
+            numberOfFields += 1
+        }
+        if (orientationAsLowercaseLetterTrbl != other.orientationAsLowercaseLetterTrbl) {
+            numberOfFields += 1
+        }
+        return numberOfFields
+    }
 
 }
 

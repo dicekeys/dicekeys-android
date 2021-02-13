@@ -36,7 +36,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.btnForget.setOnClickListener{ forget() }
         binding.btnViewPublicKey.setOnClickListener{ viewPublicKey() }
+        binding.btnAssembleFirstDicekey.setOnClickListener { startAssembleWizard() }
         binding.btnSelectHost.setOnClickListener{ viewOptions()}
+
     }
 
     private  fun viewOptions(){
@@ -78,6 +80,11 @@ class MainActivity : AppCompatActivity() {
         return diceKey
     }
 
+    private fun startAssembleWizard() {
+        val intent = Intent(this, AssembleInstructionsActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun render() {
         try {
             // Render button changes
@@ -85,6 +92,7 @@ class MainActivity : AppCompatActivity() {
             val visibleIfDiceKeyPresent = if (diceKeyPresent) android.view.View.VISIBLE else android.view.View.GONE
             val visibleIfDiceKeyAbsent = if (!diceKeyPresent) android.view.View.VISIBLE else android.view.View.GONE
             binding.btnReadDicekey.visibility = visibleIfDiceKeyAbsent
+            binding.btnAssembleFirstDicekey.visibility = visibleIfDiceKeyAbsent
             binding.btnForget.visibility = visibleIfDiceKeyPresent
             binding.btnViewPublicKey.visibility = visibleIfDiceKeyPresent
             binding.btnSelectHost.visibility = visibleIfDiceKeyPresent

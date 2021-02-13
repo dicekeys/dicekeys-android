@@ -1,6 +1,5 @@
 package org.dicekeys.dicekey
 import android.util.Base64
-import kotlinx.android.parcel.Parcelize
 import org.dicekeys.crypto.seeded.Secret
 import java.security.InvalidParameterException
 
@@ -38,6 +37,11 @@ open class DiceKey<F: Face>(val faces: List<F>) {
       )
     )
 
+    val example: DiceKey<Face>
+      get() = DiceKey(faces = (0 until 25).map { index ->
+        Face(FaceLetters[index], FaceDigits[index % 6], orientationAsLowercaseLetterTrbl = FaceRotationLetters[index % 4])
+      })
+
     @JvmStatic
     fun fromHumanReadableForm(hrf: String): DiceKey<Face> {
       return when (hrf.length) {
@@ -51,6 +55,17 @@ open class DiceKey<F: Face>(val faces: List<F>) {
         )
         else -> throw InvalidParameterException("Invalid length")
       }
+    }
+
+    fun createFromRandom(): DiceKey<Face> = DiceKey(faces = (0 until 25).map { Face(
+            letter = FaceLetters.random(),
+            digit = FaceDigits.random(),
+            orientationAsLowercaseLetterTrbl = FaceRotationLetters.random()
+        )
+    })
+
+    fun clone(diceKey: DiceKey<Face>): DiceKey<Face> {
+       return fromHumanReadableForm(diceKey.toHumanReadableForm())
     }
   }
 
@@ -97,6 +112,45 @@ open class DiceKey<F: Face>(val faces: List<F>) {
     (if (excludeOrientationOfFaces) removeOrientations() else this)
       .toCanonicalRotation()
       .toHumanReadableForm()
+
+  fun threeAlternativeRotations() : List<DiceKey<Face>> =
+          mutableListOf(
+            rotate(1),
+            rotate(2),
+            rotate(3)
+          )
+
+  fun differencesForFixedRotation(other: DiceKey<Face>) : Int {
+    var difference = 0
+    for (index in 0..24) {
+      difference += faces[index].numberOfFieldsDifferent(other.faces[index])
+    }
+    return difference
+  }
+
+  fun mostSimilarRotationWithDifference(other: DiceKey<Face>, maxDifferenceToRotateFor: Int = 12) : Pair<DiceKey<Face>, Int> {
+    var rotationWithSmallestDifference = other
+    var smallestDifference = differencesForFixedRotation(other)
+    if (smallestDifference == 0)
+      return Pair(rotationWithSmallestDifference, smallestDifference)
+    for (candidate in threeAlternativeRotations()) {
+      val difference = differencesForFixedRotation(candidate)
+      if (difference < smallestDifference && difference <= maxDifferenceToRotateFor) {
+        smallestDifference = difference
+        rotationWithSmallestDifference = candidate
+      }
+      if (smallestDifference == 0) {
+        // no need to look further
+        return Pair(rotationWithSmallestDifference, smallestDifference)
+      }
+    }
+    return Pair(rotationWithSmallestDifference, smallestDifference)
+  }
+
+  fun mostSimilarRotationOf(other: DiceKey<Face>, maxDifferenceToRotateFor: Int = 12) : DiceKey<Face> {
+    val (rotationWithSmallestDifference, _) = mostSimilarRotationWithDifference(other, maxDifferenceToRotateFor)
+    return rotationWithSmallestDifference
+  }
 
   fun centerFace(): Face {
     return faces[12]

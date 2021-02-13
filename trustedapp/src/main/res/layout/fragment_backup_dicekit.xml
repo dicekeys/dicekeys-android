@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <org.dicekeys.trustedapp.view.TwoDiceViewLayout
+            android:id="@+id/two_diceview_layout"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:handDieFaceColor="@color/highlighter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:sourceDiceViewId="@id/dice_key_source"
+            app:targetDiceViewId="@id/dice_key_target">
+
+            <org.dicekeys.trustedapp.view.DiceKeyView
+                android:id="@+id/dice_key_source"
+                android:layout_width="160dp"
+                android:layout_height="160dp" />
+
+            <org.dicekeys.trustedapp.view.DiceKeyView
+                android:id="@+id/dice_key_target"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_marginStart="@dimen/fab_margin"
+                app:dicekey="half_empty" />
+        </org.dicekeys.trustedapp.view.TwoDiceViewLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_instruction"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/fab_margin"
+            android:paddingEnd="@dimen/fab_margin"
+            android:text="Find the A die."
+            app:layout_constraintTop_toBottomOf="@id/two_diceview_layout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
