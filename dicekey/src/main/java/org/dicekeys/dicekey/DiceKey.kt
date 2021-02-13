@@ -47,11 +47,11 @@ open class DiceKey<F: Face>(val faces: List<F>) {
       return when (hrf.length) {
         // Human readable form with orientations (letter + digit + orientation) x 25
         75 -> DiceKey(
-          (0..24).map { k -> Face(hrf[k * 3], hrf[k * 3 + 1], hrf[k * 3 + 2]) }
+          (0..24).map { k -> Face.fromHumanReadableForm(hrf.substring(k * 3, k * 3 + 3)) }
         )
         // Human readable form without orientations (letter + digit) x 25
         50 -> DiceKey(
-          (0..24).map { k -> Face(hrf[k * 2], hrf[k * 2 + 1], 't') }
+              (0..24).map { k -> Face.fromHumanReadableForm(hrf.substring(k * 2, k * 3 + 2) + "t") }
         )
         else -> throw InvalidParameterException("Invalid length")
       }
