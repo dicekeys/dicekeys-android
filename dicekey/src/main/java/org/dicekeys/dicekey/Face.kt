@@ -3,6 +3,11 @@ package org.dicekeys.dicekey
 import com.squareup.moshi.JsonClass
 
 
+/**
+ * Thrown when human readable form is invalid
+ */
+class InvalidHumanReadableFormException(message: String) : java.lang.Exception(message)
+
 @JsonClass(generateAdapter = true)
 open class Face(
     open val letter: Char,
@@ -37,6 +42,35 @@ open class Face(
                 (b == c) -> b
                 else -> '?'
             }
+        }
+
+        fun isValidFaceLetter(candidateFaceLetter: Char): Boolean {
+            return "ABCDEFGHIJKLMNOPRSTUVWXYZ".indexOf(candidateFaceLetter) != -1
+        }
+        fun isValidFaceDigit(candidateFaceDigit: Char): Boolean {
+            return "123456".indexOf(candidateFaceDigit) != -1
+        }
+        fun isValidOrientationAsLowercaseLetterTrbl(candidateOrientation: Char): Boolean {
+            return "trbl".indexOf(candidateOrientation) != -1
+        }
+        @JvmStatic
+        fun fromHumanReadableForm(humanReadableForm: String): Face {
+            if (humanReadableForm.length != 3) {
+                throw InvalidHumanReadableFormException("Invalid length: a face stored in human readable form must be 3 characters long")
+            }
+            val letter: Char = humanReadableForm[0]
+            if (!isValidFaceLetter(letter)) {
+                throw InvalidHumanReadableFormException("Invalid letter: $letter")
+            }
+            val digit = humanReadableForm[1]
+            if (!isValidFaceDigit(digit)) {
+                throw InvalidHumanReadableFormException("Invalid digit: $digit")
+            }
+            val orientationAsLowercaseLetterTrbl = humanReadableForm[2]
+            if (!isValidOrientationAsLowercaseLetterTrbl(orientationAsLowercaseLetterTrbl)) {
+                throw InvalidHumanReadableFormException("Invalid orientation must be 't', 'r', 'b', or 'l': $orientationAsLowercaseLetterTrbl")
+            }
+            return Face(letter, digit, orientationAsLowercaseLetterTrbl)
         }
     }
 
