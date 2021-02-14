@@ -18,7 +18,6 @@
     <string name="save_dice_encryption_notice">The other 24 dice will be encrypted and your Biometrics will unlock them.</string>
 
     <string name="custom_recipe">Custom Recipe</string>
-    <string name="common_password_recipes">Common password recipes</string>
 
     <string name="assemble_a_dicekey">Assemble a DiceKey</string>
     <string name="load_your_dicekey">Load your DiceKey</string>
@@ -43,7 +42,13 @@
     <string name="use_a_stickeys_kit">Use a Stickeys Kit</string>
     <string name="use_a_dicekey_kit">Use a DiceKey Kit</string>
     <string name="construct_your_backup">Construct your Backup</string>
-
+    <string name="recipe_for">Recipe for %s</string>
+    <string name="sequence_number">Sequence Number</string>
+    <string name="str_multiple_passwords_info">if you need multiple passwords for a single website or service, change sequence number to create additional passowrd</string>
+    <string name="str_save_recipe_in_the_menu">Save recipe in the menu</string>
+    <string name="str_remove_recipe_from_menu">Remove recipe from menu</string>
+    <string name="copy_password">Copy Password</string>
+    <string name="common_password_recipes">Common Password Recipes</string>
 
 
 </resources>

@@ -1,10 +1,15 @@
 package org.dicekeys.api
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.Json.Default.decodeFromString
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.dicekeys.crypto.seeded.DerivationOptions
 
 fun addFieldToEndOfJsonObjectString(originalJsonObjectString: String, fieldName: String, fieldValue: String): String {
@@ -61,6 +66,11 @@ data class DerivationRecipe(
                 ),
                 augmentRecipeJson(template, sequenceNumber, lengthInChars)
         ) {}
+
+    @IgnoredOnParcel
+    val sequence by lazy {
+        Json.parseToJsonElement(derivationOptionsJson).jsonObject["#"]?.jsonPrimitive?.int ?: 1
+    }
 
     /*
      * An easy way to have a unique identifier for this Recipe

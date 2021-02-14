@@ -62,6 +62,11 @@
         <argument
             android:name="recipe"
             app:argType="org.dicekeys.api.DerivationRecipe" />
+        <argument
+            android:name="template"
+            app:argType="org.dicekeys.api.DerivationRecipe"
+            app:nullable="true"
+            android:defaultValue="@null" />
 
     </fragment>
 
