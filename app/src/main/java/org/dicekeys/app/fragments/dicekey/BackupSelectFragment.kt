@@ -10,14 +10,10 @@ import org.dicekeys.app.databinding.BackupSelectFragmentBinding
 import org.dicekeys.app.viewmodels.DiceKeyViewModel
 
 @AndroidEntryPoint
-class BackupSelectFragment: AppFragment<BackupSelectFragmentBinding>(R.layout.backup_select_fragment) {
-
-    private lateinit var viewModel: DiceKeyViewModel
+class BackupSelectFragment: AbstractDiceKeyFragment<BackupSelectFragmentBinding>(R.layout.backup_select_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = getDiceKeyRootFragment().viewModel
 
         binding.vm = viewModel
 

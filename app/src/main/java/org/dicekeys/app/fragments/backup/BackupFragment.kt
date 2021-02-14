@@ -2,16 +2,13 @@ package org.dicekeys.app.fragments.backup
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.motion.widget.TransitionBuilder.validate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -21,13 +18,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
-import org.dicekeys.app.MainActivity
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.BackupFragmentBinding
-import org.dicekeys.app.databinding.BackupSelectFragmentBinding
 import org.dicekeys.app.databinding.FragmentBackupDicekitBinding
 import org.dicekeys.app.databinding.FragmentBackupStickeysBinding
-import org.dicekeys.app.fragments.dicekey.MainDiceKeyFragmentArgs
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.utils.openBrowser
 import org.dicekeys.app.viewmodels.DiceKeyViewModel

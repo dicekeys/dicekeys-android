@@ -5,7 +5,7 @@
 
     <data>
         <variable
-            name="diceKeyViewModel"
+            name="diceKeyVM"
             type="org.dicekeys.app.viewmodels.DiceKeyViewModel" />
 
         <variable
@@ -192,6 +192,7 @@
                 android:id="@+id/dicekey"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                dicekey="@{vm.diceKey}"
                 android:layout_gravity="center" />
 
         </FrameLayout>

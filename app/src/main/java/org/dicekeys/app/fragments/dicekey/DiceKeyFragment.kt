@@ -15,21 +15,15 @@ import org.dicekeys.dicekey.Face
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DiceKeyFragment: AppFragment<DicekeyFragmentBinding>(R.layout.dicekey_fragment) {
+class DiceKeyFragment: AbstractDiceKeyFragment<DicekeyFragmentBinding>(R.layout.dicekey_fragment) {
 
     @Inject
     lateinit var biometricsHelper : BiometricsHelper
 
-    private lateinit var viewModel: DiceKeyViewModel
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = getDiceKeyRootFragment().viewModel
-
         binding.vm = viewModel
-
-        binding.dicekey.diceKey = viewModel.diceKey
 
         binding.buttonSave.setOnClickListener {
             biometricsHelper.encrypt(viewModel.diceKey, this)

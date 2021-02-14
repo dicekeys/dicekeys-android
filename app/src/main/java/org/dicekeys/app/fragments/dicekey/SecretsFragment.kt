@@ -18,17 +18,13 @@ import org.dicekeys.app.viewmodels.DiceKeyViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SecretsFragment : AppFragment<SecretsFragmentBinding>(R.layout.secrets_fragment), RecipesAdapter.OnItemClickListener {
+class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout.secrets_fragment), RecipesAdapter.OnItemClickListener {
 
     @Inject
     lateinit var recipesRepository: RecipeRepository
 
-    private lateinit var viewModel: DiceKeyViewModel
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = getDiceKeyRootFragment().viewModel
 
         val adapter = RecipesAdapter(this)
 

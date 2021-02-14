@@ -20,8 +20,8 @@
     </fragment>
     <fragment
         android:id="@+id/mainDiceKeyRootFragment"
-        android:name="org.dicekeys.app.fragments.dicekey.MainDiceKeyFragment"
-        tools:layout="@layout/main_dicekey_fragment">
+        android:name="org.dicekeys.app.fragments.dicekey.RootDiceKeyFragment"
+        tools:layout="@layout/root_dicekey_fragment">
         <argument
             android:name="diceKeyId"
             app:argType="string" />

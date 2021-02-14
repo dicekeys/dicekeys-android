@@ -9,9 +9,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import org.dicekeys.app.fragments.dicekey.MainDiceKeyFragment
 
 /**
  * AppFragment
@@ -58,7 +56,5 @@ abstract class AppFragment<T : ViewDataBinding>(
         findNavController().navigate(resId, args, navOptionsBuilder.build())
     }
 
-    fun getDiceKeyRootFragment(): MainDiceKeyFragment {
-        return ((parentFragment as NavHostFragment).parentFragment as MainDiceKeyFragment)
-    }
+
 }

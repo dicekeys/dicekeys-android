@@ -20,12 +20,7 @@ import org.dicekeys.dicekey.Face
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RecipeFragment : AppFragment<RecipeFragmentBinding>(R.layout.recipe_fragment) {
-
-    @Inject
-    lateinit var repository: DiceKeyRepository
-
-    lateinit var diceKey: DiceKey<Face>
+class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.recipe_fragment) {
 
     private val args: RecipeFragmentArgs by navArgs()
 
@@ -35,52 +30,41 @@ class RecipeFragment : AppFragment<RecipeFragmentBinding>(R.layout.recipe_fragme
     @Inject
     lateinit var viewModelFactory: RecipeViewModel.AssistedFactory
 
-    val viewModel: RecipeViewModel by viewModels {
-        RecipeViewModel.provideFactory(viewModelFactory, diceKey, args.recipe, args.template)
+    private val recipeViewModel: RecipeViewModel by viewModels {
+        RecipeViewModel.provideFactory(viewModelFactory, viewModel.diceKey, args.recipe, args.template)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Guard: If DiceKey is not available, return
-        repository.get(args.diceKeyId)?.also {
-            diceKey = it as DiceKey<Face>
-        } ?: run {
-            findNavController().popBackStack()
-            return
-        }
-
-        binding.diceKeyViewModel = getDiceKeyRootFragment().viewModel
-
-        binding.vm = viewModel
-
-        binding.dicekey.diceKey = viewModel.diceKey
+        binding.diceKeyVM = viewModel
+        binding.vm = recipeViewModel
 
 
-        binding.btnDown.setOnClickListener { viewModel.sequencUpDown(false) }
-        binding.btnUp.setOnClickListener { viewModel.sequencUpDown(true) }
+        binding.btnDown.setOnClickListener { recipeViewModel.sequencUpDown(false) }
+        binding.btnUp.setOnClickListener { recipeViewModel.sequencUpDown(true) }
 
         binding.etSequenceNumber.doAfterTextChanged { edittext ->
             try{
-                viewModel.updateSequence(edittext.toString().toInt())
+                recipeViewModel.updateSequence(edittext.toString().toInt())
             }catch (e: Exception){
                 e.printStackTrace()
             }
         }
 
         binding.tvPassword.setOnClickListener {
-            viewModel.password.value?.let {
+            recipeViewModel.password.value?.let {
                 copyToClipboard("password", it, requireContext())
                 toast("Password copied")
             }
         }
 
         binding.btnSaveRecipeInMenu.setOnClickListener {
-            viewModel.saveRecipeInMenu()
+            recipeViewModel.saveRecipeInMenu()
         }
 
         binding.btnRemoveRecipeFromMenu.setOnClickListener {
-            viewModel.removeRecipeFromMenu()
+            recipeViewModel.removeRecipeFromMenu()
         }
     }
 }

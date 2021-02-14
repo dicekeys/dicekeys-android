@@ -33,6 +33,7 @@
                 android:id="@+id/dicekey"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                dicekey="@{vm.diceKey}"
                 android:layout_gravity="center" />
 
         </FrameLayout>
