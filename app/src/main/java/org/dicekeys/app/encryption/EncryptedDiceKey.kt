@@ -26,7 +26,7 @@ data class EncryptedDiceKey(
 ) {
 
     val centerFaceAsFace: Face by lazy {
-        Face(centerFace[0], centerFace[1], centerFace[2])
+        Face.fromHumanReadableForm(centerFace)
     }
 
     override fun toString(): String = Json.encodeToString(this)
