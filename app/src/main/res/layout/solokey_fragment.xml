@@ -8,8 +8,9 @@
         <variable
             name="vm"
             type="org.dicekeys.app.viewmodels.DiceKeyViewModel" />
+
         <variable
-            name="vmSodo"
+            name="vmSolo"
             type="org.dicekeys.app.viewmodels.SoloKeyViewModel" />
     </data>
 
@@ -20,7 +21,7 @@
 
         <TextView
             android:id="@+id/tvPleaseConnect"
-            isVisible="@{vmSodo.isSoloKeyNotConnected()}"
+            isVisible="@{vmSolo.isSoloKeyNotConnected()}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -36,7 +37,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/coWritingView"
-            isVisible="@{vmSodo.isWritingProcessUnderWay()}"
+            isVisible="@{vmSolo.isWritingProcessUnderWay()}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
@@ -66,16 +67,17 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="7dp"
-                android:text="@string/you_have_seconds_to_do_so"
+                android:text="@{String.format(@string/you_have_seconds_to_do_so,vmSolo.writingProgress)}"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            isVisible="@{vmSodo.isSoloKeyConnected()}"
-            android:visibility="gone"
+            isVisible="@{vmSolo.isSoloKeyConnected()}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints">
@@ -83,8 +85,8 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="7dp"
                 android:layout_margin="10dp"
+                app:cardCornerRadius="7dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -96,24 +98,25 @@
 
                     <TextView
                         android:id="@+id/tvError"
+                        isVisible="@{vmSolo.isFail()}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:padding="7dp"
+                        android:text="@{vmSolo.failMessage}"
                         android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp"
-                        android:visibility="gone" />
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/tvSuccess"
+                        isVisible="@{vmSolo.isSuccess()}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:padding="7dp"
-                        android:text=""
+                        android:text="@{String.format(@string/successfully_wrote_to_key,vmSolo.successMessage)}"
                         android:textColor="@android:color/holo_green_dark"
                         android:textSize="18sp"
-                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@+id/tvError" />
 
                     <LinearLayout
@@ -135,7 +138,7 @@
                                 android:background="@android:color/transparent"
                                 android:gravity="center"
                                 android:inputType="number"
-                                android:text="@{vmSodo.sequenceNumber.toString()}"
+                                android:text="@{vmSolo.sequenceNumber.toString()}"
                                 android:textColor="@color/cardview_dark_background"
                                 android:textSize="20sp" />
 
@@ -159,6 +162,7 @@
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:background="@drawable/ic_arrow_up_down"
+                                android:onClick="@{() ->vmSolo.sequenceUpDown(true)}"
                                 android:rotation="-90" />
 
                             <View
@@ -167,6 +171,7 @@
                                 android:layout_height="25dp"
                                 android:layout_marginTop="20dp"
                                 android:background="@drawable/ic_arrow_up_down"
+                                android:onClick="@{() ->vmSolo.sequenceUpDown(false)}"
                                 android:rotation="90" />
                         </LinearLayout>
 
@@ -195,10 +200,11 @@
                         android:id="@+id/tvRecipeJson"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:text="@{vmSolo.derivationRecipe.derivationOptionsJson}"
                         android:textColor="@android:color/background_dark"
                         android:textSize="12sp"
-                        android:text="@{vmSodo.derivationRecipe.derivationOptionsJson}"
                         app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -220,7 +226,7 @@
                         android:id="@+id/tvSeedHexString"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{vmSodo.seedHaXString}"
+                        android:text="@{vmSolo.seedHaXString}"
                         android:textColor="@android:color/background_dark"
                         android:textSize="12sp" />
 
@@ -228,7 +234,8 @@
                         android:id="@+id/btnSidoKey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="" />
+                        android:onClick="@{() ->vmSolo.writeToCurrentSoloKey()}"
+                        android:text="@{String.format(@string/seed_s_sn_s,vmSolo.productName,vmSolo.serialNumber)}" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
