@@ -24,6 +24,9 @@
     <string name="dicekey_with_center">DiceKey with %1$s in center</string>
     <string name="unlock_dicekey_with_center">Unlock DiceKey with %1$s in center</string>
 
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
     <string name="lock">Lock</string>
     <string name="save">Save</string>
     <string name="saved">Saved</string>

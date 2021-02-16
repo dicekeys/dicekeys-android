@@ -31,7 +31,24 @@
         android:name="org.dicekeys.app.fragments.AssembleFragment"
         tools:layout="@layout/assemble_fragment"
         android:label="@string/assemble_a_dicekey" >
+        <action
+            android:id="@+id/action_backupSelect_to_backup_nav_graph"
+            app:destination="@id/backup_nav_graph" >
+
+            <argument
+                android:name="diceKeyId"
+                app:argType="string"
+                app:nullable="true" />
+
+            <argument
+                android:name="useStickeys"
+                app:argType="boolean"
+                android:defaultValue="false"/>
+
+        </action>
     </fragment>
 
+    <include
+        app:graph="@navigation/backup_nav_graph" />
 
 </navigation>

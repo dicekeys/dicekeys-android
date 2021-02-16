@@ -74,6 +74,8 @@ dependencies {
     implementation "androidx.browser:browser:1.3.0"
     /** ----------------------------------------------------------------------------------------- */
 
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'

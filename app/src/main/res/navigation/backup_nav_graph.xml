@@ -13,7 +13,8 @@
 
         <argument
             android:name="diceKeyId"
-            app:argType="string" />
+            app:argType="string"
+            app:nullable="true" />
 
         <argument
             android:name="useStickeys"

@@ -19,6 +19,7 @@ import androidx.viewpager.widget.ViewPager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
+import org.dicekeys.app.adapters.dicekey
 import org.dicekeys.app.databinding.BackupFragmentBinding
 import org.dicekeys.app.databinding.FragmentBackupDicekitBinding
 import org.dicekeys.app.databinding.FragmentBackupStickeysBinding
@@ -58,11 +59,15 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
         super.onViewCreated(view, savedInstanceState)
 
         // Guard: If DiceKey is not available, return
-        repository.get(args.diceKeyId)?.also {
-            diceKey = it as DiceKey<Face>
-        } ?: run {
-            findNavController().popBackStack()
-            return
+        args.diceKeyId?.also {
+            repository.get(it)?.also {
+                diceKey = it as DiceKey<Face>
+            } ?: run {
+                findNavController().popBackStack()
+                return
+            }
+        } ?: run{
+            diceKey = DiceKey.example
         }
 
         binding.vm = viewModel
