@@ -24,13 +24,13 @@ Java_org_dicekeys_crypto_seeded_Secret_toJson(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_Secret_derivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_Secret_recipeGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<Secret>(env, thiz)->derivationOptionsJson
+      getNativeObjectPtr<Secret>(env, thiz)->recipe
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

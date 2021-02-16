@@ -41,13 +41,13 @@ Java_org_dicekeys_crypto_seeded_UnsealingKey_toJson(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_UnsealingKey_derivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_UnsealingKey_recipeGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<UnsealingKey>(env, thiz)->derivationOptionsJson
+      getNativeObjectPtr<UnsealingKey>(env, thiz)->recipe
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
@@ -105,7 +105,7 @@ Java_org_dicekeys_crypto_seeded_UnsealingKey_getSealingKeyPtrJNI(
       getNativeObjectPtr<UnsealingKey>(env, thiz);
     return (jlong) new SealingKey(
       UnsealingKeyPtr->sealingKeyBytes,
-      UnsealingKeyPtr->derivationOptionsJson
+      UnsealingKeyPtr->recipe
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

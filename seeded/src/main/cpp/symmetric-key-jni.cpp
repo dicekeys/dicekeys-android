@@ -85,13 +85,13 @@ Java_org_dicekeys_crypto_seeded_SymmetricKey_toJson(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_SymmetricKey_derivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_SymmetricKey_recipeGetterJNI(
     JNIEnv *env,
     jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<SymmetricKey>(env, thiz)->derivationOptionsJson
+      getNativeObjectPtr<SymmetricKey>(env, thiz)->recipe
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());
