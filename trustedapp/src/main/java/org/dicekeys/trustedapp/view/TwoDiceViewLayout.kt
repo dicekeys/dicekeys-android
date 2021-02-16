@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import org.dicekeys.trustedapp.R
 
-
+@Deprecated("Moved to :app")
 class TwoDiceViewLayout @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,

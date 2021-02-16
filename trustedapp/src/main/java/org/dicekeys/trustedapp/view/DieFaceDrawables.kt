@@ -6,6 +6,7 @@ import androidx.core.content.res.ResourcesCompat
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceDimensionsFractional
 
+@Deprecated("Moved to :app")
 class Undoverline(val face: Face,
                   val faceSize: Float,
                   val isOverline: Boolean,
@@ -75,6 +76,7 @@ class Undoverline(val face: Face,
     override fun getOpacity(): Int = PixelFormat.OPAQUE
 }
 
+@Deprecated("Moved to :app")
 class DieFace(val face: Face,
               var dieSize: Float,
               val linearFractionOfFaceRenderedToDieSize: Float = 5f/8f,

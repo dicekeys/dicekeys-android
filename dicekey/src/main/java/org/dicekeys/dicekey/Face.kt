@@ -9,7 +9,7 @@ import com.squareup.moshi.JsonClass
 class InvalidHumanReadableFormException(message: String) : java.lang.Exception(message)
 
 @JsonClass(generateAdapter = true)
-open class Face(
+open class Face constructor(
     open val letter: Char,
     open val digit: Char,
     open val orientationAsLowercaseLetterTrbl: Char = '?'

@@ -9,6 +9,7 @@ import android.view.View
 import org.dicekeys.dicekey.Face
 import org.dicekeys.trustedapp.R
 
+@Deprecated("Moved to :app")
 class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,

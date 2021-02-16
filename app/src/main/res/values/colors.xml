@@ -7,4 +7,17 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="diceViewBgColor">#0B0C71</color>
+
+    <color name="alexandrasBlue">#445FB8</color>
+    <color name="alexandrasBlueLighter">#4E64BE</color>
+    <color name="diceColor">#0A005D</color>
+    <color name="diceBoxDieSlot">#040031</color>
+    <color name="formInstructions">#6D6C6D</color>
+    <color name="funnelBackground">#B2BCEF</color>
+    <color name="highlighter">#FEFF8A</color>
+    <color name="warningBackground">#D64049</color>
+
+
 </resources>

@@ -20,7 +20,7 @@
         android:title="@string/secrets"/>
 
     <item
-        android:id="@+id/backup"
+        android:id="@+id/backupSelect"
         android:enabled="true"
         android:icon="@drawable/ic_backup_to_dicekey"
         android:title="@string/backup"/>

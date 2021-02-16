@@ -9,13 +9,9 @@ import org.dicekeys.app.databinding.SolokeyFragmentBinding
 import org.dicekeys.app.viewmodels.DiceKeyViewModel
 
 @AndroidEntryPoint
-class SoloKeyFragment: AppFragment<SolokeyFragmentBinding>(R.layout.solokey_fragment) {
-
-    private lateinit var viewModel: DiceKeyViewModel
-
+class SoloKeyFragment: AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout.solokey_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = getDiceKeyRootFragment().viewModel
     }
 }

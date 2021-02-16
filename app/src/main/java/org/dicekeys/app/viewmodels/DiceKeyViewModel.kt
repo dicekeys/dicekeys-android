@@ -7,9 +7,15 @@ import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 
 
-class DiceKeyViewModel @AssistedInject constructor(private val encryptedStorage: EncryptedStorage, private val diceKeyRepository: DiceKeyRepository, @Assisted val diceKey: DiceKey<*>) : ViewModel() {
+class DiceKeyViewModel @AssistedInject constructor(
+        private val encryptedStorage: EncryptedStorage,
+        private val diceKeyRepository: DiceKeyRepository,
+        @Assisted val diceKey: DiceKey<Face>
+) : ViewModel() {
+
     val isSaved = MutableLiveData(encryptedStorage.exists(diceKey.keyId))
 
     private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> { list ->
@@ -38,13 +44,13 @@ class DiceKeyViewModel @AssistedInject constructor(private val encryptedStorage:
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
-        fun create(diceKey: DiceKey<*>): DiceKeyViewModel
+        fun create(diceKey: DiceKey<Face>): DiceKeyViewModel
     }
 
     companion object {
         fun provideFactory(
                 assistedFactory: AssistedFactory,
-                diceKey: DiceKey<*>
+                diceKey: DiceKey<Face>
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {

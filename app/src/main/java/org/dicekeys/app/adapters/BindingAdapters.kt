@@ -4,6 +4,10 @@ import android.view.View
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
+import org.dicekeys.app.views.DiceKeyView
+import org.dicekeys.app.views.StickerTargetSheetView
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 
 @BindingAdapter("isVisible")
 fun bindIsVisible(view: View, isVisible: Boolean) {
@@ -18,4 +22,14 @@ fun bindIsGone(view: View, isGone: Boolean) {
 @BindingAdapter("isInvisible")
 fun bindIsInvisible(view: View, isInvisible: Boolean) {
     view.isInvisible = isInvisible
+}
+
+@BindingAdapter("dicekey")
+fun dicekey(view: DiceKeyView, dicekey: DiceKey<Face>?) {
+    dicekey?.let { view.diceKey = it }
+}
+
+@BindingAdapter("dicekey")
+fun dicekey(view: StickerTargetSheetView, dicekey: DiceKey<Face>?) {
+    dicekey?.let { view.diceKey = it }
 }

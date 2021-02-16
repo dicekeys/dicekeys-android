@@ -11,6 +11,7 @@ import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.trustedapp.R
 
+@Deprecated("Moved to :app")
 class StickerTargetSheetView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,

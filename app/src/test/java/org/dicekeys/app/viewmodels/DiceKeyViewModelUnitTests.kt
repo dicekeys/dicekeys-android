@@ -6,6 +6,7 @@ import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,7 +23,7 @@ class DiceKeyViewModelUnitTests : TestViewModel<DiceKeyViewModel>() {
     lateinit var  diceKeyRepository: DiceKeyRepository
 
     @Mock
-    lateinit var  diceKey: DiceKey<*>
+    lateinit var  diceKey: DiceKey<Face>
 
     @Before
     fun setup(){
