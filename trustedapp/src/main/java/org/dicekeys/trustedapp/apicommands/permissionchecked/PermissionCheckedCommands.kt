@@ -147,7 +147,7 @@ class PermissionCheckedCommands(
           DerivationOptions.Type.UnsealingKey,
           ApiStrings.Commands.unsealWithUnsealingKey
         ),
-        packagedSealedMessage.derivationOptionsJson
+        packagedSealedMessage.recipe
       ).unseal(packagedSealedMessage)
 
   /**

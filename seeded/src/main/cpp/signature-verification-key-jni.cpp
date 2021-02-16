@@ -71,14 +71,14 @@ Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_keyBytesGetterJNI(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_derivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_SignatureVerificationKey_recipeGetterJNI(
   JNIEnv *env,
   jobject obj
 ) {
   try {
     return stringToJString(env,
                            getNativeObjectPtr<SignatureVerificationKey>(env,
-                                                                        obj)->getDerivationOptionsJson()
+                                                                        obj)->getRecipeJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

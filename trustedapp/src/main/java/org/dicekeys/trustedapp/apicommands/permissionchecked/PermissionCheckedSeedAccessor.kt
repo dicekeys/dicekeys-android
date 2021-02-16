@@ -122,7 +122,7 @@ open class PermissionCheckedSeedAccessor(
   ): String {
     permissionChecks.throwIfUnsealingInstructionsViolated(packagedSealedMessage.unsealingInstructions)
     return getSeedOrThrowIfClientNotAuthorized(
-      packagedSealedMessage.derivationOptionsJson,
+      packagedSealedMessage.recipe,
       type,
       command
     )

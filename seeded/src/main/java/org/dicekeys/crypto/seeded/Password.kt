@@ -8,7 +8,7 @@ package org.dicekeys.crypto.seeded
  * Because secret derivation uses a one-way function, this secret can be shared without
  * revealing the secret seed used to derive it.
  * It can then be used and, if lost, re-derived from the original seed and
- * [derivationOptionsJson] that were first used to derive it.
+ * [recipe] that were first used to derive it.
  *
  * This class wraps the native c++ Secret class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
@@ -24,12 +24,12 @@ class Password private constructor(
 
         @JvmStatic private external fun constructJNI(
                 password: String,
-                derivationOptionsJson: String
+                recipe: String
         ) : Long
 
         @JvmStatic private external fun deriveFromSeedJNI(
                 seedString: String,
-                derivationOptionsJson: String,
+                recipe: String,
                 wordListAsSingleString: String = ""
         ) : Long
 
@@ -42,9 +42,9 @@ class Password private constructor(
         @JvmStatic
         fun deriveFromSeed(
                 seedString: String,
-                derivationOptionsJson: String,
+                recipe: String,
                 wordListAsSingleString: String = ""
-        ) = Password(deriveFromSeedJNI(seedString, derivationOptionsJson, wordListAsSingleString))
+        ) = Password(deriveFromSeedJNI(seedString, recipe, wordListAsSingleString))
 
 
         @JvmStatic private external fun fromJsonJNI(
@@ -84,11 +84,11 @@ class Password private constructor(
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun passwordGetterJNI(): String
-    private external fun derivationOptionsJsonGetterJNI(): String
+    private external fun recipeGetterJNI(): String
 
     /**
      * Serialize the object to a JSON format that stores both the [password]
-     * and the [derivationOptionsJson] used to generate it.
+     * and the [recipe] used to generate it.
      * (The secret seed string used to generate it is not stored, as it is
      * not kept after the object is constructed.)
      */
@@ -103,7 +103,7 @@ class Password private constructor(
      * The options that guided the derivation of this key from the raw seed that was
      * passed to [fromJson].
      */
-    val derivationOptionsJson: String get() = derivationOptionsJsonGetterJNI()
+    val recipe: String get() = recipeGetterJNI()
 
     /**
      * A copy constructor to prevent copying of the native pointer, which would lead
@@ -111,15 +111,15 @@ class Password private constructor(
      */
     constructor(
             other: Password
-    ) : this(other.password, other.derivationOptionsJson)
+    ) : this(other.password, other.recipe)
 
     /**
      * Construct this object from its member values
      */
     internal constructor(
             password: String,
-            derivationOptionsJson: String
-    ) : this( constructJNI(password, derivationOptionsJson) )
+            recipe: String
+    ) : this( constructJNI(password, recipe) )
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()

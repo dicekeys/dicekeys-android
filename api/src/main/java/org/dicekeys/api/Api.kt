@@ -188,7 +188,7 @@ abstract class Api(
       packagedSealedMessage: PackagedSealedMessage
     ): ByteArray =
       unsealWithUnsealingKeyMarshaller.call(
-        authTokenIfRequired(ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson)) ?:
+        authTokenIfRequired(ApiDerivationOptions(packagedSealedMessage.recipe)) ?:
         authTokenIfRequired(UnsealingInstructions(packagedSealedMessage.unsealingInstructions))
       ) {
         marshallParameter(Inputs.unsealWithUnsealingKey.packagedSealedMessageJson, packagedSealedMessage)
@@ -240,7 +240,7 @@ abstract class Api(
       packagedSealedMessage: PackagedSealedMessage
     ): ByteArray =
       unsealWithSymmetricKeyMarshaller.call(
-        authTokenIfRequired(ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson)) ?:
+        authTokenIfRequired(ApiDerivationOptions(packagedSealedMessage.recipe)) ?:
         authTokenIfRequired(UnsealingInstructions(packagedSealedMessage.unsealingInstructions))
       ) {
         marshallParameter(Inputs.unsealWithSymmetricKey.packagedSealedMessageJson, packagedSealedMessage)
