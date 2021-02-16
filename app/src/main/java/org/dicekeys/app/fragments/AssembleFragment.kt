@@ -1,6 +1,7 @@
 package org.dicekeys.app.fragments
 
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -13,13 +14,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
-import com.daimajia.androidanimations.library.Techniques
-import com.daimajia.androidanimations.library.YoYo
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.AssembleFragmentBinding
-import org.dicekeys.app.fragments.dicekey.BackupSelectFragmentDirections
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceRead
@@ -46,6 +44,12 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
         binding.btnNext.setOnClickListener { onNextPage() }
         binding.btnPrev.setOnClickListener { onPrevPage() }
 
+        ObjectAnimator.ofFloat(binding.textWarning, "alpha", 1f, 0.7f).also {
+            it.repeatCount = ValueAnimator.INFINITE
+            it.repeatMode = ValueAnimator.REVERSE
+            it.duration = 500
+        }.start()
+
         onPageSelected(binding.viewPager.currentItem)
     }
 
@@ -64,7 +68,7 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
     override fun onPageSelected(position: Int) {
-        binding.progressBar.progress = position
+        binding.progressBar.setProgressCompat(position, true)
         binding.textWarning.visibility = if (position in listOf(0, 5, 6)) View.INVISIBLE else View.VISIBLE
         binding.btnPrev.isEnabled = binding.viewPager.currentItem != 0
         binding.btnNext.isEnabled = when(position) {

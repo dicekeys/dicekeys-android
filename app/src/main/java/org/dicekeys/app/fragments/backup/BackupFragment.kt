@@ -98,7 +98,7 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
     override fun onPageSelected(position: Int) {
-        binding.progressBar.progress = position
+        binding.progressBar.setProgressCompat(position, true)
         binding.btnPrev.isEnabled = position > 0
         binding.btnFirst.isEnabled = position > 0
         binding.btnNext.isEnabled = position < pagerAdapter.count - 1
