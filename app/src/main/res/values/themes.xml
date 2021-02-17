@@ -32,11 +32,11 @@
         <item name="textSizeHeadingLarge">@dimen/text_size_heading_large</item>
         <item name="textSizeHeadingDefault">@dimen/text_size_heading_default</item>
         <item name="textSizeHeadingSmall">@dimen/text_size_heading_small</item>
-        <item name="textSizeHeadingExtraSmall">@dimen/text_size_heading_x_small</item>
+        <item name="textSizeHeadingXSmall">@dimen/text_size_heading_x_small</item>
         <item name="textSizeLabelLarge">@dimen/text_size_label_large</item>
         <item name="textSizeLabelDefault">@dimen/text_size_label_default</item>
         <item name="textSizeLabelSmall">@dimen/text_size_label_small</item>
-        <item name="textSizeLabelExtraSmall">@dimen/text_size_label_x_small</item>
+        <item name="textSizeLabelXSmall">@dimen/text_size_label_x_small</item>
 
     </style>
 
