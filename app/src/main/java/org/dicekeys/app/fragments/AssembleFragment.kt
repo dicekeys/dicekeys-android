@@ -50,11 +50,11 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
 
         binding.vm = viewModel
 
-        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { result ->
-            result?.let { diceKeyJson ->
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { facesReadJsonOrNull ->
+            facesReadJsonOrNull?.let { facesReadJson ->
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
 
-                FaceRead.diceKeyFromJsonFacesRead(diceKeyJson)?.let { diceKeyFaceRead ->
+                FaceRead.diceKeyFromJsonFacesRead(facesReadJson)?.let { diceKeyFaceRead ->
 
                     // Convert to Face
                     viewModel.setDiceKey(DiceKey(faces = diceKeyFaceRead.faces.map {
@@ -83,10 +83,11 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
         binding.btnNext.setOnClickListener {
             if (viewModel.page.value == pagerAdapter.count - 1) {
                 val diceKey = viewModel.diceKey.value
+                // If user hasn't scanned his dicekey, just go back
                 if (diceKey == null) {
                     findNavController().popBackStack()
                 } else {
-                    // Remove Assemble from the backstack
+                    // Go To MainDiceKey view and remove Assemble from the backstack
                     val navOptionsBuilder = NavOptions.Builder().setPopUpTo(R.id.listDiceKeysFragment, false)
                     findNavController().navigate(AssembleFragmentDirections.actionAssembleFragmentToMainDiceKeyRootFragment(diceKeyId = diceKey.keyId), navOptionsBuilder.build())
                 }

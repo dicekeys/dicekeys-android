@@ -37,10 +37,10 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) {
-            it?.let {
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { facesReadJsonOrNull ->
+            facesReadJsonOrNull?.let { facesReadJson ->
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
-                FaceRead.diceKeyFromJsonFacesRead(it)?.let { diceKey ->
+                FaceRead.diceKeyFromJsonFacesRead(facesReadJson)?.let { diceKey ->
                     diceKeyRepository.set(diceKey)
                     navigate(ListDiceKeysFragmentDirections.actionListDiceKeysFragmentToDiceKeyRootFragment(diceKeyId = diceKey.keyId))
                 }
@@ -48,7 +48,7 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
         }
 
         binding.load.setOnClickListener {
-            navigate(NavGraphDirections.actionGlobalScanFragment())
+            navigate(ListDiceKeysFragmentDirections.actionGlobalScanFragment())
         }
 
         binding.assemble.setOnClickListener {
