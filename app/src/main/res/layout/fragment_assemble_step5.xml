@@ -34,6 +34,7 @@
             android:orientation="horizontal">
 
             <org.dicekeys.app.views.DiceKeyView
+                android:id="@+id/dice_key_view1_1"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
 
@@ -44,7 +45,7 @@
                 app:srcCompat="@android:drawable/ic_media_play" />
 
             <org.dicekeys.app.views.StickerTargetSheetView
-                android:id="@+id/sticker_target_sheet_view1"
+                android:id="@+id/dice_key_view1_2"
                 app:dicekey="half_empty"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
@@ -78,7 +79,7 @@
             android:orientation="horizontal">
 
             <org.dicekeys.app.views.DiceKeyView
-                android:id="@+id/dice_key_view1"
+                android:id="@+id/dice_key_view2_1"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
 
@@ -89,7 +90,7 @@
                 app:srcCompat="@android:drawable/ic_media_play" />
 
             <org.dicekeys.app.views.DiceKeyView
-                android:id="@+id/dice_key_view2"
+                android:id="@+id/dice_key_view2_2"
                 app:dicekey="half_empty"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />

@@ -2,8 +2,6 @@ package org.dicekeys.app.fragments
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -12,24 +10,68 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
+import org.dicekeys.app.NavGraphDirections
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.AssembleFragmentBinding
+import org.dicekeys.app.extensions.clearNavigationResult
+import org.dicekeys.app.extensions.getNavigationResult
+import org.dicekeys.app.fragments.backup.BackupFragment
+import org.dicekeys.app.repositories.DiceKeyRepository
+import org.dicekeys.app.viewmodels.AssembleViewModel
+import org.dicekeys.app.views.DiceKeyView
+import org.dicekeys.app.views.StickerTargetSheetView
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceRead
-import org.dicekeys.read.ReadDiceKeyActivity
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_fragment), ViewPager.OnPageChangeListener {
 
+    @Inject
+    lateinit var diceKeyRepository: DiceKeyRepository
+
     private lateinit var pagerAdapter: AssemblePagerAdapter
+
+    private var diceKeyScanned: Boolean = false
+    private var diceKeyBackedUp: Boolean = false
+
+
+    val viewModel: AssembleViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) {
+            it?.let {
+                clearNavigationResult(ScanFragment.READ_DICEKEY)
+
+                FaceRead.diceKeyFromJsonFacesRead(it)?.let { faceRead ->
+
+                    DiceKey(faces = faceRead.faces.map {
+                        Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
+                    }).also {
+                        viewModel.setDiceKey(it)
+                    }
+                    diceKeyScanned = true
+
+                    onPageSelected(binding.viewPager.currentItem)
+
+                }
+            }
+        }
+
+        getNavigationResult<Boolean>(BackupFragment.VALID_BACKUP)?.observe(viewLifecycleOwner) {
+            if(it){
+                diceKeyBackedUp = true
+                onPageSelected(binding.viewPager.currentItem)
+            }
+        }
 
         pagerAdapter = AssemblePagerAdapter(childFragmentManager)
 
@@ -54,17 +96,6 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
     }
 
 
-    companion object {
-        val REQUEST_CODE_SCAN = 1001
-        val REQUEST_CODE_BACKUP = 1002
-    }
-    // Add state management (LiveData, Coroutines Flows, etc)
-    private var diceKey: DiceKey<Face> = DiceKey.example
-
-    private var diceKeyScanned: Boolean = false
-    private var diceKeyBackedUp: Boolean = false
-
-
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
     override fun onPageSelected(position: Int) {
@@ -83,43 +114,20 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
 
     override fun onPageScrollStateChanged(state: Int) {}
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (
-                resultCode == Activity.RESULT_OK &&
-                requestCode == REQUEST_CODE_SCAN &&
-                data != null &&
-                data.hasExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)
-        ) {
-            data.getStringExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)?.let { diceKeyAsJson ->
-                FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
-                    this.diceKey = DiceKey(faces = diceKey.faces.map {
-                        Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
-                    })
-                    diceKeyScanned = true
-                }
-            }
-        } else if (requestCode == REQUEST_CODE_BACKUP) {
-            diceKeyBackedUp = true
-        }
-        onPageSelected(binding.viewPager.currentItem)
-    }
-
     fun onSkipStep() {
         binding.viewPager.currentItem = binding.viewPager.currentItem + 1
     }
 
     fun onScan() {
-        val intent = Intent(requireContext(), ReadDiceKeyActivity::class.java)
-        startActivityForResult(intent, REQUEST_CODE_SCAN)
+        navigate(NavGraphDirections.actionGlobalScanFragment())
     }
 
     fun onUseStickeysKit() {
-        navigate(AssembleFragmentDirections.actionBackupSelectToBackupNavGraph(null, true))
+        navigate(AssembleFragmentDirections.actionBackupSelectToBackupNavGraph(viewModel.diceKey.value?.keyId, true))
     }
 
     fun onUseDiceKeyKit() {
-        navigate(AssembleFragmentDirections.actionBackupSelectToBackupNavGraph(null, false))
+        navigate(AssembleFragmentDirections.actionBackupSelectToBackupNavGraph(viewModel.diceKey.value?.keyId , false))
     }
 
     fun onNextPage() {
@@ -166,25 +174,30 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
+            val parent = (parentFragment as AssembleFragment)
+
             view.findViewById<Button>(R.id.btn_skip)?.setOnClickListener {
-                (parentFragment as AssembleFragment).onSkipStep()
+                parent.onSkipStep()
             }
 
             view.findViewById<Button>(R.id.btn_scan)?.setOnClickListener {
-                (parentFragment as AssembleFragment).onScan()
+                parent.onScan()
             }
 
             view.findViewById<View>(R.id.wrapDiceKey)?.setOnClickListener {
-                (parentFragment as AssembleFragment).onUseDiceKeyKit()
+                parent.onUseDiceKeyKit()
             }
 
             view.findViewById<View>(R.id.wrapStickeys)?.setOnClickListener {
-                (parentFragment as AssembleFragment).onUseStickeysKit()
+                parent.onUseStickeysKit()
             }
+
         }
 
         override fun onResume() {
             super.onResume()
+
+            val parent = (parentFragment as AssembleFragment)
 
             // Animate the bag
             view?.findViewById<ImageView>(R.id.img_shaking_bug)?.let {
@@ -195,6 +208,23 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
                 }
 
                 animator.start()
+            }
+
+            // Dicekeys
+            view?.findViewById<DiceKeyView>(R.id.dice_key_view1_1)?.also {
+                it.diceKey = parent.viewModel.diceKey.value ?: DiceKey.example
+            }
+
+            view?.findViewById<StickerTargetSheetView>(R.id.dice_key_view1_2)?.also {
+                it.diceKey = parent.viewModel.diceKey.value ?: DiceKey.example
+            }
+
+            view?.findViewById<DiceKeyView>(R.id.dice_key_view2_1)?.also {
+                it.diceKey = parent.viewModel.diceKey.value ?: DiceKey.example
+            }
+
+            view?.findViewById<DiceKeyView>(R.id.dice_key_view2_2)?.also {
+                it.diceKey = parent.viewModel.diceKey.value ?: DiceKey.example
             }
 
         }

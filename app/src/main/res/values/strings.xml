@@ -10,6 +10,7 @@
     <string name="derive_secret">Derive  a Secret</string>
     <string name="secrets">Secrets</string>
     <string name="backup">Backup</string>
+    <string name="scan">Scan</string>
     <string name="your_dicekey">Your DiceKey</string>
     <string name="dicekey" translatable="false">DiceKey</string>
 

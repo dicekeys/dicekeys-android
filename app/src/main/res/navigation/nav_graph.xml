@@ -50,5 +50,12 @@
 
     <include
         app:graph="@navigation/backup_nav_graph" />
+    <fragment
+        android:id="@+id/scanFragment"
+        android:name="org.dicekeys.app.fragments.ScanFragment"
+        android:label="@string/scan"
+        tools:layout="@layout/scan_fragment" />
+
+    <action android:id="@+id/action_global_scanFragment" app:destination="@id/scanFragment"/>
 
 </navigation>
