@@ -50,17 +50,16 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
 
         binding.vm = viewModel
 
-        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) {
-            it?.let {
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { result ->
+            result?.let { diceKeyJson ->
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
 
-                FaceRead.diceKeyFromJsonFacesRead(it)?.let { faceRead ->
+                FaceRead.diceKeyFromJsonFacesRead(diceKeyJson)?.let { diceKeyFaceRead ->
 
-                    DiceKey(faces = faceRead.faces.map {
+                    // Convert to Face
+                    viewModel.setDiceKey(DiceKey(faces = diceKeyFaceRead.faces.map {
                         Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
-                    }).also {
-                        viewModel.setDiceKey(it)
-                    }
+                    }))
                 }
             }
         }
@@ -75,17 +74,7 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
 
         binding.viewPager.also {
             it.adapter = pagerAdapter
-            it.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-                override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-
-                override fun onPageSelected(position: Int) {
-                    // viewModel.setPage(position)
-                }
-
-                override fun onPageScrollStateChanged(state: Int) {}
-
-            })
-            // Prevent swipe gestures
+            // Disable swipe gestures from changing ViewPager pages
             it.setOnTouchListener { _, _ -> true }
         }
 
