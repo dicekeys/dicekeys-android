@@ -14,8 +14,11 @@ class AssembleViewModel @Inject constructor(val diceKeyRepository: DiceKeyReposi
 
     var diceKey = MutableLiveData<DiceKey<Face>>()
 
+    // var diceKeyScanned = MutableLiveData(false)
+    var diceKeyBackedUp = MutableLiveData(false)
+
     fun setDiceKey(dk: DiceKey<Face>){
-        diceKey.postValue(dk)
+        diceKey.value = dk
         diceKeyRepository.set(dk)
     }
 }

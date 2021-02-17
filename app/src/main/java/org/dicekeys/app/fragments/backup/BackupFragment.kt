@@ -108,7 +108,7 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
         getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) {
             it?.let {
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
-                
+
                 FaceRead.diceKeyFromJsonFacesRead(it)?.let { diceKey ->
                     val scannedDiceKey = DiceKey(faces = diceKey.faces.map {
                         Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)

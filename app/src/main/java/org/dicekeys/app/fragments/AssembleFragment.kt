@@ -3,7 +3,9 @@ package org.dicekeys.app.fragments
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import androidx.annotation.LayoutRes
@@ -11,13 +13,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.NavGraphDirections
 import org.dicekeys.app.R
-import org.dicekeys.app.databinding.AssembleFragmentBinding
+import org.dicekeys.app.databinding.*
 import org.dicekeys.app.extensions.clearNavigationResult
 import org.dicekeys.app.extensions.getNavigationResult
 import org.dicekeys.app.fragments.backup.BackupFragment
@@ -38,9 +42,6 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
 
     private lateinit var pagerAdapter: AssemblePagerAdapter
 
-    private var diceKeyScanned: Boolean = false
-    private var diceKeyBackedUp: Boolean = false
-
 
     val viewModel: AssembleViewModel by viewModels()
 
@@ -58,7 +59,6 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
                     }).also {
                         viewModel.setDiceKey(it)
                     }
-                    diceKeyScanned = true
 
                     onPageSelected(binding.viewPager.currentItem)
 
@@ -68,7 +68,7 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
 
         getNavigationResult<Boolean>(BackupFragment.VALID_BACKUP)?.observe(viewLifecycleOwner) {
             if(it){
-                diceKeyBackedUp = true
+                viewModel.diceKeyBackedUp.postValue(true)
                 onPageSelected(binding.viewPager.currentItem)
             }
         }
@@ -103,8 +103,8 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
         binding.textWarning.visibility = if (position in listOf(0, 5, 6)) View.INVISIBLE else View.VISIBLE
         binding.btnPrev.isEnabled = binding.viewPager.currentItem != 0
         binding.btnNext.isEnabled = when(position) {
-            AssemblePagerAdapter.PAGE_SCAN -> diceKeyScanned
-            AssemblePagerAdapter.PAGE_BACKUP -> diceKeyBackedUp
+            AssemblePagerAdapter.PAGE_SCAN -> viewModel.diceKey.value != null
+            AssemblePagerAdapter.PAGE_BACKUP -> viewModel.diceKeyBackedUp.value ?: false
             else -> true
         }
         binding.btnNext.text = if (binding.viewPager.currentItem == pagerAdapter.count - 1) "Done" else "Next"
@@ -132,7 +132,15 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
 
     fun onNextPage() {
         if (binding.viewPager.currentItem == pagerAdapter.count - 1) {
-            findNavController().popBackStack()
+            val diceKey = viewModel.diceKey.value
+            if(diceKey == null){
+                findNavController().popBackStack()
+            }else{
+                // Remove Assemble from the backstack
+                val navOptionsBuilder = NavOptions.Builder().setPopUpTo(R.id.listDiceKeysFragment,false)
+                findNavController().navigate(AssembleFragmentDirections.actionAssembleFragmentToMainDiceKeyRootFragment(diceKeyId = diceKey.keyId), navOptionsBuilder.build())
+            }
+
         } else {
             binding.viewPager.also {
                 it.setCurrentItem(it.currentItem + 1, true)
@@ -155,21 +163,42 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
         override fun getCount(): Int = 7
 
         override fun getItem(position: Int): Fragment {
-
-            return when(position) {
-                0 -> AssemblePageFragment(R.layout.fragment_assemble_step1)
-                1 -> AssemblePageFragment(R.layout.fragment_assemble_step2)
-                2 -> AssemblePageFragment(R.layout.fragment_assemble_step3)
-                3 -> AssemblePageFragment(R.layout.fragment_assemble_step4)
-                4 -> AssemblePageFragment(R.layout.fragment_assemble_step5)
-                5 -> AssemblePageFragment(R.layout.fragment_assemble_step6)
-                6 -> AssemblePageFragment(R.layout.fragment_assemble_step7)
-                else -> AssemblePageFragment(R.layout.fragment_assemble_step1)
-            }
+            return AssemblePageFragment(position)
         }
     }
 
-    class AssemblePageFragment(@LayoutRes val contentLayoutId: Int): Fragment(contentLayoutId) {
+    class AssemblePageFragment(private val fragmentPosition: Int): Fragment() {
+
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            val parent = (parentFragment as AssembleFragment)
+            val viewModel = parent.viewModel
+
+             val binding = when(fragmentPosition) {
+                1 -> FragmentAssembleStep2Binding.inflate(inflater, container, false).also {
+                    it.vm = viewModel
+                }
+                2 -> FragmentAssembleStep3Binding.inflate(inflater, container, false).also {
+                    it.vm = viewModel
+                }
+                3 -> FragmentAssembleStep4Binding.inflate(inflater, container, false).also {
+                    it.vm = viewModel
+                }
+                4 -> FragmentAssembleStep5Binding.inflate(inflater, container, false).also {
+                    it.vm = viewModel
+                }
+                5 -> FragmentAssembleStep6Binding.inflate(inflater, container, false).also {
+                    it.vm = viewModel
+                }
+                6 -> FragmentAssembleStep7Binding.inflate(inflater, container, false).also {
+                    it.vm = viewModel
+                }
+                else -> FragmentAssembleStep1Binding.inflate(inflater, container, false).also {
+                    it.vm = viewModel
+                }
+            }
+
+            return binding.root
+        }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)

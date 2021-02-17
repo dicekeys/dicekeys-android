@@ -46,6 +46,9 @@
                 android:defaultValue="false"/>
 
         </action>
+        <action
+            android:id="@+id/action_assembleFragment_to_mainDiceKeyRootFragment"
+            app:destination="@id/mainDiceKeyRootFragment" />
     </fragment>
 
     <include

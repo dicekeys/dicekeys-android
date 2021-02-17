@@ -63,7 +63,6 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
 
         if (allPermissionsGranted()) {
             startCamera()
-//            imageView.post { startCamera() }
         } else {
             ActivityCompat.requestPermissions(requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }

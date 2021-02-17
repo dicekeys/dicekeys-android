@@ -55,4 +55,15 @@
     <string name="common_password_recipes">Common Password Recipes</string>
 
 
+    <string name="you_did_it">You did it!</string>
+    <string name="thats_it">That\'s it!</string>
+
+    <string name="theres_nothing_more_to_it">There\'s nothing more to it.</string>
+    <string name="go_back_to_assemble">Go back to assemble and scan in a real DiceKey.</string>
+
+    <string name="be_sure_to_make_a_backup">Be sure to make a backup soon!</string>
+    <string name="when_you_press_the_done">When you press the "Done" button, we\'ll take you to the same screen you\'ll see after scanning your DiceKey from the home screen.</string>
+
+
+
 </resources>
