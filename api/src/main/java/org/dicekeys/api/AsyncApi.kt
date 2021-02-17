@@ -6,23 +6,23 @@ import org.dicekeys.crypto.seeded.*
 interface AsyncApi {
 
   fun getSecretAsync(
-    derivationOptionsJson: String
+    recipeJson: String
   ): Deferred<Secret>
 
   fun getUnsealingKeyAsync(
-    derivationOptionsJson: String
+    recipeJson: String
   ): Deferred<UnsealingKey>
 
   fun getSymmetricKeyAsync(
-    derivationOptionsJson: String
+    recipeJson: String
   ): Deferred<SymmetricKey>
 
   fun getSigningKeyAsync(
-    derivationOptionsJson: String
+    recipeJson: String
   ): Deferred<SigningKey>
 
   fun getSealingKeyAsync(
-    derivationOptionsJson: String
+    recipeJson: String
   ): Deferred<SealingKey>
 
   fun unsealWithUnsealingKeyAsync(
@@ -30,7 +30,7 @@ interface AsyncApi {
   ): Deferred<ByteArray>
 
   fun sealWithSymmetricKeyAsync(
-    derivationOptionsJson: String,
+    recipeJson: String,
     plaintext: ByteArray,
     unsealingInstructions: String = ""
   ): Deferred<PackagedSealedMessage>
@@ -40,11 +40,11 @@ interface AsyncApi {
   ): Deferred<ByteArray>
 
   fun getSignatureVerificationKeyAsync(
-    derivationOptionsJson: String
+    recipeJson: String
   ): Deferred<SignatureVerificationKey>
 
   fun generateSignatureAsync(
-    derivationOptionsJson: String,
+    recipeJson: String,
     message: ByteArray
   ): Deferred<GenerateSignatureResult>
 

@@ -1,7 +1,7 @@
 package org.dicekeys.trustedapp.apicommands.permissionchecked
 
 import kotlinx.coroutines.Deferred
-import org.dicekeys.api.ApiDerivationOptions
+import org.dicekeys.api.ApiRecipe
 import org.dicekeys.api.AuthenticationRequirements
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.UnsealingInstructions
@@ -41,7 +41,7 @@ abstract class ApiPermissionChecks(
    * @throws ClientNotAuthorizedException
    */
 //  fun throwIfClientNotAuthorized(
-//    derivationOptions: ApiDerivationOptions
+//    derivationOptions: ApiRecipe
 //  ): Unit = throwIfClientNotAuthorized(derivationOptions)
 
 

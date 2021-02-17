@@ -30,7 +30,7 @@ class RecipeViewModel @AssistedInject constructor(
 
     private fun generatePassword(){
         derivationRecipe.value?.let{ derivationRecipe ->
-            password.value = diceKey.toCanonicalRotation().let { Password.deriveFromSeed(it.toHumanReadableForm(), derivationRecipe.derivationOptionsJson).password }
+            password.value = diceKey.toCanonicalRotation().let { Password.deriveFromSeed(it.toHumanReadableForm(), derivationRecipe.recipeJson).password }
 
             updateSavedState()
         }

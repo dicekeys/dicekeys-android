@@ -33,14 +33,14 @@ class DerivationOptionsTests {
 
     @Test
     fun DerivationOptions_toAndBack() {
-        val kdo = ApiDerivationOptions.SymmetricKey().apply {
+        val kdo = ApiRecipe.SymmetricKey().apply {
             // Ensure the JSON format has the "keyType" field specified
             type = requiredType  // sets "keyType": "Symmetric" since this class type is Symmetric
             algorithm = defaultAlgorithm // sets "algorithm": "XSalsa20Poly1305"
             // Set other fields in the spec in a Kotlin/Java friendly way
             clientMayRetrieveKey = true // sets "clientMayRetrieveKey": true
             // The restrictions subclass can be constructed
-            restrictions = ApiDerivationOptions.Restrictions().apply {
+            restrictions = ApiRecipe.Restrictions().apply {
                 androidPackagePrefixesAllowed = listOf("com.example.app")
                 urlPrefixesAllowed = listOf("https://example.com/app/")
             }
@@ -51,8 +51,8 @@ class DerivationOptionsTests {
             // its original purpose
             put("salt", "S0d1um Chl0r1d3")
         }
-        val derivationOptionsJson = kdo.toJson()
-        val replica = ApiDerivationOptions(derivationOptionsJson)
+        val recipeJson = kdo.toJson()
+        val replica = ApiRecipe(recipeJson)
         assertTrue(compareJson(kdo, replica))
         val expectJson = """{
                 | "salt": "S0d1um Chl0r1d3",
@@ -82,15 +82,15 @@ class UnsealingInstructionsTests {
         val kdo = UnsealingInstructions().apply {
             // Ensure the JSON format has the "keyType" field specified
             // The restrictions subclass can be constructed
-            restrictions = ApiDerivationOptions.Restrictions().apply {
+            restrictions = ApiRecipe.Restrictions().apply {
                 androidPackagePrefixesAllowed = listOf("com.example.app")
                 urlPrefixesAllowed = listOf("https://example.com/app/", "https://evenworseexample.com")
             }
             userMustAcknowledgeThisMessage = "Only unseal this message if you are trying to " +
                 "reset your PoodleMail password."
         }
-        val derivationOptionsJson = kdo.toJson()
-        val replica = ApiDerivationOptions(derivationOptionsJson)
+        val recipeJson = kdo.toJson()
+        val replica = ApiRecipe(recipeJson)
         assertTrue(compareJson(kdo, replica))
         val expectJson = """{
             | "userMustAcknowledgeThisMessage": "Only unseal this message if you are trying to reset your PoodleMail password.",

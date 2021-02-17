@@ -21,7 +21,7 @@ open class ApiPermissionChecksForUrls(
   private fun doesPathMatchRequirement(pathExpectedSlashOptional: String, pathObserved: String): Boolean {
     // Paths must start with a "/".  If the path requirement didn't start with a "/",
     // we'll insert one assuming this was a mistake by the developer of the client software
-    // that created the derivationOptionsJson string.
+    // that created the recipeJson string.
     val pathExpected = if (pathExpectedSlashOptional.isEmpty() || pathExpectedSlashOptional[0] == '/')
       pathExpectedSlashOptional else "/$pathExpectedSlashOptional"
 

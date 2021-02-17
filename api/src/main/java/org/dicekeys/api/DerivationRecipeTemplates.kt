@@ -7,7 +7,7 @@ package org.dicekeys.api
 //  Tue, 02 Feb 2021 22:48:52 GMT
 //
 //  These templates are hard coded because the recipe (also known as
-//  derivationOptionsJson) is an input to the hash function used to derive
+//  recipeJson) is an input to the hash function used to derive
 //  passwords and other secrets, and so even a single-character change
 //  to the recipe will change the entire contents of the password/secret.
 //

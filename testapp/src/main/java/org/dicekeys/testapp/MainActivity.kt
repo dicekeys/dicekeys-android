@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonStart: Button
     private lateinit var resultTextView: TextView
     private lateinit var api : DiceKeysWebApiClient
-    val derivationOptionsJson = "{}"
+    val recipeJson = "{}"
     val testMessage = "The secret ingredient is dihydrogen monoxide"
     val testMessageByteArray = testMessage.toByteArray(Charsets.UTF_8)
 
@@ -39,25 +39,25 @@ class MainActivity : AppCompatActivity() {
         buttonStart = findViewById(R.id.btn_start)
 
         buttonStart.setOnClickListener{ GlobalScope.launch(Dispatchers.Main) { try {
-            val seed = api.getSecret(derivationOptionsJson)
+            val seed = api.getSecret(recipeJson)
             resultTextView.text = "Seed=${Base64.encodeToString(seed.secretBytes, Base64.DEFAULT)}"
             val packagedSealedMessage = api.sealWithSymmetricKey(
-                derivationOptionsJson,
+                recipeJson,
                 testMessageByteArray
             )
             resultTextView.text = "${resultTextView.text}\nSymmetrically sealed message '${testMessage}' as ciphertext '${Base64.encodeToString(packagedSealedMessage.ciphertext, Base64.DEFAULT)}'"
             val plaintext = api.unsealWithSymmetricKey(packagedSealedMessage)
             resultTextView.text =
                 "${resultTextView.text}\nUnsealed '${String(plaintext, Charsets.UTF_8)}'"
-            val sig = api.generateSignature(derivationOptionsJson, testMessageByteArray)
+            val sig = api.generateSignature(recipeJson, testMessageByteArray)
             resultTextView.text =
                 "${resultTextView.text}\nSigned test message '${Base64.encodeToString(sig.signature, Base64.DEFAULT)}'"
-            val signatureVerificationKey = api.getSignatureVerificationKey(derivationOptionsJson)
+            val signatureVerificationKey = api.getSignatureVerificationKey(recipeJson)
             val keysMatch = signatureVerificationKey == sig.signatureVerificationKey
             val verified = signatureVerificationKey.verifySignature(testMessageByteArray, sig.signature)
             resultTextView.text =
                 "${resultTextView.text}\nVerification key match=${keysMatch}, verification result=${verified}"
-            val publicKey = api.getSealingKey(derivationOptionsJson)
+            val publicKey = api.getSealingKey(recipeJson)
             val packagedSealedPkMessage = publicKey.seal(testMessageByteArray, """{
                |  "requireUsersConsent": {
                |     "question": "Do you want use \"8fsd8pweDmqed\" as your SpoonerMail account password and remove your current password?",
