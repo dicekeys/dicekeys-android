@@ -42,7 +42,7 @@ abstract class PermissionCheckedMarshalledCommands(
   abstract fun sendException(exception: Throwable)
 
   private fun getCommonDerivationOptionsJsonParameter() : String =
-    unmarshallRequiredStringParameter((Inputs.getSecret.derivationOptionsJson))
+    unmarshallRequiredStringParameter((Inputs.getSecret.recipeJson))
 
   private fun getAuthToken(): Unit = marshallResult(
     ApiStrings.UrlMetaInputs.authToken,

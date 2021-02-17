@@ -144,7 +144,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="5dp"
                                 tools:text="{allow : [this is the json]}"
-                                android:text="@{vm.derivationRecipe.derivationOptionsJson}"
+                                android:text="@{vm.derivationRecipe.recipeJson}"
                                 android:textColor="@android:color/background_dark"
                                 android:textSize="12sp" />
 

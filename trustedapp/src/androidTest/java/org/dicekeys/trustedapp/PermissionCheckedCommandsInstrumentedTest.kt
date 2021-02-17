@@ -3,7 +3,7 @@ package org.dicekeys.trustedapp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
-import org.dicekeys.api.ApiDerivationOptions
+import org.dicekeys.api.ApiRecipe
 import org.dicekeys.api.ClientMayNotRetrieveKeyException
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.UnsealingInstructions
@@ -38,7 +38,7 @@ class PermissionCheckedCommandsInstrumentedTest {
         ) })
       { CompletableDeferred(diceKey) })
         .sealWithSymmetricKey(
-          ApiDerivationOptions().apply {
+          ApiRecipe().apply {
             allowAndroidPrefixes = listOf("com.example")
           }.toJson(),
           "The secret ingredient is sarcasm.".toByteArray(),
@@ -58,7 +58,7 @@ class PermissionCheckedCommandsInstrumentedTest {
       { CompletableDeferred(diceKey) })
         .unsealWithSymmetricKey(PackagedSealedMessage(
           ByteArray(0),
-          ApiDerivationOptions().apply {
+          ApiRecipe().apply {
             allowAndroidPrefixes = listOf("com.example")
           }.toJson(),
           UnsealingInstructions().toJson()
@@ -110,7 +110,7 @@ class PermissionCheckedCommandsInstrumentedTest {
         ) })
       { CompletableDeferred(diceKey) })
       val privateKey = api.getUnsealingKey(
-        ApiDerivationOptions().apply {
+        ApiRecipe().apply {
           clientMayRetrieveKey = true
           allowAndroidPrefixes = listOf("com.example")
         }.toJson()

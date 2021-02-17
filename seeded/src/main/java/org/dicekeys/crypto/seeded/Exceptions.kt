@@ -11,14 +11,14 @@ class ClientNotAuthorizedException(message: String) : java.lang.Exception(messag
 class CryptographicVerificationFailureException(message: String) : java.lang.Exception(message)
 
 /**
- * Thrown when a derivationOptionsJson parameter contains a string that is neither
+ * Thrown when a recipeJson parameter contains a string that is neither
  * empty nor in valid JSON format.
  */
 class InvalidDerivationOptionsJsonException(message: String?) : java.lang.Exception(
         message ?: "Invalid key-derivation options specified")
 
 /**
- * Thrown when a derivationOptionsJson parameter contains a field that has an invalid
+ * Thrown when a recipeJson parameter contains a field that has an invalid
  * or forbidden value.
  */
 class InvalidDerivationOptionValueException(message: String) : java.lang.Exception(message)
@@ -35,6 +35,6 @@ class InvalidArgumentException(message: String) : java.lang.Exception(message)
 class JsonParsingException(message: String) : java.lang.Exception(message)
 
 /**
- * Thrown when derivationOptionsJson parameter contains an invalid lengthInBytes field.
+ * Thrown when recipeJson parameter contains an invalid lengthInBytes field.
  */
 class KeyLengthException(message: String) : java.lang.Exception(message)

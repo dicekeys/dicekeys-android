@@ -61,7 +61,7 @@ class PackagedSealedMessage internal constructor(
 
     /**
      * Serialize the object to a JSON format that stores the [ciphertext],
-     * [derivationOptionsJson], and [unsealingInstructions].
+     * [recipeJson], and [unsealingInstructions].
      * It can then be reconstructed via a call to [fromJson].
      */
     external override fun toJson(): String
