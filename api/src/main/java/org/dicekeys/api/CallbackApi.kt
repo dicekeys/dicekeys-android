@@ -24,7 +24,7 @@ interface CallbackApi {
   /**
    * Get a [UnsealingKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
@@ -37,7 +37,7 @@ interface CallbackApi {
   /**
    * Get a [SymmetricKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
@@ -49,7 +49,7 @@ interface CallbackApi {
   /**
    * Get a [SigningKey] derived from the user's DiceKey (the seed) and the key-derivation options
    * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
@@ -61,7 +61,7 @@ interface CallbackApi {
 
   /**
    * Get a [SealingKey] derived from the user's DiceKey and the [ApiDerivationOptions] specified
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html)
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html)
    * as [derivationOptionsJson].
    */
   fun getSealingKey(
@@ -87,7 +87,7 @@ interface CallbackApi {
    * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
    * symmetric key derived from the user's DiceKey, the
    * [derivationOptionsJson]
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
    * and [UnsealingInstructions] specified via a JSON string as
    * [unsealingInstructions] in the
    * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html).

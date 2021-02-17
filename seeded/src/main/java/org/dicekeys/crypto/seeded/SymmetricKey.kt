@@ -3,7 +3,7 @@ package org.dicekeys.crypto.seeded
 /**
  * A SymmetricKey can be used to seal and unseal messages.
  * This SymmetricKey class can be (re) derived from a seed using
- * set of key-derivation options specified in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
+ * set of key-derivation options specified in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
  * So, you can use this symmetric-key to seal a message, throw the
  * key away, and re-generate the key when you need to unseal the
  * message so long as you still have the original seed and

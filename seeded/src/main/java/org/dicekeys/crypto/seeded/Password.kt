@@ -3,7 +3,7 @@ package org.dicekeys.crypto.seeded
 /**
  * This class represents secret , which is  derived from a seed
  * and set of key-derivation specified options in
- * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
+ * [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
  *
  * Because secret derivation uses a one-way function, this secret can be shared without
  * revealing the secret seed used to derive it.

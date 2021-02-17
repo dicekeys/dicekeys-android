@@ -45,7 +45,7 @@ on your application's behalf.
 This package uses and returns keys from the [org.dicekeys.crypto.seeded] package.
 
 You specify how keys are derived, and place restrictions on their use, via the
-[Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html/),
+[Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html/),
 which you can construct and parse using [ApiKeyDerivationOptions].
 
 If you are sealing messages with a [SymmetricKey] or [PublicKey], you can

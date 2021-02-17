@@ -9,7 +9,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * private [UnsealingKey] which can _unseal_ them.
  * The key pair of this [SealingKey] and the matching [UnsealingKey] are generated
  * from a seed and a set of key-derivation specified options in JSON format
- * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
+ * [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
  *
  * To derive a public key from a seed, first derive the corresponding
  * [UnsealingKey] and then call [UnsealingKey.getSealingkey].

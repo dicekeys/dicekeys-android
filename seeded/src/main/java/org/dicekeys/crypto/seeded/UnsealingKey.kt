@@ -8,7 +8,7 @@ package org.dicekeys.crypto.seeded
  * corresponding [SealingKey].
  * The [UnsealingKey] and [SealingKey] are generated
  * from a seed and a set of key-derivation specified options in
- * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
+ * [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
  *
  * The [UnsealingKey] includes a copy of the public key in binary format, which can be
  * reconstituted as a [SealingKey] object via the [getSealingkey] method.

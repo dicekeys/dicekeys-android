@@ -7,7 +7,7 @@ import org.json.JSONObject
 
 /**
  * Used to construct and parse the strings in
- * [key-derivation options JSON format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+ * [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
  * which specify how to derive cryptographic keys from seed string.
  * These JSON strings appear throughout the API (and in the [DiceKeysIntentApiClient]) as a
  * parameter named _derivationOptionsJson_.
