@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="textSizeHeadingLarge" format="dimension"/>
+    <attr name="textSizeHeadingDefault" format="dimension"/>
+    <attr name="textSizeHeadingSmall" format="dimension"/>
+    <attr name="textSizeHeadingExtraSmall" format="dimension"/>
+    <attr name="textSizeLabelLarge" format="dimension"/>
+    <attr name="textSizeLabelDefault" format="dimension"/>
+    <attr name="textSizeLabelSmall" format="dimension"/>
+    <attr name="textSizeLabelExtraSmall" format="dimension"/>
+
+</resources>

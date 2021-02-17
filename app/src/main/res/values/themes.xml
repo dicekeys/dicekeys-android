@@ -2,31 +2,48 @@
     <!-- Base application theme. -->
     <style name="Theme.DiceKeys" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/alexandrasBlue</item>
+        <item name="colorPrimaryVariant">@color/alexandrasBlueLighter</item>
         <item name="colorOnPrimary">@color/white</item>
+
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
 
-        <item name="tabStyle">@style/Widget.App.TabLayout</item>
+        <item name="textAppearanceHeadline1">@style/TextAppearance.MyTheme.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.MyTheme.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.MyTheme.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.MyTheme.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.MyTheme.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.MyTheme.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.MyTheme.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.MyTheme.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.MyTheme.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.MyTheme.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.MyTheme.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.MyTheme.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.MyTheme.Overline</item>
+
+        <item name="textSizeHeadingLarge">@dimen/text_size_heading_large</item>
+        <item name="textSizeHeadingDefault">@dimen/text_size_heading_default</item>
+        <item name="textSizeHeadingSmall">@dimen/text_size_heading_small</item>
+        <item name="textSizeHeadingExtraSmall">@dimen/text_size_heading_x_small</item>
+        <item name="textSizeLabelLarge">@dimen/text_size_label_large</item>
+        <item name="textSizeLabelDefault">@dimen/text_size_label_default</item>
+        <item name="textSizeLabelSmall">@dimen/text_size_label_small</item>
+        <item name="textSizeLabelExtraSmall">@dimen/text_size_label_x_small</item>
 
     </style>
 
-    <style name="Widget.App.TabLayout" parent="Widget.MaterialComponents.TabLayout">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
-        <item name="tabTextAppearance">@style/TextAppearance.App.Button</item>
-    </style>
-
-    <style name="ThemeOverlay.App.TabLayout" parent="">
-<!--        <item name="colorPrimary">@color/teal_200</item>-->
-        <item name="colorSurface">#eeeeee</item>
-<!--        <item name="colorOnSurface">@color/white</item>-->
-    </style>
+<!--    <style name="Widget.App.TabLayout" parent="Widget.MaterialComponents.TabLayout">-->
+<!--        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>-->
+<!--        <item name="tabTextAppearance">@style/TextAppearance.App.Button</item>-->
+<!--    </style>-->
 
     <style name="TextAppearance.App.Button" parent="TextAppearance.MaterialComponents.Button">
         <item name="textAllCaps">false</item>

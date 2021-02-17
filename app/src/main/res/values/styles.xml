@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.DiceKeys.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
+        <item name="tabIndicatorColor">?colorPrimaryVariant</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Theme.DiceKeys.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.MyTheme.Headline6</item>
+        <item name="colorControlNormal">?android:textColorPrimary</item>
+    </style>
+
+    <style name="Theme.DiceKeys.Button.Primary" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="backgroundTint">?colorPrimary</item>
+    </style>
+
+    <style name="Theme.DiceKeys.EditText.ThemeOverlay" parent="ThemeOverlay">
+        <item name="colorControlNormal">?android:textColorTertiary</item>
+        <item name="colorControlActivated">?colorAccent</item>
+    </style>
+
+    <style name="Theme.DiceKeys.TextStyle.EditText.Base" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textColorHighlight">?android:textColorSecondary</item>
+        <item name="android:textColorHint">?android:textColorTertiary</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:paddingBottom">@dimen/text_size_medium</item>
+        <item name="android:theme">@style/Theme.DiceKeys.EditText.ThemeOverlay</item>
+    </style>
+
+    <style name="Platform.TextStyle.HeadingLarge" parent="Platform.TextStyle">
+        <item name="android:textSize">?textSizeHeadingLarge</item>
+        <item name="lineHeightHint">?lineHeightHeadingLarge</item>
+        <item name="fontPath">?fontPathHeadingLarge</item>
+        <item name="android:letterSpacing">?letterSpacingHeadingLarge</item>
+    </style>
+    <style name="Platform.TextStyle.HeadingDefault" parent="Platform.TextStyle">
+        <item name="android:textSize">?textSizeHeadingDefault</item>
+        <item name="lineHeightHint">?lineHeightHeadingDefault</item>
+        <item name="fontPath">?fontPathHeadingDefault</item>
+        <item name="android:letterSpacing">?letterSpacingHeadingDefault</item>
+    </style>
+    <style name="Platform.TextStyle.HeadingSmall" parent="Platform.TextStyle">
+        <item name="android:textSize">?textSizeHeadingSmall</item>
+        <item name="lineHeightHint">?lineHeightHeadingSmall</item>
+        <item name="fontPath">?fontPathHeadingSmall</item>
+        <item name="android:letterSpacing">?letterSpacingHeadingSmall</item>
+    </style>
+
+    <style name="Platform.TextStyle.HeadingXSmall" parent="Platform.TextStyle">
+        <item name="android:textSize">?textSizeHeadingXSmall</item>
+        <item name="lineHeightHint">?lineHeightHeadingXSmall</item>
+        <item name="fontPath">?fontPathHeadingXSmall</item>
+        <item name="android:letterSpacing">?letterSpacingHeadingXSmall</item>
+    </style>
+
+    <style name="Platform.TextStyle.LabelLarge" parent="Platform.TextStyle">
+        <item name="android:textSize">?textSizeLabelLarge</item>
+        <item name="lineHeightHint">?lineHeightLabelLarge</item>
+        <item name="fontPath">?fontPathLabelLarge</item>
+        <item name="android:letterSpacing">?letterSpacingLabelLarge</item>
+    </style>
+    <style name="Platform.TextStyle.LabelDefault" parent="Platform.TextStyle">
+        <item name="android:textSize">?textSizeLabelDefault</item>
+        <item name="lineHeightHint">?lineHeightLabelDefault</item>
+        <item name="fontPath">?fontPathLabelDefault</item>
+        <item name="android:letterSpacing">?letterSpacingLabelDefault</item>
+    </style>
+
+    <style name="Platform.TextStyle.LabelSmall" parent="Platform.TextStyle">
+        <item name="android:textSize">?textSizeLabelSmall</item>
+        <item name="lineHeightHint">?lineHeightLabelSmall</item>
+        <item name="fontPath">?fontPathLabelSmall</item>
+        <item name="android:letterSpacing">?letterSpacingLabelSmall</item>
+    </style>
+
+    <style name="Platform.TextStyle.LabelXSmall" parent="Platform.TextStyle">
+        <item name="android:textSize">?textSizeLabelXSmall</item>
+        <item name="lineHeightHint">?lineHeightLabelXSmall</item>
+        <item name="fontPath">?fontPathLabelXSmall</item>
+        <item name="android:letterSpacing">?letterSpacingLabelXSmall</item>
+    </style>
+
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_heading_large">32sp</dimen>
+    <dimen name="text_size_heading_default">28sp</dimen>
+    <dimen name="text_size_heading_small">24sp</dimen>
+    <dimen name="text_size_heading_x_small">20sp</dimen>
+    <dimen name="text_size_label_large">18sp</dimen>
+    <dimen name="text_size_label_default">16sp</dimen>
+    <dimen name="text_size_label_small">14sp</dimen>
+    <dimen name="text_size_label_x_small">12sp</dimen>
+
+</resources>
