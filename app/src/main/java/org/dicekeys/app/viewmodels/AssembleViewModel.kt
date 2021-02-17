@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AssembleViewModel @Inject constructor(val diceKeyRepository: DiceKeyRepository) : ViewModel() {
+    var page = MutableLiveData(0)
 
     var diceKey = MutableLiveData<DiceKey<Face>>()
 
@@ -20,5 +21,17 @@ class AssembleViewModel @Inject constructor(val diceKeyRepository: DiceKeyReposi
     fun setDiceKey(dk: DiceKey<Face>){
         diceKey.value = dk
         diceKeyRepository.set(dk)
+    }
+
+    fun setPage(position: Int) {
+        page.value = position
+    }
+
+    fun nextPage() {
+        page.value = page.value?.plus(1)
+    }
+
+    fun previousPage() {
+        page.value = page.value?.minus(1)
     }
 }

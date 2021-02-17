@@ -35,7 +35,7 @@ import org.dicekeys.dicekey.FaceRead
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_fragment), ViewPager.OnPageChangeListener {
+class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_fragment) {
 
     @Inject
     lateinit var diceKeyRepository: DiceKeyRepository
@@ -48,6 +48,8 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.vm = viewModel
+
         getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) {
             it?.let {
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
@@ -59,17 +61,13 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
                     }).also {
                         viewModel.setDiceKey(it)
                     }
-
-                    onPageSelected(binding.viewPager.currentItem)
-
                 }
             }
         }
 
         getNavigationResult<Boolean>(BackupFragment.VALID_BACKUP)?.observe(viewLifecycleOwner) {
-            if(it){
+            if (it) {
                 viewModel.diceKeyBackedUp.postValue(true)
-                onPageSelected(binding.viewPager.currentItem)
             }
         }
 
@@ -77,89 +75,50 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
 
         binding.viewPager.also {
             it.adapter = pagerAdapter
-            it.addOnPageChangeListener(this)
+            it.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+                override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+                override fun onPageSelected(position: Int) {
+                    // viewModel.setPage(position)
+                }
+
+                override fun onPageScrollStateChanged(state: Int) {}
+
+            })
+            // Prevent swipe gestures
             it.setOnTouchListener { _, _ -> true }
         }
 
         binding.progressBar.max = pagerAdapter.count - 1
 
-        binding.btnNext.setOnClickListener { onNextPage() }
-        binding.btnPrev.setOnClickListener { onPrevPage() }
+        binding.btnNext.setOnClickListener {
+            if (viewModel.page.value == pagerAdapter.count - 1) {
+                val diceKey = viewModel.diceKey.value
+                if (diceKey == null) {
+                    findNavController().popBackStack()
+                } else {
+                    // Remove Assemble from the backstack
+                    val navOptionsBuilder = NavOptions.Builder().setPopUpTo(R.id.listDiceKeysFragment, false)
+                    findNavController().navigate(AssembleFragmentDirections.actionAssembleFragmentToMainDiceKeyRootFragment(diceKeyId = diceKey.keyId), navOptionsBuilder.build())
+                }
+            } else {
+                viewModel.nextPage()
+            }
+        }
 
+        binding.btnPrev.setOnClickListener {
+            viewModel.previousPage()
+        }
+
+        // Animate warning text
         ObjectAnimator.ofFloat(binding.textWarning, "alpha", 1f, 0.7f).also {
             it.repeatCount = ValueAnimator.INFINITE
             it.repeatMode = ValueAnimator.REVERSE
             it.duration = 500
         }.start()
-
-        onPageSelected(binding.viewPager.currentItem)
     }
 
-
-    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-
-    override fun onPageSelected(position: Int) {
-        binding.progressBar.setProgressCompat(position, true)
-        binding.textWarning.visibility = if (position in listOf(0, 5, 6)) View.INVISIBLE else View.VISIBLE
-        binding.btnPrev.isEnabled = binding.viewPager.currentItem != 0
-        binding.btnNext.isEnabled = when(position) {
-            AssemblePagerAdapter.PAGE_SCAN -> viewModel.diceKey.value != null
-            AssemblePagerAdapter.PAGE_BACKUP -> viewModel.diceKeyBackedUp.value ?: false
-            else -> true
-        }
-        binding.btnNext.text = if (binding.viewPager.currentItem == pagerAdapter.count - 1) "Done" else "Next"
-
-
-    }
-
-    override fun onPageScrollStateChanged(state: Int) {}
-
-    fun onSkipStep() {
-        binding.viewPager.currentItem = binding.viewPager.currentItem + 1
-    }
-
-    fun onScan() {
-        navigate(NavGraphDirections.actionGlobalScanFragment())
-    }
-
-    fun onUseStickeysKit() {
-        navigate(AssembleFragmentDirections.actionBackupSelectToBackupNavGraph(viewModel.diceKey.value?.keyId, true))
-    }
-
-    fun onUseDiceKeyKit() {
-        navigate(AssembleFragmentDirections.actionBackupSelectToBackupNavGraph(viewModel.diceKey.value?.keyId , false))
-    }
-
-    fun onNextPage() {
-        if (binding.viewPager.currentItem == pagerAdapter.count - 1) {
-            val diceKey = viewModel.diceKey.value
-            if(diceKey == null){
-                findNavController().popBackStack()
-            }else{
-                // Remove Assemble from the backstack
-                val navOptionsBuilder = NavOptions.Builder().setPopUpTo(R.id.listDiceKeysFragment,false)
-                findNavController().navigate(AssembleFragmentDirections.actionAssembleFragmentToMainDiceKeyRootFragment(diceKeyId = diceKey.keyId), navOptionsBuilder.build())
-            }
-
-        } else {
-            binding.viewPager.also {
-                it.setCurrentItem(it.currentItem + 1, true)
-            }
-        }
-    }
-
-    fun onPrevPage() {
-        binding.viewPager.also {
-            it.setCurrentItem(it.currentItem - 1, true)
-        }
-    }
-
-    private class AssemblePagerAdapter(fm: FragmentManager)
-        : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-        companion object {
-            val PAGE_SCAN = 3
-            val PAGE_BACKUP = 4
-        }
+    private class AssemblePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getCount(): Int = 7
 
         override fun getItem(position: Int): Fragment {
@@ -167,13 +126,13 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
         }
     }
 
-    class AssemblePageFragment(private val fragmentPosition: Int): Fragment() {
+    class AssemblePageFragment(private val fragmentPosition: Int) : Fragment() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             val parent = (parentFragment as AssembleFragment)
             val viewModel = parent.viewModel
 
-             val binding = when(fragmentPosition) {
+            val binding = when (fragmentPosition) {
                 1 -> FragmentAssembleStep2Binding.inflate(inflater, container, false).also {
                     it.vm = viewModel
                 }
@@ -204,21 +163,22 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
             super.onViewCreated(view, savedInstanceState)
 
             val parent = (parentFragment as AssembleFragment)
+            val viewModel = parent.viewModel
 
             view.findViewById<Button>(R.id.btn_skip)?.setOnClickListener {
-                parent.onSkipStep()
+                viewModel.nextPage()
             }
 
             view.findViewById<Button>(R.id.btn_scan)?.setOnClickListener {
-                parent.onScan()
+                parent.navigate(AssembleFragmentDirections.actionGlobalScanFragment())
             }
 
             view.findViewById<View>(R.id.wrapDiceKey)?.setOnClickListener {
-                parent.onUseDiceKeyKit()
+                parent.navigate(AssembleFragmentDirections.actionBackupSelectToBackupNavGraph(viewModel.diceKey.value?.keyId, false))
             }
 
             view.findViewById<View>(R.id.wrapStickeys)?.setOnClickListener {
-                parent.onUseStickeysKit()
+                parent.navigate(AssembleFragmentDirections.actionBackupSelectToBackupNavGraph(viewModel.diceKey.value?.keyId, true))
             }
 
         }
@@ -255,8 +215,6 @@ class AssembleFragment: AppFragment<AssembleFragmentBinding>(R.layout.assemble_f
             view?.findViewById<DiceKeyView>(R.id.dice_key_view2_2)?.also {
                 it.diceKey = parent.viewModel.diceKey.value ?: DiceKey.example
             }
-
         }
-
     }
 }

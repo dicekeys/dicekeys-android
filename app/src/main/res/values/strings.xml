@@ -14,6 +14,7 @@
     <string name="your_dicekey">Your DiceKey</string>
     <string name="dicekey" translatable="false">DiceKey</string>
 
+
     <string name="save_the_dicekey">Save the DiceKey</string>
     <string name="save_center_die_notice">The center die will appear in the home screen.</string>
     <string name="save_dice_encryption_notice">The other 24 dice will be encrypted and your Biometrics will unlock them.</string>
@@ -25,6 +26,7 @@
     <string name="dicekey_with_center">DiceKey with %1$s in center</string>
     <string name="unlock_dicekey_with_center">Unlock DiceKey with %1$s in center</string>
 
+    <string name="done">Done</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
@@ -55,6 +57,7 @@
     <string name="common_password_recipes">Common Password Recipes</string>
 
 
+    <string name="do_not_close_the_box">Do not close the box before the final step</string>
     <string name="you_did_it">You did it!</string>
     <string name="thats_it">That\'s it!</string>
 
