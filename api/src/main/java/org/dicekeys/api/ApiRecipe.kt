@@ -7,10 +7,10 @@ import org.json.JSONObject
 
 /**
  * Used to construct and parse the strings in
- * [key-derivation options JSON format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+ * [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
  * which specify how to derive cryptographic keys from seed string.
  * These JSON strings appear throughout the API (and in the [DiceKeysIntentApiClient]) as a
- * parameter named _derivationOptionsJson_.
+ * parameter named _recipeJson_.
  *
  * This implementation extends of the more general [DerivationOptions] class, which
  * abstracts all the general-purpose key-derivation options that aren't specific
@@ -28,7 +28,7 @@ import org.json.JSONObject
  * seeds that remain the same even if the orientation of a die within a DiceKey changes.
  *
  *
- * @sample [ApiSamples.sampleOfApiDerivationOptions]
+ * @sample [ApiSamples.sampleOfApiRecipe]
  *
 
  * ```
@@ -42,12 +42,12 @@ import org.json.JSONObject
  * For example [Symmetric] for the derivation options of a symmetric key.  If you pass nothing,
  * empty options will be created, which you can then configure (e.g., via _apply).
  */
-open class ApiDerivationOptions constructor(
-  derivationOptionsJson: String? = null,
+open class ApiRecipe constructor(
+  recipeJson: String? = null,
   requiredType: Type? = null
 ):  AuthenticationRequirements,
     DerivationOptions(
-      derivationOptionsJson, requiredType
+      recipeJson, requiredType
 ) {
 
     /**
@@ -65,8 +65,8 @@ open class ApiDerivationOptions constructor(
      * specified [Restrictions] are not met.
      */
     var clientMayRetrieveKey: Boolean?
-        get () = optBoolean(ApiDerivationOptions::clientMayRetrieveKey.name, false)
-        set(value)  { put(ApiDerivationOptions::clientMayRetrieveKey.name, value) }
+        get () = optBoolean(ApiRecipe::clientMayRetrieveKey.name, false)
+        set(value)  { put(ApiRecipe::clientMayRetrieveKey.name, value) }
 
 
 
@@ -120,40 +120,40 @@ open class ApiDerivationOptions constructor(
      * For a key of 25 dice, it reduces the entropy by 50 (2x25) bits, from ~196 bits to ~146 bits.
      */
     var excludeOrientationOfFaces: Boolean
-        get () = optBoolean(ApiDerivationOptions::excludeOrientationOfFaces.name, false)
-        set(value) { put(ApiDerivationOptions::excludeOrientationOfFaces.name, value) }
+        get () = optBoolean(ApiRecipe::excludeOrientationOfFaces.name, false)
+        set(value) { put(ApiRecipe::excludeOrientationOfFaces.name, value) }
 
 
     /**
      * An extension class that must represent a specification for a public/private key pair
      */
-    class UnsealingKey(derivationOptionsJson: String? = null) :
-            ApiDerivationOptions(derivationOptionsJson,  Type.UnsealingKey)
+    class UnsealingKey(recipeJson: String? = null) :
+            ApiRecipe(recipeJson,  Type.UnsealingKey)
 
 
     /**
      * An extension class that must represent a specification for a derived seed
      */
-    class Password(derivationOptionsJson: String? = null) :
-      ApiDerivationOptions(derivationOptionsJson,  Type.Password)
+    class Password(recipeJson: String? = null) :
+      ApiRecipe(recipeJson,  Type.Password)
 
 
   /**
      * An extension class that must represent a specification for a derived seed
      */
-    class Secret(derivationOptionsJson: String? = null) :
-            ApiDerivationOptions(derivationOptionsJson,  Type.Secret)
+    class Secret(recipeJson: String? = null) :
+            ApiRecipe(recipeJson,  Type.Secret)
 
     /**
      * An extension class that must represent a specification for a signing/verification key pair
      */
-    class SigningKey(derivationOptionsJson: String? = null) :
-            ApiDerivationOptions(derivationOptionsJson,  Type.SigningKey)
+    class SigningKey(recipeJson: String? = null) :
+            ApiRecipe(recipeJson,  Type.SigningKey)
 
     /**
      * An extension class that must represent a specification for a symmetric key
      */
-    class SymmetricKey(derivationOptionsJson: String? = null) :
-            ApiDerivationOptions(derivationOptionsJson,  Type.SymmetricKey)
+    class SymmetricKey(recipeJson: String? = null) :
+            ApiRecipe(recipeJson,  Type.SymmetricKey)
 
 }

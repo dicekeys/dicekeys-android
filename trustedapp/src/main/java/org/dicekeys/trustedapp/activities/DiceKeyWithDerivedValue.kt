@@ -37,8 +37,8 @@ class DiceKeyWithDerivedValue : AppCompatActivity() {
         derivationRecipe.value=derivationRecipeTemplates.get(intent.getIntExtra("derivationRecipeTemplateIndex",0))
 
         binding.tvRecipeFor.text= String.format(getString(R.string.recipe_for_password, this.derivationRecipe.value!!.name))
-        binding.tvRecipeJson.text= derivationRecipe.value!!.derivationOptionsJson
-        binding.tvPassword.text= DiceKeyState.diceKey?.toCanonicalRotation()?.let { Password.deriveFromSeed(it.toHumanReadableForm(), derivationRecipe.value!!.derivationOptionsJson,"").password }
+        binding.tvRecipeJson.text= derivationRecipe.value!!.recipeJson
+        binding.tvPassword.text= DiceKeyState.diceKey?.toCanonicalRotation()?.let { Password.deriveFromSeed(it.toHumanReadableForm(), derivationRecipe.value!!.recipeJson,"").password }
         binding.btnDown.setOnClickListener {sequencUpDown(false)}
         binding.btnUp.setOnClickListener {sequencUpDown(true)}
         binding.btnCopyPassword.setOnClickListener{copyPassword()}
@@ -48,10 +48,10 @@ class DiceKeyWithDerivedValue : AppCompatActivity() {
             derivationRecipe.value = DerivationRecipe(derivationRecipeTemplates.get(intent.getIntExtra("derivationRecipeTemplateIndex", 0)), intValue )
         })
 
-        /*Observer derivation recipe change and update password, derivationOptionsJson */
+        /*Observer derivation recipe change and update password, recipeJson */
         derivationRecipe.observe(this, Observer {value ->
-            binding.tvPassword.text=DiceKeyState.diceKey?.toCanonicalRotation()?.let { Password.deriveFromSeed(it.toHumanReadableForm(),value.derivationOptionsJson).password }
-            binding.tvRecipeJson.text=value.derivationOptionsJson
+            binding.tvPassword.text=DiceKeyState.diceKey?.toCanonicalRotation()?.let { Password.deriveFromSeed(it.toHumanReadableForm(),value.recipeJson).password }
+            binding.tvRecipeJson.text=value.recipeJson
         })
 
         /*Sequence number text change event*/

@@ -25,31 +25,31 @@ class PermissionCheckedCommands(
   /**
    * Implement [DiceKeysIntentApiClient.getSecret] with the necessary permissions checks
    */
-  suspend fun getSecret(derivationOptionsJson: String): Secret =
+  suspend fun getSecret(recipeJson: String): Secret =
     Secret.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        derivationOptionsJson,
+        recipeJson,
         DerivationOptions.Type.Secret,
         ApiStrings.Commands.getSecret
       ),
-      derivationOptionsJson
+      recipeJson
     )
 
   /**
    * Implement [DiceKeysIntentApiClient.sealWithSymmetricKey] with the necessary permissions checks
    */
   suspend fun sealWithSymmetricKey(
-    derivationOptionsJson: String,
+    recipeJson: String,
     plaintext: ByteArray,
     unsealingInstructions: String?
   ): PackagedSealedMessage =
     SymmetricKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        derivationOptionsJson,
+        recipeJson,
         DerivationOptions.Type.SymmetricKey,
         ApiStrings.Commands.sealWithSymmetricKey
       ),
-      derivationOptionsJson
+      recipeJson
     ).seal(plaintext, unsealingInstructions ?: "")
 
   /**
@@ -70,69 +70,69 @@ class PermissionCheckedCommands(
    * Implement [DiceKeysIntentApiClient.getSealingKey] with the necessary permissions checks
    */
   suspend fun getSealingKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ) : SealingKey =
     UnsealingKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        derivationOptionsJson,
+        recipeJson,
         DerivationOptions.Type.UnsealingKey,
         ApiStrings.Commands.getSealingKey
       ),
-      derivationOptionsJson
+      recipeJson
     ).getSealingkey()
 
   /**
    * Implement [DiceKeysIntentApiClient.getUnsealingKey] with the necessary permissions checks
    */
   suspend fun getUnsealingKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ) : UnsealingKey = UnsealingKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
-      derivationOptionsJson,
+      recipeJson,
       DerivationOptions.Type.UnsealingKey
     ),
-    derivationOptionsJson
+    recipeJson
   )
 
   /**
    * Implement [DiceKeysIntentApiClient.getSigningKey] with the necessary permissions checks
    */
   suspend fun getSigningKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ) : SigningKey = SigningKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
-      derivationOptionsJson,
+      recipeJson,
       DerivationOptions.Type.SigningKey
     ),
-    derivationOptionsJson
+    recipeJson
   )
 
   /**
    * Implement [DiceKeysIntentApiClient.getSymmetricKey] with the necessary permissions checks
    */
   suspend fun getSymmetricKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ) : SymmetricKey = SymmetricKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientsMayNotRetrieveKeysOrThisClientNotAuthorized(
-      derivationOptionsJson,
+      recipeJson,
       DerivationOptions.Type.SymmetricKey
     ),
-    derivationOptionsJson
+    recipeJson
   )
 
   /**
    * Implement [DiceKeysIntentApiClient.getSignatureVerificationKey] with the necessary permissions checks
    */
   suspend fun getSignatureVerificationKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ) : SignatureVerificationKey =
     SigningKey.deriveFromSeed(
       permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        derivationOptionsJson,
+        recipeJson,
         DerivationOptions.Type.SigningKey,
         ApiStrings.Commands.getSignatureVerificationKey
       ),
-      derivationOptionsJson
+      recipeJson
     ).getSignatureVerificationKey()
 
   /**
@@ -147,22 +147,22 @@ class PermissionCheckedCommands(
           DerivationOptions.Type.UnsealingKey,
           ApiStrings.Commands.unsealWithUnsealingKey
         ),
-        packagedSealedMessage.derivationOptionsJson
+        packagedSealedMessage.recipe
       ).unseal(packagedSealedMessage)
 
   /**
    * Implement [DiceKeysIntentApiClient.generateSignature] with the necessary permissions checks
    */
   suspend fun generateSignature(
-    derivationOptionsJson: String,
+    recipeJson: String,
     message: ByteArray
   ): Pair<ByteArray, SignatureVerificationKey> = SigningKey.deriveFromSeed(
     permissionCheckedSeedAccessor.getSeedOrThrowIfClientNotAuthorized(
-        derivationOptionsJson,
+        recipeJson,
         DerivationOptions.Type.SigningKey,
         ApiStrings.Commands.generateSignature
       ),
-      derivationOptionsJson
+      recipeJson
     ).let{ signingKey ->
       Pair(signingKey.generateSignature(message), signingKey.getSignatureVerificationKey())
     }

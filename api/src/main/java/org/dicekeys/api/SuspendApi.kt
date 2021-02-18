@@ -5,36 +5,36 @@ import org.dicekeys.crypto.seeded.*
 interface SuspendApi {
 
   suspend fun generateSignature(
-    derivationOptionsJson: String,
+    recipeJson: String,
     message: ByteArray
   ): GenerateSignatureResult
 
   suspend fun getSealingKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ): SealingKey
 
   suspend fun getSecret(
-    derivationOptionsJson: String
+    recipeJson: String
   ): Secret
 
   suspend fun getSignatureVerificationKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ): SignatureVerificationKey
 
   suspend fun getSigningKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ): SigningKey
 
   suspend fun getSymmetricKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ): SymmetricKey
 
   suspend fun getUnsealingKey(
-    derivationOptionsJson: String
+    recipeJson: String
   ): UnsealingKey
 
   suspend fun sealWithSymmetricKey(
-    derivationOptionsJson: String,
+    recipeJson: String,
     plaintext: ByteArray,
     unsealingInstructions: String = ""
   ): PackagedSealedMessage

@@ -9,7 +9,7 @@ import org.dicekeys.crypto.seeded.utilities.qrCodeNativeSizeInQrCodeSquarePixels
  * private [UnsealingKey] which can _unseal_ them.
  * The key pair of this [SealingKey] and the matching [UnsealingKey] are generated
  * from a seed and a set of key-derivation specified options in JSON format
- * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
+ * [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
  *
  * To derive a public key from a seed, first derive the corresponding
  * [UnsealingKey] and then call [UnsealingKey.getSealingkey].
@@ -56,7 +56,7 @@ class SealingKey internal constructor(
 
         @JvmStatic private external fun constructJNI(
                 keyBytes: ByteArray,
-                derivationOptionsJson: String = ""
+                recipe: String = ""
         ) : Long
 
         @JvmStatic private external fun fromSerializedBinaryFormJNI(
@@ -85,17 +85,17 @@ class SealingKey internal constructor(
      */
     constructor(
         other: SealingKey
-    ) : this(other.keyBytes, other.derivationOptionsJson)
+    ) : this(other.keyBytes, other.recipe)
 
     /**
      * Construct by specifying the value of each member
      */
     internal constructor(
             keyBytes: ByteArray,
-            derivationOptionsJson: String
+            recipe: String
     ) : this ( constructJNI(
             keyBytes,
-            derivationOptionsJson
+            recipe
     ) )
 
     protected fun finalize() {
@@ -103,7 +103,7 @@ class SealingKey internal constructor(
     }
     private external fun deleteNativeObjectPtrJNI()
     private external fun keyBytesGetterJNI(): ByteArray
-    private external fun derivationOptionsJsonGetterJNI(): String
+    private external fun recipeGetterJNI(): String
 
     /**
      * Serialize the object to JSON format so that it can later be
@@ -124,7 +124,7 @@ class SealingKey internal constructor(
      * The key-derivation options used to derive the [SealingKey] and its corresponding
      * [UnsealingKey]
      */
-    val derivationOptionsJson get() = derivationOptionsJsonGetterJNI()
+    val recipe get() = recipeGetterJNI()
 
     /**
      * Seal a plaintext message to create a ciphertext which can only be unsealed
@@ -167,7 +167,7 @@ class SealingKey internal constructor(
 
     override fun equals(other: Any?): Boolean =
             (other is SealingKey) &&
-            derivationOptionsJson == other.derivationOptionsJson &&
+            recipe == other.recipe &&
             keyBytes.contentEquals(other.keyBytes)
 
     /**
