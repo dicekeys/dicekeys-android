@@ -10,20 +10,25 @@
     <string name="derive_secret">Derive  a Secret</string>
     <string name="secrets">Secrets</string>
     <string name="backup">Backup</string>
+    <string name="scan">Scan</string>
     <string name="your_dicekey">Your DiceKey</string>
     <string name="dicekey" translatable="false">DiceKey</string>
+
 
     <string name="save_the_dicekey">Save the DiceKey</string>
     <string name="save_center_die_notice">The center die will appear in the home screen.</string>
     <string name="save_dice_encryption_notice">The other 24 dice will be encrypted and your Biometrics will unlock them.</string>
 
     <string name="custom_recipe">Custom Recipe</string>
-    <string name="common_password_recipes">Common password recipes</string>
 
     <string name="assemble_a_dicekey">Assemble a DiceKey</string>
     <string name="load_your_dicekey">Load your DiceKey</string>
     <string name="dicekey_with_center">DiceKey with %1$s in center</string>
     <string name="unlock_dicekey_with_center">Unlock DiceKey with %1$s in center</string>
+
+    <string name="done">Done</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
 
     <string name="lock">Lock</string>
     <string name="save">Save</string>
@@ -38,4 +43,30 @@
     <string name="biometrics_decryption_subtitle">Use your biometrics to decrypt your DiceKey</string>
 
     <string name="biometrics_unavailable_message">You have to enable Biometrics (Fingerprint Lock) to use this feature.</string>
+
+    <string name="make_a_backup_of_your_dicekey">Make a backup of your DiceKey by copying it.</string>
+    <string name="use_a_stickeys_kit">Use a Stickeys Kit</string>
+    <string name="use_a_dicekey_kit">Use a DiceKey Kit</string>
+    <string name="construct_your_backup">Construct your Backup</string>
+    <string name="recipe_for">Recipe for %s</string>
+    <string name="sequence_number">Sequence Number</string>
+    <string name="str_multiple_passwords_info">if you need multiple passwords for a single website or service, change sequence number to create additional passowrd</string>
+    <string name="str_save_recipe_in_the_menu">Save recipe in the menu</string>
+    <string name="str_remove_recipe_from_menu">Remove recipe from menu</string>
+    <string name="copy_password">Copy Password</string>
+    <string name="common_password_recipes">Common Password Recipes</string>
+
+
+    <string name="do_not_close_the_box">Do not close the box before the final step</string>
+    <string name="you_did_it">You did it!</string>
+    <string name="thats_it">That\'s it!</string>
+
+    <string name="theres_nothing_more_to_it">There\'s nothing more to it.</string>
+    <string name="go_back_to_assemble">Go back to assemble and scan in a real DiceKey.</string>
+
+    <string name="be_sure_to_make_a_backup">Be sure to make a backup soon!</string>
+    <string name="when_you_press_the_done">When you press the "Done" button, we\'ll take you to the same screen you\'ll see after scanning your DiceKey from the home screen.</string>
+
+
+
 </resources>

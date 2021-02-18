@@ -10,7 +10,7 @@ package org.dicekeys.crypto.seeded
  * [getSignatureVerificationKey].
  * 
  * The key pair of the [SigningKey] and [SignatureVerificationKey] is generated
- * from a seed and a set of key-derivation specified options in [derivationOptionsJson]
+ * from a seed and a set of key-derivation specified options in [recipe]
  *
  * This class wraps the native c++ SigningKey class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
@@ -25,18 +25,18 @@ class SigningKey internal constructor(
         }
         @JvmStatic private external fun constructJNI(
                 signingKeyBytes: ByteArray,
-                derivationOptionsJson: String
+                recipe: String
         ) : Long
 
         @JvmStatic private external fun constructJNI(
                 signingKeyBytes: ByteArray,
                 signatureVerificationKeyBytes: ByteArray,
-                derivationOptionsJson: String
+                recipe: String
         ) : Long
 
         @JvmStatic private external fun deriveFromSeedJNI(
                 seedString: String,
-                derivationOptionsJson: String
+                recipe: String
         ) : Long
 
         /**
@@ -45,8 +45,8 @@ class SigningKey internal constructor(
          */
         fun deriveFromSeed(
                 seedString: String,
-                derivationOptionsJson: String
-        ) = SigningKey (deriveFromSeedJNI(seedString, derivationOptionsJson))
+                recipe: String
+        ) = SigningKey (deriveFromSeedJNI(seedString, recipe))
 
 
         @JvmStatic private external fun fromJsonJNI(signingKeyAsJson: String) : Long
@@ -89,7 +89,7 @@ class SigningKey internal constructor(
     constructor(other: SigningKey) : this(
             other.signingKeyBytes,
             other.signatureVerificationKeyBytes,
-            other.derivationOptionsJson)
+            other.recipe)
 
     /**
      * Construct by reconstituting its members (including [signatureVerificationKeyBytes])
@@ -97,8 +97,8 @@ class SigningKey internal constructor(
     internal constructor(
             signingKeyBytes: ByteArray,
             signatureVerificationKeyBytes: ByteArray,
-            derivationOptionsJson: String
-    ) : this(constructJNI(signingKeyBytes, signatureVerificationKeyBytes, derivationOptionsJson))
+            recipe: String
+    ) : this(constructJNI(signingKeyBytes, signatureVerificationKeyBytes, recipe))
 
     /**
      * Construct by reconstituting its members (excluding [signatureVerificationKeyBytes], which
@@ -106,14 +106,14 @@ class SigningKey internal constructor(
      */
     internal constructor(
             signingKeyBytes: ByteArray,
-            derivationOptionsJson: String
-    ) : this(constructJNI(signingKeyBytes, derivationOptionsJson))
+            recipe: String
+    ) : this(constructJNI(signingKeyBytes, recipe))
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun getSignatureVerificationKeyJNI() : Long
     private external fun signatureVerificationKeyBytesGetterJNI(): ByteArray
     private external fun signingKeyBytesGetterJNI(): ByteArray
-    private external fun derivationOptionsJsonGetterJNI(): String
+    private external fun recipeGetterJNI(): String
     external fun generateSignature(message: ByteArray): ByteArray
 
     /**
@@ -180,11 +180,11 @@ class SigningKey internal constructor(
     /**
      * Get the key-derivation options used to generate this [SigningKey]
      */
-    val derivationOptionsJson get() = derivationOptionsJsonGetterJNI()
+    val recipe get() = recipeGetterJNI()
 
     override fun equals(other: Any?): Boolean =
             (other is SigningKey) &&
-                    derivationOptionsJson == other.derivationOptionsJson &&
+                    recipe == other.recipe &&
                     signingKeyBytes.contentEquals(other.signingKeyBytes) &&
                     signatureVerificationKeyBytes.contentEquals(other.signatureVerificationKeyBytes)
 

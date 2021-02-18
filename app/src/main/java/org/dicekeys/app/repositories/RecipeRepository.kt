@@ -37,6 +37,10 @@ class RecipeRepository(private val sharedPreferences: SharedPreferences) {
                     list += it
                 }
             }
+
+            // sort by name
+            list.sortBy { it.name }
+
             recipesLiveData.postValue(list)
         }
     }

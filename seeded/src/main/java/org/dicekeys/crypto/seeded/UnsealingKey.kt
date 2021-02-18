@@ -8,7 +8,7 @@ package org.dicekeys.crypto.seeded
  * corresponding [SealingKey].
  * The [UnsealingKey] and [SealingKey] are generated
  * from a seed and a set of key-derivation specified options in
- * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
+ * [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
  *
  * The [UnsealingKey] includes a copy of the public key in binary format, which can be
  * reconstituted as a [SealingKey] object via the [getSealingkey] method.
@@ -27,11 +27,11 @@ class UnsealingKey private constructor(
         @JvmStatic private external fun constructJNI(
             privateKeyBytes: ByteArray,
             publicKeyBytes: ByteArray,
-            derivationOptionsJson: String
+            recipe: String
         ) : Long
         @JvmStatic private external fun deriveFromSeedJNI(
             seedString: String,
-            derivationOptionsJson: String
+            recipe: String
         ) : Long
 
         /**
@@ -40,8 +40,8 @@ class UnsealingKey private constructor(
          */
         fun deriveFromSeed(
                 seedString: String,
-                derivationOptionsJson: String
-        ) = UnsealingKey(deriveFromSeedJNI(seedString, derivationOptionsJson))
+                recipe: String
+        ) = UnsealingKey(deriveFromSeedJNI(seedString, recipe))
 
 
 
@@ -73,7 +73,7 @@ class UnsealingKey private constructor(
 
         /**
          * Unseal a message by re-deriving the [UnsealingKey] from the secret [seedString]
-         * used to originally derive it.  The [PackagedSealedMessage.derivationOptionsJson]
+         * used to originally derive it.  The [PackagedSealedMessage.recipe]
          * needed to derive it is in the [packagedSealedMessage], as are the
          * [PackagedSealedMessage.ciphertext] and
          * [PackagedSealedMessage.unsealingInstructions].
@@ -83,7 +83,7 @@ class UnsealingKey private constructor(
                 packagedSealedMessage: PackagedSealedMessage
         ) : ByteArray {
             return deriveFromSeed(
-                seedString, packagedSealedMessage.derivationOptionsJson
+                seedString, packagedSealedMessage.recipe
             ).unseal(
                 packagedSealedMessage.ciphertext,
                 packagedSealedMessage.unsealingInstructions
@@ -102,7 +102,7 @@ class UnsealingKey private constructor(
     private external fun deleteNativeObjectPtrJNI()
     private external fun unsealingKeyBytesGetterJNI(): ByteArray
     private external fun sealingKeyBytesGetterJNI(): ByteArray
-    private external fun derivationOptionsJsonGetterJNI(): String
+    private external fun recipeGetterJNI(): String
     external override fun toJson(): String
 
     /**
@@ -111,13 +111,13 @@ class UnsealingKey private constructor(
      */
     constructor(
         other: UnsealingKey
-    ) : this(other.unsealingKeyBytes, other.sealingKeyBytes, other.derivationOptionsJson)
+    ) : this(other.unsealingKeyBytes, other.sealingKeyBytes, other.recipe)
 
     internal constructor(
         privateKeyBytes: ByteArray,
         publicKeyBytes: ByteArray,
-        derivationOptionsJson: String
-    ) : this( constructJNI(privateKeyBytes, publicKeyBytes, derivationOptionsJson))
+        recipe: String
+    ) : this( constructJNI(privateKeyBytes, publicKeyBytes, recipe))
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()
@@ -152,11 +152,11 @@ class UnsealingKey private constructor(
     /**
      * The options that guided the derivation of this key from the seed.
      */
-    val derivationOptionsJson get() = derivationOptionsJsonGetterJNI()
+    val recipe get() = recipeGetterJNI()
 
     override fun equals(other: Any?): Boolean =
             (other is UnsealingKey) &&
-                    derivationOptionsJson == other.derivationOptionsJson &&
+                    recipe == other.recipe &&
                     unsealingKeyBytes.contentEquals(other.unsealingKeyBytes) &&
                     sealingKeyBytes.contentEquals(other.sealingKeyBytes)
 

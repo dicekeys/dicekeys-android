@@ -48,7 +48,7 @@ class EndToEndUrlApiTests {
     return mockedWebApi!!
   }
 
-  private val derivationOptionsJson = "{ \"allow\": [{\"host\": \"my.app\"}] }"
+  private val recipeJson = "{ \"allow\": [{\"host\": \"my.app\"}] }"
   private val testMessage = "The secret ingredient is dihydrogen monoxide"
   private val testMessageByteArray = testMessage.toByteArray(Charsets.UTF_8)
 
@@ -58,7 +58,7 @@ class EndToEndUrlApiTests {
 
     runBlocking {
       val packagedSealedMessage = api.sealWithSymmetricKey(
-        derivationOptionsJson,
+        recipeJson,
         testMessageByteArray
       )
       val plaintext = api.unsealWithSymmetricKey(packagedSealedMessage)
@@ -68,8 +68,8 @@ class EndToEndUrlApiTests {
 
   @Test
   fun signAndVerify() { runBlocking {
-    val sig = api.generateSignature(derivationOptionsJson, testMessageByteArray)
-    val signatureVerificationKey = api.getSignatureVerificationKey(derivationOptionsJson)
+    val sig = api.generateSignature(recipeJson, testMessageByteArray)
+    val signatureVerificationKey = api.getSignatureVerificationKey(recipeJson)
     Assert.assertArrayEquals(signatureVerificationKey.keyBytes, sig.signatureVerificationKey.keyBytes)
     Assert.assertTrue(signatureVerificationKey.verifySignature(testMessageByteArray, sig.signature))
     Assert.assertFalse(signatureVerificationKey.verifySignature(ByteArray(0), sig.signature))
@@ -85,7 +85,7 @@ class EndToEndUrlApiTests {
 
   @Test
   fun getSecretWithHandshake() { runBlocking {
-    val derivationOptions = ApiDerivationOptions().apply {
+    val derivationOptions = ApiRecipe().apply {
       requireAuthenticationHandshake = true
       allow = listOf(WebBasedApplicationIdentity("my.app", null))
       lengthInBytes = 13

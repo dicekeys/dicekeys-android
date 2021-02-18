@@ -41,10 +41,10 @@ void throwCppExceptionAsJavaException(
     javaThrow(env, "org/dicekeys/crypto/seeded/JsonParsingException", e.what());
     return;
 
-  } catch (InvalidDerivationOptionsJsonException e) {
+  } catch (InvalidRecipeJsonException e) {
     javaThrow(env, "org/dicekeys/crypto/seeded/InvalidDerivationOptionsJsonException", e.what());
     return;
-  } catch (InvalidDerivationOptionValueException e) {
+  } catch (InvalidRecipeValueException e) {
     javaThrow(env, "org/dicekeys/crypto/seeded/InvalidDerivationOptionValueException", e.what());
     return;
   } catch (KeyLengthException e) {

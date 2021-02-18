@@ -17,55 +17,55 @@ interface CallbackApi {
   }
 
   fun getSecret(
-    derivationOptionsJson: String,
+    recipeJson: String,
     callback: Callback<Secret>? = null
   )
 
   /**
    * Get a [UnsealingKey] derived from the user's DiceKey (the seed) and the key-derivation options
-   * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+   * specified via [recipeJson],
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
   fun getUnsealingKey(
-    derivationOptionsJson: String,
+    recipeJson: String,
     callback: Callback<UnsealingKey>? = null
   )
 
 
   /**
    * Get a [SymmetricKey] derived from the user's DiceKey (the seed) and the key-derivation options
-   * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+   * specified via [recipeJson],
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
   fun getSymmetricKey(
-    derivationOptionsJson: String,
+    recipeJson: String,
     callback: Callback<SymmetricKey>? = null
   )
 
   /**
    * Get a [SigningKey] derived from the user's DiceKey (the seed) and the key-derivation options
-   * specified via [derivationOptionsJson],
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+   * specified via [recipeJson],
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
    * which must specify
    *  `"clientMayRetrieveKey": true`.
    */
   fun getSigningKey(
-    derivationOptionsJson: String,
+    recipeJson: String,
     callback: Callback<SigningKey>? = null
   )
 
 
   /**
-   * Get a [SealingKey] derived from the user's DiceKey and the [ApiDerivationOptions] specified
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html)
-   * as [derivationOptionsJson].
+   * Get a [SealingKey] derived from the user's DiceKey and the [ApiRecipe] specified
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html)
+   * as [recipeJson].
    */
   fun getSealingKey(
-    derivationOptionsJson: String,
+    recipeJson: String,
     callback: Callback<SealingKey>? = null
   )
 
@@ -86,14 +86,14 @@ interface CallbackApi {
   /**
    * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
    * symmetric key derived from the user's DiceKey, the
-   * [derivationOptionsJson]
-   * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+   * [recipeJson]
+   * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
    * and [UnsealingInstructions] specified via a JSON string as
    * [unsealingInstructions] in the
    * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html).
    */
   fun sealWithSymmetricKey(
-    derivationOptionsJson: String,
+    recipeJson: String,
     plaintext: ByteArray,
     unsealingInstructions: String = "",
     callback: Callback<PackagedSealedMessage>
@@ -103,7 +103,7 @@ interface CallbackApi {
   /**
    * Unseal (decrypt & authenticate) a [packagedSealedMessage] that was previously sealed with a
    * symmetric key derived from the user's DiceKey, the
-   * [ApiDerivationOptions] specified in JSON format via [PackagedSealedMessage.derivationOptionsJson],
+   * [ApiRecipe] specified in JSON format via [PackagedSealedMessage.recipeJson],
    * and any [UnsealingInstructions] optionally specified by [PackagedSealedMessage.unsealingInstructions]
    * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html).
    *
@@ -118,20 +118,20 @@ interface CallbackApi {
 
   /**
    * Get a public [SignatureVerificationKey] derived from the user's DiceKey and the
-   * [ApiDerivationOptions] specified in JSON format via [derivationOptionsJson]
+   * [ApiRecipe] specified in JSON format via [recipeJson]
    */
   fun getSignatureVerificationKey(
-    derivationOptionsJson: String,
+    recipeJson: String,
     callback: Callback<SignatureVerificationKey>? = null
   )
 
   /**
    * Sign a [message] using a public/private signing key pair derived
-   * from the user's DiceKey and the [ApiDerivationOptions] specified in JSON format via
-   * [derivationOptionsJson].
+   * from the user's DiceKey and the [ApiRecipe] specified in JSON format via
+   * [recipeJson].
    */
   fun generateSignature(
-    derivationOptionsJson: String,
+    recipeJson: String,
     message: ByteArray,
     callback: Callback<GenerateSignatureResult>? = null
   )

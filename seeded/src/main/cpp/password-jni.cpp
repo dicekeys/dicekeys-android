@@ -24,13 +24,13 @@ Java_org_dicekeys_crypto_seeded_Password_toJson(
 }
 
 JNIEXPORT jstring JNICALL
-Java_org_dicekeys_crypto_seeded_Password_derivationOptionsJsonGetterJNI(
+Java_org_dicekeys_crypto_seeded_Password_recipeGetterJNI(
   JNIEnv *env,
   jobject thiz
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<Password>(env, thiz)->derivationOptionsJson
+      getNativeObjectPtr<Password>(env, thiz)->recipe
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

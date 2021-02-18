@@ -1,10 +1,13 @@
 package org.dicekeys.app.fragments.dicekey
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.api.DerivationRecipe
+import org.dicekeys.api.derivationRecipeTemplates
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
 import org.dicekeys.app.adapters.RecipesAdapter
@@ -15,17 +18,13 @@ import org.dicekeys.app.viewmodels.DiceKeyViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SecretsFragment : AppFragment<SecretsFragmentBinding>(R.layout.secrets_fragment), RecipesAdapter.OnItemClickListener {
+class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout.secrets_fragment), RecipesAdapter.OnItemClickListener {
 
     @Inject
     lateinit var recipesRepository: RecipeRepository
 
-    private lateinit var viewModel: DiceKeyViewModel
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = getDiceKeyRootFragment().viewModel
 
         val adapter = RecipesAdapter(this)
 
@@ -39,23 +38,32 @@ class SecretsFragment : AppFragment<SecretsFragmentBinding>(R.layout.secrets_fra
         }
     }
 
-    override fun onItemClicked(position: Int, recipe: DerivationRecipe?) {
+    override fun onItemClicked(view: View, position: Int, recipe: DerivationRecipe?) {
         when (position) {
             0 -> {
                 // POP UP
                 toast("Custom Recipes")
             }
             1 -> {
-                // POP UP
-                toast("Common Password Recipes")
+                val popupMenu = PopupMenu(requireContext(), view)
+                val menu = popupMenu.menu
+
+                for ((index, recipes) in derivationRecipeTemplates.withIndex()) {
+                    menu.add(0, 0 , index, recipes.name)
+                }
+
+                popupMenu.setOnMenuItemClickListener { item ->
+                    val derivationRecipe = derivationRecipeTemplates[item.order]
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(viewModel.diceKey.keyId, recipe = derivationRecipe, template = derivationRecipe))
+                    true
+                }
+                popupMenu.show()
+
             }
             else -> {
                 recipe?.let {
-                    // navigate(MainDiceKeyFragmentDirections.actionMainDiceKeyRootFragmentToRecipeFragment(viewModel.diceKey.keyId, recipe = it))
-
                     navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(viewModel.diceKey.keyId, recipe = it))
                 }
-
             }
         }
     }

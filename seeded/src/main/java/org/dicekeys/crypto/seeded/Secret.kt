@@ -3,12 +3,12 @@ package org.dicekeys.crypto.seeded
 /**
  * This class represents secret , which is  derived from a seed
  * and set of key-derivation specified options in
- * [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
+ * [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
  *
  * Because secret derivation uses a one-way function, this secret can be shared without
  * revealing the secret seed used to derive it.
  * It can then be used and, if lost, re-derived from the original seed and
- * [derivationOptionsJson] that were first used to derive it.
+ * [recipe] that were first used to derive it.
  *
  * This class wraps the native c++ Secret class from the
  * DiceKeys [Seeded Cryptography Library](https://dicekeys.github.io/seeded-crypto/).
@@ -24,12 +24,12 @@ class Secret private constructor(
 
         @JvmStatic private external fun constructJNI(
                 seedBytes: ByteArray,
-                derivationOptionsJson: String
+                recipe: String
         ) : Long
 
         @JvmStatic private external fun deriveFromSeedJNI(
                 seedString: String,
-                derivationOptionsJson: String
+                recipe: String
         ) : Long
 
         /**
@@ -39,8 +39,8 @@ class Secret private constructor(
         @JvmStatic
         fun deriveFromSeed(
                 seedString: String,
-                derivationOptionsJson: String
-        ) = Secret(deriveFromSeedJNI(seedString, derivationOptionsJson))
+                recipe: String
+        ) = Secret(deriveFromSeedJNI(seedString, recipe))
 
 
         @JvmStatic private external fun fromJsonJNI(
@@ -80,11 +80,11 @@ class Secret private constructor(
 
     private external fun deleteNativeObjectPtrJNI()
     private external fun secretBytesGetterJNI(): ByteArray
-    private external fun derivationOptionsJsonGetterJNI(): String
+    private external fun recipeGetterJNI(): String
 
     /**
      * Serialize the object to a JSON format that stores both the [secretBytes]
-     * and the [derivationOptionsJson] used to generate it.
+     * and the [recipe] used to generate it.
      * (The secret seed string used to generate it is not stored, as it is
      * not kept after the object is constructed.)
      */
@@ -105,7 +105,7 @@ class Secret private constructor(
      * The options that guided the derivation of this key from the raw seed that was
      * passed to [fromJson].
      */
-    val derivationOptionsJson: String get() = derivationOptionsJsonGetterJNI()
+    val recipe: String get() = recipeGetterJNI()
 
     /**
      * A copy constructor to prevent copying of the native pointer, which would lead
@@ -113,15 +113,15 @@ class Secret private constructor(
      */
     constructor(
             other: Secret
-    ) : this(other.secretBytes, other.derivationOptionsJson)
+    ) : this(other.secretBytes, other.recipe)
 
     /**
      * Construct this object from its member values
      */
     internal constructor(
             secretBytes: ByteArray,
-            derivationOptionsJson: String
-    ) : this( constructJNI(secretBytes, derivationOptionsJson) )
+            recipe: String
+    ) : this( constructJNI(secretBytes, recipe) )
 
     protected fun finalize() {
         deleteNativeObjectPtrJNI()

@@ -9,17 +9,26 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="diceViewBgColor">#0B0C71</color>
-    <color name="diceColor">#0A005D</color>
+<!--    <color name="diceColor">#0A005D</color>-->
     <color name="highlighter">#FEFF8A</color>
 
-    <color name="alexandrasBlue">#5576c7</color>
-    <color name="alexandrasBlueLighter">#607bca</color>
+<!--    <color name="alexandrasBlue">#5576c7</color>-->
+<!--    <color name="alexandrasBlueLighter">#607bca</color>-->
     <color name="dicebox">#0A0C70</color>
-    <color name="diceBoxDieSlot">#040240</color>
+<!--    <color name="diceBoxDieSlot">#040240</color>-->
     <color name="formContentBackground">#f8f8f8</color>
     <color name="formHeadingBackground">#080808</color>
     <color name="formContentForeground">#ffffff</color>
-    <color name="formInstructions">#808080</color>
-    <color name="funnelBackground">#C0C9F3</color>
-    <color name="warningBackground">#E0585B</color>
+<!--    <color name="formInstructions">#808080</color>-->
+<!--    <color name="funnelBackground">#C0C9F3</color>-->
+<!--    <color name="warningBackground">#E0585B</color>-->
+
+    <color name="alexandrasBlue">#445FB8</color>
+    <color name="alexandrasBlueLighter">#4E64BE</color>
+    <color name="diceColor">#0A005D</color>
+    <color name="diceBoxDieSlot">#040031</color>
+    <color name="formInstructions">#6D6C6D</color>
+    <color name="funnelBackground">#B2BCEF</color>
+<!--    <color name="highlighter">#FEFF8A</color>-->
+    <color name="warningBackground">#D64049</color>
 </resources>

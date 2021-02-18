@@ -72,13 +72,13 @@ JNIEXPORT jbyteArray JNICALL Java_org_dicekeys_crypto_seeded_SealingKey_keyBytes
   }
 }
 
-JNIEXPORT jstring JNICALL Java_org_dicekeys_crypto_seeded_SealingKey_derivationOptionsJsonGetterJNI(
+JNIEXPORT jstring JNICALL Java_org_dicekeys_crypto_seeded_SealingKey_recipeGetterJNI(
     JNIEnv* env,
     jobject obj
 ) {
   try {
     return stringToJString(env,
-      getNativeObjectPtr<SealingKey>(env, obj)->getDerivationOptionsJson()
+      getNativeObjectPtr<SealingKey>(env, obj)->getRecipeJson()
     );
   } catch (...) {
     throwCppExceptionAsJavaException(env, std::current_exception());

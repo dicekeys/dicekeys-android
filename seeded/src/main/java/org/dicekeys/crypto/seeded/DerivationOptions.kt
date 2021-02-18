@@ -3,10 +3,10 @@ import org.json.JSONObject
 
 
 /**
- * A class to parse and construct key-derivation options in _derivationOptionsJson_ format.
+ * A class to parse and construct key-derivation options in _recipeJson_ format.
  *
  * ```
- * val derivationOptionsJson: String =
+ * val recipeJson: String =
  *   DerivationOptions.Symmetric().apply {
  *       // Ensure the JSON format has the "keyType" field specified
  *       keyType = requiredKeyType  // sets "keyType": "Symmetric" since this class type is Symmetric
@@ -33,12 +33,12 @@ import org.json.JSONObject
  *  adding virtual fields and the types used to support them.
  */
 open class DerivationOptions(
-    derivationOptionsJson: String? = null,
+    recipeJson: String? = null,
     val requiredType: Type? = null
 ): JSONObject(
-    if (derivationOptionsJson == null || derivationOptionsJson.isEmpty())
+    if (recipeJson == null || recipeJson.isEmpty())
         "{}"
-    else derivationOptionsJson
+    else recipeJson
 ) {
     /**
      * The keyType values currently supported by this library as an enum,
@@ -199,12 +199,12 @@ open class DerivationOptions(
      * spec allows fields to be placed in different orders.
      * Any change will yield a different key.
      * Rather, the original JSON string should be preserved.
-     * This library is designed to preserve the derivationOptionsJson string for you.
+     * This library is designed to preserve the recipeJson string for you.
      * All derived keys, including the public [SealingKey] and [SignatureVerificationKey], contain
-     * the derivationOptionsJson used to derive them so that the corresponding
+     * the recipeJson used to derive them so that the corresponding
      * [UnsealingKey] and [SigningKey] can be re-derived if needed.
      * All values sealed by a [SymmetricKey] or [PublicKe] are returned in a
-     * [PackagedSealedMessage] class which contains the derivationOptionsJson needed
+     * [PackagedSealedMessage] class which contains the recipeJson needed
      * to re-derive the keys to unseal the message (but not the seed, as that would
      * allow anyone who intercepts the message to re-derive the key.)
      */
@@ -220,19 +220,19 @@ open class DerivationOptions(
         }}
     }
 
-    class UnsealingKey(derivationOptionsJson: String? = null) :
-        DerivationOptions(derivationOptionsJson,  Type.UnsealingKey)
+    class UnsealingKey(recipeJson: String? = null) :
+        DerivationOptions(recipeJson,  Type.UnsealingKey)
 
-    class Password(derivationOptionsJson: String? = null) :
-      DerivationOptions(derivationOptionsJson,  Type.Password)
+    class Password(recipeJson: String? = null) :
+      DerivationOptions(recipeJson,  Type.Password)
 
-    class Secret(derivationOptionsJson: String? = null) :
-        DerivationOptions(derivationOptionsJson,  Type.Secret)
+    class Secret(recipeJson: String? = null) :
+        DerivationOptions(recipeJson,  Type.Secret)
 
-    class SigningKey(derivationOptionsJson: String? = null) :
-        DerivationOptions(derivationOptionsJson,  Type.SigningKey)
+    class SigningKey(recipeJson: String? = null) :
+        DerivationOptions(recipeJson,  Type.SigningKey)
 
-    class SymmetricKey(derivationOptionsJson: String? = null) :
-        DerivationOptions(derivationOptionsJson,  Type.SymmetricKey)
+    class SymmetricKey(recipeJson: String? = null) :
+        DerivationOptions(recipeJson,  Type.SymmetricKey)
 
 }

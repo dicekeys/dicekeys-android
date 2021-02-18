@@ -8,6 +8,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.dicekeys.dicekey.Face
 import org.dicekeys.trustedapp.R
 
+@Deprecated("Moved to :app")
 class DiceOverlayView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
