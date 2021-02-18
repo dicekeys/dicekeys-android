@@ -3,6 +3,7 @@ package org.dicekeys.app.repositories
 import com.nhaarman.mockitokotlin2.whenever
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -16,7 +17,7 @@ class DiceKeyRepositoryUnitTests {
     private lateinit var repo: DiceKeyRepository
 
     @Mock
-    private lateinit var diceKey: DiceKey<*>
+    private lateinit var diceKey: DiceKey<Face>
 
     @Before
     fun setup() {

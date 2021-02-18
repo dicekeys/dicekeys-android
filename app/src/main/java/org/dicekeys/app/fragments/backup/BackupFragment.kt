@@ -69,9 +69,9 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
         super.onViewCreated(view, savedInstanceState)
 
         // Guard: If DiceKey is not available, return
-        args.diceKeyId?.also {
-            repository.get(it)?.also {
-                diceKey = it as DiceKey<Face>
+        args.diceKeyId?.also { diceKeyId ->
+            repository.get(diceKeyId)?.also {
+                diceKey = it
             } ?: run {
                 findNavController().popBackStack()
                 return
@@ -109,10 +109,8 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
             it?.let {
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
 
-                FaceRead.diceKeyFromJsonFacesRead(it)?.let { diceKey ->
-                    val scannedDiceKey = DiceKey(faces = diceKey.faces.map {
-                        Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
-                    })
+                FaceRead.diceKeyFromJsonFacesRead(it)?.let { diceKeyFaceRead ->
+                    val scannedDiceKey = DiceKey.toDiceKey(diceKeyFaceRead)
                     val backupDiceKey = diceKey.mostSimilarRotationOf(scannedDiceKey)
                     val invalidIndexes = (0 until 25).filter {
                         diceKey.faces[it].numberOfFieldsDifferent(backupDiceKey.faces[it]) > 0

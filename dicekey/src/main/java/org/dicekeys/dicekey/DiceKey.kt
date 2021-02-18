@@ -67,6 +67,10 @@ open class DiceKey<F: Face>(val faces: List<F>) {
     fun clone(diceKey: DiceKey<Face>): DiceKey<Face> {
        return fromHumanReadableForm(diceKey.toHumanReadableForm())
     }
+
+    fun toDiceKey(diceKey: DiceKey<FaceRead>) : DiceKey<Face> = DiceKey(faces = diceKey.faces.map {
+      Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
+    })
   }
 
   fun toHumanReadableForm(): String {

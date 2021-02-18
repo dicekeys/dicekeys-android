@@ -1,47 +1,30 @@
 package org.dicekeys.app.fragments
 
 import android.Manifest
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
-import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Size
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
-import androidx.annotation.LayoutRes
-import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager.widget.ViewPager
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
-import org.dicekeys.app.databinding.AssembleFragmentBinding
 import org.dicekeys.app.databinding.ScanFragmentBinding
 import org.dicekeys.app.extensions.setNavigationResult
 import org.dicekeys.app.extensions.toast
-import org.dicekeys.dicekey.DiceKey
-import org.dicekeys.dicekey.Face
-import org.dicekeys.dicekey.FaceRead
 import org.dicekeys.read.DiceKeyAnalyzer
-import org.dicekeys.read.ReadDiceKeyActivity
 import java.util.concurrent.Executors
+import kotlin.math.min
 
 @AndroidEntryPoint
 class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
@@ -78,11 +61,6 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
 
     // Add this after onCreate
     private val executor = Executors.newSingleThreadExecutor()
-
-
-//    private lateinit var previewView: PreviewView
-//    private lateinit var imageView: ImageView
-
 
     override fun onRequestPermissionsResult(
             requestCode: Int,
@@ -125,9 +103,13 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
         val preview: Preview = Preview.Builder()
                 .setTargetResolution(previewSize)
                 .build()
+                .also {
+                    it.setSurfaceProvider(binding.previewView.surfaceProvider)
+                }
 
-        val pWidth = binding.previewView.width
-        val pHeight = binding.previewView.height
+        // 1024x1024 should be enough to scan. The higher the resolution, the slower the algorithm.
+        val pWidth = min(1024, binding.previewView.width)
+        val pHeight = min(1024, binding.previewView.height)
         val analyzerSize: Size =
                 if (pWidth * 9 > pHeight * 16)
                 // Wider than 16x9, so fix width=1920 and calculate a height which will be <= 1080
@@ -154,13 +136,12 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
                 executor, // ContextCompat.getMainExecutor(this),
                 analyzeDiceKey
         )
-        // analyzerConfig.setTargetRotation()
 
         analyzeDiceKey.onActionOverlay = fun(overlayBitmap) {
             val matrix = Matrix()
-            // FIXME - not sure this will be correct if scanning in landscape.
-            // I'd assume this angle should be derived/read from somewhere.
-            // https://github.com/dicekeys/read-dicekey-android/issues/18
+            // Camera is in landscape mode, fragment is always in portrait
+            // it's needed to rotate the bitmap to match the preview
+            // hardcoded 90 degrees is fine as we have locked the app orientation.
             matrix.postRotate(90f)
             val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.getWidth(), overlayBitmap.getHeight(), matrix, true);
 
@@ -173,13 +154,17 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
             findNavController().popBackStack()
         }
 
-        // Bind the camera selector use case, the preview, and the image analyzer use case
-        // to this activity class
-        var camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, diceKeyImageAnalyzerUseCase)
-//        var camera = cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview)
+        try {
+            // Unbind use cases before rebinding
+            cameraProvider.unbindAll()
 
-//        preview.setSurfaceProvider(previewView.createSurfaceProvider(camera.cameraInfo))
-        preview.setSurfaceProvider(binding.previewView.surfaceProvider)
+            // Bind the camera selector use case, the preview, and the image analyzer use case
+            // to this viewLifecycleOwner
+            cameraProvider.bindToLifecycle(viewLifecycleOwner, cameraSelector, preview, diceKeyImageAnalyzerUseCase)
+
+        } catch(e: Exception) {
+            toast(e.message.toString())
+        }
     }
 }
 

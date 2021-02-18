@@ -17,6 +17,7 @@ import org.dicekeys.app.extensions.getNavigationResult
 import org.dicekeys.app.extensions.showPopupMenu
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.viewmodels.ListDiceKeysViewModel
+import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.FaceRead
 import javax.inject.Inject
 
@@ -41,7 +42,7 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
             facesReadJsonOrNull?.let { facesReadJson ->
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
                 FaceRead.diceKeyFromJsonFacesRead(facesReadJson)?.let { diceKey ->
-                    diceKeyRepository.set(diceKey)
+                    diceKeyRepository.set(DiceKey.toDiceKey(diceKey))
                     navigate(ListDiceKeysFragmentDirections.actionListDiceKeysFragmentToDiceKeyRootFragment(diceKeyId = diceKey.keyId))
                 }
             }
