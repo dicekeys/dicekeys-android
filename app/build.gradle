@@ -76,7 +76,7 @@ dependencies {
 
     /**  --- Camera ----------------------------------------------------------------------------- */
     implementation "androidx.camera:camera-camera2:1.0.0-rc02"
-    implementation 'androidx.camera:camera-view:1.0.0-rc02'
+    implementation "androidx.camera:camera-view:1.0.0-alpha21"
     implementation "androidx.camera:camera-lifecycle:1.0.0-rc02"
     implementation 'com.google.zxing:core:3.4.1'
     /** ----------------------------------------------------------------------------------------- */

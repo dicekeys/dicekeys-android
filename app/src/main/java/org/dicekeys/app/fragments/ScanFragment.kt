@@ -69,7 +69,7 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
     ) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
-               binding.overlayView.post { startCamera() }
+                binding.overlayView.post { startCamera() }
             } else {
                 toast("Permissions not granted by the user.")
                 findNavController().popBackStack()
@@ -95,7 +95,7 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
         var cameraSelector: CameraSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
-        //val previewSize = Size(viewFinder.width, viewFinder.height)
+
         val previewSize = Size(binding.previewView.width, binding.previewView.height)
 
 
@@ -107,9 +107,8 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
                     it.setSurfaceProvider(binding.previewView.surfaceProvider)
                 }
 
-        // 1024x1024 should be enough to scan. The higher the resolution, the slower the algorithm.
-        val pWidth = min(1024, binding.previewView.width)
-        val pHeight = min(1024, binding.previewView.height)
+        val pWidth = binding.previewView.width
+        val pHeight = binding.previewView.height
         val analyzerSize: Size =
                 if (pWidth * 9 > pHeight * 16)
                 // Wider than 16x9, so fix width=1920 and calculate a height which will be <= 1080
@@ -162,7 +161,7 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
             // to this viewLifecycleOwner
             cameraProvider.bindToLifecycle(viewLifecycleOwner, cameraSelector, preview, diceKeyImageAnalyzerUseCase)
 
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             toast(e.message.toString())
         }
     }
