@@ -19,7 +19,13 @@ class DiceKeyView @JvmOverloads constructor(
         val TAG = DiceKeyView::class.java.simpleName
     }
 
+    private var _diceKey: DiceKey<Face>
     var diceKey: DiceKey<Face>
+        get() = _diceKey
+        set(value) {
+            _diceKey = value
+            invalidate()
+        }
     var centerFace: Face? = null
     var showLidTab: Boolean = true
     var leaveSpaceForTab: Boolean = true
@@ -37,7 +43,7 @@ class DiceKeyView @JvmOverloads constructor(
         leaveSpaceForTab = typedArray.getBoolean(R.styleable.DiceKeyView_leaveSpaceForTab, false)
         showLidTab = typedArray.getBoolean(R.styleable.DiceKeyView_showLidTab, false)
         val diceKeyContent = DiceKeyContent.values()[typedArray.getInt(R.styleable.DiceKeyView_dicekey, 0)]
-        diceKey = when(diceKeyContent) {
+        _diceKey = when(diceKeyContent) {
             DiceKeyContent.RANDOM -> DiceKey.createFromRandom()
             else -> DiceKey.example
         }
