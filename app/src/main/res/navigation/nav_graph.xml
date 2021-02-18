@@ -31,7 +31,34 @@
         android:name="org.dicekeys.app.fragments.AssembleFragment"
         tools:layout="@layout/assemble_fragment"
         android:label="@string/assemble_a_dicekey" >
+        <action
+            android:id="@+id/action_backupSelect_to_backup_nav_graph"
+            app:destination="@id/backup_nav_graph" >
+
+            <argument
+                android:name="diceKeyId"
+                app:argType="string"
+                app:nullable="true" />
+
+            <argument
+                android:name="useStickeys"
+                app:argType="boolean"
+                android:defaultValue="false"/>
+
+        </action>
+        <action
+            android:id="@+id/action_assembleFragment_to_mainDiceKeyRootFragment"
+            app:destination="@id/mainDiceKeyRootFragment" />
     </fragment>
 
+    <include
+        app:graph="@navigation/backup_nav_graph" />
+    <fragment
+        android:id="@+id/scanFragment"
+        android:name="org.dicekeys.app.fragments.ScanFragment"
+        android:label="@string/scan"
+        tools:layout="@layout/scan_fragment" />
+
+    <action android:id="@+id/action_global_scanFragment" app:destination="@id/scanFragment"/>
 
 </navigation>

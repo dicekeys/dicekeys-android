@@ -36,10 +36,10 @@
             android:layout_width="150dp"
             android:layout_height="150dp" />
     </org.dicekeys.app.views.TwoDiceViewLayout>
-    <androidx.appcompat.widget.AppCompatButton
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_scan_copy"
         android:text="Scan copy to validate"
-        style="@style/Widget.AppCompat.Button.Colored"
         app:layout_constraintTop_toBottomOf="@id/two_diceview_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,11 +47,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_skip"
         android:text="Let me skip this step"
-        style="?borderlessButtonStyle"
-        android:textColor="@color/colorAccent"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
