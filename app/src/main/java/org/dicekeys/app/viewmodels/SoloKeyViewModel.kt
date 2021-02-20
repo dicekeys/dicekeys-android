@@ -84,7 +84,7 @@ class SoloKeyViewModel : ViewModel() {
      */
     fun getSeed(): ByteArray? {
         return try {
-            derivationRecipe.value?.let { seedString.value?.let { it1 -> Secret.deriveFromSeed(it1, it.derivationOptionsJson).secretBytes } }
+            derivationRecipe.value?.let { seedString.value?.let { it1 -> Secret.deriveFromSeed(it1, it.recipeJson).secretBytes } }
         } catch (e: Throwable) {
             null
         }

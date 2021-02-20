@@ -200,7 +200,7 @@
                         android:id="@+id/tvRecipeJson"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{vmSolo.derivationRecipe.derivationOptionsJson}"
+                        android:text="@{vmSolo.derivationRecipe.recipeJson}"
                         android:textColor="@android:color/background_dark"
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@+id/textView6" />

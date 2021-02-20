@@ -31,7 +31,6 @@ class SoloKeyFragment: AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout.
 
 
     private lateinit var permissionIntent: android.app.PendingIntent
-    private lateinit var viewModel: DiceKeyViewModel
     lateinit var diceKey: DiceKey<*>
     val soloKeyViewModel: SoloKeyViewModel by viewModels()
     companion object {
@@ -61,7 +60,7 @@ class SoloKeyFragment: AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout.
 
         /*Observer derivation recipe change and update password, derivationOptionsJson */
         soloKeyViewModel.derivationRecipe.observe(viewLifecycleOwner, Observer { value ->
-            soloKeyViewModel.seedHaXString.value = (Secret.deriveFromSeed(viewModel.diceKey.seed, value.derivationOptionsJson).secretBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
+            soloKeyViewModel.seedHaXString.value = (Secret.deriveFromSeed(viewModel.diceKey.seed, value.recipeJson).secretBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
         })
 
         /*Sequence number text change event*/
