@@ -43,7 +43,6 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
 
         binding.btnDown.setOnClickListener { recipeViewModel.sequencUpDown(false) }
         binding.btnUp.setOnClickListener { recipeViewModel.sequencUpDown(true) }
-
         binding.etSequenceNumber.doAfterTextChanged { edittext ->
             try{
                 recipeViewModel.updateSequence(edittext.toString().toInt())

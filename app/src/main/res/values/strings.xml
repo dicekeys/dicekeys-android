@@ -61,16 +61,15 @@
     <string name="you_did_it">You did it!</string>
     <string name="thats_it">That\'s it!</string>
 
+    <string name="ask_for_permissions">Ask for Permissions to read USB device</string>
+
     <string name="theres_nothing_more_to_it">There\'s nothing more to it.</string>
     <string name="go_back_to_assemble">Go back to assemble and scan in a real DiceKey.</string>
 
     <string name="be_sure_to_make_a_backup">Be sure to make a backup soon!</string>
     <string name="when_you_press_the_done">When you press the "Done" button, we\'ll take you to the same screen you\'ll see after scanning your DiceKey from the home screen.</string>
 
-
-
-
-    <string name="please_connect_a_solokey">Please connect a SoloKey.</string>
+    <string name="please_connect_a_solokey">Please connect a SoloKey.\n\nMake sure you have enabled OTG option in Android Settings.</string>
     <string name="press_the_button_on_your_security_key_three_times">Press the button on your security key three times.</string>
     <string name="you_have_seconds_to_do_so">You have %s seconds to do so</string>
 
@@ -79,5 +78,5 @@
     <string name="seed_s_sn_s">Seed %s SN# %s</string>
 
     <string name="internal_representation_of_your_recipe">Internal Representation of your recipe</string>
-    <string name="successfully_wrote_to_key">Successfully wrote to key %s</string>
+    <string name="successfully_wrote_to_solokey">Successfully wrote to SoloKey</string>
 </resources>

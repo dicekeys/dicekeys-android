@@ -6,11 +6,11 @@
     <data>
 
         <variable
-            name="vm"
+            name="diceKeyVM"
             type="org.dicekeys.app.viewmodels.DiceKeyViewModel" />
 
         <variable
-            name="vmSolo"
+            name="vm"
             type="org.dicekeys.app.viewmodels.SoloKeyViewModel" />
     </data>
 
@@ -20,226 +20,229 @@
         tools:context=".fragments.SoloKeyFragment">
 
         <TextView
-            android:id="@+id/tvPleaseConnect"
-            isVisible="@{vmSolo.isSoloKeyNotConnected()}"
-            android:layout_width="match_parent"
+            isVisible="@{vm.soloDevice == null}"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
             android:text="@string/please_connect_a_solokey"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:visibility="gone"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceBody1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/coWritingView"
-            isVisible="@{vmSolo.isWritingProcessUnderWay()}"
+        <LinearLayout
+            isVisible="@{vm.isWritingProcessUnderWay &amp;&amp; vm.soloDevice != null}"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="MissingConstraints">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView">
 
             <TextView
-                android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="7dp"
                 android:text="@string/press_the_button_on_your_security_key_three_times"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceHeadline6" />
 
             <TextView
-                android:id="@+id/tvWritingProgress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="7dp"
-                android:text="@{String.format(@string/you_have_seconds_to_do_so,vmSolo.writingProgress)}"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_marginTop="16dp"
+                android:text="@{String.format(@string/you_have_seconds_to_do_so,vm.writingProgress)}"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceBody1"
+                tools:text="@string/you_have_seconds_to_do_so" />
+        </LinearLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            isVisible="@{vmSolo.isSoloKeyConnected()}"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
+        <Button
+            android:id="@+id/buttonAskPermissions"
+            isVisible="@{vm.soloDevice != null &amp;&amp; !vm.hasPermissions}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:onClick="@{vm.askForPermissions}"
+            android:text="@string/ask_for_permissions"
+            tools:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="MissingConstraints">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <com.google.android.material.card.MaterialCardView
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView"
+            isVisible="@{vm.soloDevice != null &amp;&amp; vm.hasPermissions}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@android:color/black"
+            app:cardCornerRadius="7dp"
+            app:contentPadding="5dp"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="10dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                app:cardCornerRadius="7dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="5dp">
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:text="@{String.format(@string/recipe_for, vm.derivationRecipe.name)}"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="@android:color/white"
+                    tools:text="Recipe for Password" />
 
-                    <TextView
-                        android:id="@+id/tvError"
-                        isVisible="@{vmSolo.isFail()}"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="7dp"
-                        android:text="@{vmSolo.failMessage}"
-                        android:textColor="@android:color/holo_red_dark"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/tvSuccess"
-                        isVisible="@{vmSolo.isSuccess()}"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="7dp"
-                        android:text="@{String.format(@string/successfully_wrote_to_key,vmSolo.successMessage)}"
-                        android:textColor="@android:color/holo_green_dark"
-                        android:textSize="18sp"
-                        app:layout_constraintTop_toBottomOf="@+id/tvError" />
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    app:cardCornerRadius="7dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="5dp">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:gravity="center"
+                            android:orientation="horizontal">
 
-                            <EditText
-                                android:id="@+id/etSequenceNumber"
-                                android:layout_width="50dp"
+                            <LinearLayout
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:background="@android:color/transparent"
-                                android:gravity="center"
-                                android:inputType="number"
-                                android:text="@{vmSolo.sequenceNumber.toString()}"
-                                android:textColor="@color/cardview_dark_background"
-                                android:textSize="20sp" />
+                                android:orientation="vertical">
+
+                                <EditText
+                                    android:id="@+id/etSequenceNumber"
+                                    android:layout_width="50dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:background="@android:color/transparent"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:text="@{vm.sequenceNumber.toString()}"
+                                    android:textColor="@color/cardview_dark_background"
+                                    android:textSize="20sp" />
+
+                                <TextView
+                                    android:layout_width="100dp"
+                                    android:layout_height="fill_parent"
+                                    android:gravity="center"
+                                    android:lines="2"
+                                    android:maxLines="2"
+                                    android:text="@string/sequence_number" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:orientation="vertical">
+
+                                <View
+                                    android:id="@+id/btn_up"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:background="@drawable/ic_arrow_up_down"
+                                    android:rotation="-90" />
+
+                                <View
+                                    android:id="@+id/btn_down"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:layout_marginTop="20dp"
+                                    android:background="@drawable/ic_arrow_up_down"
+                                    android:rotation="90" />
+                            </LinearLayout>
 
                             <TextView
-                                android:layout_width="100dp"
-                                android:layout_height="fill_parent"
-                                android:gravity="center"
-                                android:lines="2"
-                                android:maxLines="2"
-                                android:text="@string/sequence_number" />
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="@string/str_multiple_passwords_info" />
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:orientation="vertical">
-
-                            <View
-                                android:id="@+id/btn_up"
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:background="@drawable/ic_arrow_up_down"
-                                android:onClick="@{() ->vmSolo.sequenceUpDown(true)}"
-                                android:rotation="-90" />
-
-                            <View
-                                android:id="@+id/btn_down"
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:layout_marginTop="20dp"
-                                android:background="@drawable/ic_arrow_up_down"
-                                android:onClick="@{() ->vmSolo.sequenceUpDown(false)}"
-                                android:rotation="90" />
-                        </LinearLayout>
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@color/grey" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:text="@string/str_multiple_passwords_info" />
+                            android:text="@string/internal_representation_of_your_recipe"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                        <TextView
+                            android:id="@+id/tvRecipeJson"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@{vm.derivationRecipe.recipeJson}"
+                            android:textAppearance="?attr/textAppearanceCaption"
+                            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@color/grey" />
+
+                        <TextView
+                            android:id="@+id/textView7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/the_seed_to_be_written_to_the_security_key"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@{vm.seed}"
+                            android:textAppearance="?attr/textAppearanceCaption"
+                            tools:text="1234567890fdfghjkliuytrerfgsadjfhkadfaoidfhadfgkafdalkjfakjdfklafa" />
+
+                        <Button
+                            android:id="@+id/buttonSeedSolo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{!vm.isWritingProcessUnderWay}"
+                            android:onClick="@{vm.writeToSoloKey}"
+                            android:text="@{String.format(@string/seed_s_sn_s, vm.hasPermissions ? vm.soloDevice.productName : vm.soloDevice.toString() ,vm.hasPermissions ? vm.soloDevice.serialNumber : vm.soloDevice.toString())}"
+                            tools:text="@string/seed_s_sn_s" />
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            isVisible="@{vm.isWritingProcessUnderWay}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
                     </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:background="@color/grey" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/internal_representation_of_your_recipe"
-                        android:textColor="@android:color/background_dark"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/tvRecipeJson"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@{vmSolo.derivationRecipe.recipeJson}"
-                        android:textColor="@android:color/background_dark"
-                        android:textSize="12sp"
-                        app:layout_constraintTop_toBottomOf="@+id/textView6" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:background="@color/grey" />
-
-                    <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/the_seed_to_be_written_to_the_security_key"
-                        android:textColor="@android:color/background_dark"
-                        android:textSize="18sp"
-                        app:layout_constraintTop_toBottomOf="@+id/tvRecipeJson"
-                        tools:layout_editor_absoluteX="7dp" />
-
-                    <TextView
-                        android:id="@+id/tvSeedHexString"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@{vmSolo.seedHaXString}"
-                        android:textColor="@android:color/background_dark"
-                        android:textSize="12sp" />
-
-                    <Button
-                        android:id="@+id/btnSidoKey"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:onClick="@{() ->vmSolo.writeToCurrentSoloKey()}"
-                        android:text="@{String.format(@string/seed_s_sn_s,vmSolo.productName,vmSolo.serialNumber)}" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

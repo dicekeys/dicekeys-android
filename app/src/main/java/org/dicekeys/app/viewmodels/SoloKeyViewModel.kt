@@ -1,67 +1,115 @@
 package org.dicekeys.app.viewmodels
 
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import android.os.CountDownTimer
-import android.text.Editable
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.dicekeys.fidowriter.ListOfWritableUsbFidoKeys
+import android.view.View
+import androidx.lifecycle.*
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.dicekeys.api.DerivationRecipe
-import org.dicekeys.app.fragments.dicekey.SoloKeyFragment
+import org.dicekeys.api.seedSecurityKeyRecipeTemplate
+import org.dicekeys.app.Application
+import org.dicekeys.app.ConsumableEvent
+import org.dicekeys.app.fido.ConnectionToWritableUsbFidoKey
 import org.dicekeys.crypto.seeded.Secret
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 
 
-class SoloKeyViewModel : ViewModel() {
+class SoloKeyViewModel @AssistedInject constructor(
+        @Assisted application: Application,
+        @Assisted val usbManager: UsbManager,
+        @Assisted val diceKey: DiceKey<Face>,
+) : AndroidViewModel(application) {
 
-    lateinit var deviceList: ListOfWritableUsbFidoKeys
-    val isSoloKeyConnected = MutableLiveData(true)
+    val soloDevice = MutableLiveData<UsbDevice>(null)
+    val hasPermissions = MutableLiveData(false)
+
+    var derivationRecipe = MutableLiveData(seedSecurityKeyRecipeTemplate);
+    var sequenceNumber = MutableLiveData(seedSecurityKeyRecipeTemplate.sequence.toString())
+    val seed = MutableLiveData("")
+
+    val writingProgress = MutableLiveData("")
+
+
+
     val isWritingProcessUnderWay = MutableLiveData(false)
-    val isSoloKeyNotConnected = MutableLiveData(false)
-    var derivationRecipe = MutableLiveData<DerivationRecipe>();
-    var sequenceNumber = MutableLiveData<Int>(1)
-    val seedHaXString= MutableLiveData<String>("")
-    val isSuccess = MutableLiveData(false)
-    val isFail = MutableLiveData(false)
-    var successMessage = MutableLiveData<String>("");
-    var failMessage =  MutableLiveData<String>("");
-    var writingProgress =  MutableLiveData<String>("");
-    /*Connected USB Details*/
-    var productName =  MutableLiveData<String>("");
-    var serialNumber =  MutableLiveData<String>("");
-   /************************/
-    var seedString =  MutableLiveData<String>("");
-    companion object {
-        const val SIDOKEYWRITETIME = 8000L
+    val onError = MutableLiveData<ConsumableEvent<Throwable>>()
+    val onSuccess = MutableLiveData<ConsumableEvent<Boolean>>()
+
+    private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+
+            if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
+                scanUsbDevices()
+            } else if (UsbManager.ACTION_USB_DEVICE_DETACHED == intent.action) {
+                scanUsbDevices()
+            } else if (ACTION_USB_PERMISSION == intent.action) {
+                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                    checkUsbPermissions()
+                }
+            }
+        }
     }
 
-    /**
-     * Show no solo key connect view and hide others views
-     */
-    fun noSidoConnected(){
-        isWritingProcessUnderWay.postValue(false)
-        isSoloKeyConnected.postValue(false)
-        isSoloKeyNotConnected.postValue(true);
+    init {
+        val intentFilter = IntentFilter().also {
+            it.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+            it.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+            it.addAction(ACTION_USB_PERMISSION)
+        }
+
+        getApplication<Application>().registerReceiver(broadcastReceiver, intentFilter)
+
+        generateSeed()
+        scanUsbDevices()
     }
 
-    /**
-     * show writing underway view and hide other views
-     */
-    fun writingUnderWay(){
-        isSoloKeyNotConnected.postValue(false);
-        isSoloKeyConnected.postValue(false)
-        isWritingProcessUnderWay.postValue(true)
+    private fun generateSeed(){
+        derivationRecipe.value?.let{ derivationRecipe ->
+            seed.value = (Secret.deriveFromSeed(diceKey.seed, derivationRecipe.recipeJson).secretBytes.joinToString(separator = "") { String.format("%02x", (it.toInt() and 0xFF)) })
+        }
     }
 
-    /**
-     * Show solo key connected view and hide other views
+    /*
+     * Warning: Only one USB device is supported, connecting more than one can result on unexpected behavior.
+     * This is OK for now, as this is the most common scenario for Android
      */
-    fun soloKeyConnected(){
-        isSoloKeyNotConnected.postValue(false);
-        isWritingProcessUnderWay.postValue(false)
-        isSoloKeyConnected.postValue(true)
+    fun scanUsbDevices() {
+        usbManager.deviceList.values.firstOrNull { device ->
+            ConnectionToWritableUsbFidoKey.isSoloKey(device)
+        }.also { usbDevice ->
+            soloDevice.value = usbDevice
+            isWritingProcessUnderWay.value = false
+            checkUsbPermissions()
+        }
+    }
+
+    fun checkUsbPermissions(){
+        soloDevice.value?.let {
+            hasPermissions.postValue(usbManager.hasPermission(it))
+        }
+    }
+
+    fun askForPermissions(v: View?){
+        soloDevice.value?.let{
+            val permissionIntent =
+                    PendingIntent.getBroadcast(getApplication(), 0, Intent(ACTION_USB_PERMISSION), 0)
+            usbManager.requestPermission(it, permissionIntent)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        getApplication<Application>().unregisterReceiver(broadcastReceiver)
     }
 
     /**
@@ -72,19 +120,11 @@ class SoloKeyViewModel : ViewModel() {
     }
 
     /**
-     * Check USB Device is ready to write or nor
-     */
-    fun deviceReadyToWrite(): Boolean =
-            deviceList.devices.values.firstOrNull()?.let {
-                deviceList.hasPermission(it)
-            } ?: false
-
-    /**
      * Get Seed HEXAString
      */
     fun getSeed(): ByteArray? {
         return try {
-            derivationRecipe.value?.let { seedString.value?.let { it1 -> Secret.deriveFromSeed(it1, it.recipeJson).secretBytes } }
+            derivationRecipe.value?.let { seed.value?.let { it1 -> Secret.deriveFromSeed(it1, it.recipeJson).secretBytes } }
         } catch (e: Throwable) {
             null
         }
@@ -105,88 +145,77 @@ class SoloKeyViewModel : ViewModel() {
     /**
      * Write seed to solokey
      */
-    private fun writeToSoloKey(device: UsbDevice) {
-        if (isWritingProcessUnderWay.value == true)
-            return
-        val seed = getSeed()
-        if (seed == null || !isSeedValid(seed))
-            return
-        //Show Writing underway view
-        writingUnderWay()
-        isSuccess.postValue(false)
-        isFail.postValue(false)
-        timer.start()
+    fun writeToSoloKey(v: View?) {
+        soloDevice.value?.let { device ->
+            if (isWritingProcessUnderWay.value == true)
+                return
 
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val connection = deviceList.connect(device)
-                connection.loadKeySeed(seed)
-                //Hide writing underway process and show connected Solo Key details with success
-                soloKeyConnected()
-                successMessage.postValue(device.deviceName)/*device.deviceName*/
-                isSuccess.postValue(true)
-                render()
-            } catch (e: java.lang.Exception) {
-                //Solo Key wring failed
-                isFail.postValue(true)
-                failMessage.postValue(e.message.toString())
-                render()
+            val seed = getSeed()
+            if (seed == null || !isSeedValid(seed))
+                return
+
+            isWritingProcessUnderWay.postValue(true)
+            timer.start()
+
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    ConnectionToWritableUsbFidoKey
+                            .connect(usbManager, device)
+                            .loadKeySeed(seed)
+
+                    onSuccess.postValue(ConsumableEvent(true))
+                } catch (e: Exception) {
+                    onError.postValue(ConsumableEvent(e))
+                }finally {
+                    timer.cancel()
+                    isWritingProcessUnderWay.postValue(false)
+                }
             }
-        }
-    }
-
-
-    /**
-     * Render attached usb devices and show ready to write view if device ready show view to write key
-     */
-    fun render() {
-        if (isSeedValid() &&
-                deviceReadyToWrite() &&
-                !(isWritingProcessUnderWay.value)!!) {
-            soloKeyConnected()
-            deviceList.devices.values.firstOrNull()?.let {
-                productName.postValue(it.productName.toString())
-                serialNumber.postValue(it.serialNumber.toString())
-
-            }
-        } else {
-            //No solo key connected
-            noSidoConnected()
-        }
-       // soloKeyConnected()
-        timer.cancel()
-    }
-
-    /**
-     * Check attached usb and write seed to solo key
-     */
-    fun writeToCurrentSoloKey() {
-        if (deviceList.devices.size == 1) deviceList.devices.values.firstOrNull()?.let {
-            writeToSoloKey(it)
         }
     }
 
     /**
      * Up/down sequence number
      */
-    fun sequenceUpDown(isUp: Boolean) {
-        sequenceNumber.value?.let { a ->
-            if (isUp) {
-                sequenceNumber.value = (a + 1)
-            } else {
-                if (a > 1) sequenceNumber.value = (a - 1)
+    fun sequencUpDown(isUp: Boolean) {
+        try{
+            sequenceNumber.value?.toInt()?.let { seq ->
+                updateSequence(seq + if (isUp) 1 else -1)
             }
+        }catch (e : Exception){
+            e.printStackTrace()
         }
     }
 
-    /*
-    * Edittext Squence Number change
-    * */
-    fun doafterchange(editable: Editable){
-        if (!editable.isNullOrBlank() && editable.toString().toInt() >= 1) {
-            sequenceNumber.value = editable.toString().toInt()
-        } else {
-            sequenceNumber.value = 1
+    fun updateSequence(sequence: Int){
+        if(sequence > 0) {
+            derivationRecipe.value = DerivationRecipe(seedSecurityKeyRecipeTemplate, sequence)
+            sequenceNumber.value = sequence.toString()
+
+            generateSeed()
+        }
+    }
+
+    @dagger.assisted.AssistedFactory
+    interface AssistedFactory {
+        fun create(application: Application, usbManager: UsbManager, diceKey: DiceKey<Face>): SoloKeyViewModel
+    }
+
+    companion object {
+        const val SIDOKEYWRITETIME = 8000L
+
+        private const val ACTION_USB_PERMISSION = "org.dicekeys.USB_PERMISSION"
+
+        fun provideFactory(
+                assistedFactory: AssistedFactory,
+                application: Application,
+                usbManager: UsbManager,
+                diceKey: DiceKey<Face>
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return assistedFactory.create(application, usbManager, diceKey) as T
+            }
         }
     }
 }
