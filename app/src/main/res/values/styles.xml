@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--Components-->
+    <style name="Widget.DiceKeys.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.DiceKeys.Toolbar</item>
+    </style>
+
+    <style name="ThemeOverlay.DiceKeys.Toolbar" parent="">
+        <item name="android:colorControlActivated">@color/white</item>
+        <item name="android:colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
+</resources>
