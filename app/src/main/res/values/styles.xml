@@ -1,68 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.DiceKeys.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
-        <item name="tabIndicatorColor">?colorPrimaryVariant</item>
-        <item name="textAllCaps">false</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="Theme.DiceKeys.Toolbar" parent="Widget.AppCompat.Toolbar">
-        <item name="titleTextAppearance">@style/TextAppearance.MyTheme.Headline6</item>
-        <item name="colorControlNormal">?android:textColorPrimary</item>
+    <!--Components-->
+    <style name="Widget.DiceKeys.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.DiceKeys.Toolbar</item>
     </style>
 
-    <style name="Theme.DiceKeys.Button.Primary" parent="TextAppearance.MaterialComponents.Button">
-        <item name="android:textColor">?android:textColorPrimary</item>
-        <item name="backgroundTint">?colorPrimary</item>
-    </style>
-
-    <style name="Theme.DiceKeys.EditText.ThemeOverlay" parent="ThemeOverlay">
-        <item name="colorControlNormal">?android:textColorTertiary</item>
-        <item name="colorControlActivated">?colorAccent</item>
-    </style>
-
-    <style name="Theme.DiceKeys.TextStyle.EditText.Base" parent="Widget.AppCompat.EditText">
-        <item name="android:textColor">?android:textColorPrimary</item>
-        <item name="android:textColorHighlight">?android:textColorSecondary</item>
-        <item name="android:textColorHint">?android:textColorTertiary</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-        <item name="android:paddingBottom">@dimen/text_size_medium</item>
-        <item name="android:theme">@style/Theme.DiceKeys.EditText.ThemeOverlay</item>
-    </style>
-
-    <style name="Theme.DiceKeys.TextStyle" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">?android:textColorPrimary</item>
-        <item name="android:textColorHint">?android:textColorTertiary</item>
-    </style>
-
-    <style name="Theme.DiceKeys.TextStyle.HeadingLarge" parent="Theme.DiceKeys.TextStyle">
-        <item name="android:textSize">?textSizeHeadingLarge</item>
-    </style>
-    <style name="Theme.DiceKeys.TextStyle.HeadingDefault" parent="Theme.DiceKeys.TextStyle">
-        <item name="android:textSize">?textSizeHeadingDefault</item>
-    </style>
-    <style name="Theme.DiceKeys.TextStyle.HeadingSmall" parent="Theme.DiceKeys.TextStyle">
-        <item name="android:textSize">?textSizeHeadingSmall</item>
-    </style>
-
-    <style name="Theme.DiceKeys.TextStyle.HeadingXSmall" parent="Theme.DiceKeys.TextStyle">
-        <item name="android:textSize">?textSizeHeadingXSmall</item>
-    </style>
-
-    <style name="Theme.DiceKeys.TextStyle.LabelLarge" parent="Theme.DiceKeys.TextStyle">
-        <item name="android:textSize">?textSizeLabelLarge</item>
-    </style>
-    <style name="Theme.DiceKeys.TextStyle.LabelDefault" parent="Theme.DiceKeys.TextStyle">
-        <item name="android:textSize">?textSizeLabelDefault</item>
-    </style>
-
-    <style name="Theme.DiceKeys.TextStyle.LabelSmall" parent="Theme.DiceKeys.TextStyle">
-        <item name="android:textSize">?textSizeLabelSmall</item>
-    </style>
-
-    <style name="Theme.DiceKeys.TextStyle.LabelXSmall" parent="Theme.DiceKeys.TextStyle">
-        <item name="android:textSize">?textSizeLabelXSmall</item>
+    <style name="ThemeOverlay.DiceKeys.Toolbar" parent="">
+        <item name="android:colorControlActivated">@color/white</item>
+        <item name="android:colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
     </style>
 
 </resources>
