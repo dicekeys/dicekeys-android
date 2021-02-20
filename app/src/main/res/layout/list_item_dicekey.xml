@@ -17,25 +17,19 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <org.dicekeys.app.views.DiceKeyCenterFaceOnlyView
+            android:id="@+id/centerView"
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"/>
 
         <TextView
-            android:id="@+id/center_face"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceHeadline3"
-            android:text="@{diceKey.centerFace}"
-            tools:text="G5"
-            android:background="@color/colorAccent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text= "@{String.format(@string/unlock_dicekey_with_center, diceKey.centerFace)}"
+            tools:text="Center"
+            android:textAlignment="center"
+            android:text= "@{String.format(@string/unlock_dicekey_with_center, diceKey.centerFaceAsFace.toHumanReadableForm(false))}"
             android:textAppearance="?attr/textAppearanceHeadline6" />
 
     </LinearLayout>

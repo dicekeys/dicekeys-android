@@ -57,7 +57,8 @@
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableTop="@drawable/ic_baseline_lock_24"
+                    android:drawableTop="@drawable/ic_phonelet_24"
+                    android:drawableTint="@color/white"
                     android:text="@{vm.isSaved() ? @string/saved : @string/save}"
                     android:textColor="@color/white"
                     android:textSize="12sp" />

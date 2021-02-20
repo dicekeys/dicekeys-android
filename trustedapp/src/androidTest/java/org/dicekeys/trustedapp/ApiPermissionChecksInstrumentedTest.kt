@@ -2,7 +2,7 @@ package org.dicekeys.trustedapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.CompletableDeferred
-import org.dicekeys.api.ApiDerivationOptions
+import org.dicekeys.api.ApiRecipe
 import org.dicekeys.api.ClientPackageNotAuthorizedException
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.trustedapp.apicommands.permissionchecked.ApiPermissionChecksForPackages
@@ -28,28 +28,28 @@ class ApiPermissionChecksInstrumentedTest {
 
     Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
-        ApiDerivationOptions().apply {
+        ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       ))
 
     Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
-        ApiDerivationOptions().apply {
+        ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example.", "com.other")
         }
       ))
 
       Assert.assertTrue(ApiPermissionChecksForPackages("com.example."){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
-        ApiDerivationOptions().apply {
+        ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       ))
 
       Assert.assertFalse(ApiPermissionChecksForPackages("com.examplespoof"){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
-        ApiDerivationOptions().apply {
+        ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       ))
@@ -60,7 +60,7 @@ class ApiPermissionChecksInstrumentedTest {
   fun preventsLengthExtensionAttack() {
     ApiPermissionChecksForPackages("com.examplespoof"){ deferredAllow }
       .throwIfClientNotAuthorized(
-        ApiDerivationOptions().apply {
+        ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       )
@@ -70,7 +70,7 @@ class ApiPermissionChecksInstrumentedTest {
   fun throwsIfAndroidPackagePrefixesNotSet() {
     ApiPermissionChecksForPackages("com.example"){ deferredAllow }
       .throwIfClientNotAuthorized(
-        ApiDerivationOptions().apply{
+        ApiRecipe().apply{
           allowAndroidPrefixes =listOf("https://someplaceotherthanhere.com/")
         }
       )

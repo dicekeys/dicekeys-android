@@ -1,6 +1,7 @@
 package org.dicekeys.app.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +36,7 @@ class RecipesAdapter(private val clickListener: OnItemClickListener) : RecyclerV
         }
 
         holder.itemView.setOnClickListener {
-            clickListener.onItemClicked(position, recipe)
+            clickListener.onItemClicked(holder.itemView, position, recipe)
         }
     }
 
@@ -52,7 +53,7 @@ class RecipesAdapter(private val clickListener: OnItemClickListener) : RecyclerV
     class RecipesViewHolder(val binding: ListItemRecipeBinding) : RecyclerView.ViewHolder(binding.root)
 
     interface OnItemClickListener{
-        fun onItemClicked(position: Int, recipe: DerivationRecipe?)
+        fun onItemClicked(view: View, position: Int, recipe: DerivationRecipe?)
     }
 
     companion object {

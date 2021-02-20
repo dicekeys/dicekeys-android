@@ -27,7 +27,8 @@ import org.dicekeys.crypto.seeded.Secret
 import org.dicekeys.dicekey.DiceKey
 
 @AndroidEntryPoint
-class SoloKeyFragment : AppFragment<SolokeyFragmentBinding>(R.layout.solokey_fragment) {
+class SoloKeyFragment: AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout.solokey_fragment) {
+
 
     private lateinit var permissionIntent: android.app.PendingIntent
     private lateinit var viewModel: DiceKeyViewModel

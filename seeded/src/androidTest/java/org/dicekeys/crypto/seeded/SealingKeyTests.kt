@@ -29,15 +29,15 @@ class SealingKeyTests {
 
     @Test
     fun createPublicKeyFromJson() {
-        val derivationOptionsJson = """{}"""
+        val recipeJson = """{}"""
         val publicKeyJson = """{
             "keyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
-            "derivationOptionsJson": "$derivationOptionsJson"
+            "recipe": "$recipeJson"
         }"""
         val pk = SealingKey.fromJson(publicKeyJson)
         assertEquals(0x0f, pk.keyBytes[31].toInt())
-        assertEquals(derivationOptionsJson, pk.derivationOptionsJson)
-        val copyOfPk = SealingKey(pk.keyBytes, pk.derivationOptionsJson)
+        assertEquals(recipeJson, pk.recipeJson)
+        val copyOfPk = SealingKey(pk.keyBytes, pk.recipeJson)
         assertEquals(pk, copyOfPk)
     }
 
@@ -45,8 +45,8 @@ class SealingKeyTests {
 
     @Test
     fun testPrivateKeys() {
-        val derivationOptionsJson = """{"type": "UnsealingKey"}"""
-        val sk = UnsealingKey.deriveFromSeed(seed, derivationOptionsJson)
+        val recipeJson = """{"type": "UnsealingKey"}"""
+        val sk = UnsealingKey.deriveFromSeed(seed, recipeJson)
         val pk = sk.getSealingkey()
         val testMessage = "some message to test"
         val packagedSealedMessage = pk.seal( testMessage );
@@ -67,10 +67,10 @@ class SealingKeyTests {
 
     @Test
     fun shouldThrowInvalidDerivationOptionValueException() {
-        val derivationOptionsJson = """{}"""
+        val recipeJson = """{}"""
         val publicKeyJson = """{
             "ErrorInsteadOfKeyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
-            "derivationOptionsJson": "$derivationOptionsJson"
+            "recipe": "$recipeJson"
         }"""
         try {
             SealingKey.fromJson(publicKeyJson)
@@ -98,15 +98,15 @@ class SealingKeyTests {
 
     @Test
     fun createSignatureVerificationKeyFromJson() {
-        val derivationOptionsJson = """{}"""
+        val recipeJson = """{}"""
         val signatureVerificationKeyJson = """{
             "keyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
-            "derivationOptionsJson": "$derivationOptionsJson"
+            "recipe": "$recipeJson"
         }"""
         val svk = SignatureVerificationKey.fromJson(signatureVerificationKeyJson)
         assertEquals(0x0f, svk.keyBytes[31].toInt())
-        assertEquals(derivationOptionsJson, svk.derivationOptionsJson)
-        val copyOfSvk = SignatureVerificationKey(svk.keyBytes, svk.derivationOptionsJson)
+        assertEquals(recipeJson, svk.recipeJson)
+        val copyOfSvk = SignatureVerificationKey(svk.keyBytes, svk.recipeJson)
         assertEquals(svk, copyOfSvk)
 
         val bCopy = svk.toSerializedBinaryForm()
@@ -116,8 +116,8 @@ class SealingKeyTests {
 
     @Test
     fun testSigningAndVerificationPairs() {
-        val derivationOptionsJson = """{"type": "SigningKey"}"""
-        val sk = SigningKey.deriveFromSeed(seed, derivationOptionsJson)
+        val recipeJson = """{"type": "SigningKey"}"""
+        val sk = SigningKey.deriveFromSeed(seed, recipeJson)
         val vk = sk.getSignatureVerificationKey()
         val testMessage = "some message to test"
         val signature = sk.generateSignature( testMessage )
@@ -141,8 +141,8 @@ class SealingKeyTests {
 
     @Test
     fun testSymmetricKey() {
-        val derivationOptionsJson = """{"type": "SymmetricKey"}"""
-        val sk = SymmetricKey.deriveFromSeed(seed, derivationOptionsJson)
+        val recipeJson = """{"type": "SymmetricKey"}"""
+        val sk = SymmetricKey.deriveFromSeed(seed, recipeJson)
         val testMessage = "some message to test"
         val packagedSealedMessage = sk.seal(testMessage)
         val decryptedBytes = SymmetricKey.unseal(packagedSealedMessage, seed)
@@ -152,20 +152,20 @@ class SealingKeyTests {
         val binaryCopy = sk.toSerializedBinaryForm()
         val copy = SymmetricKey.fromSerializedBinaryForm(binaryCopy)
         assertArrayEquals(copy.keyBytes, sk.keyBytes)
-        assertEquals(copy.derivationOptionsJson, sk.derivationOptionsJson)
+        assertEquals(copy.recipeJson, sk.recipeJson)
 
     }
 
     @Test
     fun testSeed() {
-        val derivationOptionsJson = """{"type": "Secret", "lengthInBytes": 48}"""
-        val s = Secret.deriveFromSeed(seed, derivationOptionsJson)
+        val recipeJson = """{"type": "Secret", "lengthInBytes": 48}"""
+        val s = Secret.deriveFromSeed(seed, recipeJson)
         assertEquals(s.secretBytes.size, 48)
 
         val binaryCopy = s.toSerializedBinaryForm()
         val copy = Secret.fromSerializedBinaryForm(binaryCopy)
         assertArrayEquals(copy.secretBytes, s.secretBytes)
-        assertEquals(copy.derivationOptionsJson, s.derivationOptionsJson)
+        assertEquals(copy.recipeJson, s.recipeJson)
     }
 
 

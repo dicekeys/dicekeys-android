@@ -19,7 +19,7 @@ class ExampleUnitTest {
 //fun createPublicKeyFromJson() {
 //    val pk = PublicKey("""{
 //            "keyBytes": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f",
-//            "derivationOptionsJson": "{}"
+//            "recipe": "{}"
 //        }""")
 //    assertEquals(0x0f, pk.keyBytes[31].toInt())
 //}

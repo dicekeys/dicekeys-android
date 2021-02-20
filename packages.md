@@ -31,7 +31,7 @@ This library can be used to derive keys from (hopefully strong) passwords or oth
 secret seeds.
 
 To this end, we have placed features specific to DiceKeys in the [org.dicekeys.api] namespace.
-That includes [ApiKeyDerivationOptions], which extends [KeyDerivationOptions] in this package
+That includes [ApiRecipe], which extends [Recipe] in this package
 with fields that would not apply to other seeded cryptography applications (e.g.,
 ignoring the orientation of the faces of dice within a DiceKey).
 It also includes the format for unsealing_instructions instructions [UnsealingInstructions]
@@ -45,8 +45,8 @@ on your application's behalf.
 This package uses and returns keys from the [org.dicekeys.crypto.seeded] package.
 
 You specify how keys are derived, and place restrictions on their use, via the
-[Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html/),
-which you can construct and parse using [ApiKeyDerivationOptions].
+[Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html/),
+which you can construct and parse using [ApiRecipe].
 
 If you are sealing messages with a [SymmetricKey] or [PublicKey], you can
 instruct the DiceKeys to enforce additional restrictions before unsealing a

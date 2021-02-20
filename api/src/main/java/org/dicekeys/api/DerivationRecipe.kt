@@ -1,10 +1,15 @@
 package org.dicekeys.api
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.Json.Default.decodeFromString
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.dicekeys.crypto.seeded.DerivationOptions
 
 fun addFieldToEndOfJsonObjectString(originalJsonObjectString: String, fieldName: String, fieldValue: String): String {
@@ -27,13 +32,13 @@ fun addSequenceNumberToDerivationOptionsJson(derivationOptionsWithoutSequenceNum
 }
 
 private fun augmentRecipeJson(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int): String {
-    var derivationOptionsJson = template.derivationOptionsJson
+    var recipeJson = template.recipeJson
     if (template.type == DerivationOptions.Type.Password && lengthInChars > 0) {
-        derivationOptionsJson = addLengthInCharsToDerivationOptionsJson(derivationOptionsJson, lengthInChars)
+        recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
     }
-    derivationOptionsJson =
-            addSequenceNumberToDerivationOptionsJson(derivationOptionsJson, sequenceNumber)
-    return derivationOptionsJson
+    recipeJson =
+            addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
+    return recipeJson
 }
 
 @Serializable
@@ -44,7 +49,7 @@ data class DerivationRecipe(
         @SerialName("name")
         val name: String,
         @SerialName("derivation_options_json")
-        val derivationOptionsJson: String
+        val recipeJson: String
 ) : Parcelable {
 
     constructor(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0):
@@ -62,11 +67,16 @@ data class DerivationRecipe(
                 augmentRecipeJson(template, sequenceNumber, lengthInChars)
         ) {}
 
+    @IgnoredOnParcel
+    val sequence by lazy {
+        Json.parseToJsonElement(recipeJson).jsonObject["#"]?.jsonPrimitive?.int ?: 1
+    }
+
     /*
      * An easy way to have a unique identifier for this Recipe
      */
     val id
-        get() = derivationOptionsJson.hashCode().toString()
+        get() = recipeJson.hashCode().toString()
 
     override fun toString(): String = Json.encodeToString(this)
 }

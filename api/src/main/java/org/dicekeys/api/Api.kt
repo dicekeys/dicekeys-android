@@ -58,15 +58,15 @@ abstract class Api(
 
     /**
      * Sign a [message] using a public/private signing key pair derived
-     * from the user's DiceKey and the [ApiDerivationOptions] specified in JSON format via
-     * [derivationOptionsJson].
+     * from the user's DiceKey and the [ApiRecipe] specified in JSON format via
+     * [recipeJson].
      */
     override suspend fun generateSignature(
-      derivationOptionsJson: String,
+      recipeJson: String,
       message: ByteArray
     ): GenerateSignatureResult =
-      generateSignatureMarshaller.call(authTokenIfRequired(ApiDerivationOptions(derivationOptionsJson))) {
-        marshallParameter(Inputs.generateSignature::derivationOptionsJson.name, derivationOptionsJson )
+      generateSignatureMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+        marshallParameter(Inputs.generateSignature::recipeJson.name, recipeJson )
         marshallParameter(Inputs.generateSignature::message.name, message)
       }
 
@@ -82,14 +82,14 @@ abstract class Api(
 
     /**
      * Derive a pseudo-random cryptographic [Secret] from the user's DiceKey and
-     * the key-derivation options passed as [derivationOptionsJson]
-     * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html).
+     * the key-derivation options passed as [recipeJson]
+     * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
      */
     override suspend fun getSecret(
-      derivationOptionsJson: String
+      recipeJson: String
     ): Secret =
-      getSecretMarshaller.call(authTokenIfRequired(ApiDerivationOptions(derivationOptionsJson))) {
-        marshallParameter(Inputs.getSecret::derivationOptionsJson.name, derivationOptionsJson)
+      getSecretMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+        marshallParameter(Inputs.getSecret::recipeJson.name, recipeJson)
       }
 
     private val getSecretMarshaller =
@@ -100,16 +100,16 @@ abstract class Api(
 
     /**
      * Get a [UnsealingKey] derived from the user's DiceKey (the seed) and the key-derivation options
-     * specified via [derivationOptionsJson],
-     * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+     * specified via [recipeJson],
+     * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
      * which must specify
      *  `"clientMayRetrieveKey": true`.
      */
     override suspend fun getUnsealingKey(
-      derivationOptionsJson: String
+      recipeJson: String
     ): UnsealingKey =
-      getUnsealingKeyMarshaller.call(authTokenIfRequired(ApiDerivationOptions(derivationOptionsJson))) {
-        marshallParameter(Inputs.getUnsealingKey::derivationOptionsJson.name, derivationOptionsJson)
+      getUnsealingKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+        marshallParameter(Inputs.getUnsealingKey::recipeJson.name, recipeJson)
       }
 
     private val getUnsealingKeyMarshaller =
@@ -120,16 +120,16 @@ abstract class Api(
 
     /**
      * Get a [SymmetricKey] derived from the user's DiceKey (the seed) and the key-derivation options
-     * specified via [derivationOptionsJson],
-     * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+     * specified via [recipeJson],
+     * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
      * which must specify
      *  `"clientMayRetrieveKey": true`.
      */
     override suspend fun getSymmetricKey(
-      derivationOptionsJson: String
+      recipeJson: String
     ): SymmetricKey =
-      getSymmetricKeyMarshaller.call(authTokenIfRequired(ApiDerivationOptions(derivationOptionsJson))) {
-        marshallParameter(Inputs.getSymmetricKey::derivationOptionsJson.name, derivationOptionsJson)
+      getSymmetricKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+        marshallParameter(Inputs.getSymmetricKey::recipeJson.name, recipeJson)
       }
 
     private val getSymmetricKeyMarshaller =
@@ -139,16 +139,16 @@ abstract class Api(
 
     /**
      * Get a [SigningKey] derived from the user's DiceKey (the seed) and the key-derivation options
-     * specified via [derivationOptionsJson],
-     * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+     * specified via [recipeJson],
+     * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
      * which must specify
      *  `"clientMayRetrieveKey": true`.
      */
     override suspend fun getSigningKey(
-      derivationOptionsJson: String
+      recipeJson: String
     ): SigningKey =
-      getSigningKeyMarshaller.call(authTokenIfRequired(ApiDerivationOptions(derivationOptionsJson))) {
-        marshallParameter(Inputs.getSigningKey::derivationOptionsJson.name, derivationOptionsJson)
+      getSigningKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+        marshallParameter(Inputs.getSigningKey::recipeJson.name, recipeJson)
       }
 
     private val getSigningKeyMarshaller =
@@ -158,15 +158,15 @@ abstract class Api(
 
 
     /**
-     * Get a [SealingKey] derived from the user's DiceKey and the [ApiDerivationOptions] specified
-     * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html)
-     * as [derivationOptionsJson].
+     * Get a [SealingKey] derived from the user's DiceKey and the [ApiRecipe] specified
+     * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html)
+     * as [recipeJson].
      */
     override suspend fun getSealingKey(
-      derivationOptionsJson: String
+      recipeJson: String
     ): SealingKey =
-      getSealingKeyMarshaller.call(authTokenIfRequired(ApiDerivationOptions(derivationOptionsJson))) {
-        marshallParameter(Inputs.getSealingKey::derivationOptionsJson.name, derivationOptionsJson)
+      getSealingKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+        marshallParameter(Inputs.getSealingKey::recipeJson.name, recipeJson)
       }
 
     private val getSealingKeyMarshaller =
@@ -188,7 +188,7 @@ abstract class Api(
       packagedSealedMessage: PackagedSealedMessage
     ): ByteArray =
       unsealWithUnsealingKeyMarshaller.call(
-        authTokenIfRequired(ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson)) ?:
+        authTokenIfRequired(ApiRecipe(packagedSealedMessage.recipe)) ?:
         authTokenIfRequired(UnsealingInstructions(packagedSealedMessage.unsealingInstructions))
       ) {
         marshallParameter(Inputs.unsealWithUnsealingKey.packagedSealedMessageJson, packagedSealedMessage)
@@ -203,19 +203,19 @@ abstract class Api(
     /**
      * Seal (encrypt with a message-authentication code) a message ([plaintext]) with a
      * symmetric key derived from the user's DiceKey, the
-     * [derivationOptionsJson]
-     * in [Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html),
+     * [recipeJson]
+     * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html),
      * and [UnsealingInstructions] specified via a JSON string as
      * [unsealingInstructions] in the
      * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html).
      */
     override suspend fun sealWithSymmetricKey(
-      derivationOptionsJson: String,
+      recipeJson: String,
       plaintext: ByteArray,
       unsealingInstructions: String
     ): PackagedSealedMessage =
-      sealWithSymmetricKeyMarshaller.call(authTokenIfRequired(ApiDerivationOptions(derivationOptionsJson))) {
-        marshallParameter(Inputs.sealWithSymmetricKey::derivationOptionsJson.name, derivationOptionsJson)
+      sealWithSymmetricKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+        marshallParameter(Inputs.sealWithSymmetricKey::recipeJson.name, recipeJson)
         marshallParameter(Inputs.sealWithSymmetricKey::plaintext.name, plaintext)
         marshallParameter(Inputs.sealWithSymmetricKey::unsealingInstructions.name, unsealingInstructions)
       }
@@ -229,7 +229,7 @@ abstract class Api(
     /**
      * Unseal (decrypt & authenticate) a [packagedSealedMessage] that was previously sealed with a
      * symmetric key derived from the user's DiceKey, the
-     * [ApiDerivationOptions] specified in JSON format via [PackagedSealedMessage.derivationOptionsJson],
+     * [ApiRecipe] specified in JSON format via [PackagedSealedMessage.recipeJson],
      * and any [UnsealingInstructions] optionally specified by [PackagedSealedMessage.unsealingInstructions]
      * in [Post-Decryption Instructions JSON Format](https://dicekeys.github.io/seeded-crypto/unsealing_instructions_format.html).
      *
@@ -240,7 +240,7 @@ abstract class Api(
       packagedSealedMessage: PackagedSealedMessage
     ): ByteArray =
       unsealWithSymmetricKeyMarshaller.call(
-        authTokenIfRequired(ApiDerivationOptions(packagedSealedMessage.derivationOptionsJson)) ?:
+        authTokenIfRequired(ApiRecipe(packagedSealedMessage.recipe)) ?:
         authTokenIfRequired(UnsealingInstructions(packagedSealedMessage.unsealingInstructions))
       ) {
         marshallParameter(Inputs.unsealWithSymmetricKey.packagedSealedMessageJson, packagedSealedMessage)
@@ -254,13 +254,13 @@ abstract class Api(
 
     /**
      * Get a public [SignatureVerificationKey] derived from the user's DiceKey and the
-     * [ApiDerivationOptions] specified in JSON format via [derivationOptionsJson]
+     * [ApiRecipe] specified in JSON format via [recipeJson]
      */
     override suspend fun getSignatureVerificationKey(
-      derivationOptionsJson: String
+      recipeJson: String
     ): SignatureVerificationKey =
-      getSignatureVerificationKeyMarshaller.call(authTokenIfRequired(ApiDerivationOptions(derivationOptionsJson))) {
-        marshallParameter(Inputs.getSignatureVerificationKey::derivationOptionsJson.name, derivationOptionsJson)
+      getSignatureVerificationKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+        marshallParameter(Inputs.getSignatureVerificationKey::recipeJson.name, recipeJson)
       }
 
     private val getSignatureVerificationKeyMarshaller =
@@ -274,48 +274,48 @@ abstract class Api(
 
 
     override fun generateSignatureAsync(
-      derivationOptionsJson: String,
+      recipeJson: String,
       message: ByteArray
     ): Deferred<GenerateSignatureResult> = CoroutineScope(Dispatchers.Default).async {
-      generateSignature(derivationOptionsJson, message) }
+      generateSignature(recipeJson, message) }
 
     override fun getSealingKeyAsync(
-      derivationOptionsJson: String
+      recipeJson: String
     ): Deferred<SealingKey> = CoroutineScope(Dispatchers.Default).async {
-      getSealingKey(derivationOptionsJson) }
+      getSealingKey(recipeJson) }
 
     override fun getSecretAsync(
-      derivationOptionsJson: String
+      recipeJson: String
     ): Deferred<Secret> = CoroutineScope(Dispatchers.Default).async {
-      getSecret(derivationOptionsJson) }
+      getSecret(recipeJson) }
 
     override fun getSignatureVerificationKeyAsync(
-      derivationOptionsJson: String
+      recipeJson: String
     ): Deferred<SignatureVerificationKey> = CoroutineScope(Dispatchers.Default).async {
-      getSignatureVerificationKey(derivationOptionsJson) }
+      getSignatureVerificationKey(recipeJson) }
 
     override fun getSigningKeyAsync(
-      derivationOptionsJson: String
+      recipeJson: String
     ): Deferred<SigningKey> = CoroutineScope(Dispatchers.Default).async {
-      getSigningKey(derivationOptionsJson) }
+      getSigningKey(recipeJson) }
 
     override fun getSymmetricKeyAsync(
-      derivationOptionsJson: String
+      recipeJson: String
     ): Deferred<SymmetricKey> = CoroutineScope(Dispatchers.Default).async {
-      getSymmetricKey(derivationOptionsJson) }
+      getSymmetricKey(recipeJson) }
 
     override fun getUnsealingKeyAsync(
-      derivationOptionsJson: String
+      recipeJson: String
     ): Deferred<UnsealingKey> = CoroutineScope(Dispatchers.Default).async {
-      getUnsealingKey(derivationOptionsJson) }
+      getUnsealingKey(recipeJson) }
 
     override fun sealWithSymmetricKeyAsync(
-      derivationOptionsJson: String,
+      recipeJson: String,
       plaintext: ByteArray,
       unsealingInstructions: String
     ): Deferred<PackagedSealedMessage> = CoroutineScope(Dispatchers.Default).async {
       sealWithSymmetricKey(
-      derivationOptionsJson, plaintext, unsealingInstructions
+      recipeJson, plaintext, unsealingInstructions
     ) }
 
 
@@ -344,50 +344,50 @@ abstract class Api(
     }
 
     override fun generateSignature(
-      derivationOptionsJson: String,
+      recipeJson: String,
       message: ByteArray,
       callback: CallbackApi.Callback<GenerateSignatureResult>?
     ) = toCallback(callback) { generateSignature(
-      derivationOptionsJson, message
+      recipeJson, message
     )}
 
     override fun getSealingKey(
-      derivationOptionsJson: String,
+      recipeJson: String,
       callback: CallbackApi.Callback<SealingKey>?
-    ) = toCallback(callback) { getSealingKey(derivationOptionsJson) }
+    ) = toCallback(callback) { getSealingKey(recipeJson) }
 
     override fun getSecret(
-      derivationOptionsJson: String,
+      recipeJson: String,
       callback: CallbackApi.Callback<Secret>?
-    ) = toCallback(callback) { getSecret(derivationOptionsJson) }
+    ) = toCallback(callback) { getSecret(recipeJson) }
 
     override fun getSignatureVerificationKey(
-      derivationOptionsJson: String,
+      recipeJson: String,
       callback: CallbackApi.Callback<SignatureVerificationKey>?
-    ) = toCallback(callback) { getSignatureVerificationKey(derivationOptionsJson) }
+    ) = toCallback(callback) { getSignatureVerificationKey(recipeJson) }
 
     override fun getSigningKey(
-      derivationOptionsJson: String,
+      recipeJson: String,
       callback: CallbackApi.Callback<SigningKey>?
-    ) = toCallback(callback) { getSigningKey(derivationOptionsJson) }
+    ) = toCallback(callback) { getSigningKey(recipeJson) }
 
     override fun getSymmetricKey(
-      derivationOptionsJson: String,
+      recipeJson: String,
       callback: CallbackApi.Callback<SymmetricKey>?
-    ) = toCallback(callback) { getSymmetricKey(derivationOptionsJson) }
+    ) = toCallback(callback) { getSymmetricKey(recipeJson) }
 
     override fun getUnsealingKey(
-      derivationOptionsJson: String,
+      recipeJson: String,
       callback: CallbackApi.Callback<UnsealingKey>?
-    ) = toCallback(callback) { getUnsealingKey(derivationOptionsJson) }
+    ) = toCallback(callback) { getUnsealingKey(recipeJson) }
 
     override fun sealWithSymmetricKey(
-      derivationOptionsJson: String,
+      recipeJson: String,
       plaintext: ByteArray,
       unsealingInstructions: String,
       callback: CallbackApi.Callback<PackagedSealedMessage>
     ) = toCallback(callback) { sealWithSymmetricKey(
-      derivationOptionsJson, plaintext, unsealingInstructions
+      recipeJson, plaintext, unsealingInstructions
     ) }
 
     override fun unsealWithSymmetricKey(

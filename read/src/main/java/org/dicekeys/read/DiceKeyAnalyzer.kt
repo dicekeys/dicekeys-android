@@ -1,5 +1,6 @@
 package org.dicekeys.read
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
@@ -7,7 +8,7 @@ import androidx.camera.core.ImageProxy
 import java.nio.ByteBuffer
 import java.lang.Exception
 
-class DiceKeyAnalyzer(val activity: ReadDiceKeyActivity) : ImageAnalysis.Analyzer {
+class DiceKeyAnalyzer(val activity: Activity) : ImageAnalysis.Analyzer {
 
     var onActionOverlay = fun(overlay: Bitmap): Unit = null!!
     var onActionDone = fun(diceKeyAsJson: String): Unit = null!!

@@ -10,7 +10,7 @@ import org.dicekeys.app.encryption.BiometricsHelper
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SaveFragment: AppFragment<SaveFragmentBinding>(R.layout.save_fragment) {
+class SaveFragment: AbstractDiceKeyFragment<SaveFragmentBinding>(R.layout.save_fragment) {
 
     @Inject
     lateinit var biometricsHelper: BiometricsHelper
@@ -18,14 +18,15 @@ class SaveFragment: AppFragment<SaveFragmentBinding>(R.layout.save_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.vm = getDiceKeyRootFragment().viewModel
+        binding.vm = viewModel
 
-        binding.buttonSave.setOnClickListener {
-            biometricsHelper.encrypt(getDiceKeyRootFragment().viewModel.diceKey, this)
+        binding.buttonSave.setOnClickListener{
+            biometricsHelper.encrypt(viewModel.diceKey, this)
         }
 
-        binding.buttonDelete.setOnClickListener {
+        binding.buttonRemove.setOnClickListener{
             getDiceKeyRootFragment().viewModel.remove()
         }
+
     }
 }

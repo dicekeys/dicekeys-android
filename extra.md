@@ -12,8 +12,8 @@ You can ask the DiceKeys app to derive cryptographic keys seeded by the user's D
 to perform cryptographic operations using the derived keys,
 and to give those keys to your application if it is authorized to receive them.
 You specify how keys are derived and who can access them via the
-[Key-Derivation Options JSON Format](hhttps://dicekeys.github.io/seeded-crypto/derivation_options_format.html/),
-which you can construct and parse using the [ApiKeyDerivationOptions] class.
+[Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html/),
+which you can construct and parse using the [ApiRecipe] class.
 
 The API builds on the the cross-platform
 [Seeded Cryptography C++ Library](https://dicekeys.github.io/seeded-crypto/).
@@ -75,15 +75,15 @@ class SampleActivity: AppCompatActivity() {
         try {
             // Derive keys that other application are forbidden from using.
             // (The DiceKeys app will refuse to (re)derive this key for other apps.)
-            val keyDerivationOptionsJson = ApiKeyDerivationOptions().apply {
-                restrictions = ApiKeyDerivationOptions.Restrictions().apply {
+            val recipeJson = ApiRecipe().apply {
+                restrictions = ApiRecipe.Restrictions().apply {
                     // The activity's packageName field contains the name of this package
                     androidPackagePrefixesAllowed = listOf(packageName)
                 }
             }.toJson()
             // Get a public key derived form the user's DiceKey.
             // (Most apps will get this once and store it, rather than ask for it every time.)
-            val publicKey = diceKeysApiClient.getSealingKey(keyDerivationOptionsJson)
+            val publicKey = diceKeysApiClient.getSealingKey(recipeJson)
             // With public key cryptography, sealing a message does not require an API call
             // and is a fully synchronous operation (no waiting needed).
             val packagedSealedMessage = publicKey.seal("You call this a plaintext?")

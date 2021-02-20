@@ -3,5 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="highlighter">#FEFF8A</color>
+    <color name="diceColor">#0A005D</color>
     <color name="diceViewBgColor">#0B0C71</color>
 </resources>

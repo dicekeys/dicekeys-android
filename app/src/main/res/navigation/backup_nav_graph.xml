@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/backup_nav_graph"
+    app:startDestination="@id/backupFragment">
+
+    <fragment
+        android:id="@+id/backupFragment"
+        android:name="org.dicekeys.app.fragments.backup.BackupFragment"
+        tools:layout="@layout/backup_fragment"
+        android:label="@string/backup">
+
+        <argument
+            android:name="diceKeyId"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="useStickeys"
+            app:argType="boolean"
+            android:defaultValue="false"/>
+    </fragment>
+
+</navigation>
