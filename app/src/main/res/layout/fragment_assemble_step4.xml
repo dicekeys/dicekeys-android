@@ -42,20 +42,35 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:text="Scan"
+            android:text="@{vm.diceKey == null ? @string/scan : @string/scan_again}"
             app:layout_constraintBottom_toTopOf="@id/btn_skip"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
 
-        <ImageView
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="@dimen/fab_margin"
             app:layout_constraintBottom_toTopOf="@id/btn_scan"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_top"
-            app:srcCompat="@drawable/ic_scanning_side_view" />
+            app:layout_constraintTop_toBottomOf="@id/text_top">
+
+            <org.dicekeys.app.views.DiceKeyView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                dicekey="@{vm.diceKey}"
+                isVisible="@{vm.diceKey != null}"
+                android:layout_gravity="center" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                isVisible="@{vm.diceKey == null}"
+                app:srcCompat="@drawable/ic_scanning_side_view" />
+
+        </FrameLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

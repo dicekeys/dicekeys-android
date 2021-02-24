@@ -160,6 +160,8 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
             }
 
             view.findViewById<Button>(R.id.btn_scan)?.setOnClickListener {
+                // Clear previous dicekey
+                viewModel.setDiceKey(null)
                 parent.navigate(AssembleFragmentDirections.actionGlobalScanFragment())
             }
 

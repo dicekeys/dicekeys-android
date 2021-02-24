@@ -11,6 +11,7 @@
     <string name="secrets">Secrets</string>
     <string name="backup">Backup</string>
     <string name="scan">Scan</string>
+    <string name="scan_again">Scan again</string>
     <string name="your_dicekey">Your DiceKey</string>
     <string name="dicekey" translatable="false">DiceKey</string>
 
