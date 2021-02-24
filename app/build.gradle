@@ -13,13 +13,13 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "org.dicekeys.app"
+        applicationId "com.dicekeys.app"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
-        testApplicationId "org.dicekeys.test"
+        testApplicationId "com.dicekeys.test"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
