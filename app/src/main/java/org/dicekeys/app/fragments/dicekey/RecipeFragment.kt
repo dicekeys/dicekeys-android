@@ -26,7 +26,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
     lateinit var viewModelFactory: RecipeViewModel.AssistedFactory
 
     private val recipeViewModel: RecipeViewModel by viewModels {
-        RecipeViewModel.provideFactory(viewModelFactory, viewModel.diceKey.value!!, args.recipe, args.template)
+        RecipeViewModel.provideFactory(assistedFactory = viewModelFactory, diceKey = viewModel.diceKey.value!!, recipe = args.recipe, template = args.template)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,13 +35,37 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         binding.diceKeyVM = viewModel
         binding.vm = recipeViewModel
 
-
         binding.btnDown.setOnClickListener { recipeViewModel.sequencUpDown(false) }
         binding.btnUp.setOnClickListener { recipeViewModel.sequencUpDown(true) }
-        binding.etSequenceNumber.doAfterTextChanged { edittext ->
+
+        binding.maxChars.doAfterTextChanged { edittext ->
             try{
                 recipeViewModel.updateSequence(edittext.toString().toInt())
             }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+
+        binding.etSequenceNumber.doAfterTextChanged { edittext ->
+            try {
+                recipeViewModel.updateSequence(edittext.toString().toInt())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        binding.domains.doAfterTextChanged { edittext ->
+            try {
+                recipeViewModel.updateDomains(edittext.toString())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        binding.maxChars.doAfterTextChanged { edittext ->
+            try {
+                recipeViewModel.updateLengthInChars(edittext.toString().toInt())
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }

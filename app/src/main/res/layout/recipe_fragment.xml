@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:gravity="center"
-                    android:text="@{String.format(@string/recipe_for, vm.derivationRecipe.name)}"
+                    android:text="@{String.format(@string/recipe_for, vm.derivationRecipe != null ? vm.derivationRecipe.name : '-')}"
                     android:textAppearance="?attr/textAppearanceHeadline6"
                     android:textColor="@android:color/white"
                     tools:text="Recipe for Password" />
@@ -63,7 +63,54 @@
                         android:paddingEnd="6dp">
 
                         <LinearLayout
-                            isVisible="@{vm.template != null}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            isVisible="@{vm.isCustomRecipe()}"
+                            android:orientation="vertical">
+
+                            <EditText
+                                android:id="@+id/domains"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:color/transparent"
+                                android:hint="https://example.com"
+                                android:gravity="center"
+                                android:inputType="textUri"
+                                android:textAppearance="?attr/textAppearanceBody1"
+                                tools:ignore="HardcodedText" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAlignment="center"
+                                android:textAppearance="?attr/textAppearanceCaption"
+                                android:text="@string/url_or_comma_separeated_list" />
+
+                            <EditText
+                                android:id="@+id/maxChars"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:color/transparent"
+                                android:gravity="center"
+                                android:hint="@string/no_limit"
+                                android:inputType="number"
+                                android:layout_marginTop="6dp"
+                                android:textAppearance="?attr/textAppearanceBody1" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAlignment="center"
+                                android:textAppearance="?attr/textAppearanceCaption"
+                                android:hint="@string/no_limit"
+                                android:text="@string/maximum_character" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            isVisible="@{vm.template != null || vm.isCustomRecipe()}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
@@ -135,7 +182,17 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:text="@string/complete_the_recipe"
+                            android:textAlignment="center"
+                            android:padding="8dp"
+                            isVisible="@{vm.derivationRecipe == null}"
+                            android:textAppearance="?attr/textAppearanceCaption" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:text="Internal Representation of your recipe"
+                            isVisible="@{vm.derivationRecipe != null}"
                             android:textAppearance="?attr/textAppearanceBody1" />
 
                         <TextView
@@ -146,6 +203,7 @@
                             android:text="@{vm.derivationRecipe.recipeJson}"
                             android:textColor="@android:color/background_dark"
                             android:textSize="12sp"
+                            isVisible="@{vm.derivationRecipe != null}"
                             tools:text="{allow : [this is the json]}" />
 
                         <View
@@ -157,7 +215,7 @@
                         <Button
                             android:id="@+id/btnSaveRecipeInMenu"
                             style="@style/Widget.MaterialComponents.Button.TextButton"
-                            isVisible="@{!vm.recipeIsSaved}"
+                            isVisible="@{!vm.recipeIsSaved &amp;&amp; vm.derivationRecipe != null}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/str_save_recipe_in_the_menu"
@@ -166,7 +224,7 @@
                         <Button
                             android:id="@+id/btnRemoveRecipeFromMenu"
                             style="@style/Widget.MaterialComponents.Button.TextButton"
-                            isVisible="@{vm.recipeIsSaved}"
+                            isVisible="@{vm.recipeIsSaved &amp;&amp; vm.derivationRecipe != null}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
@@ -194,8 +252,8 @@
             <org.dicekeys.app.views.DiceKeyView
                 android:id="@+id/dicekey"
                 dicekey="@{vm.diceKey}"
-                android:layout_width="240dp"
-                android:layout_height="240dp"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -209,6 +267,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="8dp"
             app:cardCornerRadius="5dp"
+            isVisible="@{vm.derivationRecipe != null}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">

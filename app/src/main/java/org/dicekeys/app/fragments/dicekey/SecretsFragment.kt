@@ -41,8 +41,7 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
     override fun onItemClicked(view: View, position: Int, recipe: DerivationRecipe?) {
         when (position) {
             0 -> {
-                // POP UP
-                toast("Custom Recipes")
+                navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment())
             }
             1 -> {
                 val popupMenu = PopupMenu(requireContext(), view)
@@ -54,7 +53,7 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
 
                 popupMenu.setOnMenuItemClickListener { item ->
                     val derivationRecipe = derivationRecipeTemplates[item.order]
-                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(viewModel.diceKey.value!!.keyId, recipe = derivationRecipe, template = derivationRecipe))
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(template = derivationRecipe))
                     true
                 }
                 popupMenu.show()
@@ -62,7 +61,7 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
             }
             else -> {
                 recipe?.let {
-                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(viewModel.diceKey.value!!.keyId, recipe = it))
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = it))
                 }
             }
         }

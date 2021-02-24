@@ -14,7 +14,11 @@
     <string name="scan_again">Scan again</string>
     <string name="your_dicekey">Your DiceKey</string>
     <string name="dicekey" translatable="false">DiceKey</string>
+    <string name="url_or_comma_separeated_list">URL or comma-separated list of domains</string>
+    <string name="maximum_character">Maximum Character Length (6 – 999)</string>
+    <string name="no_limit">no limit</string>
 
+    <string name="complete_the_recipe">Complete the recipe above to see the output</string>
     <string name="enter_dicekey_by_hand">Enter the DiceKey by Hand</string>
     <string name="save_the_dicekey">Save the DiceKey</string>
     <string name="save_center_die_notice">The center die will appear in the home screen.</string>
