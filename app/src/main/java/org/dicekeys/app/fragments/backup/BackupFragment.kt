@@ -9,10 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
@@ -58,12 +55,7 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
 
     private lateinit var pagerAdapter: BackupPagerAdapter
 
-    @Inject
-    lateinit var viewModelFactory: DiceKeyViewModel.AssistedFactory
-
-    val viewModel: DiceKeyViewModel by viewModels {
-        DiceKeyViewModel.provideFactory(viewModelFactory, diceKey)
-    }
+    val viewModel: DiceKeyViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -134,7 +126,9 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
                     }
                     builder.setPositiveButton("OK") { dialog, _ ->
                         dialog.cancel()
-                        finish()
+                        if(perfectMatch){
+                            finish()
+                        }
                     }
                     builder.show()
                 }

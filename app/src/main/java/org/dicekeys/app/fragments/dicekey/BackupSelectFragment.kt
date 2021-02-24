@@ -18,11 +18,11 @@ class BackupSelectFragment: AbstractDiceKeyFragment<BackupSelectFragmentBinding>
         binding.vm = viewModel
 
         binding.wrapStickeys.setOnClickListener {
-            navigate(BackupSelectFragmentDirections.actionBackupSelectToBackupNavGraph(viewModel.diceKey.keyId, true))
+            navigate(BackupSelectFragmentDirections.actionBackupSelectToBackupFragment(viewModel.diceKey.value!!.keyId, true))
         }
 
         binding.wrapDiceKey.setOnClickListener {
-            navigate(BackupSelectFragmentDirections.actionBackupSelectToBackupNavGraph(viewModel.diceKey.keyId, false))
+            navigate(BackupSelectFragmentDirections.actionBackupSelectToBackupFragment(viewModel.diceKey.value!!.keyId, false))
         }
     }
 }

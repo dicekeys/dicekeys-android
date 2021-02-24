@@ -21,11 +21,11 @@ class SaveFragment: AbstractDiceKeyFragment<SaveFragmentBinding>(R.layout.save_f
         binding.vm = viewModel
 
         binding.buttonSave.setOnClickListener{
-            biometricsHelper.encrypt(viewModel.diceKey, this)
+            biometricsHelper.encrypt(viewModel.diceKey.value!!, this)
         }
 
         binding.buttonRemove.setOnClickListener{
-            getDiceKeyRootFragment().viewModel.remove()
+            viewModel.remove()
         }
 
     }

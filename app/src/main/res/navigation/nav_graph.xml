@@ -12,53 +12,103 @@
         tools:layout="@layout/list_dicekeys_fragment">
 
         <action
-            android:id="@+id/action_listDiceKeysFragment_to_diceKeyRootFragment"
-            app:destination="@id/mainDiceKeyRootFragment" />
-        <action
             android:id="@+id/action_listDiceKeysFragment_to_assembleFragment"
             app:destination="@id/assembleFragment" />
     </fragment>
+
     <fragment
-        android:id="@+id/mainDiceKeyRootFragment"
-        android:name="org.dicekeys.app.fragments.dicekey.RootDiceKeyFragment"
-        tools:layout="@layout/root_dicekey_fragment">
-        <argument
-            android:name="diceKeyId"
-            app:argType="string" />
-    </fragment>
+        android:id="@+id/save"
+        android:name="org.dicekeys.app.fragments.dicekey.SaveFragment"
+        tools:layout="@layout/save_fragment" />
+
+
     <fragment
         android:id="@+id/assembleFragment"
         android:name="org.dicekeys.app.fragments.AssembleFragment"
-        tools:layout="@layout/assemble_fragment"
-        android:label="@string/assemble_a_dicekey" >
+        android:label="@string/assemble_a_dicekey"
+        tools:layout="@layout/assemble_fragment">
+
         <action
-            android:id="@+id/action_backupSelect_to_backup_nav_graph"
-            app:destination="@id/backup_nav_graph" >
+            android:id="@+id/action_assembleFragment_to_backupFragment"
+            app:destination="@id/backupFragment" />
 
-            <argument
-                android:name="diceKeyId"
-                app:argType="string"
-                app:nullable="true" />
-
-            <argument
-                android:name="useStickeys"
-                app:argType="boolean"
-                android:defaultValue="false"/>
-
-        </action>
-        <action
-            android:id="@+id/action_assembleFragment_to_mainDiceKeyRootFragment"
-            app:destination="@id/mainDiceKeyRootFragment" />
     </fragment>
 
-    <include
-        app:graph="@navigation/backup_nav_graph" />
+    <fragment
+        android:id="@+id/solokey"
+        android:name="org.dicekeys.app.fragments.dicekey.SoloKeyFragment"
+        tools:layout="@layout/solokey_fragment" />
+
+    <fragment
+        android:id="@+id/backupSelect"
+        android:name="org.dicekeys.app.fragments.dicekey.BackupSelectFragment"
+        tools:layout="@layout/backup_select_fragment">
+        <action
+            android:id="@+id/action_backupSelect_to_backupFragment"
+            app:destination="@id/backupFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/backupFragment"
+        android:name="org.dicekeys.app.fragments.backup.BackupFragment"
+        android:label="@string/backup"
+        tools:layout="@layout/backup_fragment">
+
+        <argument
+            android:name="diceKeyId"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="useStickeys"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/secrets"
+        android:name="org.dicekeys.app.fragments.dicekey.SecretsFragment"
+        tools:layout="@layout/secrets_fragment">
+        <action
+            android:id="@+id/action_secrets_to_recipeFragment"
+            app:destination="@id/recipeFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/recipeFragment"
+        android:name="org.dicekeys.app.fragments.dicekey.RecipeFragment"
+        android:label=""
+        tools:layout="@layout/recipe_fragment">
+        <argument
+            android:name="diceKeyId"
+            app:argType="string" />
+        <argument
+            android:name="recipe"
+            app:argType="org.dicekeys.api.DerivationRecipe" />
+        <argument
+            android:name="template"
+            android:defaultValue="@null"
+            app:argType="org.dicekeys.api.DerivationRecipe"
+            app:nullable="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/dicekey"
+        android:name="org.dicekeys.app.fragments.dicekey.DiceKeyFragment"
+        tools:layout="@layout/dicekey_fragment" />
+
+
     <fragment
         android:id="@+id/scanFragment"
         android:name="org.dicekeys.app.fragments.ScanFragment"
         android:label="@string/scan"
         tools:layout="@layout/scan_fragment" />
 
-    <action android:id="@+id/action_global_scanFragment" app:destination="@id/scanFragment"/>
+    <action
+        android:id="@+id/action_global_scanFragment"
+        app:destination="@id/scanFragment" />
+    <action android:id="@+id/action_global_dicekey" app:destination="@id/dicekey"/>
 
 </navigation>

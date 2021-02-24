@@ -4,19 +4,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
-import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.RecipeFragmentBinding
 import org.dicekeys.app.extensions.toast
-import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.repositories.RecipeRepository
 import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.viewmodels.RecipeViewModel
-import org.dicekeys.dicekey.DiceKey
-import org.dicekeys.dicekey.Face
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,7 +26,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
     lateinit var viewModelFactory: RecipeViewModel.AssistedFactory
 
     private val recipeViewModel: RecipeViewModel by viewModels {
-        RecipeViewModel.provideFactory(viewModelFactory, viewModel.diceKey, args.recipe, args.template)
+        RecipeViewModel.provideFactory(viewModelFactory, viewModel.diceKey.value!!, args.recipe, args.template)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +49,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         binding.tvPassword.setOnClickListener {
             recipeViewModel.password.value?.let {
                 copyToClipboard("password", it, requireContext())
-                toast("Password copied")
+                toast(R.string.password_copied)
             }
         }
 
