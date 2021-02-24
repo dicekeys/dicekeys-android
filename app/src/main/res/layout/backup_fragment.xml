@@ -24,41 +24,49 @@
 
         <Button
             android:id="@+id/btn_first"
-            android:layout_width="50dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:text="&lt;&lt;"
+            app:icon="@drawable/ic_baseline_navigate_before_24"
+            app:iconGravity="end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/btn_last"
-            android:layout_width="50dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:text="&gt;&gt;"
+            app:icon="@drawable/ic_baseline_navigate_next_24"
+            app:iconGravity="start"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_prev"
-            android:layout_width="110dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:text="Previous"
+            android:text="@string/previous"
+            app:icon="@drawable/ic_baseline_navigate_before_24"
+            app:iconGravity="textStart"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/btn_first" />
 
         <Button
             android:id="@+id/btn_next"
-            android:layout_width="110dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:text="Next"
+            android:text="@string/next"
+            app:icon="@drawable/ic_baseline_navigate_next_24"
+            app:iconGravity="textEnd"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_last" />
 

@@ -72,7 +72,8 @@
 
         <org.dicekeys.app.views.StickerTargetSheetView
             android:layout_width="180dp"
-            android:layout_height="180dp" />
+            android:layout_height="180dp"
+            app:dicekey="example"/>
 
         <org.dicekeys.app.views.StickerTargetSheetView
             android:layout_width="180dp"

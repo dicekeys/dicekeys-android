@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <color name="colorPrimary">#445FB8</color>
+    <color name="colorPrimaryDark">#4E64BE</color>
+    <color name="colorAccent">#0A0C70</color>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
     <color name="diceViewBgColor">#0B0C71</color>
+<!--    <color name="diceColor">#0A005D</color>-->
+    <color name="highlighter">#FEFF8A</color>
+
+<!--    <color name="alexandrasBlue">#5576c7</color>-->
+<!--    <color name="alexandrasBlueLighter">#607bca</color>-->
+    <color name="dicebox">#0A0C70</color>
+<!--    <color name="diceBoxDieSlot">#040240</color>-->
+    <color name="formContentBackground">#f8f8f8</color>
+    <color name="formHeadingBackground">#080808</color>
+    <color name="formContentForeground">#ffffff</color>
+<!--    <color name="formInstructions">#808080</color>-->
+<!--    <color name="funnelBackground">#C0C9F3</color>-->
+<!--    <color name="warningBackground">#E0585B</color>-->
 
     <color name="alexandrasBlue">#445FB8</color>
     <color name="alexandrasBlueLighter">#4E64BE</color>
@@ -16,8 +28,7 @@
     <color name="diceBoxDieSlot">#040031</color>
     <color name="formInstructions">#6D6C6D</color>
     <color name="funnelBackground">#B2BCEF</color>
-    <color name="highlighter">#FEFF8A</color>
+<!--    <color name="highlighter">#FEFF8A</color>-->
     <color name="warningBackground">#D64049</color>
-
-
+    <color name="red">#D64049</color>
 </resources>

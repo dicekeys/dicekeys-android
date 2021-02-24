@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import org.dicekeys.app.R
 import org.dicekeys.app.extensions.toast
 import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 
 /*
  *  BiometricsHelper
@@ -49,7 +50,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
     }
 
 
-    fun decrypt(encryptedDiceKey: EncryptedDiceKey, fragment: Fragment, success: (diceKey: DiceKey<*>) -> Unit) {
+    fun decrypt(encryptedDiceKey: EncryptedDiceKey, fragment: Fragment, success: (diceKey: DiceKey<Face>) -> Unit) {
         try {
             val promptInfo = createBiometricPrompt(false, fragment)
 

@@ -9,11 +9,12 @@
         android:id="@+id/backupFragment"
         android:name="org.dicekeys.app.fragments.backup.BackupFragment"
         tools:layout="@layout/backup_fragment"
-        android:label="BackupFragment">
+        android:label="@string/backup">
 
         <argument
             android:name="diceKeyId"
-            app:argType="string" />
+            app:argType="string"
+            app:nullable="true" />
 
         <argument
             android:name="useStickeys"

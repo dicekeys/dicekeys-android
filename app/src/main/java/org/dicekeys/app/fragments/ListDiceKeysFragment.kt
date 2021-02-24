@@ -1,29 +1,24 @@
 package org.dicekeys.app.fragments
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import org.dicekeys.app.AppFragment
-import org.dicekeys.app.MainActivity
-import org.dicekeys.app.R
-import org.dicekeys.app.adapters.DiceKeysAdapter
+import org.dicekeys.app.*
 import org.dicekeys.app.databinding.ListDicekeysFragmentBinding
 import org.dicekeys.app.databinding.ListItemDicekeyBinding
 import org.dicekeys.app.encryption.BiometricsHelper
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
+import org.dicekeys.app.extensions.clearNavigationResult
+import org.dicekeys.app.extensions.getNavigationResult
 import org.dicekeys.app.extensions.showPopupMenu
-import org.dicekeys.app.openDialogDeleteDiceKey
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.viewmodels.ListDiceKeysViewModel
-import org.dicekeys.dicekey.Face
+import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.FaceRead
-import org.dicekeys.read.ReadDiceKeyActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,9 +38,18 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { facesReadJsonOrNull ->
+            facesReadJsonOrNull?.let { facesReadJson ->
+                clearNavigationResult(ScanFragment.READ_DICEKEY)
+                FaceRead.diceKeyFromJsonFacesRead(facesReadJson)?.let { diceKey ->
+                    diceKeyRepository.set(DiceKey.toDiceKey(diceKey))
+                    navigate(ListDiceKeysFragmentDirections.actionListDiceKeysFragmentToDiceKeyRootFragment(diceKeyId = diceKey.keyId))
+                }
+            }
+        }
+
         binding.load.setOnClickListener {
-            val intent = Intent(requireContext(), ReadDiceKeyActivity::class.java)
-            startActivityForResult(intent, MainActivity.READ_DICE_REQUEST_CODE)
+            navigate(ListDiceKeysFragmentDirections.actionGlobalScanFragment())
         }
 
         binding.assemble.setOnClickListener {
@@ -104,24 +108,6 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
             }
 
             binding.root.addView(diceKeyView.root, index)
-        }
-    }
-
-    // Needs refactoring
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == MainActivity.READ_DICE_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-
-                data.getStringExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)?.let { diceKeyAsJson ->
-                    FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
-                        diceKeyRepository.set(diceKey)
-                        navigate(ListDiceKeysFragmentDirections.actionListDiceKeysFragmentToDiceKeyRootFragment(diceKeyId = diceKey.keyId))
-                    }
-                }
-
-            }
         }
     }
 }

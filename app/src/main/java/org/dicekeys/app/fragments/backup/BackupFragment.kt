@@ -18,10 +18,17 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
+import org.dicekeys.app.NavGraphDirections
 import org.dicekeys.app.R
+import org.dicekeys.app.adapters.dicekey
 import org.dicekeys.app.databinding.BackupFragmentBinding
 import org.dicekeys.app.databinding.FragmentBackupDicekitBinding
 import org.dicekeys.app.databinding.FragmentBackupStickeysBinding
+import org.dicekeys.app.extensions.clearNavigationResult
+import org.dicekeys.app.extensions.getNavigationResult
+import org.dicekeys.app.extensions.setNavigationResult
+import org.dicekeys.app.fragments.ListDiceKeysFragmentDirections
+import org.dicekeys.app.fragments.ScanFragment
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.utils.openBrowser
 import org.dicekeys.app.viewmodels.DiceKeyViewModel
@@ -35,6 +42,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragment), ViewPager.OnPageChangeListener {
+
+    companion object {
+        const val VALID_BACKUP = "valid_backup"
+    }
 
     @Inject
     lateinit var repository: DiceKeyRepository
@@ -58,11 +69,15 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
         super.onViewCreated(view, savedInstanceState)
 
         // Guard: If DiceKey is not available, return
-        repository.get(args.diceKeyId)?.also {
-            diceKey = it as DiceKey<Face>
-        } ?: run {
-            findNavController().popBackStack()
-            return
+        args.diceKeyId?.also { diceKeyId ->
+            repository.get(diceKeyId)?.also {
+                diceKey = it
+            } ?: run {
+                findNavController().popBackStack()
+                return
+            }
+        } ?: run{
+            diceKey = DiceKey.example
         }
 
         binding.vm = viewModel
@@ -88,12 +103,49 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
         binding.btnPrev.setOnClickListener {
             onPrevPage()
         }
+
+
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) {
+            it?.let {
+                clearNavigationResult(ScanFragment.READ_DICEKEY)
+
+                FaceRead.diceKeyFromJsonFacesRead(it)?.let { diceKeyFaceRead ->
+                    val scannedDiceKey = DiceKey.toDiceKey(diceKeyFaceRead)
+                    val backupDiceKey = diceKey.mostSimilarRotationOf(scannedDiceKey)
+                    val invalidIndexes = (0 until 25).filter {
+                        diceKey.faces[it].numberOfFieldsDifferent(backupDiceKey.faces[it]) > 0
+                    }.toSet()
+
+                    val perfectMatch = invalidIndexes.isEmpty()
+                    val totalMismatch = invalidIndexes.size > 5
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("Your scanned copy")
+
+                    if (perfectMatch) {
+                        builder.setMessage("You made a perfect copy!")
+                        setNavigationResult(result = true, key = VALID_BACKUP)
+                    } else if (totalMismatch) {
+                        builder.setMessage("That key doesn't look at all like the key you scanned before.")
+                    } else {
+                        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_backup_verify, null)
+                        view.findViewById<DiceKeyView>(R.id.dice_key).highlightedIndexes = invalidIndexes
+                        view.findViewById<TextView>(R.id.text).text = "You incorrectly copied the highlighted " + (if (invalidIndexes.size == 1) "die" else "dice") + ". You can fix the copy to match the original, or change the original to match the copy."
+                        builder.setView(view)
+                    }
+                    builder.setPositiveButton("OK") { dialog, _ ->
+                        dialog.cancel()
+                        finish()
+                    }
+                    builder.show()
+                }
+            }
+        }
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
     override fun onPageSelected(position: Int) {
-        binding.progressBar.progress = position
+        binding.progressBar.setProgressCompat(position, true)
         binding.btnPrev.isEnabled = position > 0
         binding.btnFirst.isEnabled = position > 0
         binding.btnNext.isEnabled = position < pagerAdapter.count - 1
@@ -119,50 +171,7 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
     }
 
     fun onScan() {
-        val intent = Intent(requireContext(), ReadDiceKeyActivity::class.java)
-        startActivityForResult(intent, 0)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (
-                resultCode == Activity.RESULT_OK &&
-                data != null &&
-                data.hasExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)
-        ) {
-            data.getStringExtra(ReadDiceKeyActivity.Companion.Parameters.Response.diceKeyAsJson)?.let { diceKeyAsJson ->
-                FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
-                    val scannedDiceKey = DiceKey(faces = diceKey.faces.map {
-                        Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
-                    })
-                    val backupDiceKey = diceKey.mostSimilarRotationOf(scannedDiceKey)
-                    val invalidIndexes = (0 until 25).filter {
-                        diceKey.faces[it].numberOfFieldsDifferent(backupDiceKey.faces[it]) > 0
-                    }.toSet()
-
-                    val perfectMatch = invalidIndexes.isEmpty()
-                    val totalMismatch = invalidIndexes.size > 5
-                    val builder = AlertDialog.Builder(requireContext())
-                    builder.setTitle("Your scanned copy")
-
-                    if (perfectMatch) {
-                        builder.setMessage("You made a perfect copy!")
-                    } else if (totalMismatch) {
-                        builder.setMessage("That key doesn't look at all like the key you scanned before.")
-                    } else {
-                        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_backup_verify, null)
-                        view.findViewById<DiceKeyView>(R.id.dice_key).highlightedIndexes = invalidIndexes
-                        view.findViewById<TextView>(R.id.text).text = "You incorrectly copied the highlighted " + (if (invalidIndexes.size == 1) "die" else "dice") + ". You can fix the copy to match the original, or change the original to match the copy."
-                        builder.setView(view)
-                    }
-                    builder.setPositiveButton("OK") { dialog, _ ->
-                        dialog.cancel()
-                        finish()
-                    }
-                    builder.show()
-                }
-            }
-        }
+        navigate(NavGraphDirections.actionGlobalScanFragment())
     }
 
     fun finish(){

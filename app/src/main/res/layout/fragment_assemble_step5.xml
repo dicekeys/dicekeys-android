@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="org.dicekeys.app.viewmodels.AssembleViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/text_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Make a backup of your DiceKey by copying it."
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/wrapStickeys"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/text_top">
+
+            <org.dicekeys.app.views.TwoDiceViewLayout
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:targetDiceViewId="@id/sticker_target_sheet_view1"
+                app:targetDiceViewIndex="12">
+
+                <org.dicekeys.app.views.DiceKeyView
+                    android:id="@+id/dice_key_view1_1"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    app:srcCompat="@android:drawable/ic_media_play" />
+
+                <org.dicekeys.app.views.StickerTargetSheetView
+                    android:id="@+id/dice_key_view1_2"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    app:dicekey="half_empty" />
+            </org.dicekeys.app.views.TwoDiceViewLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Use a Stickeys Kit"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/wrapDiceKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/wrapStickeys">
+
+            <org.dicekeys.app.views.TwoDiceViewLayout
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:targetDiceViewId="@id/dice_key_view2"
+                app:targetDiceViewIndex="12">
+
+                <org.dicekeys.app.views.DiceKeyView
+                    android:id="@+id/dice_key_view2_1"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    app:srcCompat="@android:drawable/ic_media_play" />
+
+                <org.dicekeys.app.views.DiceKeyView
+                    android:id="@+id/dice_key_view2_2"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    app:dicekey="half_empty" />
+            </org.dicekeys.app.views.TwoDiceViewLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Use a DiceKey Kit"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_skip"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Let me skip this step"
+            isVisible="@{!vm.diceKeyBackedUp}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
