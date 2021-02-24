@@ -29,11 +29,13 @@ class DiceKeyViewModelUnitTests : TestViewModel<DiceKeyViewModel>() {
     fun setup(){
         whenever(encryptedStorage.getDiceKeysLiveData()).thenReturn(mock())
 
-        viewModel = DiceKeyViewModel(encryptedStorage, diceKeyRepository, diceKey)
+        viewModel = DiceKeyViewModel(encryptedStorage, diceKeyRepository)
     }
 
     @Test
     fun testForget(){
+        viewModel.setDiceKey(diceKey)
+
         viewModel.forget()
 
         // verify DiceKey is removed from DiceKeyRepository
@@ -42,6 +44,8 @@ class DiceKeyViewModelUnitTests : TestViewModel<DiceKeyViewModel>() {
 
     @Test
     fun testRemove(){
+        viewModel.setDiceKey(diceKey)
+
         viewModel.remove()
 
         // Verify that remove also called in EncryptedStorage and DiceKeyRepository
