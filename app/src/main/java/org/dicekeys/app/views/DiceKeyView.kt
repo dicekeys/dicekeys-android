@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import org.dicekeys.app.R
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
+import kotlin.properties.Delegates
 
 class DiceKeyView @JvmOverloads constructor(
         context: Context,
@@ -19,13 +20,10 @@ class DiceKeyView @JvmOverloads constructor(
         val TAG = DiceKeyView::class.java.simpleName
     }
 
-    private var _diceKey: DiceKey<Face>
-    var diceKey: DiceKey<Face>
-        get() = _diceKey
-        set(value) {
-            _diceKey = value
-            invalidate()
-        }
+    var diceKey: DiceKey<Face> by Delegates.observable(DiceKey.example) { _, _, _ ->
+        invalidate()
+    }
+
     var centerFace: Face? = null
     var showLidTab: Boolean = true
     var leaveSpaceForTab: Boolean = true
@@ -43,7 +41,7 @@ class DiceKeyView @JvmOverloads constructor(
         leaveSpaceForTab = typedArray.getBoolean(R.styleable.DiceKeyView_leaveSpaceForTab, false)
         showLidTab = typedArray.getBoolean(R.styleable.DiceKeyView_showLidTab, false)
         val diceKeyContent = DiceKeyContent.values()[typedArray.getInt(R.styleable.DiceKeyView_dicekey, 0)]
-        _diceKey = when(diceKeyContent) {
+        diceKey = when(diceKeyContent) {
             DiceKeyContent.RANDOM -> DiceKey.createFromRandom()
             else -> DiceKey.example
         }
