@@ -6,6 +6,7 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey">#E4E4E4</color>
 
     <color name="diceViewBgColor">#0B0C71</color>
 <!--    <color name="diceColor">#0A005D</color>-->

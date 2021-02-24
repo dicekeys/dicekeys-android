@@ -1,6 +1,9 @@
 package org.dicekeys.app.viewmodels
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.dicekeys.app.encryption.EncryptedDiceKey
@@ -17,7 +20,6 @@ class DiceKeyViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     val isSaved = MutableLiveData(encryptedStorage.exists(diceKey.keyId))
-
     private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> { list ->
         isSaved.postValue(list.find { it.keyId == diceKey.keyId } != null)
     }

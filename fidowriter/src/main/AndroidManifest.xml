@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dicekeys.fidowriter">
 
-    <uses-feature android:name="android.hardware.usb.host" />
+   <!-- <uses-feature android:name="android.hardware.usb.host" />
     <uses-permission android:name="android.permission.USB_PERMISSION" />
 
     <application
@@ -26,9 +26,9 @@
                     android:host="fidowriter.dicekeys.com"
                     android:pathPrefix="/"
                 />
-<!--                android:pathPrefix="/&#45;&#45;derived-secret-api&#45;&#45;/"-->
+&lt;!&ndash;                android:pathPrefix="/&#45;&#45;derived-secret-api&#45;&#45;/"&ndash;&gt;
             </intent-filter>
         </activity>
-    </application>
+    </application>-->
 
 </manifest>
