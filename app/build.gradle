@@ -13,7 +13,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "org.dicekeys.app"
+        applicationId "com.dicekeys.app"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
