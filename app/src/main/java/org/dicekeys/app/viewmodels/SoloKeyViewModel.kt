@@ -45,6 +45,10 @@ class SoloKeyViewModel @AssistedInject constructor(
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
     val onSuccess = MutableLiveData<ConsumableEvent<Boolean>>()
 
+    // Listener that updates state when USB devices are attached, detached,
+    // or when the app is granted permission to access them
+    // Intent has the USB device as an extra param, but not required for the current implementation
+    // as we always scan for usb devices on any event, simpler for our use case.
     private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
 
@@ -61,12 +65,14 @@ class SoloKeyViewModel @AssistedInject constructor(
     }
 
     init {
+        // Listen for USB devices being attached, detached, or for the app being granted permission to access them.
         val intentFilter = IntentFilter().also {
             it.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
             it.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
             it.addAction(ACTION_USB_PERMISSION)
         }
 
+        // Registering the BroadcastReceiver, it's important to unregister in onCleared method
         getApplication<Application>().registerReceiver(broadcastReceiver, intentFilter)
 
         generateSeed()
@@ -133,7 +139,7 @@ class SoloKeyViewModel @AssistedInject constructor(
     /**
      * Intialize countdown timer
      */
-    val timer = object : CountDownTimer(SIDOKEYWRITETIME, 1000) {
+    private val timer = object : CountDownTimer(FIDOKEY_WRITE_TIME, 1000) {
         override fun onTick(millisUntilFinished: Long) {
             //Update writing progress time
             writingProgress.postValue((millisUntilFinished / 1000).toString())
@@ -202,7 +208,7 @@ class SoloKeyViewModel @AssistedInject constructor(
     }
 
     companion object {
-        const val SIDOKEYWRITETIME = 8000L
+        const val FIDOKEY_WRITE_TIME = 8000L
 
         private const val ACTION_USB_PERMISSION = "org.dicekeys.USB_PERMISSION"
 

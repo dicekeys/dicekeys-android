@@ -31,9 +31,10 @@ class SoloKeyFragment : AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout
         binding.diceKeyVM = viewModel
         binding.vm = soloKeyViewModel
 
-
         binding.btnDown.setOnClickListener { soloKeyViewModel.sequencUpDown(false) }
         binding.btnUp.setOnClickListener { soloKeyViewModel.sequencUpDown(true) }
+
+        // Update the sequence number in the model when the text field's recipe changes to a valid input
         binding.etSequenceNumber.doAfterTextChanged { edittext ->
             try{
                 soloKeyViewModel.updateSequence(edittext.toString().toInt())
