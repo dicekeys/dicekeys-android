@@ -38,7 +38,7 @@ import org.dicekeys.read.ReadDiceKeyActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragment), ViewPager.OnPageChangeListener {
+class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragment, 0), ViewPager.OnPageChangeListener {
 
     companion object {
         const val VALID_BACKUP = "valid_backup"

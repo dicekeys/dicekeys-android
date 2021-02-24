@@ -27,7 +27,7 @@ import java.util.concurrent.Executors
 import kotlin.math.min
 
 @AndroidEntryPoint
-class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment) {
+class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0) {
 
     companion object {
         const val READ_DICEKEY = "read_dicekey"

@@ -2,6 +2,7 @@ package org.dicekeys.app.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import androidx.fragment.app.activityViewModels
@@ -20,11 +21,12 @@ import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.viewmodels.DiceKeyViewModel
 import org.dicekeys.app.viewmodels.ListDiceKeysViewModel
 import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceRead
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.list_dicekeys_fragment) {
+class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.list_dicekeys_fragment, R.menu.preferences) {
 
     @Inject
     lateinit var encryptedStorage: EncryptedStorage
@@ -37,8 +39,6 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
 
     val listViewModel: ListDiceKeysViewModel by viewModels()
 
-    val viewModel: DiceKeyViewModel by activityViewModels()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -47,11 +47,8 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
                 FaceRead.diceKeyFromJsonFacesRead(facesReadJson)?.let { diceKey ->
                     DiceKey.toDiceKey(diceKey).also{
-                        diceKeyRepository.set(it)
-                        viewModel.setDiceKey(it)
+                        navigateToDiceKey(it)
                     }
-
-                    navigate(ListDiceKeysFragmentDirections.actionGlobalDicekey())
                 }
             }
         }
@@ -91,14 +88,15 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
             )
 
             diceKeyView.root.setOnClickListener {
-                if (diceKeyRepository.exists(encryptedDiceKey)) {
-                    navigate(R.id.dicekey)
-                } else {
+                val diceKey = listViewModel.getDiceKey(encryptedDiceKey)
+
+                // Needs Decryption
+                if(diceKey == null){
                     biometricsHelper.decrypt(encryptedDiceKey, this@ListDiceKeysFragment) { diceKey ->
-                        diceKeyRepository.set(diceKey)
-                        viewModel.setDiceKey(diceKey)
-                        navigate(R.id.dicekey)
+                        navigateToDiceKey(diceKey)
                     }
+                }else{
+                    navigateToDiceKey(diceKey)
                 }
             }
 
@@ -118,5 +116,23 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
 
             binding.root.addView(diceKeyView.root, index)
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        return when(item.itemId){
+            R.id.preferences -> {
+                navigate(R.id.preferencesFragment)
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    private fun navigateToDiceKey(diceKey: DiceKey<Face>){
+        diceKeyRepository.set(diceKey)
+        navigate(ListDiceKeysFragmentDirections.actionGlobalDicekey())
     }
 }

@@ -32,6 +32,8 @@ class DiceKeyViewModel @Inject constructor(
         encryptedStorage
                 .getDiceKeysLiveData()
                 .observeForever(encryptedStorageObserver)
+
+        diceKey.value = diceKeyRepository.getActiveDiceKey()
     }
 
     private fun updateIsSaved(){
@@ -44,11 +46,6 @@ class DiceKeyViewModel @Inject constructor(
 
     fun forget() {
         diceKey.value?.let { diceKeyRepository.remove(it) }
-    }
-
-    fun setDiceKey(dk: DiceKey<Face>){
-        diceKey.value = dk
-        updateIsSaved()
     }
 
     override fun onCleared() {

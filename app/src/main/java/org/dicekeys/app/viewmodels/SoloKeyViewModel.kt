@@ -121,14 +121,14 @@ class SoloKeyViewModel @AssistedInject constructor(
     /**
      * Check seed value is valid or not
      */
-    fun isSeedValid(s: ByteArray? = getSeed()): Boolean {
+    fun isSeedValid(s: ByteArray? = getSeedAsByteArray()): Boolean {
         return s != null && s.size == 32
     }
 
     /**
      * Get Seed HEXAString
      */
-    fun getSeed(): ByteArray? {
+    fun getSeedAsByteArray(): ByteArray? {
         return try {
             derivationRecipe.value?.let { seed.value?.let { it1 -> Secret.deriveFromSeed(it1, it.recipeJson).secretBytes } }
         } catch (e: Throwable) {
@@ -156,7 +156,7 @@ class SoloKeyViewModel @AssistedInject constructor(
             if (isWritingProcessUnderWay.value == true)
                 return
 
-            val seed = getSeed()
+            val seed = getSeedAsByteArray()
             if (seed == null || !isSeedValid(seed))
                 return
 

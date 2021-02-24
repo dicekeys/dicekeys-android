@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
+import org.dicekeys.app.adapters.dicekey
 import org.dicekeys.app.databinding.*
 import org.dicekeys.app.extensions.clearNavigationResult
 import org.dicekeys.app.extensions.getNavigationResult
@@ -29,7 +30,7 @@ import org.dicekeys.dicekey.FaceRead
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_fragment) {
+class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_fragment, 0) {
 
     @Inject
     lateinit var diceKeyRepository: DiceKeyRepository
@@ -38,7 +39,7 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
 
 
     val assembleViewModel: AssembleViewModel by viewModels()
-    val viewModel: DiceKeyViewModel by activityViewModels()
+//    val viewModel: DiceKeyViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,10 +83,12 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
                 if (diceKey == null) {
                     findNavController().popBackStack()
                 } else {
-                    viewModel.setDiceKey(diceKey)
+                    diceKeyRepository.set(diceKey)
                     // Go To MainDiceKey view and remove Assemble from the backstack
                     val navOptionsBuilder = NavOptions.Builder().setPopUpTo(R.id.listDiceKeysFragment, false)
-                    findNavController().navigate(AssembleFragmentDirections.actionGlobalDicekey(), navOptionsBuilder.build())
+                    findNavController()
+                            .navigate(AssembleFragmentDirections
+                                    .actionGlobalDicekey(), navOptionsBuilder.build())
                 }
             } else {
                 assembleViewModel.nextPage()
