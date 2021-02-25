@@ -6,22 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
+import javax.inject.Inject
 
-
-class DiceKeyViewModel @AssistedInject constructor(
+@HiltViewModel
+class DiceKeyViewModel @Inject constructor(
         private val encryptedStorage: EncryptedStorage,
-        private val diceKeyRepository: DiceKeyRepository,
-        @Assisted val diceKey: DiceKey<Face>
+        private val diceKeyRepository: DiceKeyRepository
 ) : ViewModel() {
 
-    val isSaved = MutableLiveData(encryptedStorage.exists(diceKey.keyId))
-    private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> { list ->
-        isSaved.postValue(list.find { it.keyId == diceKey.keyId } != null)
+    var diceKey = MutableLiveData<DiceKey<Face>?>()
+
+    val isSaved = MutableLiveData(diceKey.value?.let { encryptedStorage.exists(it.keyId) } ?: false)
+    private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> {
+        updateIsSaved()
     }
 
     init {
@@ -31,33 +34,25 @@ class DiceKeyViewModel @AssistedInject constructor(
                 .observeForever(encryptedStorageObserver)
     }
 
+    private fun updateIsSaved(){
+        isSaved.postValue(diceKey.value?.let { encryptedStorage.exists(it.keyId) } ?: false)
+    }
+
     fun remove() {
-        encryptedStorage.remove(diceKey)
+        diceKey.value?.let { encryptedStorage.remove(it) }
     }
 
     fun forget() {
-        diceKeyRepository.remove(diceKey)
+        diceKey.value?.let { diceKeyRepository.remove(it) }
+    }
+
+    fun setDiceKey(dk: DiceKey<Face>){
+        diceKey.value = dk
+        updateIsSaved()
     }
 
     override fun onCleared() {
         super.onCleared()
         encryptedStorage.getDiceKeysLiveData().removeObserver(encryptedStorageObserver)
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(diceKey: DiceKey<Face>): DiceKeyViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-                assistedFactory: AssistedFactory,
-                diceKey: DiceKey<Face>
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(diceKey) as T
-            }
-        }
     }
 }

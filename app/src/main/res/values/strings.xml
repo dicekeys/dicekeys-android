@@ -55,7 +55,7 @@
     <string name="str_remove_recipe_from_menu">Remove recipe from menu</string>
     <string name="copy_password">Copy Password</string>
     <string name="common_password_recipes">Common Password Recipes</string>
-
+    <string name="password_copied">Password copied</string>
 
     <string name="do_not_close_the_box">Do not close the box before the final step</string>
     <string name="you_did_it">You did it!</string>

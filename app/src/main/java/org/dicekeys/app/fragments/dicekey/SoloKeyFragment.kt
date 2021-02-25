@@ -22,7 +22,7 @@ class SoloKeyFragment : AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout
     lateinit var viewModelFactory: SoloKeyViewModel.AssistedFactory
 
     private val soloKeyViewModel: SoloKeyViewModel by viewModels {
-        SoloKeyViewModel.provideFactory(viewModelFactory, requireActivity().application as Application, requireContext().getSystemService(Context.USB_SERVICE) as UsbManager, viewModel.diceKey)
+        SoloKeyViewModel.provideFactory(viewModelFactory, requireActivity().application as Application, requireContext().getSystemService(Context.USB_SERVICE) as UsbManager, viewModel.diceKey.value!!)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

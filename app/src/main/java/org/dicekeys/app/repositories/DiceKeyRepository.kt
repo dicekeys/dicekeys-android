@@ -34,5 +34,8 @@ class DiceKeyRepository {
         diceKeys.clear()
     }
 
+    // Get the Active DiceKey, currently the app allows only one unlocked dicekey, so just pick the first
+    fun getActiveDiceKey() = if(diceKeys.isEmpty()) null else diceKeys[diceKeys.keys.first()]
+
     fun size() = diceKeys.size
 }

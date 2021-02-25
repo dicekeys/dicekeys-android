@@ -18,181 +18,184 @@
         android:layout_height="match_parent"
         tools:context="org.dicekeys.trustedapp.activities.DiceKeyWithDerivedValue">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/coLayout"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:ignore="MissingConstraints">
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="@android:color/black"
+            app:cardCornerRadius="7dp"
+            app:contentPadding="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                app:cardBackgroundColor="@android:color/black"
-                app:cardCornerRadius="7dp"
-                app:contentPadding="5dp">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvRecipeFor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:text="@{String.format(@string/recipe_for, vm.derivationRecipe.name)}"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="@android:color/white"
+                    tools:text="Recipe for Password" />
 
-                    <TextView
-                        android:id="@+id/tvRecipeFor"
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    app:cardCornerRadius="7dp">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:gravity="center"
-                        android:text= "@{String.format(@string/recipe_for, vm.derivationRecipe.name)}"
-                        android:textColor="@android:color/white"
-                        tools:text="Recipe for Password"
-                        android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        app:cardCornerRadius="7dp">
+                        android:orientation="vertical"
+                        android:paddingStart="6dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="6dp">
 
                         <LinearLayout
+                            isVisible="@{vm.template != null}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:paddingTop="6dp"
-                            android:paddingStart="6dp"
-                            android:paddingEnd="6dp">
+                            android:gravity="center"
+                            android:orientation="horizontal">
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="center"
-                                isVisible="@{vm.template != null}"
-                                android:orientation="horizontal">
+                                android:orientation="vertical">
 
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
+                                <EditText
+                                    android:id="@+id/etSequenceNumber"
+                                    android:layout_width="50dp"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical">
-
-                                    <EditText
-                                        android:id="@+id/etSequenceNumber"
-                                        android:layout_width="50dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_gravity="center"
-                                        android:background="@android:color/transparent"
-                                        android:gravity="center"
-                                        android:inputType="number"
-                                        android:text="@{vm.sequenceNumber}"
-                                        android:textColor="@color/cardview_dark_background"
-                                        android:textSize="20sp" />
-
-                                    <TextView
-                                        android:layout_width="100dp"
-                                        android:layout_height="fill_parent"
-                                        android:gravity="center"
-                                        android:lines="2"
-                                        android:maxLines="2"
-                                        android:text="@string/sequence_number" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:orientation="vertical">
-
-                                    <View
-                                        android:id="@+id/btn_up"
-                                        android:layout_width="25dp"
-                                        android:layout_height="25dp"
-                                        android:background="@drawable/ic_arrow_up_down"
-                                        android:rotation="-90" />
-
-                                    <View
-                                        android:id="@+id/btn_down"
-                                        android:layout_width="25dp"
-                                        android:layout_height="25dp"
-                                        android:layout_marginTop="20dp"
-                                        android:background="@drawable/ic_arrow_up_down"
-                                        android:rotation="90" />
-                                </LinearLayout>
+                                    android:layout_gravity="center"
+                                    android:background="@android:color/transparent"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:text="@{vm.sequenceNumber}"
+                                    android:textColor="@color/cardview_dark_background"
+                                    android:textSize="20sp" />
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="10dp"
-                                    android:text="@string/str_multiple_passwords_info" />
+                                    android:layout_width="100dp"
+                                    android:layout_height="fill_parent"
+                                    android:gravity="center"
+                                    android:lines="2"
+                                    android:maxLines="2"
+                                    android:text="@string/sequence_number" />
                             </LinearLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginTop="5dp"
-                                android:layout_marginBottom="5dp"
-                                isVisible="@{vm.template != null}"
-                                android:background="@android:color/darker_gray" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:orientation="vertical">
+
+                                <View
+                                    android:id="@+id/btn_up"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:background="@drawable/ic_arrow_up_down"
+                                    android:rotation="-90" />
+
+                                <View
+                                    android:id="@+id/btn_down"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:layout_marginTop="20dp"
+                                    android:background="@drawable/ic_arrow_up_down"
+                                    android:rotation="90" />
+                            </LinearLayout>
 
                             <TextView
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Internal Representation of your recipe"
-                                android:textAppearance="?attr/textAppearanceBody1" />
-
-                            <TextView
-                                android:id="@+id/tvRecipeJson"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
-                                tools:text="{allow : [this is the json]}"
-                                android:text="@{vm.derivationRecipe.recipeJson}"
-                                android:textColor="@android:color/background_dark"
-                                android:textSize="12sp" />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginTop="5dp"
-                                android:background="@android:color/darker_gray" />
-
-                            <Button
-                                android:id="@+id/btnSaveRecipeInMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                isVisible="@{!vm.recipeIsSaved}"
-                                android:text="@string/str_save_recipe_in_the_menu"
-                                android:textAllCaps="false"
-                                style="@style/Widget.MaterialComponents.Button.TextButton"
-                                />
-
-                            <Button
-                                android:id="@+id/btnRemoveRecipeFromMenu"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                isVisible="@{vm.recipeIsSaved}"
-                                android:text="@string/str_remove_recipe_from_menu"
-                                android:textAllCaps="false"
-                                style="@style/Widget.MaterialComponents.Button.TextButton" />
-
+                                android:layout_marginLeft="10dp"
+                                android:text="@string/str_multiple_passwords_info" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+                        <View
+                            isVisible="@{vm.template != null}"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@android:color/darker_gray" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Internal Representation of your recipe"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                        <TextView
+                            android:id="@+id/tvRecipeJson"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@{vm.derivationRecipe.recipeJson}"
+                            android:textColor="@android:color/background_dark"
+                            android:textSize="12sp"
+                            tools:text="{allow : [this is the json]}" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@android:color/darker_gray" />
+
+                        <Button
+                            android:id="@+id/btnSaveRecipeInMenu"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            isVisible="@{!vm.recipeIsSaved}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/str_save_recipe_in_the_menu"
+                            android:textAllCaps="false" />
+
+                        <Button
+                            android:id="@+id/btnRemoveRecipeFromMenu"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            isVisible="@{vm.recipeIsSaved}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/str_remove_recipe_from_menu"
+                            android:textAllCaps="false" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <FrameLayout
             android:id="@+id/cvDice"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="20dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toTopOf="@+id/cvPassword"
-            app:layout_constraintTop_toBottomOf="@+id/coLayout">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView2">
 
             <org.dicekeys.app.views.DiceKeyView
                 android:id="@+id/dicekey"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 dicekey="@{vm.diceKey}"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -208,8 +211,7 @@
             app:cardCornerRadius="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cvDice">
+            app:layout_constraintStart_toStartOf="parent">
 
             <TextView
                 android:id="@+id/tvPassword"

@@ -2,6 +2,7 @@ package org.dicekeys.app.fragments.dicekey
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
@@ -26,7 +27,7 @@ class DiceKeyFragment: AbstractDiceKeyFragment<DicekeyFragmentBinding>(R.layout.
         binding.vm = viewModel
 
         binding.buttonSave.setOnClickListener {
-            biometricsHelper.encrypt(viewModel.diceKey, this)
+            biometricsHelper.encrypt(viewModel.diceKey.value!!, this)
         }
     }
 }

@@ -6,25 +6,41 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import org.dicekeys.app.AppFragment
+import org.dicekeys.app.extensions.toast
+import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.viewmodels.DiceKeyViewModel
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
+import javax.inject.Inject
 
 /*
- * Extend this class to access the DiceKeyViewModel of the RootDiceKeyFragment
+ * Extend this class to access the DiceKeyViewModel
  */
 abstract class AbstractDiceKeyFragment<T : ViewDataBinding>(@LayoutRes layout: Int) : AppFragment<T>(layout) {
 
-    protected lateinit var viewModel: DiceKeyViewModel
+    lateinit var diceKey: DiceKey<Face>
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState).also {
-            viewModel = getDiceKeyRootFragment().viewModel
+    val viewModel: DiceKeyViewModel by activityViewModels()
+
+    @Inject
+    lateinit var repository: DiceKeyRepository
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Guard: If DiceKey is not available, return
+        repository.getActiveDiceKey()?.also {
+            diceKey = it
+        } ?: run {
+            findNavController().popBackStack()
+            toast("DiceKey not found in memory")
+            return
         }
-    }
 
-    fun getDiceKeyRootFragment(): RootDiceKeyFragment {
-        return ((parentFragment as NavHostFragment).parentFragment as RootDiceKeyFragment)
     }
-
 }
