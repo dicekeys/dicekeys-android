@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.dicekeys.trustedapp.R
+import kotlin.properties.Delegates
 
 @Deprecated("Moved to :app")
 class DiceKeyView @JvmOverloads constructor(
@@ -19,7 +20,10 @@ class DiceKeyView @JvmOverloads constructor(
         val TAG = DiceKeyView::class.java.simpleName
     }
 
-    var diceKey: DiceKey<Face>
+    // var diceKey: DiceKey<Face>
+    var diceKey: DiceKey<Face> by Delegates.observable(DiceKey.example) { _, _, _ ->
+        invalidate()
+    }
     var centerFace: Face? = null
     var showLidTab: Boolean = true
     var leaveSpaceForTab: Boolean = true

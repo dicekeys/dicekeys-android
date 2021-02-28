@@ -15,12 +15,16 @@
         <activity android:name=".activities.DiceViewActivity" />
         <activity android:name=".activities.DiceKeyWithDerivedValue"
             android:theme="@style/AppTheme" />
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.DicekeyKeyboard"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".activities.MainActivity">
+
         </activity>
         <activity
             android:name=".activities.DisplayPublicKeyActivity"
