@@ -123,10 +123,11 @@
         android:id="@+id/enterDiceKeyFragment"
         android:name="org.dicekeys.app.fragments.EnterDiceKeyFragment"
         tools:layout="@layout/fragment_enter_dicekey"
-        android:label="EnterDiceKeyFragment" />
+        android:label="@string/enter_dicekey_by_hand" />
     <fragment
         android:id="@+id/preferencesFragment"
         android:name="org.dicekeys.app.fragments.PreferencesFragment"
+        tools:layout="@layout/preferences_fragment"
         android:label="@string/preferences" />
 
     <action android:id="@+id/action_global_preferencesFragment" app:destination="@id/preferencesFragment"/>
