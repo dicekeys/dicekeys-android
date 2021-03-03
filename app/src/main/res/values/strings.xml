@@ -15,7 +15,7 @@
     <string name="your_dicekey">Your DiceKey</string>
     <string name="dicekey" translatable="false">DiceKey</string>
 
-
+    <string name="enter_dicekey_by_hand">Enter the DiceKey by Hand</string>
     <string name="save_the_dicekey">Save the DiceKey</string>
     <string name="save_center_die_notice">The center die will appear in the home screen.</string>
     <string name="save_dice_encryption_notice">The other 24 dice will be encrypted and your Biometrics will unlock them.</string>

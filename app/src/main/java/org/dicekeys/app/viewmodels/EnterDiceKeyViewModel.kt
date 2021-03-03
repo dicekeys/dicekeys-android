@@ -23,21 +23,17 @@ class EnterDiceKeyViewModel : ViewModel() {
     }
 
     fun updateDiceKey(){
-        diceKey.postValue(DiceKey(faces = (0 until faces.size).map { index ->
+        diceKey.value = DiceKey(faces = (0 until faces.size).map { index ->
             Face(faces[index].letter, faces[index].digit, faces[index].orientationAsLowercaseLetterTrbl)
-        }))
+        })
 
         val currentFace = faces[faceSelectedIndex]
 
 
         // Show Digits Keyboard, only if Letter exits and Digit not
-        if(!currentFace.letter.isWhitespace() && currentFace.digit.isWhitespace()){
-            isLetterVisible.postValue(false)
-        }else{
-            isLetterVisible.postValue(true)
-        }
+        isLetterVisible.value = !(!currentFace.letter.isWhitespace() && currentFace.digit.isWhitespace())
 
-        isValid.postValue(faceSelectedIndex == 24 && currentFace.isNotBlank)
+        isValid.value = faceSelectedIndex == 24 && currentFace.isNotBlank
     }
 
     fun delete(){

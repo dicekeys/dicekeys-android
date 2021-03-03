@@ -54,7 +54,7 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
         }
 
         binding.load.setOnClickListener {
-            navigate(ListDiceKeysFragmentDirections.actionGlobalScanFragment())
+            navigate(ListDiceKeysFragmentDirections.actionGlobalScanFragment(showEnterByHand = true))
         }
 
         binding.assemble.setOnClickListener {

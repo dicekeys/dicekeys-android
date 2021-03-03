@@ -19,7 +19,7 @@ import org.dicekeys.dicekey.FaceLetters
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EnterDiceKeyFragment : AppFragment<FragmentEnterDicekeyBinding>(R.layout.fragment_enter_dicekey), KeyAdapter.OnButtonClickListener {
+class EnterDiceKeyFragment : AppFragment<FragmentEnterDicekeyBinding>(R.layout.fragment_enter_dicekey, 0), KeyAdapter.OnButtonClickListener {
 
     @Inject
     lateinit var diceKeyRepository: DiceKeyRepository
