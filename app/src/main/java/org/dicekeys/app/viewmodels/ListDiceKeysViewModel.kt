@@ -10,8 +10,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListDiceKeysViewModel @Inject constructor(private val encryptedStorage: EncryptedStorage, private val diceKeyRepository: DiceKeyRepository) : ViewModel() {
+
+    fun isDiceKeyInMemory(encryptedDiceKey: EncryptedDiceKey) = diceKeyRepository.exists(encryptedDiceKey)
+
+    fun getDiceKey(encryptedDiceKey: EncryptedDiceKey)  = diceKeyRepository.get(encryptedDiceKey.keyId)
+
     fun remove(encryptedDiceKey: EncryptedDiceKey){
+        // Remove from Storage
         encryptedStorage.remove(encryptedDiceKey)
+        // Remove from Memory
         diceKeyRepository.remove(encryptedDiceKey.keyId)
     }
 }

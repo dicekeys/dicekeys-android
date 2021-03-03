@@ -14,6 +14,7 @@ import org.dicekeys.dicekey.Face
 
 class DiceKeyRepository {
     private var diceKeys = mutableMapOf<String, DiceKey<Face>>()
+    private var activeDiceKeyId : String? = null
 
     fun exists(encryptedDiceKey: EncryptedDiceKey) = exists(encryptedDiceKey.keyId)
     fun exists(diceKey: DiceKey<*>) = exists(diceKey.keyId)
@@ -21,6 +22,7 @@ class DiceKeyRepository {
 
     fun set(diceKey: DiceKey<Face>) {
         diceKeys[diceKey.keyId] = diceKey
+        activeDiceKeyId = diceKey.keyId
     }
 
     fun get(keyId: String) = diceKeys[keyId]
@@ -34,8 +36,10 @@ class DiceKeyRepository {
         diceKeys.clear()
     }
 
-    // Get the Active DiceKey, currently the app allows only one unlocked dicekey, so just pick the first
-    fun getActiveDiceKey() = if(diceKeys.isEmpty()) null else diceKeys[diceKeys.keys.first()]
+    // Get the Active DiceKey
+    fun getActiveDiceKey(): DiceKey<Face>? {
+        return diceKeys[activeDiceKeyId]
+    }
 
     fun size() = diceKeys.size
 }

@@ -97,7 +97,8 @@
     <fragment
         android:id="@+id/dicekey"
         android:name="org.dicekeys.app.fragments.dicekey.DiceKeyFragment"
-        tools:layout="@layout/dicekey_fragment" />
+        tools:layout="@layout/dicekey_fragment">
+    </fragment>
 
 
     <fragment
@@ -110,5 +111,9 @@
         android:id="@+id/action_global_scanFragment"
         app:destination="@id/scanFragment" />
     <action android:id="@+id/action_global_dicekey" app:destination="@id/dicekey"/>
+    <fragment
+        android:id="@+id/preferencesFragment"
+        android:name="org.dicekeys.app.fragments.PreferencesFragment"
+        android:label="@string/preferences" /><action android:id="@+id/action_global_preferencesFragment" app:destination="@id/preferencesFragment"/>
 
 </navigation>
