@@ -17,7 +17,6 @@ class StickerTargetSheetView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : DiceBaseView(context, attrs, defStyleAttr) {
 
-    var diceKey: DiceKey<Face>
     var showDiceAtIndexes: Set<Int>
 
     override val sizeModel = DiceSizeModel(SizeF(0f, 0f), false, extraVerticalMarginOfBoxEdgeAsFractionOfDieSize = 0.5f)

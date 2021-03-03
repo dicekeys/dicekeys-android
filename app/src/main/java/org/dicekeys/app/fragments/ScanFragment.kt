@@ -38,6 +38,10 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.buttonEnterByHand.setOnClickListener {
+            navigate(ScanFragmentDirections.actionScanFragmentToEnterDiceKeyFragment())
+        }
+
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
     }
 

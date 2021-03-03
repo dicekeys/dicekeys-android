@@ -20,10 +20,6 @@ class DiceKeyView @JvmOverloads constructor(
         val TAG = DiceKeyView::class.java.simpleName
     }
 
-    var diceKey: DiceKey<Face> by Delegates.observable(DiceKey.example) { _, _, _ ->
-        invalidate()
-    }
-
     var centerFace: Face? = null
     var showLidTab: Boolean = true
     var leaveSpaceForTab: Boolean = true

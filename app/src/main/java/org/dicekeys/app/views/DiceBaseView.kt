@@ -5,12 +5,18 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.SizeF
 import android.view.View
+import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
+import kotlin.properties.Delegates
 
 abstract class DiceBaseView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
+
+    var diceKey: DiceKey<Face> by Delegates.observable(DiceKey.example) { _, _, _ ->
+        invalidate()
+    }
 
     data class DiePosition(
             val indexInArray: Int,
