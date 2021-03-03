@@ -14,6 +14,9 @@ open class Face constructor(
     open val digit: Char,
     open val orientationAsLowercaseLetterTrbl: Char = '?'
 ) {
+    val isBlank by lazy { letter.isWhitespace() && digit.isWhitespace() }
+    val isNotBlank by lazy { !letter.isWhitespace() && !digit.isWhitespace() }
+
     val clockwise90DegreeRotationsFromUpright: Byte? get()  =
         FaceInternals.trblToClockwise90DegreeRotationsFromUpright(orientationAsLowercaseLetterTrbl)
 

@@ -33,6 +33,7 @@ class DicekeyKeyboard : AppCompatActivity(), KeyAdapter.OnButtonClickListener {
         /*Create Adapter for Letters and digits*/
         val adapter_letter = KeyAdapter(this)
         val adapter_digit = KeyAdapter(this)
+
         adapter_letter.set(FaceLetters)
         adapter_digit.set(FaceDigits)
 
@@ -69,8 +70,8 @@ class DicekeyKeyboard : AppCompatActivity(), KeyAdapter.OnButtonClickListener {
      * Update dicekeyview
      */
     fun updateFaceView(){
-        binding.stickerSheetView.diceKey =DiceKey(faces = (0 until 25).map { index ->
-            Face( EditableDiceKeyState.faces.get(index).letter, EditableDiceKeyState.faces.get(index).digit,EditableDiceKeyState.faces.get(index).orientationAsLowercaseLetterTrbl)
+        binding.stickerSheetView.diceKey = DiceKey(faces = (0 until EditableDiceKeyState.faces.size).map { index ->
+            Face(EditableDiceKeyState.faces[index].letter, EditableDiceKeyState.faces[index].digit, EditableDiceKeyState.faces[index].orientationAsLowercaseLetterTrbl)
         })
         binding.stickerSheetView.highlightedIndexes= setOf(EditableDiceKeyState.faceSelectedIndex)
     }

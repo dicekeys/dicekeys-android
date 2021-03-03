@@ -155,18 +155,26 @@ class DieFace(val face: Face,
             canvas.drawRoundRect(1F, 1F, dieSize - faceBorderWidth/2f, dieSize - faceBorderWidth/2, dieSize / 8, dieSize / 8, borderPaint)
         }
         textPaint.textSize = fontSize
-        canvas.drawText(text, dieSize / 2, textCenterY, textPaint)
+        if(face.letter!=null && face.digit!=null) {
+            canvas.drawText(text, dieSize / 2, textCenterY, textPaint)
+        }else if(face.letter!=null && face.digit==null) {
+            canvas.drawText(face.letter.toString(), dieSize / 2, textCenterY, textPaint)
+        }
 
         canvas.save()
         canvas.translate(left, underlineTop)
-        Undoverline(face, sizeOfRenderedFace, false, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
-                .draw(canvas)
+        if(!face.isBlank) {
+            Undoverline(face, sizeOfRenderedFace, false, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
+                    .draw(canvas)
+        }
         canvas.restore()
 
         canvas.save()
         canvas.translate(left, overlineTop)
-        Undoverline(face, sizeOfRenderedFace, true, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
-                .draw(canvas)
+        if(!face.isBlank) {
+            Undoverline(face, sizeOfRenderedFace, true, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
+                    .draw(canvas)
+        }
         canvas.restore()
 
         canvas.restore()

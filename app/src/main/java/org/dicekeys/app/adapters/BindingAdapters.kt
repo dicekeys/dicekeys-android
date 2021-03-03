@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.progressindicator.BaseProgressIndicator
+import org.dicekeys.app.views.DiceBaseView
 import org.dicekeys.app.views.DiceKeyView
 import org.dicekeys.app.views.StickerTargetSheetView
 import org.dicekeys.dicekey.DiceKey
@@ -27,13 +28,10 @@ fun bindIsInvisible(view: View, isInvisible: Boolean) {
 }
 
 @BindingAdapter("dicekey")
-fun dicekey(view: DiceKeyView, dicekey: DiceKey<Face>?) {
-    dicekey?.let { view.diceKey = it }
-}
-
-@BindingAdapter("dicekey")
-fun dicekey(view: StickerTargetSheetView, dicekey: DiceKey<Face>?) {
-    dicekey?.let { view.diceKey = it }
+fun dicekey(view: DiceBaseView, dicekey: DiceKey<*>?) {
+    println("DICEKEY BINDING")
+    println(dicekey.toString())
+    dicekey?.let { view.diceKey = it as DiceKey<Face>}
 }
 
 @BindingAdapter("progress")

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="value"
+            type="String" />
+    </data>
+        <Button
+            android:text="@{value}"
+            android:layout_width="42dp"
+            android:layout_height="42dp" />
+</layout>

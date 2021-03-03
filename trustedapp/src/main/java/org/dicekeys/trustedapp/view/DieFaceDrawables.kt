@@ -165,16 +165,18 @@ class DieFace(val face: Face,
 
         canvas.save()
         canvas.translate(left, underlineTop)
-        if(text.length==2)
-        Undoverline(face, sizeOfRenderedFace, false, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
-                .draw(canvas)
+        if(!face.isBlank) {
+            Undoverline(face, sizeOfRenderedFace, false, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
+                    .draw(canvas)
+        }
         canvas.restore()
 
         canvas.save()
         canvas.translate(left, overlineTop)
-        if(text.length==2)
-        Undoverline(face, sizeOfRenderedFace, true, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
-                .draw(canvas)
+        if(!face.isBlank) {
+            Undoverline(face, sizeOfRenderedFace, true, penColor = penPaint.color, holeColor = faceSurfacePaint.color)
+                    .draw(canvas)
+        }
         canvas.restore()
 
         canvas.restore()
