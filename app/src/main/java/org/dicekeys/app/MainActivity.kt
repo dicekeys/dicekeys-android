@@ -1,45 +1,40 @@
 package org.dicekeys.app
 
-import android.content.Intent
+import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isGone
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
-import androidx.navigation.NavOptions
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.databinding.ActivityMainBinding
-import org.dicekeys.app.fragments.AssembleFragmentDirections
-import org.dicekeys.app.repositories.DiceKeyRepository
-import org.dicekeys.app.viewmodels.DiceKeyViewModel
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    @Inject
-    lateinit var diceKeyRepository: DiceKeyRepository
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var binding: ActivityMainBinding
 
-    val viewModel: DiceKeyViewModel by viewModels()
-
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Make the window Secure
-        // Postpone after V2
-        // window?.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         setContentView(binding.root)
+
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.also {
+            // Prevent replacing title from NavController
+            it.setDisplayShowTitleEnabled(false)
+        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
@@ -48,8 +43,11 @@ class MainActivity : AppCompatActivity() {
                 setOf(R.id.listDiceKeysFragment)
         )
 
-        setSupportActionBar(binding.toolbar)
-        binding.toolbar.setupWithNavController(navController, appBarConfiguration)
+        binding.toolbar.also {
+            // remove the extra padding on the title
+            it.contentInsetStartWithNavigation = 0
+            it.setupWithNavController(navController, appBarConfiguration)
+        }
 
         binding.bottomNavigation.setupWithNavController(navController)
 
@@ -65,38 +63,43 @@ class MainActivity : AppCompatActivity() {
             val isScan = navController.currentBackStackEntry?.destination?.id == R.id.scanFragment
 
             // Hide the toolbar
-            binding.toolbar.isGone = ( (isRoot || insideDiceKeyNav) && !isScan)
-
-            binding.dicekeyToolbar.isVisible = insideDiceKeyNav && !isScan
+            // binding.toolbar.isGone = ( (isRoot || insideDiceKeyNav) && !isScan)
             binding.bottomNavigation.isVisible = insideDiceKeyNav && !isScan
 
             // Remove the highlight when on Save fragment
             binding.bottomNavigation.menu.setGroupCheckable(0, destination.id != R.id.save, true);
+        }
 
-            /*
-             * ListDiceKeysFragment is considered the top level navigation,
-             * so when navigating to it, its good idea to clear all DiceKeys from memory.
-             * Using this method we are capturing navigation from both keyboard back press and toolbar back button.
-             */
-            if(destination.id == R.id.listDiceKeysFragment){
+        updateSecureDisplay()
+    }
 
-                // Clear the repository
-                diceKeyRepository.clear()
+    override fun onResume() {
+        super.onResume()
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    fun setTitle(title: String){
+        binding.toolbar.title = title
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        updateSecureDisplay()
+    }
+
+    private fun updateSecureDisplay(){
+        sharedPreferences.getBoolean("secure_display", true).also {
+            if(it){
+                window?.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+            }else{
+                window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
             }
-        }
-
-        binding.buttonLock.setOnClickListener {
-            viewModel.forget()
-            navController.popBackStack(R.id.listDiceKeysFragment, false)
-        }
-
-        binding.buttonSave.setOnClickListener {
-            navController.navigate(R.id.save)
-        }
-
-
-        viewModel.diceKey.observe(this){
-            binding.toolbarTitle.text = getString(R.string.dicekey_with_center, it?.centerFace()?.toHumanReadableForm(false))
         }
     }
 }

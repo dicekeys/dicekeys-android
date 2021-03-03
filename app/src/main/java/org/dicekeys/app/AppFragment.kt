@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.MenuRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -25,7 +26,8 @@ import androidx.navigation.fragment.findNavController
  */
 
 abstract class AppFragment<T : ViewDataBinding>(
-        @LayoutRes val layout: Int
+        @LayoutRes val layout: Int,
+        @MenuRes val menuRes: Int
 ) : Fragment() {
     internal lateinit var binding: T
 
@@ -37,7 +39,21 @@ abstract class AppFragment<T : ViewDataBinding>(
         binding = DataBindingUtil.inflate(layoutInflater, layout, container, false)
         binding.lifecycleOwner = this
 
+        if (menuRes > 0) {
+            setHasOptionsMenu(true)
+        }
+
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        if (menuRes > 0) {
+            inflater.inflate(menuRes, menu)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return super.onOptionsItemSelected(item)
     }
 
     fun navigate(directions: NavDirections) {
@@ -55,6 +71,5 @@ abstract class AppFragment<T : ViewDataBinding>(
         // Add Animations
         findNavController().navigate(resId, args, navOptionsBuilder.build())
     }
-
 
 }

@@ -29,48 +29,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize" />
 
-                <LinearLayout
-                    android:id="@+id/dicekeyToolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center">
-
-                    <Button
-                        android:id="@+id/buttonLock"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawableTop="@drawable/ic_baseline_lock_24"
-                        android:text="@string/lock"
-                        android:textColor="@color/white"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/toolbarTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAlignment="center"
-                        android:textAppearance="?attr/textAppearanceBody1"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:text="@{String.format(@string/dicekey_with_center, vm.diceKey.centerFace().toHumanReadableForm(false))}"
-                        tools:text="DiceKey with Q4 in center" />
-
-                    <Button
-                        android:id="@+id/buttonSave"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawableTop="@drawable/ic_phonelet_24"
-                        android:drawableTint="@color/white"
-                        android:text="@{vm.isSaved() ? @string/saved : @string/save}"
-                        android:textColor="@color/white"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
             </com.google.android.material.appbar.AppBarLayout>
 
             <androidx.fragment.app.FragmentContainerView

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/enterDiceKeyFragment">
+    app:startDestination="@id/listDiceKeysFragment">
 
     <fragment
         android:id="@+id/listDiceKeysFragment"
@@ -97,7 +97,8 @@
     <fragment
         android:id="@+id/dicekey"
         android:name="org.dicekeys.app.fragments.dicekey.DiceKeyFragment"
-        tools:layout="@layout/dicekey_fragment" />
+        tools:layout="@layout/dicekey_fragment">
+    </fragment>
 
 
     <fragment
@@ -114,5 +115,11 @@
         android:id="@+id/enterDiceKeyFragment"
         android:name="org.dicekeys.app.fragments.EnterDiceKeyFragment"
         android:label="EnterDiceKeyFragment" />
+    <fragment
+        android:id="@+id/preferencesFragment"
+        android:name="org.dicekeys.app.fragments.PreferencesFragment"
+        android:label="@string/preferences" />
+
+    <action android:id="@+id/action_global_preferencesFragment" app:destination="@id/preferencesFragment"/>
 
 </navigation>

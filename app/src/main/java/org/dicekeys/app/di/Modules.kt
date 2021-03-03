@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import org.dicekeys.app.AppLifecycleObserver
 import org.dicekeys.app.encryption.AppKeystore
 import org.dicekeys.app.encryption.BiometricsHelper
 import org.dicekeys.app.encryption.EncryptedStorage
@@ -45,5 +46,11 @@ class Modules {
     @Provides
     fun provideDiceKeyRepository(): DiceKeyRepository {
         return DiceKeyRepository()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAppLifecycleObserver(@ApplicationContext context: Context, diceKeyRepository: DiceKeyRepository): AppLifecycleObserver {
+        return AppLifecycleObserver(context, diceKeyRepository)
     }
 }

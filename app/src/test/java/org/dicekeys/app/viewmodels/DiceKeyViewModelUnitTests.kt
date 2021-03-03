@@ -2,6 +2,7 @@ package org.dicekeys.app.viewmodels
 
 import com.nhaarman.mockitokotlin2.*
 import org.dicekeys.app.TestViewModel
+import org.dicekeys.app.adapters.dicekey
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
@@ -28,14 +29,14 @@ class DiceKeyViewModelUnitTests : TestViewModel<DiceKeyViewModel>() {
     @Before
     fun setup(){
         whenever(encryptedStorage.getDiceKeysLiveData()).thenReturn(mock())
+        whenever(diceKeyRepository.getActiveDiceKey()).thenReturn(diceKey)
+
 
         viewModel = DiceKeyViewModel(encryptedStorage, diceKeyRepository)
     }
 
     @Test
     fun testForget(){
-        viewModel.setDiceKey(diceKey)
-
         viewModel.forget()
 
         // verify DiceKey is removed from DiceKeyRepository
@@ -44,8 +45,6 @@ class DiceKeyViewModelUnitTests : TestViewModel<DiceKeyViewModel>() {
 
     @Test
     fun testRemove(){
-        viewModel.setDiceKey(diceKey)
-
         viewModel.remove()
 
         // Verify that remove also called in EncryptedStorage and DiceKeyRepository
