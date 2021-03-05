@@ -79,7 +79,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardView"
-            isVisible="@{vm.soloDevice != null &amp;&amp; vm.hasPermissions}"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -222,6 +222,7 @@
                             tools:text="1234567890fdfghjkliuytrerfgsadjfhkadfaoidfhadfgkafdalkjfakjdfklafa" />
 
                         <Button
+                            isVisible="@{vm.soloDevice != null &amp;&amp; vm.hasPermissions}"
                             android:id="@+id/buttonSeedSolo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
