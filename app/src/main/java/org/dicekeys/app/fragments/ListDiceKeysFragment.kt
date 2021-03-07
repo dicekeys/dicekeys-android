@@ -42,14 +42,10 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { facesReadJsonOrNull ->
-            facesReadJsonOrNull?.let { facesReadJson ->
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { humanReadableOrNull ->
+            humanReadableOrNull?.let { humanReadable ->
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
-                FaceRead.diceKeyFromJsonFacesRead(facesReadJson)?.let { diceKey ->
-                    DiceKey.toDiceKey(diceKey).also{
-                        navigateToDiceKey(it)
-                    }
-                }
+                navigateToDiceKey(DiceKey.fromHumanReadableForm(humanReadable))
             }
         }
 

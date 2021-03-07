@@ -20,7 +20,7 @@ class DiceKeyViewModel @Inject constructor(
         private val diceKeyRepository: DiceKeyRepository
 ) : ViewModel() {
 
-    var diceKey = MutableLiveData<DiceKey<Face>?>()
+    var diceKey = MutableLiveData<DiceKey<Face>>()
 
     val isSaved = MutableLiveData(diceKey.value?.let { encryptedStorage.exists(it.keyId) } ?: false)
     private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> {
@@ -28,12 +28,13 @@ class DiceKeyViewModel @Inject constructor(
     }
 
     init {
+        // Get Active DiceKey
+        diceKey.value = diceKeyRepository.getActiveDiceKey()
+
         // Listen to EncryptedStorage change events
         encryptedStorage
                 .getDiceKeysLiveData()
                 .observeForever(encryptedStorageObserver)
-
-        diceKey.value = diceKeyRepository.getActiveDiceKey()
     }
 
     private fun updateIsSaved(){

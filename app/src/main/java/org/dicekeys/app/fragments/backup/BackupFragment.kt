@@ -96,42 +96,39 @@ class BackupFragment: AppFragment<BackupFragmentBinding>(R.layout.backup_fragmen
             onPrevPage()
         }
 
-
-        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) {
-            it?.let {
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { humanReadableOrNull ->
+            humanReadableOrNull?.let { humanReadable ->
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
 
-                FaceRead.diceKeyFromJsonFacesRead(it)?.let { diceKeyFaceRead ->
-                    val scannedDiceKey = DiceKey.toDiceKey(diceKeyFaceRead)
-                    val backupDiceKey = diceKey.mostSimilarRotationOf(scannedDiceKey)
-                    val invalidIndexes = (0 until 25).filter {
-                        diceKey.faces[it].numberOfFieldsDifferent(backupDiceKey.faces[it]) > 0
-                    }.toSet()
+                val scannedDiceKey = DiceKey.fromHumanReadableForm(humanReadable)
+                val backupDiceKey = diceKey.mostSimilarRotationOf(scannedDiceKey)
+                val invalidIndexes = (0 until 25).filter {
+                    diceKey.faces[it].numberOfFieldsDifferent(backupDiceKey.faces[it]) > 0
+                }.toSet()
 
-                    val perfectMatch = invalidIndexes.isEmpty()
-                    val totalMismatch = invalidIndexes.size > 5
-                    val builder = AlertDialog.Builder(requireContext())
-                    builder.setTitle("Your scanned copy")
+                val perfectMatch = invalidIndexes.isEmpty()
+                val totalMismatch = invalidIndexes.size > 5
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("Your scanned copy")
 
-                    if (perfectMatch) {
-                        builder.setMessage("You made a perfect copy!")
-                        setNavigationResult(result = true, key = VALID_BACKUP)
-                    } else if (totalMismatch) {
-                        builder.setMessage("That key doesn't look at all like the key you scanned before.")
-                    } else {
-                        val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_backup_verify, null)
-                        view.findViewById<DiceKeyView>(R.id.dice_key).highlightedIndexes = invalidIndexes
-                        view.findViewById<TextView>(R.id.text).text = "You incorrectly copied the highlighted " + (if (invalidIndexes.size == 1) "die" else "dice") + ". You can fix the copy to match the original, or change the original to match the copy."
-                        builder.setView(view)
-                    }
-                    builder.setPositiveButton("OK") { dialog, _ ->
-                        dialog.cancel()
-                        if(perfectMatch){
-                            finish()
-                        }
-                    }
-                    builder.show()
+                if (perfectMatch) {
+                    builder.setMessage("You made a perfect copy!")
+                    setNavigationResult(result = true, key = VALID_BACKUP)
+                } else if (totalMismatch) {
+                    builder.setMessage("That key doesn't look at all like the key you scanned before.")
+                } else {
+                    val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_backup_verify, null)
+                    view.findViewById<DiceKeyView>(R.id.dice_key).highlightedIndexes = invalidIndexes
+                    view.findViewById<TextView>(R.id.text).text = "You incorrectly copied the highlighted " + (if (invalidIndexes.size == 1) "die" else "dice") + ". You can fix the copy to match the original, or change the original to match the copy."
+                    builder.setView(view)
                 }
+                builder.setPositiveButton("OK") { dialog, _ ->
+                    dialog.cancel()
+                    if(perfectMatch){
+                        finish()
+                    }
+                }
+                builder.show()
             }
         }
     }

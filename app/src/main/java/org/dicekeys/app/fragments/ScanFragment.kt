@@ -19,10 +19,13 @@ import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
+import org.dicekeys.app.adapters.dicekey
 import org.dicekeys.app.databinding.ScanFragmentBinding
 import org.dicekeys.app.extensions.setNavigationResult
 import org.dicekeys.app.extensions.toast
+import org.dicekeys.dicekey.FaceRead
 import org.dicekeys.read.DiceKeyAnalyzer
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.min
 
@@ -32,6 +35,9 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
     companion object {
         const val READ_DICEKEY = "read_dicekey"
     }
+
+    private lateinit var cameraExecutor: ExecutorService
+
 
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 
@@ -43,6 +49,7 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
         }
 
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     override fun onResume() {
@@ -55,6 +62,11 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
+
     // This is an arbitrary number we are using to keep track of the permission
     // request. Where an app has multiple context for requesting permission,
     // this can help differentiate the different contexts.
@@ -62,9 +74,6 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
 
     // This is an array of all the permission specified in the manifest.
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
-
-    // Add this after onCreate
-    private val executor = Executors.newSingleThreadExecutor()
 
     override fun onRequestPermissionsResult(
             requestCode: Int,
@@ -126,6 +135,7 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
                 else
                 // Taller than 1x1, or 1x1, so fix width at 1080 and calculate height 1080<=x<=1920
                     Size(1080, (1080 * pHeight / pWidth))
+
         val diceKeyImageAnalyzerUseCase = ImageAnalysis.Builder()
                 // In our analysis, we care more about the latest image than
                 // analyzing *every* image
@@ -136,7 +146,7 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
         var analyzeDiceKey = DiceKeyAnalyzer(requireActivity())
         diceKeyImageAnalyzerUseCase.setAnalyzer(
                 // Stuart is guessing with this next parameter
-                executor, // ContextCompat.getMainExecutor(this),
+                cameraExecutor,
                 analyzeDiceKey
         )
 
@@ -146,15 +156,23 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
             // it's needed to rotate the bitmap to match the preview
             // hardcoded 90 degrees is fine as we have locked the app orientation.
             matrix.postRotate(90f)
-            val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.getWidth(), overlayBitmap.getHeight(), matrix, true);
+            val rotatedBitmap = Bitmap.createBitmap(overlayBitmap, 0, 0, overlayBitmap.width, overlayBitmap.height, matrix, true);
 
             binding.overlayView.setImageBitmap(rotatedBitmap)
         }
 
         analyzeDiceKey.onActionDone = fun(diceKeyAsJson) {
             cameraProviderFuture.get().unbindAll()
-            setNavigationResult(result = diceKeyAsJson, key = READ_DICEKEY)
-            findNavController().popBackStack()
+
+            FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
+
+                // Rotate 90 degrees
+                diceKey.rotate(1).also {
+                    setNavigationResult(result = it.toHumanReadableForm(), key = READ_DICEKEY)
+                    findNavController().popBackStack()
+                }
+            }
+
         }
 
         try {

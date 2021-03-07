@@ -46,17 +46,10 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
 
         binding.vm = assembleViewModel
 
-        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { facesReadJsonOrNull ->
-            facesReadJsonOrNull?.let { facesReadJson ->
+        getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { humanReadableOrNull ->
+            humanReadableOrNull?.let { humanReadable ->
                 clearNavigationResult(ScanFragment.READ_DICEKEY)
-
-                FaceRead.diceKeyFromJsonFacesRead(facesReadJson)?.let { diceKeyFaceRead ->
-
-                    // Convert to Face
-                    assembleViewModel.setDiceKey(DiceKey(faces = diceKeyFaceRead.faces.map {
-                        Face(letter = it.letter, digit = it.digit, orientationAsLowercaseLetterTrbl = it.orientationAsLowercaseLetterTrbl)
-                    }))
-                }
+                assembleViewModel.setDiceKey(DiceKey.fromHumanReadableForm(humanReadable))
             }
         }
 
