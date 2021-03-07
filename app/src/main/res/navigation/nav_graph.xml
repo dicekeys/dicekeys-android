@@ -80,12 +80,13 @@
         android:name="org.dicekeys.app.fragments.dicekey.RecipeFragment"
         android:label=""
         tools:layout="@layout/recipe_fragment">
-        <argument
-            android:name="diceKeyId"
-            app:argType="string" />
+
         <argument
             android:name="recipe"
-            app:argType="org.dicekeys.api.DerivationRecipe" />
+            app:argType="org.dicekeys.api.DerivationRecipe"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+
         <argument
             android:name="template"
             android:defaultValue="@null"

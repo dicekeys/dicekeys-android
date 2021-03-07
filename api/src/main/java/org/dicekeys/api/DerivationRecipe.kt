@@ -43,7 +43,7 @@ private fun augmentRecipeJson(template: DerivationRecipe, sequenceNumber: Int, l
 
 @Serializable
 @Parcelize
-data class DerivationRecipe(
+data class DerivationRecipe constructor(
         @SerialName("type")
         val type: DerivationOptions.Type,
         @SerialName("name")
@@ -65,7 +65,13 @@ data class DerivationRecipe(
                     if (sequenceNumber == 1) "" else " ($sequenceNumber)"
                 ),
                 augmentRecipeJson(template, sequenceNumber, lengthInChars)
-        ) {}
+        )
+
+    companion object{
+        fun createCustomOnlineRecipe(recipe: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0): DerivationRecipe {
+            return DerivationRecipe(DerivationOptions.Type.Password, recipe.name, augmentRecipeJson(recipe, sequenceNumber, lengthInChars))
+        }
+    }
 
     @IgnoredOnParcel
     val sequence by lazy {
