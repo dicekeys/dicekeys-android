@@ -9,6 +9,10 @@
             name="diceKey"
             type="org.dicekeys.app.encryption.EncryptedDiceKey" />
 
+        <variable
+            name="isOpened"
+            type="Boolean" />
+
     </data>
 
     <LinearLayout
@@ -29,7 +33,7 @@
             android:layout_marginTop="16dp"
             tools:text="Center"
             android:textAlignment="center"
-            android:text= "@{String.format(@string/unlock_dicekey_with_center, diceKey.centerFaceAsFace.toHumanReadableForm(false))}"
+            android:text= "@{String.format(isOpened ? @string/open_dicekey_with_center : @string/unlock_dicekey_with_center, diceKey.centerFaceAsFace.toHumanReadableForm(false))}"
             android:textAppearance="?attr/textAppearanceHeadline6" />
 
     </LinearLayout>
