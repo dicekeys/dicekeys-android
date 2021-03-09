@@ -37,7 +37,7 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
     @Inject
     lateinit var biometricsHelper: BiometricsHelper
 
-    val listViewModel: ListDiceKeysViewModel by viewModels()
+    private val listViewModel: ListDiceKeysViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,8 +64,16 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
         }
     }
 
-    private fun updateDiceKeys(list: List<EncryptedDiceKey>) {
+    override fun onResume() {
+        super.onResume()
 
+        // Update DiceKeys list as could have been kicked from memory
+        encryptedStorage.getDiceKeysLiveData().value?.let {
+            updateDiceKeys(it)
+        }
+    }
+
+    private fun updateDiceKeys(list: List<EncryptedDiceKey>) {
         // 2 elements are hardcoded in the xml, the rest are dynamically generated
         while (binding.root.childCount > 2) {
             binding.root.removeViewAt(0)
@@ -74,6 +82,7 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
         for ((index, encryptedDiceKey) in list.withIndex()) {
             val diceKeyView = ListItemDicekeyBinding.inflate(LayoutInflater.from(requireContext()))
             diceKeyView.diceKey = encryptedDiceKey
+            diceKeyView.isOpened = diceKeyRepository.exists(encryptedDiceKey)
 
             diceKeyView.centerView.centerFace = encryptedDiceKey.centerFaceAsFace
 

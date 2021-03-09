@@ -30,6 +30,7 @@
     <string name="load_your_dicekey">Load your DiceKey</string>
     <string name="dicekey_with_center">DiceKey with %1$s in center</string>
     <string name="unlock_dicekey_with_center">Unlock DiceKey with %1$s in center</string>
+    <string name="open_dicekey_with_center">Open DiceKey with %1$s in center</string>
 
     <string name="done">Done</string>
     <string name="next">Next</string>
