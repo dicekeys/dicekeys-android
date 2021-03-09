@@ -38,20 +38,14 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         binding.btnDown.setOnClickListener { recipeViewModel.sequencUpDown(false) }
         binding.btnUp.setOnClickListener { recipeViewModel.sequencUpDown(true) }
 
-        binding.maxChars.doAfterTextChanged { edittext ->
-            try{
-                recipeViewModel.updateSequence(edittext.toString().toInt())
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
-        }
-
         binding.etSequenceNumber.doAfterTextChanged { edittext ->
+            var seq = 1
             try {
-                recipeViewModel.updateSequence(edittext.toString().toInt())
+                seq = edittext.toString().toInt()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+            recipeViewModel.updateSequence(seq)
         }
 
         binding.domains.doAfterTextChanged { edittext ->
@@ -63,11 +57,13 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         }
 
         binding.maxChars.doAfterTextChanged { edittext ->
+            var length = 0
             try {
-                recipeViewModel.updateLengthInChars(edittext.toString().toInt())
+                length = edittext.toString().toInt()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+            recipeViewModel.updateLengthInChars(length)
         }
 
         binding.tvPassword.setOnClickListener {

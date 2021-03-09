@@ -31,9 +31,10 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             isVisible="@{vm.isWritingProcessUnderWay &amp;&amp; vm.soloDevice != null}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,11 +72,10 @@
             android:layout_marginEnd="24dp"
             android:onClick="@{vm::askForPermissions}"
             android:text="@string/ask_for_permissions"
-            tools:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardView"
