@@ -46,22 +46,10 @@ class RecipeBuilder(val template: DerivationRecipe?) {
     }
 
     fun getDerivationRecipe(): DerivationRecipe? {
-        if(template == null) {
-            val name = domainList.joinToString(", ")
-            val allowDomainList = domainList.map { """{"host":"*.$it"}""" }
-
-            if (domainList.isEmpty()) {
-                return null
-            }
-
-            val recipe = DerivationRecipe(DerivationOptions.Type.Password, name, """{"allow":[${allowDomainList.joinToString(",")}]}""")
-
-            if (sequence > 1 || lengthInChars > 0) {
-                return DerivationRecipe.createCustomOnlineRecipe(recipe, sequence, lengthInChars)
-            }
-            return recipe
-        }else{
-            return DerivationRecipe(template, sequence)
+        return if(template == null) {
+            DerivationRecipe.createCustomOnlineRecipe(domainList, sequence, lengthInChars)
+        } else {
+            DerivationRecipe(template, sequence)
         }
     }
 }

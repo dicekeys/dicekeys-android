@@ -68,8 +68,23 @@ data class DerivationRecipe constructor(
         )
 
     companion object{
-        fun createCustomOnlineRecipe(recipe: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0): DerivationRecipe {
-            return DerivationRecipe(DerivationOptions.Type.Password, recipe.name, augmentRecipeJson(recipe, sequenceNumber, lengthInChars))
+
+        /*
+         * Create a custom Online Recipe
+         */
+        fun createCustomOnlineRecipe(domains: List<String>, sequenceNumber: Int, lengthInChars: Int = 0): DerivationRecipe? {
+            if (domains.isEmpty()) {
+                return null
+            }
+
+            val allowDomainList = domains.map { """{"host":"*.$it"}""" }
+            val name = domains.joinToString(", ")
+            var recipeJson = """{"allow":[${allowDomainList.joinToString(",")}]}"""
+
+            recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
+            recipeJson = addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
+
+            return DerivationRecipe(DerivationOptions.Type.Password, name, recipeJson)
         }
     }
 
