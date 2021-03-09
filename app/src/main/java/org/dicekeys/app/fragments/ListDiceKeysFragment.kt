@@ -82,7 +82,7 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
         for ((index, encryptedDiceKey) in list.withIndex()) {
             val diceKeyView = ListItemDicekeyBinding.inflate(LayoutInflater.from(requireContext()))
             diceKeyView.diceKey = encryptedDiceKey
-            diceKeyView.isOpened = diceKeyRepository.exists(encryptedDiceKey)
+            diceKeyView.isInMemory = diceKeyRepository.exists(encryptedDiceKey)
 
             diceKeyView.centerView.centerFace = encryptedDiceKey.centerFaceAsFace
 

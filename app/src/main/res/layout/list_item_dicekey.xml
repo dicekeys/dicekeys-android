@@ -10,12 +10,12 @@
             type="org.dicekeys.app.encryption.EncryptedDiceKey" />
 
         <variable
-            name="isOpened"
+            name="isInMemory"
             type="Boolean" />
 
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -23,20 +23,27 @@
 
         <org.dicekeys.app.views.DiceKeyCenterFaceOnlyView
             android:id="@+id/centerView"
-            android:layout_width="80dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center"/>
+            android:layout_width="70dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/textView4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/textView4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            tools:text="Center"
+            android:layout_height="0dp"
+            android:text="@{String.format(isInMemory ? @string/open_dicekey_with_center : @string/unlock_dicekey_with_center, diceKey.centerFaceAsFace.toHumanReadableForm(false))}"
             android:textAlignment="center"
-            android:text= "@{String.format(isOpened ? @string/open_dicekey_with_center : @string/unlock_dicekey_with_center, diceKey.centerFaceAsFace.toHumanReadableForm(false))}"
-            android:textAppearance="?attr/textAppearanceHeadline6" />
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Center" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
