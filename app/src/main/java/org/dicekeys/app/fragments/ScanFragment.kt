@@ -111,7 +111,6 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
 
         val previewSize = Size(binding.previewView.width, binding.previewView.height)
 
-
         // Build the viewfinder use case
         val preview: Preview = Preview.Builder()
                 .setTargetResolution(previewSize)
@@ -120,21 +119,16 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
                     it.setSurfaceProvider(binding.previewView.surfaceProvider)
                 }
 
-        val pWidth = binding.previewView.width
-        val pHeight = binding.previewView.height
-        val analyzerSize: Size =
-                if (pWidth * 9 > pHeight * 16)
-                // Wider than 16x9, so fix width=1920 and calculate a height which will be <= 1080
-                    Size(1920, (1920 * pHeight) / pWidth)
-                else if (pHeight * 16 > pWidth * 9)
-                // Taller than 16x9, so fix height=1920 and calculate a width which will be <= 1080
-                    Size((1920 * pWidth) / pHeight, 1920)
-                else if (pWidth > pHeight)
-                // Wider than 1x1 but less than 16x9, so fix height=1080 and calculate width <=1920
-                    Size((1080 * pWidth / pHeight), 1080)
-                else
-                // Taller than 1x1, or 1x1, so fix width at 1080 and calculate height 1080<=x<=1920
-                    Size(1080, (1080 * pHeight / pWidth))
+        /*
+         * Based on the following CameraX documentation, having a hardcoded target resolution is enough
+         * for the framework to pick the most appropriate resolution.
+         *
+         * The target resolution attempts to establish a minimum bound for the image resolution.
+         * * The actual image resolution will be the closest available resolution in size that is not
+         * * smaller than the target resolution, as determined by the Camera implementation.
+         */
+
+        val analyzerSize = Size(1024, 1024)
 
         val diceKeyImageAnalyzerUseCase = ImageAnalysis.Builder()
                 // In our analysis, we care more about the latest image than
