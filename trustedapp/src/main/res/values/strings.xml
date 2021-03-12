@@ -10,7 +10,7 @@
     <string name="title_activity_backup">Make a backup</string>
     <string name="recipe_for_password">Recipe for %s Password</string>
     <string name="sequence_number">Sequence Number</string>
-    <string name="str_multiple_passwords_info">if you need multiple passwords for a single website or service, change sequence number to create additional passowrd</string>
+    <string name="str_multiple_passwords_info">if you need multiple passwords for a single website or service, change the sequence number to create additional password</string>
     <string name="str_save_recipe_in_the_menu">Save recipe in the menu</string>
     <string name="copy_password">Copy Password</string>
     <string name="common_password_recipe">Common Password Recipe</string>
