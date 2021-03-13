@@ -124,8 +124,8 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
          * for the framework to pick the most appropriate resolution.
          *
          * The target resolution attempts to establish a minimum bound for the image resolution.
-         * * The actual image resolution will be the closest available resolution in size that is not
-         * * smaller than the target resolution, as determined by the Camera implementation.
+         * The actual image resolution will be the closest available resolution in size that is not
+         * smaller than the target resolution, as determined by the Camera implementation.
          */
 
         val analyzerSize = Size(1024, 1024)
