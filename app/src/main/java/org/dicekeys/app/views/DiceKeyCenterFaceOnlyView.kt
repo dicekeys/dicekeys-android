@@ -184,8 +184,17 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val width = MeasureSpec.getSize(widthMeasureSpec).toFloat()
-        val height = MeasureSpec.getSize(heightMeasureSpec).toFloat()
+        var width = MeasureSpec.getSize(widthMeasureSpec).toFloat()
+        var height = MeasureSpec.getSize(heightMeasureSpec).toFloat()
+
+        // Find the correct width/height that will respect the aspect ratio
+        val newHeight = width * ASPECT_RATIO
+
+        if(newHeight < height){
+            height = newHeight.toFloat()
+        }else{
+            width = (height / ASPECT_RATIO).toFloat()
+        }
 
         size = SizeF(width, height)
 
@@ -196,5 +205,9 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
                 totalWidth,
                 totalHeight
         )
+    }
+
+    companion object{
+        const val ASPECT_RATIO = 1.5
     }
 }
