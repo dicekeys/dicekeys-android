@@ -87,6 +87,9 @@
     <string name="be_sure_to_make_a_backup">Be sure to make a backup soon!</string>
     <string name="when_you_press_the_done">When you press the "Done" button, we\'ll take you to the same screen you\'ll see after scanning your DiceKey from the home screen.</string>
 
+    <string name="not_seeing_your_connected_solokey">Not seeing your connected SoloKey?</string>
+    <string name="solokey_help_message">If you are connecting using a cable rather than directly, make sure it is an OTG cable.\n\nIf your device has an OTG setting at Settings > Connected devices > OTG, turn it on.\n\nIf you are using an Android device from before 2019 and it does not contain that setting, make sure it supports OTG.</string>
+
     <string name="please_connect_a_solokey">Please connect a SoloKey.</string>
     <string name="press_the_button_on_your_security_key_three_times">Press the button on your security key three times.</string>
     <string name="you_have_seconds_to_do_so">You have %s seconds to do so</string>

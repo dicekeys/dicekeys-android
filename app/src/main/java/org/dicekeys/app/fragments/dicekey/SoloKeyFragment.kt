@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.Application
 import org.dicekeys.app.R
@@ -55,6 +56,14 @@ class SoloKeyFragment : AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout
             it.getContentIfNotHandledOrReturnNull()?.let {
                 dialog(R.string.solokey, R.string.successfully_wrote_to_solokey)
             }
+        }
+
+        binding.buttonHelp.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.not_seeing_your_connected_solokey)
+                    .setMessage(R.string.solokey_help_message)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
         }
     }
 }
