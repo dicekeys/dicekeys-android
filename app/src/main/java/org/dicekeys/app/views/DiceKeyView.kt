@@ -16,15 +16,10 @@ class DiceKeyView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : DiceBaseView(context, attrs, defStyleAttr) {
 
-    companion object {
-        val TAG = DiceKeyView::class.java.simpleName
-    }
-
     var centerFace: Face? = null
     var showLidTab: Boolean = true
     var leaveSpaceForTab: Boolean = true
     var showDiceAtIndexes: Set<Int>? = null
-    override val sizeModel = DiceSizeModel(1f, leaveSpaceForTab)
 
     val diceBoxPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     val diceBoxDieSlotPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -56,6 +51,8 @@ class DiceKeyView @JvmOverloads constructor(
         highlighterPaint.color = typedArray.getColor(R.styleable.DiceKeyView_hightlighColor, ContextCompat.getColor(context, R.color.highlighter))
         typedArray.recycle()
     }
+
+    override val sizeModel by lazy { DiceSizeModel(1f, leaveSpaceForTab) }
 
     val computedDiceKeyToRender: DiceKey<Face>
         get() = diceKey
