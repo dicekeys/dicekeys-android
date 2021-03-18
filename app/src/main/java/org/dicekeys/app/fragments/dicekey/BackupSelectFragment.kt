@@ -16,7 +16,7 @@ class BackupSelectFragment: AbstractDiceKeyFragment<BackupSelectFragmentBinding>
         super.onViewCreated(view, savedInstanceState)
 
         if(isGuarded) return
-        
+
         binding.vm = viewModel
 
         binding.wrapStickeys.setOnClickListener {
