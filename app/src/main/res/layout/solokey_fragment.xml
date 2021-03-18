@@ -245,7 +245,7 @@
                             android:layout_height="wrap_content"
                             android:enabled="@{!vm.isWritingProcessUnderWay}"
                             android:onClick="@{vm::writeToSoloKey}"
-                            android:text="@{String.format(@string/seed_s_sn_s, vm.hasPermissions ? vm.soloDevice.productName : vm.soloDevice.toString() ,vm.hasPermissions ? vm.soloDevice.serialNumber : vm.soloDevice.toString())}"
+                            android:text="@{String.format(@string/seed_s_sn_s, vm.productName , vm.serialNumber)}"
                             tools:text="@string/seed_s_sn_s" />
 
                         <com.google.android.material.progressindicator.LinearProgressIndicator

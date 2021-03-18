@@ -1,6 +1,7 @@
 package org.dicekeys.app.viewmodels
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.dicekeys.app.adapters.dicekey
@@ -11,15 +12,14 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class AssembleViewModel @Inject constructor(val diceKeyRepository: DiceKeyRepository) : ViewModel() {
-    var page = MutableLiveData(0)
+class AssembleViewModel @Inject constructor(private val state: SavedStateHandle, val diceKeyRepository: DiceKeyRepository) : ViewModel() {
+    var page = state.getLiveData("page", 0)
 
     var diceKey = MutableLiveData<DiceKey<Face>?>()
 
-    // var diceKeyScanned = MutableLiveData(false)
     var diceKeyBackedUp = MutableLiveData(false)
 
-    fun setDiceKey(dk: DiceKey<Face>?){
+    fun setDiceKey(dk: DiceKey<Face>?) {
         // remove the previous dicekey from memory
         diceKey.value?.let {
             diceKeyRepository.remove(it)
@@ -27,10 +27,6 @@ class AssembleViewModel @Inject constructor(val diceKeyRepository: DiceKeyReposi
 
         diceKey.value = dk
         dk?.let { diceKeyRepository.set(it) }
-    }
-
-    fun setPage(position: Int) {
-        page.value = position
     }
 
     fun nextPage() {

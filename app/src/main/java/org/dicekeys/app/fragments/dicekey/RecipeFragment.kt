@@ -32,11 +32,14 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isGuarded) return
+
         binding.diceKeyVM = viewModel
         binding.vm = recipeViewModel
 
         binding.btnDown.setOnClickListener { recipeViewModel.sequencUpDown(false) }
         binding.btnUp.setOnClickListener { recipeViewModel.sequencUpDown(true) }
+
 
         binding.etSequenceNumber.doAfterTextChanged { edittext ->
             var seq = 1

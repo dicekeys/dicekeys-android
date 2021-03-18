@@ -15,6 +15,8 @@ class BackupSelectFragment: AbstractDiceKeyFragment<BackupSelectFragmentBinding>
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isGuarded) return
+
         binding.vm = viewModel
 
         binding.wrapStickeys.setOnClickListener {

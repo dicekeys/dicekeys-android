@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import org.dicekeys.app.AppFragment
@@ -25,6 +24,10 @@ import javax.inject.Inject
 abstract class AbstractDiceKeyFragment<T : ViewDataBinding>(@LayoutRes layout: Int) : AppFragment<T>(layout, R.menu.dicekey_menu) {
 
     lateinit var diceKey: DiceKey<Face>
+
+    // isGuarded is used to prevent fragment to continue initialization,
+    // as the DiceKey is no longer available in memory
+    var isGuarded = false
 
     val viewModel: DiceKeyViewModel by viewModels()
 
@@ -71,12 +74,12 @@ abstract class AbstractDiceKeyFragment<T : ViewDataBinding>(@LayoutRes layout: I
 
     // Check if DiceKey is still in memory
     private fun guard(){
-        // Guard: If DiceKey is not available, return
+        // Guard: If DiceKey is not available
         repository.getActiveDiceKey()?.also {
             diceKey = it
         } ?: run {
             findNavController().popBackStack()
-            return
+            isGuarded = true
         }
     }
 }

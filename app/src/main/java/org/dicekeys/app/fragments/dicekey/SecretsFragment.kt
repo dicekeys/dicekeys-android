@@ -26,6 +26,8 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isGuarded) return
+
         val adapter = RecipesAdapter(this)
 
         recipesRepository.getRecipesLiveData().observe(viewLifecycleOwner) {

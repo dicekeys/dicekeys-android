@@ -29,7 +29,6 @@ fun bindIsInvisible(view: View, isInvisible: Boolean) {
 
 @BindingAdapter("dicekey")
 fun dicekey(view: DiceBaseView, dicekey: DiceKey<*>?) {
-    println("DICEKEY BINDING")
     println(dicekey.toString())
     dicekey?.let { view.diceKey = it as DiceKey<Face>}
 }

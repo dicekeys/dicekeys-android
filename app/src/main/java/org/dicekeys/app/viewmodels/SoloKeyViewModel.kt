@@ -38,8 +38,8 @@ class SoloKeyViewModel @AssistedInject constructor(
     val seed = MutableLiveData("")
 
     val writingProgress = MutableLiveData("")
-
-
+    val productName = MutableLiveData("-")
+    val serialNumber = MutableLiveData("-")
 
     val isWritingProcessUnderWay = MutableLiveData(false)
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
@@ -91,7 +91,7 @@ class SoloKeyViewModel @AssistedInject constructor(
      */
     fun scanUsbDevices() {
         usbManager.deviceList.values.firstOrNull { device ->
-            ConnectionToWritableUsbFidoKey.isSoloKey(device)
+            ConnectionToWritableUsbFidoKey.isSoloKey(device) || true
         }.also { usbDevice ->
             soloDevice.value = usbDevice
             isWritingProcessUnderWay.value = false
@@ -101,7 +101,11 @@ class SoloKeyViewModel @AssistedInject constructor(
 
     fun checkUsbPermissions(){
         soloDevice.value?.let {
-            hasPermissions.postValue(usbManager.hasPermission(it))
+            val usbHasPermission = usbManager.hasPermission(it)
+            hasPermissions.postValue(usbHasPermission)
+
+            productName.postValue(if(usbHasPermission) it.productName else "")
+            serialNumber.postValue(if(usbHasPermission) it.serialNumber else "")
         }
     }
 
