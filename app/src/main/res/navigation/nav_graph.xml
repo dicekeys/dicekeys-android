@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/assembleFragment"
-        android:name="org.dicekeys.app.fragments.AssembleFragment"
+        android:name="org.dicekeys.app.fragments.assemble.AssembleFragment"
         android:label="@string/assemble_a_dicekey"
         tools:layout="@layout/assemble_fragment">
 
