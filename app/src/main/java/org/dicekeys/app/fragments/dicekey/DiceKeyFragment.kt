@@ -24,6 +24,8 @@ class DiceKeyFragment: AbstractDiceKeyFragment<DicekeyFragmentBinding>(R.layout.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isGuarded) return
+
         binding.vm = viewModel
 
         binding.buttonSave.setOnClickListener {

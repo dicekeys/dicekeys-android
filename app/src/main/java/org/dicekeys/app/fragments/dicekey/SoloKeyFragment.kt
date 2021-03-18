@@ -29,6 +29,8 @@ class SoloKeyFragment : AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isGuarded) return
+
         binding.diceKeyVM = viewModel
         binding.vm = soloKeyViewModel
 
