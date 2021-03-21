@@ -3,9 +3,9 @@ package org.dicekeys.app.fragments.dicekey
 import android.os.Bundle
 import android.view.View
 import dagger.hilt.android.AndroidEntryPoint
-import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.SaveFragmentBinding
+import org.dicekeys.app.encryption.AppKeystore
 import org.dicekeys.app.encryption.BiometricsHelper
 import javax.inject.Inject
 
@@ -23,7 +23,11 @@ class SaveFragment: AbstractDiceKeyFragment<SaveFragmentBinding>(R.layout.save_f
         binding.vm = viewModel
 
         binding.buttonSave.setOnClickListener{
-            biometricsHelper.encrypt(viewModel.diceKey.value!!, this)
+            if(biometricsHelper.canUseBiometrics(requireContext())){
+                biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.BIOMETRIC, this)
+            }else{
+                biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.AUTHENTICATION, this)
+            }
         }
 
         binding.buttonRemove.setOnClickListener{
