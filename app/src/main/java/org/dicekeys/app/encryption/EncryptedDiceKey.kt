@@ -16,13 +16,16 @@ import org.dicekeys.dicekey.Face
  */
 
 @Serializable
-data class EncryptedDiceKey(
+data class EncryptedDiceKey constructor(
         @SerialName("key_id")
         val keyId: String,
         @SerialName("center_face")
         val centerFace: String,
         @SerialName("encrypted_data")
         val encryptedData: EncryptedData,
+        // Set Biometric for backward compatibility by default
+        @SerialName("keystore_type")
+        val keystoreType: AppKeystore.KeystoreType = AppKeystore.KeystoreType.BIOMETRIC,
 ) {
 
     val centerFaceAsFace: Face by lazy {

@@ -17,7 +17,7 @@ import org.dicekeys.dicekey.DiceKey
  */
 
 class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
-    private val diceKeysLiveData : MutableLiveData<List<EncryptedDiceKey>> = MutableLiveData(listOf())
+    private val diceKeysLiveData: MutableLiveData<List<EncryptedDiceKey>> = MutableLiveData(listOf())
 
     private val sharedPreferencesListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         updateDiceKeys()
@@ -28,10 +28,10 @@ class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferencesListener)
     }
 
-    private fun updateDiceKeys(){
+    private fun updateDiceKeys() {
         GlobalScope.launch {
             val list = mutableListOf<EncryptedDiceKey>()
-            for(key in sharedPreferences.all.keys){
+            for (key in sharedPreferences.all.keys) {
                 getEncryptedData(key)?.let {
                     list += it
                 }
@@ -42,9 +42,12 @@ class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
 
     fun getDiceKeysLiveData(): LiveData<List<EncryptedDiceKey>> = diceKeysLiveData
 
-    fun save(diceKey: DiceKey<*>, encryptedData: EncryptedData){
-        // TODO add center face
-        val encryptedDiceKey = EncryptedDiceKey(keyId = diceKey.keyId, centerFace = diceKey.centerFace().toHumanReadableForm(true), encryptedData = encryptedData)
+    fun save(diceKey: DiceKey<*>, encryptedData: EncryptedData, keystoreType: AppKeystore.KeystoreType) {
+        val encryptedDiceKey = EncryptedDiceKey(keyId = diceKey.keyId,
+                centerFace = diceKey.centerFace().toHumanReadableForm(true),
+                encryptedData = encryptedData,
+                keystoreType = keystoreType
+        )
 
         sharedPreferences
                 .edit()
@@ -52,15 +55,15 @@ class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
                 .apply()
     }
 
-    fun remove(encryptedDiceKey: EncryptedDiceKey){
+    fun remove(encryptedDiceKey: EncryptedDiceKey) {
         remove(encryptedDiceKey.keyId)
     }
 
-    fun remove(diceKey: DiceKey<*>){
+    fun remove(diceKey: DiceKey<*>) {
         remove(diceKey.keyId)
     }
 
-    private fun remove(id: String){
+    private fun remove(id: String) {
         sharedPreferences.edit().remove(id).apply()
     }
 
@@ -68,7 +71,7 @@ class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
 
 
     fun getEncryptedData(id: String): EncryptedDiceKey? {
-        return sharedPreferences.getString(id, null)?.let{
+        return sharedPreferences.getString(id, null)?.let {
             return Json.decodeFromString(it)
         }
     }

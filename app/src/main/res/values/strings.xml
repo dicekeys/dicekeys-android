@@ -50,6 +50,9 @@
     <string name="biometrics_encryption_subtitle">Use your biometrics to encrypt your DiceKey and safely store it on your device.</string>
     <string name="biometrics_decryption_subtitle">Use your biometrics to decrypt your DiceKey</string>
 
+    <string name="authenticate_encryption_subtitle">Authenticate to encrypt your DiceKey and safely store it on your device.</string>
+    <string name="authenticate_decryption_subtitle">Authenticate to decrypt your DiceKey</string>
+
     <string name="biometrics_unavailable_message">You have to enable Biometrics (Fingerprint Lock) to use this feature.</string>
 
     <string name="make_a_backup_of_your_dicekey">Make a backup of your DiceKey by copying it.</string>

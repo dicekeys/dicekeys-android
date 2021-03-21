@@ -6,6 +6,8 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
 import java.security.KeyStore
 import java.security.KeyStoreException
 import javax.crypto.Cipher
@@ -22,12 +24,20 @@ import javax.crypto.spec.IvParameterSpec
  */
 
 class AppKeystore {
-    private var keyStore: KeyStore
 
-    init {
-        keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
-            load(null)
-        }
+    /*
+     * Check [initializeKeyStoreKey] for initialization settings for each option.
+     * The general idea is to have the most strict/secure options for BIOMETRIC, and simple device authentication
+     * with AUTHENTICATION option. Keystore exists as an option but is not used.
+     */
+    enum class KeystoreType {
+        BIOMETRIC,
+        AUTHENTICATION,
+        KEYSTORE,
+    }
+
+    private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
+        load(null)
     }
 
     private fun keyStoreKeyExists(keystoreAlias: String): Boolean {
@@ -62,7 +72,7 @@ class AppKeystore {
     }
 
     @Throws(Exception::class)
-    fun initializeKeyStoreKey(keystoreAlias: String, isBiometric: Boolean) {
+    fun initializeKeyStoreKey(keystoreAlias: String, keystoreType: KeystoreType) {
         if (keyStoreKeyExists(keystoreAlias)) {
             throw KeyStoreException("KeyStore is already created for $keystoreAlias")
         }
@@ -79,29 +89,35 @@ class AppKeystore {
                 .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
 
+        when(keystoreType){
+            KeystoreType.BIOMETRIC  -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    builder.setUnlockedDeviceRequired(true)
+                }
 
-        if (isBiometric) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                builder.setUnlockedDeviceRequired(true)
+                builder.setUserAuthenticationRequired(true)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
+                } else {
+                    builder.setUserAuthenticationValidityDurationSeconds(-1)
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    builder.setInvalidatedByBiometricEnrollment(true)
+                }
             }
-
-            builder.setUserAuthenticationRequired(true)
-
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
-            } else {
-                builder.setUserAuthenticationValidityDurationSeconds(-1)
+            KeystoreType.AUTHENTICATION -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    builder.setUnlockedDeviceRequired(true)
+                }
             }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                builder.setInvalidatedByBiometricEnrollment(true)
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
-            } else {
-                builder.setUserAuthenticationValidityDurationSeconds(-1)
+            KeystoreType.KEYSTORE -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
+                } else {
+                    builder.setUserAuthenticationValidityDurationSeconds(-1)
+                }
             }
         }
 
@@ -119,6 +135,15 @@ class AppKeystore {
         return cipher
     }
 
+    private fun getEncryptionCipher(keystoreAlias: String, keystoreType: KeystoreType): Cipher {
+        if (!keyStoreKeyExists(keystoreAlias) || !isKeyStoreValid(keystoreAlias)) {
+            deleteFromKeyStore(keystoreAlias)
+            initializeKeyStoreKey(keystoreAlias, keystoreType)
+        }
+
+        return getEncryptionCipher(keystoreAlias)
+    }
+
     @Throws(Exception::class)
     private fun getDecryptionCipher(keystoreAlias: String, encryptedData: EncryptedData): Cipher {
         val cipher = Cipher.getInstance(TRANSFORMATION)
@@ -128,26 +153,27 @@ class AppKeystore {
     }
 
     @Throws(Exception::class)
-    fun getBiometricsEncryptionCipher(): Cipher {
-        if (!keyStoreKeyExists(BIOMETRICS_KEYSTORE_ALIAS) || !isKeyStoreValid(
-                        BIOMETRICS_KEYSTORE_ALIAS
-                )) {
-            deleteFromKeyStore(BIOMETRICS_KEYSTORE_ALIAS)
-            initializeKeyStoreKey(BIOMETRICS_KEYSTORE_ALIAS, true)
+    fun getEncryptionCipher(keystoreType: KeystoreType): Cipher {
+        return when(keystoreType){
+            KeystoreType.KEYSTORE -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, KeystoreType.KEYSTORE)
+            KeystoreType.AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, KeystoreType.AUTHENTICATION)
+            KeystoreType.BIOMETRIC -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, KeystoreType.BIOMETRIC)
         }
-
-        return getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS)
     }
 
     @Throws(Exception::class)
-    fun getBiometricsDecryptionCipher(encryptedData: EncryptedData): Cipher {
-        return getDecryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, encryptedData)
+    fun getDecryptionCipher(encryptedData: EncryptedData, keystoreType: KeystoreType): Cipher {
+        return when(keystoreType){
+            KeystoreType.KEYSTORE -> getDecryptionCipher(BASIC_KEYSTORE_ALIAS, encryptedData)
+            KeystoreType.AUTHENTICATION -> getDecryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, encryptedData)
+            KeystoreType.BIOMETRIC -> getDecryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, encryptedData)
+        }
     }
 
     @Throws(Exception::class)
     fun encryptData(dataToEncrypt: ByteArray): EncryptedData {
         if (!keyStoreKeyExists(BASIC_KEYSTORE_ALIAS)) {
-            initializeKeyStoreKey(BASIC_KEYSTORE_ALIAS, false)
+            initializeKeyStoreKey(BASIC_KEYSTORE_ALIAS, KeystoreType.KEYSTORE)
         }
 
         val cipher = getEncryptionCipher(BASIC_KEYSTORE_ALIAS)
@@ -176,24 +202,13 @@ class AppKeystore {
         return cipher.doFinal(encryptedData.getEncryptedData())
     }
 
-    fun canUseBiometrics(context: Context): Boolean {
-        try {
-            val kManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            if (kManager.isDeviceSecure) {
-                return true
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return false
-    }
-
     companion object {
         private const val TRANSFORMATION =
                 "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_CBC}/${KeyProperties.ENCRYPTION_PADDING_PKCS7}"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
 
         const val BASIC_KEYSTORE_ALIAS = "v1-basic"
+        const val AUTHENTICATION_KEYSTORE_ALIAS = "v1-authentication"
         const val BIOMETRICS_KEYSTORE_ALIAS = "v1-biometrics"
     }
 }
