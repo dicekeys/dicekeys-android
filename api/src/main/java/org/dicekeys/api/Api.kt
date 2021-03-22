@@ -79,6 +79,22 @@ abstract class Api(
         }
       }
 
+    /**
+     * Derive a pseudo-random cryptographic [Password] from the user's DiceKey and
+     * the key-derivation options passed as [recipeJson]
+     * in [Recipe JSON Format](https://dicekeys.github.io/seeded-crypto/recipe_format.html).
+     */
+    override suspend fun getPassword(
+            recipeJson: String
+    ): Password =
+            getPasswordMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
+            marshallParameter(Inputs.getPassword::recipeJson.name, recipeJson)
+          }
+
+    private val getPasswordMarshaller =
+          apiMarshallers.add<Password>(SuspendApi::getPassword.name) {
+            Password.fromJson(unmarshallString(Outputs.getSecret.secretJson))
+          }
 
     /**
      * Derive a pseudo-random cryptographic [Secret] from the user's DiceKey and
@@ -284,6 +300,11 @@ abstract class Api(
     ): Deferred<SealingKey> = CoroutineScope(Dispatchers.Default).async {
       getSealingKey(recipeJson) }
 
+    override fun getPasswordAsync(
+            recipeJson: String
+    ): Deferred<Password> = CoroutineScope(Dispatchers.Default).async {
+      getPassword(recipeJson) }
+
     override fun getSecretAsync(
       recipeJson: String
     ): Deferred<Secret> = CoroutineScope(Dispatchers.Default).async {
@@ -355,6 +376,11 @@ abstract class Api(
       recipeJson: String,
       callback: CallbackApi.Callback<SealingKey>?
     ) = toCallback(callback) { getSealingKey(recipeJson) }
+
+    override fun getPassword(
+            recipeJson: String,
+            callback: CallbackApi.Callback<Password>?
+    ) = toCallback(callback) { getPassword(recipeJson) }
 
     override fun getSecret(
       recipeJson: String,

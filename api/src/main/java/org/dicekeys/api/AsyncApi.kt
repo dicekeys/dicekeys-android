@@ -5,6 +5,10 @@ import org.dicekeys.crypto.seeded.*
 
 interface AsyncApi {
 
+  fun getPasswordAsync(
+          recipeJson: String
+  ): Deferred<Password>
+
   fun getSecretAsync(
     recipeJson: String
   ): Deferred<Secret>

@@ -15,6 +15,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.AppFragment
@@ -23,6 +24,7 @@ import org.dicekeys.app.adapters.dicekey
 import org.dicekeys.app.databinding.ScanFragmentBinding
 import org.dicekeys.app.extensions.setNavigationResult
 import org.dicekeys.app.extensions.toast
+import org.dicekeys.app.fragments.backup.BackupFragmentArgs
 import org.dicekeys.dicekey.FaceRead
 import org.dicekeys.read.DiceKeyAnalyzer
 import java.util.concurrent.ExecutorService
@@ -36,8 +38,9 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
         const val READ_DICEKEY = "read_dicekey"
     }
 
-    private lateinit var cameraExecutor: ExecutorService
+    private val args: ScanFragmentArgs by navArgs()
 
+    private lateinit var cameraExecutor: ExecutorService
 
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 
@@ -47,6 +50,8 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
         binding.buttonEnterByHand.setOnClickListener {
             navigate(ScanFragmentDirections.actionScanFragmentToEnterDiceKeyFragment())
         }
+
+        binding.showEnterByHand = args.showEnterByHand
 
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraExecutor = Executors.newSingleThreadExecutor()
