@@ -74,6 +74,7 @@ class ApiStrings {
 
   object MetaInputs {
     const val command = "command"
+    const val recipe = "recipe"
     const val requestId = "requestId"
   }
 

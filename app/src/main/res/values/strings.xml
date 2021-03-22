@@ -100,4 +100,36 @@
 
     <string name="internal_representation_of_your_recipe">Internal Representation of your recipe</string>
     <string name="successfully_wrote_to_solokey">Successfully wrote to SoloKey</string>
+    <string name="request">Request</string>
+    <string name="may_use_your_dicekey">May %s use your DiceKey to create a %s?</string>
+    <string name="to_allow_this_action">To allow this action, you\'ll first need to load your DiceKey.</string>
+
+    <string name="s_create">create</string>
+    <string name="s_recreate">recreate</string>
+
+    <string name="send_password">Send Password</string>
+    <string name="send_secret">Send Secret</string>
+    <string name="send_keys">Send Keys</string>
+    <string name="send_key">Send Key</string>
+    <string name="send_encoded_message">Send Encoded Message</string>
+    <string name="approve">Approve</string>
+
+    <string name="recipe">Recipe</string>
+    <string name="secret_created">Secret created</string>
+    <string name="password_created">Password created</string>
+    <string name="key_created">Key created</string>
+    <string name="message_to_sign">Message to sign</string>
+    <string name="message_to_seal">Message to seal</string>
+
+    <string name="may_use_password">May %s use your DiceKey to %s a password?</string>
+    <string name="may_use_secret_security_code">May %s use your DiceKey to %s a secret security code?</string>
+    <string name="may_use_keys_encode_decode_secrets">May %s use your DiceKey to %s keys to encode and decode secrets?</string>
+    <string name="may_use_key_encode_decode_secrets">May %s use your DiceKey to %s a key to encode and decode secrets?</string>
+    <string name="may_use_encode_secret">May %s use your DiceKey to encode a secret?</string>
+    <string name="may_use_decode_secret">May %s use your DiceKey to decode a secret?</string>
+    <string name="may_use_keys_sign_data">May %s use your DiceKey to %s keys to sign data?</string>
+    <string name="may_use_digital_signature">May %s use your DiceKey to add its digital signature to data?</string>
+    <string name="may_use_key_verify">May %s use your DiceKey to %s a key used to verify data it has signed?</string>
+    <string name="may_use_keys_store_secrets">May %s use your DiceKey to %s keys to store secrets?</string>
+
 </resources>

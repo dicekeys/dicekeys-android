@@ -1,7 +1,5 @@
 package org.dicekeys.api
 
-import java.lang.IllegalArgumentException
-
 
 /**
  * Thrown when a key to be derived has requirements in recipeJson that disallow
@@ -40,3 +38,5 @@ class ClientMayNotRetrieveKeyException(keyName: String) :
   ClientUriNotAuthorizedException("You cannot generate a $keyName without including clientMayRetrieveKey in your key derivation options.")
 
 class UnknownApiException(message: String?): java.lang.Exception(message) {}
+
+class UserDeclinedToAuthorizeOperation(message: String?): java.lang.Exception(message) {}

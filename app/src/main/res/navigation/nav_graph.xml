@@ -83,9 +83,9 @@
 
         <argument
             android:name="recipe"
+            android:defaultValue="@null"
             app:argType="org.dicekeys.api.DerivationRecipe"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
 
         <argument
             android:name="template"
@@ -98,39 +98,52 @@
     <fragment
         android:id="@+id/dicekey"
         android:name="org.dicekeys.app.fragments.dicekey.DiceKeyFragment"
-        tools:layout="@layout/dicekey_fragment">
-    </fragment>
+        tools:layout="@layout/dicekey_fragment"/>
 
 
     <fragment
         android:id="@+id/scanFragment"
         android:name="org.dicekeys.app.fragments.ScanFragment"
         android:label="@string/scan"
-        tools:layout="@layout/scan_fragment" >
+        tools:layout="@layout/scan_fragment">
         <action
             android:id="@+id/action_scanFragment_to_enterDiceKeyFragment"
             app:destination="@id/enterDiceKeyFragment" />
         <argument
             android:name="showEnterByHand"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
 
     <action
         android:id="@+id/action_global_scanFragment"
         app:destination="@id/scanFragment" />
-    <action android:id="@+id/action_global_dicekey" app:destination="@id/dicekey"/>
+    <action
+        android:id="@+id/action_global_dicekey"
+        app:destination="@id/dicekey" />
     <fragment
         android:id="@+id/enterDiceKeyFragment"
         android:name="org.dicekeys.app.fragments.EnterDiceKeyFragment"
-        tools:layout="@layout/fragment_enter_dicekey"
-        android:label="@string/enter_dicekey_by_hand" />
+        android:label="@string/enter_dicekey_by_hand"
+        tools:layout="@layout/fragment_enter_dicekey" />
     <fragment
         android:id="@+id/preferencesFragment"
         android:name="org.dicekeys.app.fragments.PreferencesFragment"
-        tools:layout="@layout/preferences_fragment"
-        android:label="@string/preferences" />
+        android:label="@string/preferences"
+        tools:layout="@layout/preferences_fragment" />
 
-    <action android:id="@+id/action_global_preferencesFragment" app:destination="@id/preferencesFragment"/>
+    <action
+        android:id="@+id/action_global_preferencesFragment"
+        app:destination="@id/preferencesFragment" />
+
+    <fragment
+        android:id="@+id/apiRequestFragment"
+        android:name="org.dicekeys.app.fragments.ApiRequestFragment"
+        android:label="@string/request"
+        tools:layout="@layout/api_request_fragment">
+
+        <deepLink app:uri="https://dicekeys.app/" />
+
+    </fragment>
 
 </navigation>

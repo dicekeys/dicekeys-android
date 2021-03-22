@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         intent?.data?.let { api.handleResult( it ) }
     }
+    // https://dicekeys.org/api?command=getSecret&respondTo=https%3A%2F%2Ftest-app.dicekeys.org%2Fapi&requestId=getSecret%3AkYMz1_uX57XjdgxSKOgocg%3D%3D%0A&recipeJson=%7B%7D
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

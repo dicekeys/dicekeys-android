@@ -59,11 +59,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     || it.destination.id == R.id.secrets
             } != null
 
-            val isRoot = destination.id == R.id.listDiceKeysFragment
             val isScan = navController.currentBackStackEntry?.destination?.id == R.id.scanFragment
 
             // Hide the toolbar
-            // binding.toolbar.isGone = ( (isRoot || insideDiceKeyNav) && !isScan)
             binding.bottomNavigation.isVisible = insideDiceKeyNav && !isScan
 
             // Remove the highlight when on Save fragment

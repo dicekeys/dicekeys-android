@@ -13,6 +13,10 @@ interface SuspendApi {
     recipeJson: String
   ): SealingKey
 
+  suspend fun getPassword(
+          recipeJson: String
+  ): Password
+
   suspend fun getSecret(
     recipeJson: String
   ): Secret

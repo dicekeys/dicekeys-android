@@ -1,20 +1,18 @@
 package org.dicekeys.api
 
 import android.content.Intent
-import org.dicekeys.crypto.seeded.CryptographicVerificationFailureException
-import org.dicekeys.crypto.seeded.SealingKey
-import org.dicekeys.crypto.seeded.UnsealingKey
-import org.dicekeys.crypto.seeded.Secret
-import org.dicekeys.crypto.seeded.SignatureVerificationKey
-import org.dicekeys.crypto.seeded.SigningKey
-import org.dicekeys.crypto.seeded.SymmetricKey
-import org.dicekeys.crypto.seeded.PackagedSealedMessage
+import org.dicekeys.crypto.seeded.*
 
 interface CallbackApi {
   interface Callback<T> {
     fun onComplete(result: T)
     fun onException(e: Throwable?)
   }
+
+  fun getPassword(
+          recipeJson: String,
+          callback: Callback<Password>? = null
+  )
 
   fun getSecret(
     recipeJson: String,
