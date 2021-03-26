@@ -14,18 +14,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <org.dicekeys.app.views.DiceKeyView
-            android:id="@+id/diceKeyView"
-            dicekey="@{vm.diceKey}"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:id="@+id/diceKeyWrap"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:hightlighColor="@color/highlighter"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <org.dicekeys.app.views.DiceKeyView
+                android:id="@+id/dicekey"
+                dicekey="@{vm.diceKey}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
 
 
         <ImageButton
@@ -37,7 +44,7 @@
             android:src="@drawable/ic_baseline_rotate_left_24"
             android:tint="@color/colorPrimary"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/diceKeyView"
+            app:layout_constraintTop_toBottomOf="@+id/diceKeyWrap"
             tools:ignore="MissingConstraints" />
 
         <ImageButton

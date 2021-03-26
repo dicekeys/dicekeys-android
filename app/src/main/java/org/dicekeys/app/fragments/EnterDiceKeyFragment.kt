@@ -66,7 +66,7 @@ class EnterDiceKeyFragment : AppFragment<FragmentEnterDicekeyBinding>(R.layout.f
         }
 
         viewModel.diceKey.observe(viewLifecycleOwner) {
-            binding.diceKeyView.highlightedIndexes = setOf(viewModel.faceSelectedIndex)
+            binding.dicekey.highlightedIndexes = setOf(viewModel.faceSelectedIndex)
         }
     }
 

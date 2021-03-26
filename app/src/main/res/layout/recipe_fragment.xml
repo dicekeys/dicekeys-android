@@ -45,7 +45,6 @@
                     android:gravity="center"
                     android:text="@{String.format(@string/recipe_for, vm.derivationRecipe != null ? vm.derivationRecipe.name : '-')}"
                     android:textAppearance="?attr/textAppearanceHeadline6"
-                    android:textColor="@android:color/white"
                     tools:text="Recipe for Password" />
 
                 <com.google.android.material.card.MaterialCardView
@@ -130,7 +129,6 @@
                                     android:gravity="center"
                                     android:inputType="number"
                                     android:text="@{vm.sequenceNumber}"
-                                    android:textColor="@color/cardview_dark_background"
                                     android:textSize="20sp" />
 
                                 <TextView
@@ -148,19 +146,21 @@
                                 android:layout_marginLeft="10dp"
                                 android:orientation="vertical">
 
-                                <View
+                                <ImageView
                                     android:id="@+id/btn_up"
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
-                                    android:background="@drawable/ic_arrow_up_down"
+                                    app:tint="@color/material_on_surface_emphasis_high_type"
+                                    android:src="@drawable/ic_arrow_up_down"
                                     android:rotation="-90" />
 
-                                <View
+                                <ImageView
                                     android:id="@+id/btn_down"
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
                                     android:layout_marginTop="20dp"
-                                    android:background="@drawable/ic_arrow_up_down"
+                                    app:tint="@color/material_on_surface_emphasis_high_type"
+                                    android:src="@drawable/ic_arrow_up_down"
                                     android:rotation="90" />
                             </LinearLayout>
 
@@ -201,8 +201,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:text="@{vm.derivationRecipe.recipeJson}"
-                            android:textColor="@android:color/background_dark"
-                            android:textSize="12sp"
+                            android:textAppearance="?attr/textAppearanceCaption"
                             isVisible="@{vm.derivationRecipe != null}"
                             tools:text="{allow : [this is the json]}" />
 

@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--Components-->
-    <style name="Widget.DiceKeys.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+    <style name="Widget.DiceKeys.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
         <item name="materialThemeOverlay">@style/ThemeOverlay.DiceKeys.Toolbar</item>
     </style>
 

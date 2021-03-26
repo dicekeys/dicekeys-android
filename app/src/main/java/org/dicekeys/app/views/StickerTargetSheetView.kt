@@ -21,6 +21,7 @@ class StickerTargetSheetView @JvmOverloads constructor(
 
     override val sizeModel = DiceSizeModel(SizeF(0f, 0f), false, extraVerticalMarginOfBoxEdgeAsFractionOfDieSize = 0.5f)
 
+    val backgroundPaint = Paint().also { it.color = Color.WHITE }
     val diePenPaint = Paint()
     val faceSurfacePaint = Paint()
     val highlighterPaint = Paint()
@@ -76,6 +77,10 @@ class StickerTargetSheetView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (canvas != null) {
+
+            // Set Background
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), backgroundPaint)
+
             canvas.drawRect(1f, 1f, (width - 1).toFloat(), (height - 1).toFloat() , borderPaint)
             canvas.save()
             canvas.translate(sizeModel.marginLeft, sizeModel.marginTop)

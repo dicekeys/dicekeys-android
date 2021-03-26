@@ -25,9 +25,10 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.appbar.MaterialToolbar
+                    style="?attr/toolbarStyle"
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize" />
+                    android:layout_height="wrap_content" />
 
             </com.google.android.material.appbar.AppBarLayout>
 
