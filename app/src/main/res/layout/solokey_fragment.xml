@@ -100,7 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            app:cardBackgroundColor="@android:color/black"
+            app:cardBackgroundColor="@color/black_800"
             app:cardCornerRadius="7dp"
             app:contentPadding="5dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -153,7 +153,6 @@
                                     android:gravity="center"
                                     android:inputType="number"
                                     android:text="@{vm.sequenceNumber.toString()}"
-                                    android:textColor="@color/cardview_dark_background"
                                     android:textSize="20sp" />
 
                                 <TextView
@@ -171,19 +170,21 @@
                                 android:layout_marginLeft="10dp"
                                 android:orientation="vertical">
 
-                                <View
+                                <ImageView
                                     android:id="@+id/btn_up"
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
-                                    android:background="@drawable/ic_arrow_up_down"
+                                    app:tint="@color/material_on_surface_emphasis_high_type"
+                                    android:src="@drawable/ic_arrow_up_down"
                                     android:rotation="-90" />
 
-                                <View
+                                <ImageView
                                     android:id="@+id/btn_down"
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
                                     android:layout_marginTop="20dp"
-                                    android:background="@drawable/ic_arrow_up_down"
+                                    app:tint="@color/material_on_surface_emphasis_high_type"
+                                    android:src="@drawable/ic_arrow_up_down"
                                     android:rotation="90" />
                             </LinearLayout>
 
