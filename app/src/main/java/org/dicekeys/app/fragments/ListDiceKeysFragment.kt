@@ -26,18 +26,14 @@ import org.dicekeys.dicekey.FaceRead
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.list_dicekeys_fragment, R.menu.preferences) {
-
-    @Inject
-    lateinit var encryptedStorage: EncryptedStorage
-
-    @Inject
-    lateinit var diceKeyRepository: DiceKeyRepository
-
-    @Inject
-    lateinit var biometricsHelper: BiometricsHelper
+class ListDiceKeysFragment : AbstractListDiceKeysFragment<ListDicekeysFragmentBinding>(R.layout.list_dicekeys_fragment, R.menu.preferences) {
 
     private val listViewModel: ListDiceKeysViewModel by viewModels()
+
+    override val staticViewsCount: Int = 2
+
+    override val linearLayoutContainer: LinearLayout
+        get() = binding.container
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,71 +52,33 @@ class ListDiceKeysFragment : AppFragment<ListDicekeysFragmentBinding>(R.layout.l
         binding.assemble.setOnClickListener {
             navigate(ListDiceKeysFragmentDirections.actionListDiceKeysFragmentToAssembleFragment())
         }
+    }
 
-        encryptedStorage.getDiceKeysLiveData().observe(viewLifecycleOwner) {
-            it?.let {
-                updateDiceKeys(it)
+    override fun clickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) {
+        val diceKey = listViewModel.getDiceKey(encryptedDiceKey)
+
+        // Needs Decryption
+        if(diceKey == null){
+            biometricsHelper.decrypt(encryptedDiceKey, this@ListDiceKeysFragment) { diceKey ->
+                navigateToDiceKey(diceKey)
             }
+        }else{
+            navigateToDiceKey(diceKey)
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        // Update DiceKeys list as could have been kicked from memory
-        encryptedStorage.getDiceKeysLiveData().value?.let {
-            updateDiceKeys(it)
-        }
-    }
-
-    private fun updateDiceKeys(list: List<EncryptedDiceKey>) {
-        // 2 elements are hardcoded in the xml, the rest are dynamically generated
-        while (binding.root.childCount > 2) {
-            binding.root.removeViewAt(0)
-        }
-
-        for ((index, encryptedDiceKey) in list.withIndex()) {
-            val diceKeyView = ListItemDicekeyBinding.inflate(LayoutInflater.from(requireContext()))
-            diceKeyView.diceKey = encryptedDiceKey
-            diceKeyView.isInMemory = diceKeyRepository.exists(encryptedDiceKey)
-
-            diceKeyView.centerView.centerFace = encryptedDiceKey.centerFaceAsFace
-
-            diceKeyView.root.layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    0,
-                    1.0f
-            )
-
-            diceKeyView.root.setOnClickListener {
-                val diceKey = listViewModel.getDiceKey(encryptedDiceKey)
-
-                // Needs Decryption
-                if(diceKey == null){
-                    biometricsHelper.decrypt(encryptedDiceKey, this@ListDiceKeysFragment) { diceKey ->
-                        navigateToDiceKey(diceKey)
+    override fun longClickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) {
+        showPopupMenu(view, R.menu.dicekey_popup) { menuItem ->
+            when (menuItem.itemId) {
+                R.id.delete -> {
+                    openDialogDeleteDiceKey(requireContext()) {
+                        listViewModel.remove(encryptedDiceKey)
                     }
-                }else{
-                    navigateToDiceKey(diceKey)
                 }
             }
-
-            diceKeyView.root.setOnLongClickListener {
-                showPopupMenu(diceKeyView.root, R.menu.dicekey_popup) { menuItem ->
-                    when (menuItem.itemId) {
-                        R.id.delete -> {
-                            openDialogDeleteDiceKey(requireContext()) {
-                                listViewModel.remove(encryptedDiceKey)
-                            }
-                        }
-                    }
-                    true
-                }
-                true
-            }
-
-            binding.root.addView(diceKeyView.root, index)
+            true
         }
+        true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

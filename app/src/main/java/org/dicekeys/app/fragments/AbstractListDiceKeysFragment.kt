@@ -32,8 +32,8 @@ abstract class AbstractListDiceKeysFragment<T : ViewDataBinding>(
     abstract val staticViewsCount : Int
     abstract val linearLayoutContainer: LinearLayout
 
-    abstract fun clickOnDiceKey(encryptedDiceKey : EncryptedDiceKey)
-    abstract fun longClickOnDiceKey(encryptedDiceKey : EncryptedDiceKey)
+    abstract fun clickOnDiceKey(view: View, encryptedDiceKey : EncryptedDiceKey)
+    abstract fun longClickOnDiceKey(view: View, encryptedDiceKey : EncryptedDiceKey)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,7 +56,7 @@ abstract class AbstractListDiceKeysFragment<T : ViewDataBinding>(
 
     private fun updateDiceKeys(list: List<EncryptedDiceKey>) {
         // 2 elements are hardcoded in the xml, the rest are dynamically generated
-        while (staticViewsCount > 2) {
+        while (linearLayoutContainer.childCount > staticViewsCount) {
             linearLayoutContainer.removeViewAt(0)
         }
 
@@ -74,11 +74,11 @@ abstract class AbstractListDiceKeysFragment<T : ViewDataBinding>(
             )
 
             diceKeyView.root.setOnClickListener {
-                clickOnDiceKey(encryptedDiceKey)
+                clickOnDiceKey(it, encryptedDiceKey)
             }
 
             diceKeyView.root.setOnLongClickListener {
-                longClickOnDiceKey(encryptedDiceKey)
+                longClickOnDiceKey(it, encryptedDiceKey)
                 true
             }
 
