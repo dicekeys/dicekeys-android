@@ -38,7 +38,7 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
     override val linearLayoutContainer: LinearLayout
         get() = binding.container
 
-    override fun clickOnDiceKey(encryptedDiceKey: EncryptedDiceKey) {
+    override fun clickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) {
         val diceKey = diceKeyRepository.get(encryptedDiceKey.keyId)
 
         // Needs Decryption
@@ -51,7 +51,7 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
         }
     }
 
-    override fun longClickOnDiceKey(encryptedDiceKey: EncryptedDiceKey) { }
+    override fun longClickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) { }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
