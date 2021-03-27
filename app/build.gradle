@@ -16,8 +16,8 @@ android {
         applicationId "com.dicekeys.app"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 2
-        versionName "1.01"
+        versionCode 3
+        versionName "1.02"
 
         testApplicationId "com.dicekeys.test"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
