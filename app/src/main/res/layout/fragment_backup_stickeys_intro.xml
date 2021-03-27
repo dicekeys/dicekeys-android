@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Next, you will create a copy of your DiceKey on the target seet by placing stickers."
+        android:text="Next, you will create a copy of your DiceKey on the target sheet by placing stickers."
         android:textAppearance="?attr/textAppearanceHeadline6"
         app:layout_constraintBottom_toTopOf="@id/btn_order_more"
         app:layout_constraintEnd_toEndOf="parent"
