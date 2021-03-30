@@ -22,17 +22,22 @@ class SaveFragment: AbstractDiceKeyFragment<SaveFragmentBinding>(R.layout.save_f
 
         binding.vm = viewModel
 
-        binding.buttonSave.setOnClickListener{
-            if(biometricsHelper.canUseBiometrics(requireContext())){
-                biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.BIOMETRIC, this)
-            }else{
-                biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.AUTHENTICATION, this)
-            }
+        binding.buttonSaveBiometrics.setOnClickListener{
+            biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.BIOMETRIC, this)
+        }
+
+        binding.buttonSaveScreenLock.setOnClickListener {
+            biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.AUTHENTICATION, this)
         }
 
         binding.buttonRemove.setOnClickListener{
             viewModel.remove()
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+
+        binding.canUseBiometrics = biometricsHelper.canUseBiometrics(requireContext())
     }
 }

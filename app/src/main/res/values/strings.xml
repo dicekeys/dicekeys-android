@@ -2,7 +2,7 @@
     <string name="app_name">DiceKeys</string>
     <string name="error">Error</string>
     <string name="delete">Delete</string>
-    <string name="forget">forget</string>
+    <string name="forget">Forget</string>
     <string name="your_dicekeys">Your DiceKeys</string>
 
     <string name="seed_solokey">Seed a SoloKey</string>
@@ -25,6 +25,9 @@
     <string name="save_dice_encryption_notice">The other 24 dice will be encrypted and your Biometrics will unlock them.</string>
 
     <string name="tap_to_show">tap to show dice</string>
+
+    <string name="save_biometrics">Save with Biometrics</string>
+    <string name="save_screen_lock">Save with Screen Lock</string>
 
     <string name="custom_recipe">Custom Recipe</string>
 
