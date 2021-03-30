@@ -1,9 +1,7 @@
 package org.dicekeys.app.views
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
 import androidx.core.content.ContextCompat
 import org.dicekeys.app.R
@@ -23,14 +21,21 @@ class DiceKeyView @JvmOverloads constructor(
 
     val diceBoxPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     val diceBoxDieSlotPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val diceBoxDieSlotHiddenPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     val diePenPaint = Paint()
     val faceSurfacePaint = Paint()
     val highlighterPaint = Paint()
+
+    var hideDiceExceptCenterDie: Boolean by Delegates.observable(false) { _, _, newValue ->
+        invalidate()
+    }
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.DiceKeyView)
         leaveSpaceForTab = typedArray.getBoolean(R.styleable.DiceKeyView_leaveSpaceForTab, false)
         showLidTab = typedArray.getBoolean(R.styleable.DiceKeyView_showLidTab, false)
+        hideDiceExceptCenterDie = typedArray.getBoolean(R.styleable.DiceKeyView_hideDiceExceptCenterDie, hideDiceExceptCenterDie)
+
         val diceKeyContent = DiceKeyContent.values()[typedArray.getInt(R.styleable.DiceKeyView_dicekey, 0)]
         diceKey = when(diceKeyContent) {
             DiceKeyContent.RANDOM -> DiceKey.createFromRandom()
@@ -50,6 +55,10 @@ class DiceKeyView @JvmOverloads constructor(
         faceSurfacePaint.color = typedArray.getColor(R.styleable.DiceKeyView_faceColor, Color.WHITE)
         highlighterPaint.color = typedArray.getColor(R.styleable.DiceKeyView_hightlighColor, ContextCompat.getColor(context, R.color.highlighter))
         typedArray.recycle()
+        
+        diceBoxDieSlotHiddenPaint.color = diceBoxPaint.color
+        diceBoxDieSlotHiddenPaint.colorFilter = LightingColorFilter(0xffffffff.toInt(), 0x101010)
+        diceBoxDieSlotHiddenPaint.alpha = 200
     }
 
     override val sizeModel by lazy { DiceSizeModel(1f, leaveSpaceForTab) }
@@ -101,19 +110,27 @@ class DiceKeyView @JvmOverloads constructor(
 
             canvas.save()
             canvas.translate(sizeModel.marginLeft, sizeModel.marginTop)
-            for (facePosition in facePositions) {
+            for ((i, facePosition) in facePositions.withIndex()) {
                 canvas.save()
                 canvas.translate(
                         dieStepSize * facePosition.column,
                         dieStepSize * facePosition.row
                 )
-                if (computedShowDiceAtIndexes.contains(facePosition.id)) {
+
+                val dieIsCenterDie = (i == 12)
+                if (hideDiceExceptCenterDie && !dieIsCenterDie){
+                    canvas.drawRoundRect(0f, 0f, faceSize, faceSize,
+                            sizeModel.faceRadius, sizeModel.faceRadius, diceBoxDieSlotPaint)
+                }else{
                     val dieFace = facePosition.drawable
                     dieFace.highlighted = highlightedIndexes.contains(facePosition.id)
                     dieFace.draw(canvas)
-                } else {
+                }
+
+                if(hideDiceExceptCenterDie) {
+                    // Apply fading
                     canvas.drawRoundRect(0f, 0f, faceSize, faceSize,
-                        sizeModel.faceRadius, sizeModel.faceRadius, diceBoxDieSlotPaint)
+                            sizeModel.faceRadius, sizeModel.faceRadius, diceBoxDieSlotHiddenPaint)
                 }
                 canvas.restore()
             }

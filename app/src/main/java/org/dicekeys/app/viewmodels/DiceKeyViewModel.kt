@@ -3,9 +3,6 @@ package org.dicekeys.app.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
@@ -21,6 +18,7 @@ class DiceKeyViewModel @Inject constructor(
 ) : ViewModel() {
 
     var diceKey = MutableLiveData<DiceKey<Face>>()
+    val hideFaces = diceKeyRepository.hideFaces
 
     val isSaved = MutableLiveData(diceKey.value?.let { encryptedStorage.exists(it.keyId) } ?: false)
     private val encryptedStorageObserver = Observer<List<EncryptedDiceKey>> {
@@ -39,6 +37,10 @@ class DiceKeyViewModel @Inject constructor(
 
     private fun updateIsSaved(){
         isSaved.postValue(diceKey.value?.let { encryptedStorage.exists(it.keyId) } ?: false)
+    }
+
+    fun toggleHideFaces(){
+        diceKeyRepository.toggleHideFaces()
     }
 
     fun remove() {

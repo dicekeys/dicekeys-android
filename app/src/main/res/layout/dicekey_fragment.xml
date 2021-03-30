@@ -15,9 +15,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/tap_to_show"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceCaption"
+            isVisible="@{vm.hideFaces}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+
         <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
@@ -31,6 +46,7 @@
             <org.dicekeys.app.views.DiceKeyView
                 android:id="@+id/dicekey"
                 dicekey="@{vm.diceKey}"
+                hideDiceExceptCenterDie="@{vm.hideFaces}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center" />

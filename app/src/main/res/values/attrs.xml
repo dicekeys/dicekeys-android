@@ -17,6 +17,7 @@
     <declare-styleable name="DiceKeyView">
         <attr name="showLidTab" format="boolean" />
         <attr name="leaveSpaceForTab" format="boolean" />
+        <attr name="hideDiceExceptCenterDie" format="boolean" />
         <attr name="dicekey" />
         <attr name="boxColor" />
         <attr name="slotColor" />

@@ -9,21 +9,21 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.databinding.ActivityMainBinding
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var binding: ActivityMainBinding
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this

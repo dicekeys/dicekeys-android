@@ -1,6 +1,8 @@
 package org.dicekeys.app.di
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,8 +46,14 @@ class Modules {
 
     @Singleton
     @Provides
-    fun provideDiceKeyRepository(): DiceKeyRepository {
-        return DiceKeyRepository()
+    fun provideDiceKeyRepository(sharedPreferences: SharedPreferences): DiceKeyRepository {
+        return DiceKeyRepository(sharedPreferences)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(context)
     }
 
     @Singleton
