@@ -1,5 +1,6 @@
 package org.dicekeys.app.repositories
 
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.dicekey.DiceKey
@@ -21,7 +22,7 @@ class DiceKeyRepositoryUnitTests {
 
     @Before
     fun setup() {
-        repo = DiceKeyRepository()
+        repo = DiceKeyRepository(mock())
 
         whenever(diceKey.keyId).thenReturn("keyId")
     }

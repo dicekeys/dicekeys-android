@@ -83,5 +83,9 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         binding.btnRemoveRecipeFromMenu.setOnClickListener {
             recipeViewModel.removeRecipeFromMenu()
         }
+
+        binding.dicekey.setOnClickListener {
+            viewModel.toggleHideFaces()
+        }
     }
 }

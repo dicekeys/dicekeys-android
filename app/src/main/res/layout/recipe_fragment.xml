@@ -250,7 +250,8 @@
 
             <org.dicekeys.app.views.DiceKeyView
                 android:id="@+id/dicekey"
-                dicekey="@{vm.diceKey}"
+                dicekey="@{diceKeyVM.diceKey}"
+                hideDiceExceptCenterDie="@{diceKeyVM.hideFaces}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center" />

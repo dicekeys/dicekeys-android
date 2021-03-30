@@ -1,5 +1,7 @@
 package org.dicekeys.app.repositories
 
+import android.content.SharedPreferences
+import androidx.lifecycle.MutableLiveData
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
@@ -12,9 +14,19 @@ import org.dicekeys.dicekey.Face
  *
  */
 
-class DiceKeyRepository {
+class DiceKeyRepository(private val sharedPreferences: SharedPreferences) {
     private var diceKeys = mutableMapOf<String, DiceKey<Face>>()
     private var activeDiceKeyId : String? = null
+
+    val hideFaces = MutableLiveData(sharedPreferences.getBoolean(HIDE_FACES, false))
+
+    fun toggleHideFaces(){
+        hideFaces.value = hideFaces.value!!.let {
+            val hideFaces = !it
+            sharedPreferences.edit().putBoolean(HIDE_FACES, hideFaces).apply()
+            return@let hideFaces
+        }
+    }
 
     fun exists(encryptedDiceKey: EncryptedDiceKey) = exists(encryptedDiceKey.keyId)
     fun exists(diceKey: DiceKey<*>) = exists(diceKey.keyId)
@@ -42,4 +54,8 @@ class DiceKeyRepository {
     }
 
     fun size() = diceKeys.size
+
+    companion object{
+        const val HIDE_FACES = "hide_faces"
+    }
 }

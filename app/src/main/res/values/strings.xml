@@ -24,6 +24,8 @@
     <string name="save_center_die_notice">The center die will appear in the home screen.</string>
     <string name="save_dice_encryption_notice">The other 24 dice will be encrypted and your Biometrics will unlock them.</string>
 
+    <string name="tap_to_show">tap to show dice</string>
+
     <string name="custom_recipe">Custom Recipe</string>
 
     <string name="assemble_a_dicekey">Assemble a DiceKey</string>

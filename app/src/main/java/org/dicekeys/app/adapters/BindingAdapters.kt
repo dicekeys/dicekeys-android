@@ -29,8 +29,12 @@ fun bindIsInvisible(view: View, isInvisible: Boolean) {
 
 @BindingAdapter("dicekey")
 fun dicekey(view: DiceBaseView, dicekey: DiceKey<*>?) {
-    println(dicekey.toString())
     dicekey?.let { view.diceKey = it as DiceKey<Face>}
+}
+
+@BindingAdapter("hideDiceExceptCenterDie")
+fun dicekey(view: DiceKeyView, hideDiceExceptCenterDie: Boolean) {
+    view.hideDiceExceptCenterDie = hideDiceExceptCenterDie
 }
 
 @BindingAdapter("progress")
