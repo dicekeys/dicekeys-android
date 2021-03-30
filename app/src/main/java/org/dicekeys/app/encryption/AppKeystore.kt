@@ -111,13 +111,15 @@ class AppKeystore {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     builder.setUnlockedDeviceRequired(true)
                 }
-            }
-            KeystoreType.KEYSTORE -> {
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
                 } else {
                     builder.setUserAuthenticationValidityDurationSeconds(-1)
                 }
+            }
+            KeystoreType.KEYSTORE -> {
+               // No need to init anything
             }
         }
 
