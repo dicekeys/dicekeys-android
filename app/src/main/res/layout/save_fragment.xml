@@ -81,36 +81,49 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/save_dice_encryption_notice"
+                    android:text="@string/how_to_unlock"
                     android:textAppearance="?attr/textAppearanceBody1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-                <Button
-                    android:id="@+id/buttonSaveBiometrics"
-                    isVisible="@{!vm.isSaved()}"
+                <RadioGroup
+                    android:id="@+id/keystore_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/save_biometrics"
-                    android:textAllCaps="false"
-                    android:enabled="@{canUseBiometrics}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                    android:layout_marginTop="8dp"
+                    isVisible="@{!vm.isSaved()}"
+                    android:checkedButton="@+id/radio_button_1"
+                    app:layout_constraintTop_toBottomOf="@+id/textView3"
+                    tools:layout_editor_absoluteX="16dp">
+
+                    <RadioButton
+                        android:id="@+id/unlock_screen_lock"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/unlock_with_lock_screen" />
+
+                    <RadioButton
+                        android:id="@+id/unlock_biometrics"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:enabled="@{canUseBiometrics}"
+                        android:text="@string/unlock_with_biometrics" />
+
+                </RadioGroup>
 
                 <Button
-                    android:id="@+id/buttonSaveScreenLock"
+                    android:id="@+id/buttonSave"
                     isVisible="@{!vm.isSaved()}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:text="@string/save"
                     android:textAllCaps="false"
-                    android:text="@string/save_screen_lock"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/buttonSaveBiometrics" />
+                    app:layout_constraintTop_toBottomOf="@+id/keystore_type" />
+
 
                 <Button
                     android:id="@+id/buttonRemove"
@@ -121,6 +134,7 @@
                     android:layout_marginTop="16dp"
                     android:text="@string/forget"
                     android:textAllCaps="false"
+                    tools:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView3" />

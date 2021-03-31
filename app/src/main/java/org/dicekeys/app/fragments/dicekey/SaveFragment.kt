@@ -22,13 +22,18 @@ class SaveFragment: AbstractDiceKeyFragment<SaveFragmentBinding>(R.layout.save_f
 
         binding.vm = viewModel
 
-        binding.buttonSaveBiometrics.setOnClickListener{
-            biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.BIOMETRIC, this)
+        binding.buttonSave.setOnClickListener {
+            when(binding.keystoreType.checkedRadioButtonId){
+                R.id.unlock_biometrics -> {
+                    biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.BIOMETRIC, this)
+                }
+                R.id.unlock_screen_lock -> {
+                    biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.AUTHENTICATION, this)
+                }
+            }
         }
 
-        binding.buttonSaveScreenLock.setOnClickListener {
-            biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.AUTHENTICATION, this)
-        }
+        binding.keystoreType.check(if(biometricsHelper.canUseBiometrics(requireContext())) R.id.unlock_biometrics else  R.id.unlock_screen_lock )
 
         binding.buttonRemove.setOnClickListener{
             viewModel.remove()
@@ -38,6 +43,11 @@ class SaveFragment: AbstractDiceKeyFragment<SaveFragmentBinding>(R.layout.save_f
     override fun onResume() {
         super.onResume()
 
-        binding.canUseBiometrics = biometricsHelper.canUseBiometrics(requireContext())
+        binding.canUseBiometrics = biometricsHelper.canUseBiometrics(requireContext()).also { canUseBiometrics ->
+            // Change selection if the checked selection is not longer available
+            if(!canUseBiometrics && binding.keystoreType.checkedRadioButtonId == R.id.unlock_biometrics){
+                binding.keystoreType.check(R.id.unlock_screen_lock)
+            }
+        }
     }
 }
