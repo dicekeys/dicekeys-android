@@ -65,11 +65,12 @@ abstract class AppFragment<T : ViewDataBinding>(
     }
 
     fun navigate(@IdRes resId: Int, args: Bundle?) {
-
         val navOptionsBuilder = NavOptions.Builder()
 
-        // Add Animations
-        findNavController().navigate(resId, args, navOptionsBuilder.build())
+        try{
+            findNavController().navigate(resId, args, navOptionsBuilder.build())
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
-
 }
