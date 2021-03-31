@@ -21,13 +21,13 @@
     <string name="complete_the_recipe">Complete the recipe above to see the output</string>
     <string name="enter_dicekey_by_hand">Enter the DiceKey by Hand</string>
     <string name="save_the_dicekey">Save the DiceKey</string>
-    <string name="save_center_die_notice">The center die will appear in the home screen.</string>
-    <string name="save_dice_encryption_notice">The other 24 dice will be encrypted and your Biometrics will unlock them.</string>
+    <string name="save_center_die_notice">Your DiceKey will be stored encrypted and identified by the center die.</string>
+    <string name="how_to_unlock">How would you like to unlock the other 24 dice?</string>
 
     <string name="tap_to_show">tap to show dice</string>
 
-    <string name="save_biometrics">Save with Biometrics</string>
-    <string name="save_screen_lock">Save with Screen Lock</string>
+    <string name="unlock_with_lock_screen">Use my lock screen unlock options</string>
+    <string name="unlock_with_biometrics">Use only my fingerprint or other biometrics</string>
 
     <string name="custom_recipe">Custom Recipe</string>
 
