@@ -37,7 +37,7 @@
                     android:adjustViewBounds="true"
                     android:cropToPadding="true"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_scanning_side_view" />
+                    app:srcCompat="@drawable/ic_scanning_side_view" />
 
             </LinearLayout>
 
@@ -73,21 +73,21 @@
                     android:adjustViewBounds="true"
                     android:cropToPadding="false"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/shaking_bag" />
+                    app:srcCompat="@drawable/shaking_bag" />
 
                 <ImageView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/box_bottom_after_roll" />
+                    app:srcCompat="@drawable/box_bottom_after_roll" />
 
                 <ImageView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/seal_box" />
+                    app:srcCompat="@drawable/seal_box" />
 
             </LinearLayout>
 
