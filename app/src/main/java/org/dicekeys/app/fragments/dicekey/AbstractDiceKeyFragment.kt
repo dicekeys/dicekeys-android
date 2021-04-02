@@ -61,11 +61,6 @@ abstract class AbstractDiceKeyFragment<T : ViewDataBinding>(@LayoutRes layout: I
                 navigate(R.id.save)
                 true
             }
-            R.id.lock -> {
-                viewModel.forget()
-                findNavController().popBackStack()
-                true
-            }
             else -> {
                 super.onOptionsItemSelected(item)
             }

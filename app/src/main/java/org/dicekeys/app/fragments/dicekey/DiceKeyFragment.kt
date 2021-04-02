@@ -2,6 +2,7 @@ package org.dicekeys.app.fragments.dicekey
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.DicekeyFragmentBinding
@@ -28,6 +29,11 @@ class DiceKeyFragment: AbstractDiceKeyFragment<DicekeyFragmentBinding>(R.layout.
             }else{
                 biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.AUTHENTICATION, this)
             }
+        }
+
+        binding.buttonLock.setOnClickListener {
+            viewModel.forget()
+            findNavController().popBackStack()
         }
         
         binding.dicekey.setOnClickListener {
