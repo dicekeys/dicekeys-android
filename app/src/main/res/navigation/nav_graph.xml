@@ -142,7 +142,9 @@
         android:label="@string/request"
         tools:layout="@layout/api_request_fragment">
 
-        <deepLink app:uri="https://dicekeys.app/" />
+        <deepLink
+            android:autoVerify="true"
+            app:uri="https://dicekeys.app/" />
 
     </fragment>
 
