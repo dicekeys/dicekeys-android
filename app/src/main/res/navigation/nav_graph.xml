@@ -146,4 +146,14 @@
 
     </fragment>
 
+    <fragment
+        android:id="@+id/bip39Fragment"
+        android:name="org.dicekeys.app.fragments.bip39.Bip39Fragment"
+        tools:layout="@layout/bip39_fragment"
+        android:label="Bip39Fragment" />
+
+    <action
+        android:id="@+id/action_global_bip39"
+        app:destination="@id/bip39Fragment" />
+
 </navigation>
