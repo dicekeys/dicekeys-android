@@ -16,8 +16,8 @@ import org.dicekeys.dicekey.Face
 class RecipeViewModel @AssistedInject constructor(
         private val recipeRepository: RecipeRepository,
         @Assisted val diceKey: DiceKey<Face>,
-        @Assisted val recipe: DerivationRecipe?,
-        @Assisted val template: DerivationRecipe?,
+        @Assisted("recipe") val recipe: DerivationRecipe?,
+        @Assisted("template") val template: DerivationRecipe?,
 ) : ViewModel() {
     private val showRecipe = recipe != null
     val isCustomRecipe = MutableLiveData(recipe == null && template == null)
@@ -106,7 +106,9 @@ class RecipeViewModel @AssistedInject constructor(
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
-        fun create(diceKey: DiceKey<Face>, recipe: DerivationRecipe?, template: DerivationRecipe?): RecipeViewModel
+        fun create(diceKey: DiceKey<Face>,
+                   @Assisted("recipe") recipe: DerivationRecipe?,
+                   @Assisted("template") template: DerivationRecipe?): RecipeViewModel
     }
 
     companion object {
