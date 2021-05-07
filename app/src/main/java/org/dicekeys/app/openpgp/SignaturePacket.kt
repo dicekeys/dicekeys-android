@@ -5,7 +5,7 @@ import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters
 import org.bouncycastle.math.ec.rfc8032.Ed25519
 import java.security.MessageDigest
 
-class SignaturePacket(private val privateKey: ByteArray, private val timestamp: Int, userIdPacket: UserIdPacket): Packet() {
+class SignaturePacket(private val privateKey: ByteArray, private val timestamp: UInt, userIdPacket: UserIdPacket): Packet() {
 
     private val secretPacket = SecretPacket(privateKey, timestamp)
 
@@ -24,7 +24,7 @@ class SignaturePacket(private val privateKey: ByteArray, private val timestamp: 
 
         subpackets.writeByte(0x05) // length
         subpackets.writeByte(0x02) // Signature Creation Time (0x2)
-        subpackets.writeInt(timestamp)
+        subpackets.writeInt(timestamp.toInt())
 
         subpackets.writeByte(0x02) // length
         subpackets.writeByte(0x1b) // Key Flags (0x1b)
@@ -91,23 +91,13 @@ class SignaturePacket(private val privateKey: ByteArray, private val timestamp: 
 
         buffer.write(hash.take(2).toByteArray())
 
-
         val signature = ByteArray(Ed25519PrivateKeyParameters.SIGNATURE_SIZE)
         privateKeyEd255119.sign(Ed25519.Algorithm.Ed25519, null, hash, 0, hash.size, signature, 0)
 
         // split signature into 2 parts of 32 bytes
         // r & s
-        // add every part as an MPI,
-        // length first counting bits
-
-        buffer.writeShort(0x100)
-        buffer.write(signature.take(32).toByteArray())
-
-        buffer.writeShort(0x100)
-        buffer.write(signature.takeLast(32).toByteArray())
-
-//        buffer.writeShort(signature.size)
-//        buffer.write(signature)
+        buffer.write(Mpi.fromByteArray(signature.take(32).toByteArray()).toByteArray())
+        buffer.write(Mpi.fromByteArray(signature.takeLast(32).toByteArray()).toByteArray())
 
         buffer.toByteArray()
     }

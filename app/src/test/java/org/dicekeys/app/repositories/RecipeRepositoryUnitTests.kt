@@ -1,16 +1,17 @@
 package org.dicekeys.app.repositories
 
 import android.content.SharedPreferences
-import com.nhaarman.mockitokotlin2.*
 import org.dicekeys.api.DerivationRecipe
-import org.dicekeys.crypto.seeded.DerivationOptions
-import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 
 @RunWith(MockitoJUnitRunner::class)

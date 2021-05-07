@@ -7,7 +7,7 @@ import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.security.MessageDigest
 
-class PublicPacket(private val publicKey: ByteArray, private val timestamp: Int): Packet() {
+class PublicPacket(private val publicKey: ByteArray, private val timestamp: UInt): Packet() {
 
     override val ctb: Int
         get() = 0x98
@@ -22,7 +22,7 @@ class PublicPacket(private val publicKey: ByteArray, private val timestamp: Int)
         val taggedPublicKey = byteArrayOf(0x40) + publicKey
 
         body.write(version)
-        body.writeInt(timestamp)
+        body.writeInt(timestamp.toInt())
         body.write(algo)
         body.write(curveLength)
         body.write(curveOid)
@@ -38,9 +38,8 @@ class PublicPacket(private val publicKey: ByteArray, private val timestamp: Int)
         val out = ByteStreams.newDataOutput()
         val digest: MessageDigest = MessageDigest.getInstance("SHA-1")
 
-
         out.writeByte(Version)
-        out.writeInt(timestamp)
+        out.writeInt(timestamp.toInt())
         out.writeByte(Ed25519Algorithm)
         out.writeByte(Ed25519CurveOid.size)
         out.write(Ed25519CurveOid)

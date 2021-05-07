@@ -6,7 +6,7 @@ import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.security.MessageDigest
 
-class SecretPacket(private val privateKey: ByteArray, private val timestamp: Int): Packet() {
+class SecretPacket(private val privateKey: ByteArray, private val timestamp: UInt): Packet() {
 
     private val privateKeyEd255119 = Ed25519PrivateKeyParameters(privateKey, 0)
 
@@ -28,27 +28,24 @@ class SecretPacket(private val privateKey: ByteArray, private val timestamp: Int
         val s2kUsage = 0x00
 
         body.writeByte(version)
-        body.writeInt(timestamp)
+        body.writeInt(timestamp.toInt())
         body.writeByte(algo)
         body.writeByte(curveLength)
         body.write(curveOid)
 
-        // TODO MPI
-        body.write(byteArrayOf(0x01, 0x07)) // eddsa_public_len , Why two bytes?
-        body.write(taggedPublicKey)
+        body.write(Mpi.fromByteArray(taggedPublicKey).toByteArray())
 
         body.write(s2kUsage)
 
-        // TODO THIS IS MPI
-        body.write(byteArrayOf(0x00, 0xff.toByte())) // eddsa_secret_len , Why two bytes? and why 00 ff and 01 00 in some situations? TODO implement MPI
-        body.write(privateKey)
+        val privateKeyMpi = Mpi.fromByteArray(privateKey)
+        body.write(privateKeyMpi.toByteArray())
 
-
-        // Private Key Checksum
-        var total = BigInteger.valueOf(0xff)
         val buffer: ByteBuffer = ByteBuffer.allocate(2)
 
-        for(i in privateKey){
+        // Private Key Checksum
+        var total = BigInteger.valueOf(0)
+
+        for(i in privateKeyMpi.toByteArray()){
             total = total.add(BigInteger(1, byteArrayOf(i)))
         }
 
