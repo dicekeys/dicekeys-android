@@ -43,14 +43,14 @@ class AppKeystoreUnitTests {
 
     @Test(expected = Exception::class)
     fun on_duplicate_initialization_throw_exception() {
-        appKeystore.initializeKeyStoreKey(ALIAS, false)
-        appKeystore.initializeKeyStoreKey(ALIAS, false)
+        appKeystore.initializeKeyStoreKey(ALIAS, AppKeystore.KeystoreType.KEYSTORE)
+        appKeystore.initializeKeyStoreKey(ALIAS, AppKeystore.KeystoreType.KEYSTORE)
     }
 
     @Test
     fun test_key_alias_removal() {
-        appKeystore.initializeKeyStoreKey(ALIAS, false)
+        appKeystore.initializeKeyStoreKey(ALIAS, AppKeystore.KeystoreType.KEYSTORE)
         appKeystore.deleteFromKeyStore(ALIAS)
-        appKeystore.initializeKeyStoreKey(ALIAS, false)
+        appKeystore.initializeKeyStoreKey(ALIAS, AppKeystore.KeystoreType.KEYSTORE)
     }
 }

@@ -1,8 +1,6 @@
 package org.dicekeys.app.repositories
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
-import org.dicekeys.app.repositories.DiceKeyRepository
+
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.junit.Assert.*
@@ -11,6 +9,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
 class DiceKeyRepositoryUnitTests {
