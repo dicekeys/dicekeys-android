@@ -10,7 +10,7 @@ class SecretPacket(private val privateKey: ByteArray, private val timestamp: UIn
 
     private val privateKeyEd255119 = Ed25519PrivateKeyParameters(privateKey, 0)
 
-    override val ctb: Int
+    override val pTag: Int
         get() = 0x94
 
     val publicPacket: PublicPacket by lazy {

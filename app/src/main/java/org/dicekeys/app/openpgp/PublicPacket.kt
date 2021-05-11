@@ -9,7 +9,7 @@ import java.security.MessageDigest
 
 class PublicPacket(private val publicKey: ByteArray, private val timestamp: UInt): Packet() {
 
-    override val ctb: Int
+    override val pTag: Int
         get() = 0x98
 
     override val body: ByteArray by lazy {

@@ -11,7 +11,7 @@ class SignaturePacket(privateKey: ByteArray, private val timestamp: UInt, userId
 
     private val privateKeyEd255119 = Ed25519PrivateKeyParameters(privateKey, 0)
 
-    override val ctb: Int
+    override val pTag: Int
         get() = 0x88
 
     val hashedSubPackets : ByteArray by lazy {

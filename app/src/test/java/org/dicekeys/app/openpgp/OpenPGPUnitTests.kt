@@ -57,9 +57,17 @@ class OpenPGPUnitTests {
 
     @Test
     fun testMpi(){
-        var mpi : Mpi = Mpi.fromHex("01")
+        var mpi : Mpi = Mpi.fromHex("00")
+        Assert.assertEquals("0000", mpi.toByteArray().toHex())
+        Assert.assertEquals(0x00, mpi.size.toInt())
+
+        mpi = Mpi.fromHex("01")
         Assert.assertEquals("000101", mpi.toByteArray().toHex())
         Assert.assertEquals(0x01, mpi.size.toInt())
+
+        mpi = Mpi.fromHex("FF")
+        Assert.assertEquals("0008FF", mpi.toByteArray().toHex())
+        Assert.assertEquals(0x08, mpi.size.toInt())
 
         mpi = Mpi.fromHex("01FF")
         Assert.assertEquals("000901FF", mpi.toByteArray().toHex())

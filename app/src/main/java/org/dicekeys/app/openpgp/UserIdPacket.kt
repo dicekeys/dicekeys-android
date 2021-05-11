@@ -5,7 +5,7 @@ import java.security.MessageDigest
 
 class UserIdPacket(name: String, email: String) : Packet() {
 
-    override val ctb: Int
+    override val pTag: Int
         get() = 0xb4
 
     override val body: ByteArray by lazy {
@@ -19,7 +19,7 @@ class UserIdPacket(name: String, email: String) : Packet() {
 
     override fun hash(digest: MessageDigest) {
         val buffer = ByteStreams.newDataOutput()
-        buffer.writeByte(ctb)
+        buffer.writeByte(pTag)
         buffer.writeInt(this.body.size) // 4-bytes
         buffer.write(body)
 
