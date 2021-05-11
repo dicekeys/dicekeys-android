@@ -26,14 +26,14 @@ object OpenSslHelper {
     private fun marshalPrivateKeyEd25519(
         privateKey: ByteArray,
         pubKey: ByteArray,
-        comment: String
+        comment: String,
+        checksum : Int = Math.random().toInt()
     ): ByteArray {
+        // Checksum is a random number and is used only to validate that the key when successfully decrypted.
+        // This method allow you to provide a checksum in order to validate the unit tests
+
         val out = ByteStreams.newDataOutput()
 
-        // Per spec this should be a random number just to validate the key if is encrypted
-        // in our case (unencrypted keys) and to also have valid unit tests is hardcoded.
-        // val checksum = Math.random().toInt()
-        val checksum = 0x103D60C3
         out.writeInt(checksum)
         out.writeInt(checksum)
         out.write(marshalPublicKeyEd25519(pubKey))
@@ -59,7 +59,7 @@ object OpenSslHelper {
         return "ssh-ed25519 $base64 DiceKeys"
     }
 
-    fun createPrivateKeyEd25519(privateKey: ByteArray, comment: String): ByteArray {
+    fun createPrivateKeyEd25519(privateKey: ByteArray, comment: String, checksum : Int = Math.random().toInt()): ByteArray {
         val privateKeyEd255119 = Ed25519PrivateKeyParameters(privateKey, 0)
         val publicKey = privateKeyEd255119.generatePublicKey().encoded
 
@@ -75,7 +75,7 @@ object OpenSslHelper {
         val sshPublicKey = marshalPublicKeyEd25519(publicKey)
         marshalData(out, sshPublicKey)
 
-        val sshPrivateKey = marshalPrivateKeyEd25519(privateKey, publicKey, comment)
+        val sshPrivateKey = marshalPrivateKeyEd25519(privateKey, publicKey, comment, checksum)
         marshalData(out, sshPrivateKey)
 
         return out.toByteArray()

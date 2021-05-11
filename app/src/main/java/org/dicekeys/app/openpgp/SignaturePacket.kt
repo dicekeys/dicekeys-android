@@ -1,5 +1,6 @@
 package org.dicekeys.app.openpgp;
 
+import com.google.common.io.ByteArrayDataOutput
 import com.google.common.io.ByteStreams
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters
 import org.bouncycastle.math.ec.rfc8032.Ed25519
@@ -14,58 +15,74 @@ class SignaturePacket(privateKey: ByteArray, private val timestamp: UInt, userId
     override val pTag: Int
         get() = 0x88
 
-    val hashedSubPackets : ByteArray by lazy {
-        val subpackets = ByteStreams.newDataOutput()
-
-        subpackets.writeByte(0x16) // length
-        subpackets.writeByte(0x21) // tag
-        subpackets.writeByte(Version) // version
-        subpackets.write(secretPacket.publicPacket.fingerprint())
-
-        subpackets.writeByte(0x05) // length
-        subpackets.writeByte(0x02) // Signature Creation Time (0x2)
-        subpackets.writeInt(timestamp.toInt())
-
-        subpackets.writeByte(0x02) // length
-        subpackets.writeByte(0x1b) // Key Flags (0x1b)
-        subpackets.writeByte(0x01) // Certify (0x1)
-
-        subpackets.writeByte(0x05) // length
-        subpackets.writeByte(0x0b) // Preferred Symmetric Algorithms (0xb)
-        // AES with 256-bit key (0x9),AES with 192-bit key (0x8),AES with 128-bit key (0x7),TripleDES (DES-EDE, 168 bit key derived from 192) (0x2)
-        subpackets.write(byteArrayOf(0x09, 0x08, 0x07, 0x02))
-
-        subpackets.writeByte(0x06) // length
-        subpackets.writeByte(0x15) // Preferred Hash Algorithms (0x15)
-        // SHA512 (0xa),SHA384 (0x9),SHA256 (0x8),SHA224 (0xb),SHA1 (0x2)
-        subpackets.write(byteArrayOf(0x0a, 0x09, 0x08, 0x0b, 0x02))
-
-        subpackets.writeByte(0x04) // length
-        subpackets.writeByte(0x16) // Preferred Compression Algorithms (0x16)
-        // ZLIB (0x2),BZip2 (0x3),ZIP (0x1)
-        subpackets.write(byteArrayOf(0x02, 0x03, 0x01))
-
-        subpackets.writeByte(0x02) // length
-        subpackets.writeByte(0x1e) // Features (0x1e)
-        subpackets.writeByte(0x01) // Modification detection (0x1)
-
-        subpackets.writeByte(0x02) // length
-        subpackets.writeByte(0x17) // Key Server Preferences (0x17)
-        subpackets.writeByte(0x80) // No-modify (0x80)
-
-        subpackets.toByteArray()
-    }
-
-    val unhashedSubPackets : ByteArray by lazy {
+    // RFC4880-bis-10 - Section 5.2.3.1 - Signature Subpacket Specification
+    // RFC4880-bis-10 - Section 5.2.3.21 - Key Flags
+    private val hashedSubPackets : ByteArray by lazy {
         val out = ByteStreams.newDataOutput()
-        val data = ByteStreams.newDataOutput().let {
-            it.writeByte(0x10) // Issuer (0x10)
-            it.write(secretPacket.publicPacket.keyId())
-            it.toByteArray()
+
+        // Issuer Fingerprint
+        Subpacket(0x21, out).apply {
+            writeByte(Version) // Version
+            write(secretPacket.publicPacket.fingerprint())
+            write()
         }
 
-        out.writeByte(data.size) // length
-        out.write(data)
+        // Signature Creation Time (0x2)
+        Subpacket(0x02, out).apply {
+            writeInt(timestamp.toInt())
+            write()
+        }
+
+        // Key Flags (0x1b)
+        Subpacket(0x1b, out).apply {
+            writeByte(0x01) // Certify (0x1)
+            write()
+        }
+
+        // Preferred Symmetric Algorithms (0xb)
+        Subpacket(0x0b, out).apply {
+            // AES with 256-bit key (0x9),AES with 192-bit key (0x8),AES with 128-bit key (0x7),TripleDES (DES-EDE, 168 bit key derived from 192) (0x2)
+            write(byteArrayOf(0x09, 0x08, 0x07, 0x02))
+            write()
+        }
+
+        // Preferred Hash Algorithms (0x15)
+        Subpacket(0x15, out).apply {
+            // SHA512 (0xa),SHA384 (0x9),SHA256 (0x8),SHA224 (0xb),SHA1 (0x2)
+            write(byteArrayOf(0x0a, 0x09, 0x08, 0x0b, 0x02))
+            write()
+        }
+
+        // Preferred Compression Algorithms (0x16)
+        Subpacket(0x16, out).apply {
+            // ZLIB (0x2),BZip2 (0x3),ZIP (0x1)
+            write(byteArrayOf(0x02, 0x03, 0x01))
+            write()
+        }
+
+        // Features (0x1e)
+        Subpacket(0x1e, out).apply {
+            writeByte(0x01) // Modification detection (0x1)
+            write()
+        }
+
+        // Key Server Preferences (0x17)
+        Subpacket(0x17, out ).apply {
+            writeByte(0x80) // No-modify (0x80)
+            write()
+        }
+
+        out.toByteArray()
+    }
+
+    private val unhashedSubPackets : ByteArray by lazy {
+        val out = ByteStreams.newDataOutput()
+
+        // Issuer (0x10)
+        Subpacket(0x10, out).apply {
+            write(secretPacket.publicPacket.keyId())
+            write()
+        }
 
         out.toByteArray()
     }

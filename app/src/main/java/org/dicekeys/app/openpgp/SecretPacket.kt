@@ -20,6 +20,8 @@ class SecretPacket(private val privateKey: ByteArray, private val timestamp: UIn
     override val body: ByteArray by lazy {
         val body = ByteStreams.newDataOutput()
 
+        // RFC4880-bis-10 - Section 13.3 - EdDSA Point Format
+        // 0x40 indicate compressed format
         val taggedPublicKey = byteArrayOf(0x40) + privateKeyEd255119.generatePublicKey().encoded
         val s2kUsage = 0x00
 

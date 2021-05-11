@@ -20,8 +20,9 @@ class OpenSshHelperUnitTests {
 
     @Test
     fun test_privateKey(){
+        val checksum = 0x103D60C3
         Assert.assertEquals(
                 "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZWQyNTUxOQAAACDJU3QvXXomER2Gj7utIoycGAUk/RdDiRonltSfRzX9PQAAAJAQPWDDED1gwwAAAAtzc2gtZWQyNTUxOQAAACDJU3QvXXomER2Gj7utIoycGAUk/RdDiRonltSfRzX9PQAAAEAFrXdopr92us8RzW6VhoXCkhotCh97MxPLZvpxOC/PQclTdC9deiYRHYaPu60ijJwYBST9F0OJGieW1J9HNf09AAAACERpY2VLZXlzAQIDBAU=",
-                BaseEncoding.base64().encode(OpenSslHelper.createPrivateKeyEd25519(privateKey, "DiceKeys")))
+                BaseEncoding.base64().encode(OpenSslHelper.createPrivateKeyEd25519(privateKey, "DiceKeys", checksum)))
     }
 }
