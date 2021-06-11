@@ -1,4 +1,4 @@
-package org.dicekeys.app.openpgp;
+package org.dicekeys.app.openpgp
 
 import com.google.common.io.ByteStreams
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters
@@ -15,6 +15,10 @@ class SecretPacket(private val privateKey: ByteArray, private val timestamp: UIn
 
     val publicPacket: PublicPacket by lazy {
         PublicPacket(privateKeyEd255119.generatePublicKey().encoded, timestamp)
+    }
+
+    override fun hashPreImage(): ByteArray {
+        return publicPacket.hashPreImage()
     }
 
     override val body: ByteArray by lazy {
@@ -53,7 +57,4 @@ class SecretPacket(private val privateKey: ByteArray, private val timestamp: UIn
         body.toByteArray()
     }
 
-    override fun hash(digest: MessageDigest) {
-        publicPacket.hash(digest)
-    }
 }

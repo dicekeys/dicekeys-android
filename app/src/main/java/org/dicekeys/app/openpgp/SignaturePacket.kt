@@ -1,12 +1,11 @@
 package org.dicekeys.app.openpgp;
 
-import com.google.common.io.ByteArrayDataOutput
 import com.google.common.io.ByteStreams
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters
 import org.bouncycastle.math.ec.rfc8032.Ed25519
 import java.security.MessageDigest
 
-class SignaturePacket(privateKey: ByteArray, private val timestamp: UInt, userIdPacket: UserIdPacket): Packet() {
+class SignaturePacket(privateKey: ByteArray, private val timestamp: UInt, private val userIdPacket: UserIdPacket): Packet() {
 
     private val secretPacket = SecretPacket(privateKey, timestamp)
 
@@ -87,7 +86,7 @@ class SignaturePacket(privateKey: ByteArray, private val timestamp: UInt, userId
         out.toByteArray()
     }
 
-    override val body: ByteArray by lazy {
+    val bodyContentsIncludedInHash: ByteArray by lazy {
         val buffer = ByteStreams.newDataOutput()
 
         val publicPacket = secretPacket.publicPacket
@@ -100,16 +99,18 @@ class SignaturePacket(privateKey: ByteArray, private val timestamp: UInt, userId
         buffer.writeShort(hashedSubPackets.size) // hashed_area_len
         buffer.write(hashedSubPackets)
 
+        buffer.toByteArray()
+    }
+
+    override val body: ByteArray by lazy {
+        val buffer = ByteStreams.newDataOutput()
+        buffer.write(bodyContentsIncludedInHash)
+//       val publicPacket = secretPacket.publicPacket
+
         buffer.writeShort(unhashedSubPackets.size) // unhashed_area_len
         buffer.write(unhashedSubPackets)
 
-        val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
-        publicPacket.hash(digest)
-        userIdPacket.hash(digest)
-        hash(digest)
-
-        val hash = digest.digest()
-
+        val hash = sha256()
         buffer.write(hash.take(2).toByteArray())
 
         val signature = ByteArray(Ed25519PrivateKeyParameters.SIGNATURE_SIZE)
@@ -123,24 +124,16 @@ class SignaturePacket(privateKey: ByteArray, private val timestamp: UInt, userId
         buffer.toByteArray()
     }
 
-
-    override fun hash(digest: MessageDigest) {
+    override fun hashPreImage(): ByteArray {
         val buffer = ByteStreams.newDataOutput()
-
-        buffer.writeByte(Version)
-        buffer.writeByte(0x13) //   signatureType: "Positive certification of a User ID and Public-Key packet. (0x13)"
-        buffer.writeByte(Ed25519Algorithm)
-        buffer.writeByte(Sha256Algorithm)
-
-        buffer.writeShort(hashedSubPackets.size) // hashed_area_len
-        buffer.write(hashedSubPackets)
-
-        val signatureHashedSize = buffer.toByteArray().size
-
+        buffer.write(secretPacket.publicPacket.hashPreImage())
+        buffer.write(userIdPacket.hashPreImage())
+        buffer.write(bodyContentsIncludedInHash)
+        val signatureHashedSize = bodyContentsIncludedInHash.size
         buffer.write(byteArrayOf(Version.toByte(), 0xff.toByte()))
         buffer.writeInt(signatureHashedSize)
-
-        digest.update(buffer.toByteArray())
+        return buffer.toByteArray()
     }
+
 
 }

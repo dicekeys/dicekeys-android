@@ -54,13 +54,12 @@ class PublicPacket(private val publicKey: ByteArray, private val timestamp: UInt
 
     fun keyId(): ByteArray = fingerprint().takeLast(8).toByteArray()
 
-
-    override fun hash(digest: MessageDigest) {
+    override fun hashPreImage(): ByteArray {
         val buffer = ByteStreams.newDataOutput()
         buffer.writeByte(0x99)
         buffer.writeShort(body.size) // 2-bytes
         buffer.write(body)
-
-        digest.update(buffer.toByteArray())
+        return buffer.toByteArray()
     }
+
 }

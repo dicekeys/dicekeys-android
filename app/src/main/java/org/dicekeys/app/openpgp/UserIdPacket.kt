@@ -17,12 +17,12 @@ class UserIdPacket(name: String, email: String) : Packet() {
         body.toByteArray()
     }
 
-    override fun hash(digest: MessageDigest) {
+    override fun hashPreImage(): ByteArray {
         val buffer = ByteStreams.newDataOutput()
         buffer.writeByte(pTag)
         buffer.writeInt(this.body.size) // 4-bytes
         buffer.write(body)
-
-        digest.update(buffer.toByteArray())
+        return buffer.toByteArray()
     }
+
 }

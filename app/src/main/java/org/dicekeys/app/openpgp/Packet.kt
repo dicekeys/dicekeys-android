@@ -9,7 +9,16 @@ abstract class Packet {
     abstract val pTag : Int // Also known as CTB (Cipher Type Byte)
     abstract val body : ByteArray
 
-    abstract fun hash(digest: MessageDigest)
+    abstract fun hashPreImage(): ByteArray
+
+    fun hash(digest: MessageDigest) {
+        digest.update(hashPreImage());
+    }
+    fun sha256(): ByteArray {
+        val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
+        digest.update(hashPreImage());
+        return digest.digest()
+    }
 
     fun toByteArray(): ByteArray {
         val out = ByteStreams.newDataOutput()
