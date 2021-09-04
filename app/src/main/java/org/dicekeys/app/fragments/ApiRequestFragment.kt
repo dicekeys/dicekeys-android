@@ -18,9 +18,7 @@ import org.dicekeys.app.R
 import org.dicekeys.app.apicommands.permissionchecked.PermissionCheckedUrlCommands
 import org.dicekeys.app.databinding.ApiRequestFragmentBinding
 import org.dicekeys.app.encryption.EncryptedDiceKey
-import org.dicekeys.app.extensions.clearNavigationResult
-import org.dicekeys.app.extensions.getNavigationResult
-import org.dicekeys.app.extensions.toast
+import org.dicekeys.app.extensions.*
 import org.dicekeys.app.viewmodels.ApiRequestViewModel
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
@@ -177,8 +175,10 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
             urlCommand.executeCommand()
 
             if(urlCommand.hasException()){
-                urlCommand.sendException()
-                findNavController().popBackStack()
+                dialog(getString(R.string.error), getString(R.string.another_app_made_an_invalid_request, urlCommand.exception?.message ?: "unknown error")) {
+                    urlCommand.sendException()
+                    findNavController().popBackStack()
+                }
             }else{
                 viewModel.createLabel.value = when (urlCommand.command) {
                     ApiStrings.Commands.getPassword -> {
