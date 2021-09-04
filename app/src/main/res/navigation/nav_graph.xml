@@ -98,7 +98,12 @@
     <fragment
         android:id="@+id/dicekey"
         android:name="org.dicekeys.app.fragments.dicekey.DiceKeyFragment"
-        tools:layout="@layout/dicekey_fragment"/>
+        tools:layout="@layout/dicekey_fragment">
+        <argument
+            android:name="isAfterAssembly"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
 
 
     <fragment

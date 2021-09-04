@@ -3,6 +3,7 @@ package org.dicekeys.app.fragments.dicekey
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.DicekeyFragmentBinding
@@ -13,6 +14,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DiceKeyFragment: AbstractDiceKeyFragment<DicekeyFragmentBinding>(R.layout.dicekey_fragment) {
 
+    private val args: DiceKeyFragmentArgs by navArgs()
+
     @Inject
     lateinit var biometricsHelper : BiometricsHelper
 
@@ -22,13 +25,10 @@ class DiceKeyFragment: AbstractDiceKeyFragment<DicekeyFragmentBinding>(R.layout.
         if(isGuarded) return
 
         binding.vm = viewModel
+        binding.isAfterAssembly = args.isAfterAssembly
 
         binding.buttonSave.setOnClickListener{
-            if(biometricsHelper.canUseBiometrics(requireContext())){
-                biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.BIOMETRIC, this)
-            }else{
-                biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.AUTHENTICATION, this)
-            }
+            navigate(R.id.save)
         }
 
         binding.buttonLock.setOnClickListener {
