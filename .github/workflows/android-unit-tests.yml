@@ -34,8 +34,8 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x ./gradlew
       
-      - name: Build with Gradle
-        run: ./gradlew app:test
+      - name: Run unit tests
+        run: ./gradlew dicekey:test app:test
 
       - name: Android Test Report
         uses: asadmansr/android-test-report-action@v1.2.0
