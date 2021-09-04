@@ -76,7 +76,7 @@ class AssembleFragment : AppFragment<AssembleFragmentBinding>(R.layout.assemble_
                     val navOptionsBuilder = NavOptions.Builder().setPopUpTo(R.id.listDiceKeysFragment, false)
                     findNavController()
                             .navigate(AssembleFragmentDirections
-                                    .actionGlobalDicekey(), navOptionsBuilder.build())
+                                    .actionGlobalDicekey(isAfterAssembly = true), navOptionsBuilder.build())
                 }
             } else {
                 assembleViewModel.nextPage()
