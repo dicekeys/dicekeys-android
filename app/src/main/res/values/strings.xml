@@ -140,5 +140,5 @@
     <string name="may_use_digital_signature">May %s use your DiceKey to add its digital signature to data?</string>
     <string name="may_use_key_verify">May %s use your DiceKey to %s a key used to verify data it has signed?</string>
     <string name="may_use_keys_store_secrets">May %s use your DiceKey to %s keys to store secrets?</string>
-
+    <string name="another_app_made_an_invalid_request">Another app made an invalid request of the DiceKeys app: %s</string>
 </resources>
