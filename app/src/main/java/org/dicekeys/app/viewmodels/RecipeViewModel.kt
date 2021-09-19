@@ -7,8 +7,12 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.app.RecipeBuilder
+import org.dicekeys.app.data.DeriveType
+import org.dicekeys.app.data.DerivedValue
+import org.dicekeys.app.data.DerivedValueView
+import org.dicekeys.app.extensions.toHexString
 import org.dicekeys.app.repositories.RecipeRepository
-import org.dicekeys.crypto.seeded.Password
+import org.dicekeys.crypto.seeded.*
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 
@@ -18,27 +22,52 @@ class RecipeViewModel @AssistedInject constructor(
         @Assisted val diceKey: DiceKey<Face>,
         @Assisted("recipe") val recipe: DerivationRecipe?,
         @Assisted("template") val template: DerivationRecipe?,
+        @Assisted val deriveType: DeriveType,
 ) : ViewModel() {
     private val showRecipe = recipe != null
     val isCustomRecipe = MutableLiveData(recipe == null && template == null)
 
     var derivationRecipe = MutableLiveData(recipe ?: template)
     var sequenceNumber = MutableLiveData(recipe?.sequence?.toString() ?: "1")
-    var password = MutableLiveData<String>(null)
     var recipeIsSaved = MutableLiveData(if(recipe != null) recipeRepository.exists(recipe) else false)
-
     var recipeBuilder = RecipeBuilder(template)
 
+    var derivedValueView: DerivedValueView? = null
+    var derivedValue: MutableLiveData<DerivedValue> = MutableLiveData()
+    var derivedValueAsString = MutableLiveData<String>(null)
+
     init {
-        generatePassword()
+        deriveValue()
     }
 
-    private fun generatePassword(){
-        derivationRecipe.value?.let{ derivationRecipe ->
-            password.value = diceKey.toCanonicalRotation().let { Password.deriveFromSeed(it.toHumanReadableForm(), derivationRecipe.recipeJson).password }
-            
+    private fun deriveValue(){
+        derivationRecipe.value?.recipeJson?.let{ recipeJson ->
+            diceKey.toCanonicalRotation().toHumanReadableForm().let { seed ->
+
+                derivedValue.value = when (deriveType) {
+                    DeriveType.Password -> DerivedValue.Password(Password.deriveFromSeed(seed, recipeJson))
+                    DeriveType.Secret -> DerivedValue.Secret(Secret.deriveFromSeed(seed, recipeJson))
+                    DeriveType.SigningKey -> DerivedValue.SigningKey(SigningKey.deriveFromSeed(seed, recipeJson))
+                    DeriveType.SymmetricKey -> DerivedValue.SymmetricKey(SymmetricKey.deriveFromSeed(seed, recipeJson))
+                    DeriveType.UnsealingKey -> DerivedValue.UnsealingKey(UnsealingKey.deriveFromSeed(seed, recipeJson))
+                }
+
+                updateView()
+            }
+
             updateSavedState()
         }
+    }
+
+    private fun updateView(){
+        derivedValue.value?.let {
+            derivedValueAsString.value = it.valueForView(derivedValueView ?: DerivedValueView.JSON())
+        }
+    }
+
+    fun setView(view: DerivedValueView){
+        derivedValueView = view
+        updateView()
     }
     
     fun saveRecipeInMenu(){
@@ -87,7 +116,7 @@ class RecipeViewModel @AssistedInject constructor(
                 derivationRecipe.value = recipeBuilder.getDerivationRecipe()
             }
 
-            generatePassword()
+            deriveValue()
         }
     }
 
@@ -108,7 +137,8 @@ class RecipeViewModel @AssistedInject constructor(
     interface AssistedFactory {
         fun create(diceKey: DiceKey<Face>,
                    @Assisted("recipe") recipe: DerivationRecipe?,
-                   @Assisted("template") template: DerivationRecipe?): RecipeViewModel
+                   @Assisted("template") template: DerivationRecipe?,
+                   deriveType: DeriveType): RecipeViewModel
     }
 
     companion object {
@@ -116,11 +146,12 @@ class RecipeViewModel @AssistedInject constructor(
                 assistedFactory: AssistedFactory,
                 diceKey: DiceKey<Face>,
                 recipe: DerivationRecipe?,
-                template: DerivationRecipe?
+                template: DerivationRecipe?,
+                deriveType: DeriveType
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(diceKey = diceKey, recipe = recipe, template = template) as T
+                return assistedFactory.create(diceKey = diceKey, recipe = recipe, template = template, deriveType = deriveType) as T
             }
         }
     }

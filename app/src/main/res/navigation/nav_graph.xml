@@ -92,6 +92,9 @@
             android:defaultValue="@null"
             app:argType="org.dicekeys.api.DerivationRecipe"
             app:nullable="true" />
+        <argument
+            android:name="deriveType"
+            app:argType="org.dicekeys.app.data.DeriveType" />
 
     </fragment>
 

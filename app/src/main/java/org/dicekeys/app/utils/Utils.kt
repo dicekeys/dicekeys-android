@@ -4,10 +4,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
+import android.view.View
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import org.dicekeys.app.R
+import org.dicekeys.app.extensions.pulse
 
 fun openBrowser(context: Context, url: String) {
 
@@ -33,8 +35,9 @@ fun getClipboard(context: Context): String? =
             it.primaryClip?.getItemAt(0)?.text?.toString()
         }
 
-fun copyToClipboard(label: String, content: String, context: Context) {
+fun copyToClipboard(label: String, content: String, context: Context, viewToPulse : View? = null) {
     (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
         it.setPrimaryClip(ClipData.newPlainText(label, content))
     }
+    viewToPulse?.pulse()
 }

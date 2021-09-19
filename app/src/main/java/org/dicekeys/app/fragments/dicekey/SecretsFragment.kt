@@ -1,38 +1,41 @@
 package org.dicekeys.app.fragments.dicekey
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.api.derivationRecipeTemplates
-import org.dicekeys.app.AppFragment
 import org.dicekeys.app.R
-import org.dicekeys.app.adapters.RecipesAdapter
+import org.dicekeys.app.adapters.GenericAdapter
+import org.dicekeys.app.data.DeriveType
 import org.dicekeys.app.databinding.SecretsFragmentBinding
-import org.dicekeys.app.extensions.toast
+import org.dicekeys.app.items.GenericListItem
+import org.dicekeys.app.items.HeaderListItem
+import org.dicekeys.app.items.TitleListItem
 import org.dicekeys.app.repositories.RecipeRepository
-import org.dicekeys.app.viewmodels.DiceKeyViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout.secrets_fragment), RecipesAdapter.OnItemClickListener {
+class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout.secrets_fragment),
+    GenericAdapter.OnItemClickListener {
 
     @Inject
     lateinit var recipesRepository: RecipeRepository
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(isGuarded) return
+        if (isGuarded) return
 
-        val adapter = RecipesAdapter(this)
+        val adapter = GenericAdapter(this)
 
         recipesRepository.getRecipesLiveData().observe(viewLifecycleOwner) {
-            adapter.set(it)
+            updateAdater(adapter, it)
         }
+
+        updateAdater(adapter, null)
 
         binding.recycler.also {
             it.layoutManager = LinearLayoutManager(requireContext())
@@ -40,31 +43,43 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
         }
     }
 
-    override fun onItemClicked(view: View, position: Int, recipe: DerivationRecipe?) {
-        when (position) {
-            0 -> {
-                navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment())
+    private fun updateAdater(adapter: GenericAdapter, savedRecipes: List<DerivationRecipe>?) {
+        val list = mutableListOf<GenericListItem<*>>()
+        if (!savedRecipes.isNullOrEmpty()) {
+            list += HeaderListItem(getString(R.string.saved_recipes))
+            list += savedRecipes.map {
+                TitleListItem(it.name, data1 = it)
             }
-            1 -> {
-                val popupMenu = PopupMenu(requireContext(), view)
-                val menu = popupMenu.menu
+        }
 
-                for ((index, recipes) in derivationRecipeTemplates.withIndex()) {
-                    menu.add(0, 0 , index, recipes.name)
-                }
+        list += HeaderListItem(getString(R.string.build_in_recipes))
+        list += derivationRecipeTemplates.map {
+            // mark it as template
+            TitleListItem(it.name, data1 = it, data2 = true)
+        }
 
-                popupMenu.setOnMenuItemClickListener { item ->
-                    val derivationRecipe = derivationRecipeTemplates[item.order]
-                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(template = derivationRecipe))
-                    true
-                }
-                popupMenu.show()
+        list += HeaderListItem(getString(R.string.custom_recipe))
+        list += TitleListItem("password", data1 = DeriveType.Password)
+        list += TitleListItem("seed or other secret", data1 = DeriveType.Secret)
+        list += TitleListItem("signing/authentication key", data1 = DeriveType.SigningKey)
+        list += TitleListItem("symmetric cryptographic key", data1 = DeriveType.SymmetricKey)
+        list += TitleListItem("public/private key pair", data1 = DeriveType.UnsealingKey)
 
-            }
-            else -> {
-                recipe?.let {
-                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = it))
+        adapter.set(list)
+    }
+
+    override fun onItemClicked(view: View, position: Int, item: GenericListItem<*>) {
+        if(item is TitleListItem){
+            if(item.data1 is DerivationRecipe) {
+                if ((item.data2 as? Boolean) == true) {
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(template = item.data1, deriveType = DeriveType.Password))
+                } else {
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = item.data1, deriveType = DeriveType.Password))
                 }
+            }else if(item.data1 is DeriveType){
+                navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(deriveType = item.data1))
+            }else{
+                navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(deriveType = DeriveType.Password))
             }
         }
     }

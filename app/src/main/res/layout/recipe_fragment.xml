@@ -240,10 +240,10 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/cvPassword"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/typeTextInputLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialCardView2">
@@ -258,13 +258,32 @@
 
         </FrameLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/typeTextInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:hint="Type"
+            app:layout_constraintBottom_toTopOf="@+id/cardDerivedValue"
+            app:layout_constraintEnd_toEndOf="@+id/cardDerivedValue"
+            app:layout_constraintStart_toStartOf="@+id/cardDerivedValue">
+
+            <AutoCompleteTextView
+                android:id="@+id/type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvPassword"
+            android:id="@+id/cardDerivedValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             app:cardCornerRadius="5dp"
             isVisible="@{vm.derivationRecipe != null}"
@@ -273,18 +292,20 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
-                android:id="@+id/tvPassword"
+                android:id="@+id/derivedValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/diceViewBgColor"
-                android:drawableRight="@drawable/ic_baseline_content_copy_24"
                 android:drawablePadding="12dp"
-                android:gravity="center"
                 android:padding="8dp"
-                android:text="@{vm.password}"
+                android:focusableInTouchMode="false"
+                android:focusable="false"
+                android:text="@{vm.derivedValueAsString}"
                 android:textColor="@android:color/white"
                 android:textIsSelectable="true"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:text="15-this-is-a-password-for-the-example-dicekey-as-a-long-text-with-no-meaning-at-all"
+                app:drawableRightCompat="@drawable/ic_baseline_content_copy_24" />
         </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

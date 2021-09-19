@@ -114,6 +114,9 @@ class SigningKey internal constructor(
     private external fun signatureVerificationKeyBytesGetterJNI(): ByteArray
     private external fun signingKeyBytesGetterJNI(): ByteArray
     private external fun recipeGetterJNI(): String
+    private external fun openPgpPemFormatSecretKeyJNI(userIdPacketContent: String, timestamp: Long): String
+    private external fun openSshPemPrivateKeyJNI(comment: String): String
+    private external fun openSshPublicKeyJNI(): String
     external fun generateSignature(message: ByteArray): ByteArray
 
     /**
@@ -181,6 +184,22 @@ class SigningKey internal constructor(
      * Get the key-derivation options used to generate this [SigningKey]
      */
     val recipe get() = recipeGetterJNI()
+
+
+    /**
+     * Get the OpenPGP secret key in PEM format
+     */
+    val openPgpPemFormatSecretKey get() = openPgpPemFormatSecretKeyJNI("", 0)
+
+    /**
+     * Get the OpenSSH private key in PEM format
+     */
+    val openSshPemPrivateKey get() = openSshPemPrivateKeyJNI("")
+
+    /**
+     * Get the OpenSSH public key
+     */
+    val openSshPublicKey get() = openSshPublicKeyJNI()
 
     override fun equals(other: Any?): Boolean =
             (other is SigningKey) &&
