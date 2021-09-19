@@ -159,7 +159,6 @@ Java_org_dicekeys_crypto_seeded_SigningKey_constructJNI___3B_3BLjava_lang_String
   try {
     return (jlong) new SigningKey(
       jbyteArrayToSodiumBuffer(env, signing_key_bytes),
-      jbyteArrayToVector(env, signature_verification_key_bytes),
       jstringToString(env, key_derivation_options_json)
     );
   } catch (...) {
