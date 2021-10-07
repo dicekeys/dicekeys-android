@@ -5,7 +5,12 @@ import org.dicekeys.crypto.seeded.DerivationOptions
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.internal.runners.JUnit4ClassRunner
+import org.junit.runner.RunWith
+import org.junit.runners.BlockJUnit4ClassRunner
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(BlockJUnit4ClassRunner::class)
 class RecipeBuilderUnitTests {
 
     private lateinit var builder: RecipeBuilder

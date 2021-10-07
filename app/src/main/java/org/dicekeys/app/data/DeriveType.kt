@@ -1,5 +1,6 @@
 package org.dicekeys.app.data
 
+import org.dicekeys.app.bip39.Mnemonics
 import org.dicekeys.app.extensions.toHexString
 import org.dicekeys.crypto.seeded.JsonSerializable
 
@@ -8,15 +9,16 @@ enum class DeriveType {
 }
 
 sealed class DerivedValueView(val description: String) {
-    class JSON() : DerivedValueView("JSON")
-    class Password() : DerivedValueView("Password")
-    class Hex() : DerivedValueView("HEX")
-    class HexUnsealing() : DerivedValueView("HEX (Unsealing Key)")
-    class HexSealing() : DerivedValueView("HEX (Sealing Key)")
-    class BIP39() : DerivedValueView("BIP39")
-    class OpenPGPPrivateKey() : DerivedValueView("OpenPGP Private Key")
-    class OpenSSHPrivateKey() : DerivedValueView("OpenSSH Private Key")
-    class OpenSSHPublicKey() : DerivedValueView("OpenSSH Public Key")
+    class JSON : DerivedValueView("JSON")
+    class Password : DerivedValueView("Password")
+    class Hex : DerivedValueView("HEX")
+    class HexSigningKey : DerivedValueView("HEX (Signing Key)")
+    class HexUnsealing : DerivedValueView("HEX (Unsealing Key)")
+    class HexSealing : DerivedValueView("HEX (Sealing Key)")
+    class BIP39 : DerivedValueView("BIP39")
+    class OpenPGPPrivateKey : DerivedValueView("OpenPGP Private Key")
+    class OpenSSHPrivateKey : DerivedValueView("OpenSSH Private Key")
+    class OpenSSHPublicKey : DerivedValueView("OpenSSH Public Key")
 }
 
 sealed class DerivedValue(
@@ -43,6 +45,7 @@ sealed class DerivedValue(
     ) {
         override fun valueForView(view: DerivedValueView): String = when (view) {
             is DerivedValueView.Hex -> secret.secretBytes.toHexString()
+            is DerivedValueView.BIP39 -> String(Mnemonics.MnemonicCode(secret.secretBytes).chars)
             else -> super.valueForView(view)
         }
     }
@@ -54,11 +57,11 @@ sealed class DerivedValue(
             DerivedValueView.OpenPGPPrivateKey(),
             DerivedValueView.OpenSSHPrivateKey(),
             DerivedValueView.OpenSSHPublicKey(),
-            DerivedValueView.Hex()
+            DerivedValueView.HexSigningKey()
         )
     ) {
         override fun valueForView(view: DerivedValueView): String = when (view) {
-            is DerivedValueView.Hex -> signingKey.signingKeyBytes.toHexString()
+            is DerivedValueView.HexSigningKey -> signingKey.signingKeyBytes.toHexString()
             is DerivedValueView.OpenPGPPrivateKey -> signingKey.openPgpPemFormatSecretKey
             is DerivedValueView.OpenSSHPrivateKey -> signingKey.openSshPemPrivateKey
             is DerivedValueView.OpenSSHPublicKey -> signingKey.openSshPublicKey
@@ -80,13 +83,14 @@ sealed class DerivedValue(
         }
     }
 
-    class UnsealingKey(private val unsealingKey: org.dicekeys.crypto.seeded.UnsealingKey) : DerivedValue(
-        unsealingKey, listOf(
-            DerivedValueView.JSON(),
-            DerivedValueView.HexUnsealing(),
-            DerivedValueView.HexSealing()
-        )
-    ) {
+    class UnsealingKey(private val unsealingKey: org.dicekeys.crypto.seeded.UnsealingKey) :
+        DerivedValue(
+            unsealingKey, listOf(
+                DerivedValueView.JSON(),
+                DerivedValueView.HexUnsealing(),
+                DerivedValueView.HexSealing()
+            )
+        ) {
         override fun valueForView(view: DerivedValueView): String = when (view) {
             is DerivedValueView.HexUnsealing -> unsealingKey.unsealingKeyBytes.toHexString()
             is DerivedValueView.HexSealing -> unsealingKey.sealingKeyBytes.toHexString()
