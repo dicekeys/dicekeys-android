@@ -1,5 +1,8 @@
 package org.dicekeys.app.viewmodels
 
+import android.text.Html
+import android.text.Spanned
+import androidx.core.text.toSpanned
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +13,7 @@ import org.dicekeys.app.RecipeBuilder
 import org.dicekeys.app.data.DeriveType
 import org.dicekeys.app.data.DerivedValue
 import org.dicekeys.app.data.DerivedValueView
+import org.dicekeys.app.data.DerivedValueView.BIP39
 import org.dicekeys.app.extensions.toHexString
 import org.dicekeys.app.repositories.RecipeRepository
 import org.dicekeys.crypto.seeded.*
@@ -32,7 +36,7 @@ class RecipeViewModel @AssistedInject constructor(
     var recipeIsSaved = MutableLiveData(if(recipe != null) recipeRepository.exists(recipe) else false)
     var recipeBuilder = RecipeBuilder(template)
 
-    var derivedValueView: DerivedValueView? = null
+    var derivedValueView: MutableLiveData<DerivedValueView> = MutableLiveData()
     var derivedValue: MutableLiveData<DerivedValue> = MutableLiveData()
     var derivedValueAsString = MutableLiveData<String>(null)
 
@@ -61,12 +65,14 @@ class RecipeViewModel @AssistedInject constructor(
 
     private fun updateView(){
         derivedValue.value?.let {
-            derivedValueAsString.value = it.valueForView(derivedValueView ?: DerivedValueView.JSON())
+            it.valueForView(derivedValueView.value ?: DerivedValueView.JSON()).also {
+                derivedValueAsString.value = it
+            }
         }
     }
 
     fun setView(view: DerivedValueView){
-        derivedValueView = view
+        derivedValueView.value = view
         updateView()
     }
     

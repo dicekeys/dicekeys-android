@@ -4,20 +4,28 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
+import org.dicekeys.app.adapters.GenericAdapter
+import org.dicekeys.app.data.DerivedValueView
 import org.dicekeys.app.databinding.RecipeFragmentBinding
+import org.dicekeys.app.extensions.dialog
+import org.dicekeys.app.extensions.toast
+import org.dicekeys.app.items.Bip39WordItem
+import org.dicekeys.app.items.GenericListItem
 import org.dicekeys.app.repositories.RecipeRepository
 import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.viewmodels.RecipeViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.recipe_fragment) {
+class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.recipe_fragment), GenericAdapter.OnItemClickListener{
 
+    private lateinit var bip39Adapter: GenericAdapter
     private val args: RecipeFragmentArgs by navArgs()
 
     @Inject
@@ -42,8 +50,8 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         binding.btnUp.setOnClickListener { recipeViewModel.sequencUpDown(true) }
 
 
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mutableListOf<String>())
-        binding.type.setAdapter(adapter)
+        val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mutableListOf<String>())
+        binding.type.setAdapter(typeAdapter)
 
         binding.type.setOnItemClickListener { _, _, position, id ->
             recipeViewModel.derivedValue.value?.views?.get(position)?.let{
@@ -52,9 +60,9 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         }
 
         recipeViewModel.derivedValue.observe(viewLifecycleOwner){
-            adapter.clear()
+            typeAdapter.clear()
             val list = it.views.map { it.description }
-            adapter.addAll(list)
+            typeAdapter.addAll(list)
 
             val currentSelection = binding.type.text.toString()
             if(currentSelection.isBlank() || list.find { it == currentSelection } == null){
@@ -92,9 +100,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         }
 
         binding.derivedValue.setOnClickListener {
-            recipeViewModel.derivedValueAsString.value?.let {
-                copyToClipboard("password", it, requireContext(), binding.derivedValue)
-            }
+            copyDerivedValue()
         }
 
         binding.btnSaveRecipeInMenu.setOnClickListener {
@@ -108,5 +114,48 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         binding.dicekey.setOnClickListener {
             viewModel.toggleHideFaces()
         }
+
+        bip39Adapter = GenericAdapter(this)
+
+        binding.recycler.also {
+            it.layoutManager = StaggeredGridLayoutManager(3 , StaggeredGridLayoutManager.VERTICAL)
+            it.adapter = bip39Adapter
+        }
+
+        recipeViewModel.derivedValueAsString.observe(viewLifecycleOwner) {
+            if(recipeViewModel.derivedValueView.value is DerivedValueView.BIP39){
+                updateBip39Words(it)
+            }
+        }
     }
+
+    private fun copyDerivedValue(){
+        recipeViewModel.derivedValueAsString.value?.let {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Copy to Clipboard?")
+                .setMessage("Do you want to copy the derived value to the Clipboard?")
+                .setPositiveButton("Copy") { _, _ ->
+                    copyToClipboard("Derived Value", it, requireContext(), binding.cardDerivedValue)
+                }
+                .setNegativeButton(R.string.cancel) { _, _ ->
+
+                }
+                .show()
+        }
+    }
+
+    private fun updateBip39Words(value: String) {
+        val list = mutableListOf<GenericListItem<*>>()
+
+        for((index, word) in value.split(" ").withIndex()){
+            list += Bip39WordItem((index + 1).toString(),word)
+        }
+
+        bip39Adapter.set(list)
+    }
+
+    override fun onItemClicked(view: View, position: Int, item: GenericListItem<*>) {
+        copyDerivedValue()
+    }
+
 }

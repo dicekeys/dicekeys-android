@@ -10,7 +10,8 @@ import org.dicekeys.app.items.BindingViewHolder
 import org.dicekeys.app.items.GenericListItem
 
 
-class GenericAdapter(private val clickListener: OnItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class GenericAdapter(private val clickListener: OnItemClickListener? = null) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var items = listOf<GenericListItem<*>>()
 
     override fun getItemViewType(position: Int) = items[position].itemViewType
@@ -22,29 +23,11 @@ class GenericAdapter(private val clickListener: OnItemClickListener) : RecyclerV
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         items[position].bindView(holder as BindingViewHolder<*>)
 
-        holder.binding.root.setOnClickListener {
-            clickListener.onItemClicked(it, position, items[position])
+        clickListener?.let { clickListener ->
+            holder.binding.root.setOnClickListener {
+                clickListener.onItemClicked(it, position, items[position])
+            }
         }
-
-//        when (position) {
-//            0 -> {
-//                holder.binding.name = holder.itemView.context.getString(R.string.custom_recipe)
-//            }
-//            1 -> {
-//                holder.binding.name = holder.itemView.context.getString(R.string.common_password_recipes)
-//            }
-//            else -> {
-//                // Get the actual position in the list minus the hardcoded elements
-//                recipes[position - HARDCODED_ELEMENTS_SIZE].let {
-//                    recipe = it
-//                    holder.binding.name = it.name
-//                }
-//            }
-//        }
-//
-//        holder.itemView.setOnClickListener {
-//            clickListener.onItemClicked(holder.itemView, position, recipe)
-//        }
     }
 
     override fun getItemCount(): Int = items.size
@@ -54,7 +37,7 @@ class GenericAdapter(private val clickListener: OnItemClickListener) : RecyclerV
         notifyDataSetChanged()
     }
 
-    interface OnItemClickListener{
+    interface OnItemClickListener {
         fun onItemClicked(view: View, position: Int, item: GenericListItem<*>)
     }
 }

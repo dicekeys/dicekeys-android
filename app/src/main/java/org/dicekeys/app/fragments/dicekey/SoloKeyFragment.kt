@@ -3,6 +3,7 @@ package org.dicekeys.app.fragments.dicekey
 import android.content.Context
 import android.hardware.usb.UsbManager
 import android.os.Bundle
+import android.text.Html
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
@@ -67,5 +68,7 @@ class SoloKeyFragment : AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout
                     .setPositiveButton(android.R.string.ok, null)
                     .show()
         }
+
+        binding.textView5.text = Html.fromHtml("<font size=\"12\"><b>1</b></font> <b>abort</b>")
     }
 }

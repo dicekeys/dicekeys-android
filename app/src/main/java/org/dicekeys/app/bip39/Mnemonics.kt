@@ -10,7 +10,7 @@ import java.util.*
  * Encompasses all mnemonic functionality, which helps keep everything concise and in one place.
  */
 object Mnemonics {
-    internal var cachedList = WordList()
+    private var cachedList = WordList()
 
     fun getCachedWords(languageCode: String): List<String> {
         if (cachedList.languageCode != languageCode) {
