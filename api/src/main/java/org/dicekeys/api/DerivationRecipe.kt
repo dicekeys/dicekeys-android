@@ -58,21 +58,21 @@ data class DerivationRecipe constructor(
         template.name +
                 when (template.type) {
                     DerivationOptions.Type.Password -> " Password"
+                    DerivationOptions.Type.Secret -> " Secret"
                     DerivationOptions.Type.SymmetricKey -> " Key"
                     DerivationOptions.Type.UnsealingKey -> " Key Pair"
-                    else -> ""
+                    DerivationOptions.Type.SigningKey -> " Signing Key"
                 } + (
                     if (sequenceNumber == 1) "" else " ($sequenceNumber)"
                 ),
                 augmentRecipeJson(template, sequenceNumber, lengthInChars)
         )
-
     companion object{
 
         /*
          * Create a custom Online Recipe
          */
-        fun createCustomOnlineRecipe(domains: List<String>, sequenceNumber: Int, lengthInChars: Int = 0): DerivationRecipe? {
+        fun createCustomOnlineRecipe(type: DerivationOptions.Type, domains: List<String>, sequenceNumber: Int, lengthInChars: Int = 0): DerivationRecipe? {
             if (domains.isEmpty()) {
                 return null
             }
@@ -84,7 +84,23 @@ data class DerivationRecipe constructor(
             recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
             recipeJson = addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
 
-            return DerivationRecipe(DerivationOptions.Type.Password, name, recipeJson)
+            return DerivationRecipe(type, name, recipeJson)
+        }
+
+        /*
+         * Create a custom Recipe with purpose
+         */
+        fun createCustomPurposeRecipe(type: DerivationOptions.Type, purpose: String, sequenceNumber: Int): DerivationRecipe? {
+            if (purpose.isEmpty()) {
+                return null
+            }
+
+            var recipeJson = """{"purpose":"$purpose"}"""
+
+            recipeJson = addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
+
+            val name = purpose.replaceFirstChar { it.uppercase() } // capitalize
+            return DerivationRecipe(type, name, recipeJson)
         }
     }
 

@@ -47,7 +47,7 @@ class RecipeBuilder(val template: DerivationRecipe?) {
 
     fun getDerivationRecipe(): DerivationRecipe? {
         return if(template == null) {
-            DerivationRecipe.createCustomOnlineRecipe(domainList, sequence, lengthInChars)
+            DerivationRecipe.createCustomOnlineRecipe(DerivationOptions.Type.Password, domainList, sequence, lengthInChars)
         } else {
             DerivationRecipe(template, sequence)
         }
