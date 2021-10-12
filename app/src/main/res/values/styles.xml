@@ -12,4 +12,12 @@
         <item name="colorControlNormal">@color/white</item>
     </style>
 
+    <style name="DiceKeys.BottomSheetDialogTheme" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/DiceKeys.BottomSheetStyle</item>
+    </style>
+
+    <style name="DiceKeys.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_bottom_sheet</item>
+    </style>
+
 </resources>

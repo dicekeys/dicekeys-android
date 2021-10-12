@@ -23,7 +23,7 @@ class RecipeBuilderUnitTests {
 
     @Before
     fun setup(){
-        builder = RecipeBuilder(null)
+        builder = RecipeBuilder(DerivationOptions.Type.Password, null)
     }
 
     @Test

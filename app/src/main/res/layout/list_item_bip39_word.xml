@@ -17,7 +17,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp">
+        android:paddingTop="4dp"
+        tools:background="@color/diceViewBgColor">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -39,6 +40,7 @@
                     android:text="@{index}"
                     android:textAppearance="?attr/textAppearanceBody1"
                     android:textSize="10dp"
+                    android:textColor="@android:color/white"
                     tools:text="1" />
 
                 <TextView
@@ -48,6 +50,7 @@
                     android:includeFontPadding="false"
                     android:text="@{word}"
                     android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="@android:color/white"
                     tools:text="Abort" />
 
             </LinearLayout>
@@ -57,7 +60,6 @@
                 android:layout_height="1dp"
                 android:alpha="0.25"
                 android:background="@color/white" />
-
 
         </LinearLayout>
 

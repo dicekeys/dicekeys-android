@@ -94,7 +94,7 @@
             app:nullable="true" />
         <argument
             android:name="deriveType"
-            app:argType="org.dicekeys.app.data.DeriveType" />
+            app:argType="org.dicekeys.crypto.seeded.DerivationOptions$Type" />
 
     </fragment>
 

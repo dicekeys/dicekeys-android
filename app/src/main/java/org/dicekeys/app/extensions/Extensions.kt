@@ -4,6 +4,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.view.View
+import org.dicekeys.crypto.seeded.DerivationOptions
 
 fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
 
@@ -33,3 +34,11 @@ fun View.pulse() {
         it.start()
     }
 }
+
+fun DerivationOptions.Type.description() = when(this){
+        DerivationOptions.Type.Password ->"password"
+        DerivationOptions.Type.Secret -> "seed or other secret"
+        DerivationOptions.Type.SymmetricKey -> "symmetric cryptographic key"
+        DerivationOptions.Type.UnsealingKey -> "public/private key pair"
+        DerivationOptions.Type.SigningKey -> "signing/authentication key"
+    }

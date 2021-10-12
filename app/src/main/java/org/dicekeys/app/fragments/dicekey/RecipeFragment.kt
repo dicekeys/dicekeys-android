@@ -34,15 +34,11 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
     @Inject
     lateinit var viewModelFactory: RecipeViewModel.AssistedFactory
 
-    private val recipeViewModel: RecipeViewModel by viewModels {
+    val recipeViewModel: RecipeViewModel by viewModels {
         RecipeViewModel.provideFactory(assistedFactory = viewModelFactory, diceKey = viewModel.diceKey.value!!, recipe = args.recipe, template = args.template, args.deriveType)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isGuarded) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.diceKeyVM = viewModel
         binding.vm = recipeViewModel
 
@@ -59,15 +55,17 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
             }
         }
 
-        recipeViewModel.derivedValue.observe(viewLifecycleOwner){
+        recipeViewModel.derivedValue.observe(viewLifecycleOwner){ derivedValue ->
             typeAdapter.clear()
-            val list = it.views.map { it.description }
-            typeAdapter.addAll(list)
 
-            val currentSelection = binding.type.text.toString()
-            if(currentSelection.isBlank() || list.find { it == currentSelection } == null){
-                binding.type.setText(it.views[0].description, false)
-                recipeViewModel.setView(it.views[0])
+            derivedValue?.views?.map { it.description }?.also { list ->
+                typeAdapter.addAll(list)
+
+                val currentSelection = binding.type.text.toString()
+                if(currentSelection.isBlank() || list.find { it == currentSelection } == null){
+                    binding.type.setText(derivedValue.views[0].description, false)
+                    recipeViewModel.setView(derivedValue.views[0])
+                }
             }
         }
 
@@ -79,24 +77,6 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
                 e.printStackTrace()
             }
             recipeViewModel.updateSequence(seq)
-        }
-
-        binding.domains.doAfterTextChanged { edittext ->
-            try {
-                recipeViewModel.updateDomains(edittext.toString())
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        binding.maxChars.doAfterTextChanged { edittext ->
-            var length = 0
-            try {
-                length = edittext.toString().toInt()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            recipeViewModel.updateLengthInChars(length)
         }
 
         binding.derivedValue.setOnClickListener {
@@ -122,9 +102,21 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
             it.adapter = bip39Adapter
         }
 
+        binding.buttonEditRecipe.setOnClickListener {
+            EditRecipeBottomSheet().also {
+                it.show(childFragmentManager, it.toString())
+            }
+        }
+
         recipeViewModel.derivedValueAsString.observe(viewLifecycleOwner) {
             if(recipeViewModel.derivedValueView.value is DerivedValueView.BIP39){
                 updateBip39Words(it)
+            }
+        }
+
+        if(recipeViewModel.derivationRecipe.value == null){
+            EditRecipeBottomSheet().also {
+                it.show(childFragmentManager, it.toString())
             }
         }
     }

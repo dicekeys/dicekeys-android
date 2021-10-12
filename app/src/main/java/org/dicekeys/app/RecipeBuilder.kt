@@ -7,34 +7,30 @@ import java.net.URL
 /*
  * A builder to create custom or template based Recipes
  */
-class RecipeBuilder(val template: DerivationRecipe?) {
-    private var domainList: List<String> = listOf()
+class RecipeBuilder constructor(val type : DerivationOptions.Type, val template: DerivationRecipe?) {
+     var domains: String? =null
+        private set
+    var purpose: String? = null
+        private set
     private var sequence = 1
     private var lengthInChars = 0
+    private var lengthInBytes = 0
 
     fun reset(){
-        domainList = listOf()
+        domains = null
+        purpose = null
         sequence = 1
         lengthInChars = 0
+        lengthInBytes = 0
     }
 
-    fun updateDomains(domains: String){
+    fun updateDomains(d: String){
+        domains = d
+        purpose = null
+    }
 
-        // Check if is valid URL
-        try{
-            val url = URL(domains)
-            domainList = listOf(url.host)
-            return
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
-
-        // or domain list
-        domainList = domains
-                .split(",")
-                .map { it -> it.trim { it == '.' || it == '/' } } // remove leading and trailing chars
-                .filter { it.isNotBlank() }
-                .sorted()
+    fun updatePurpose(p : String?){
+        purpose = p
     }
 
     fun updateSequence(s: Int){
@@ -42,14 +38,57 @@ class RecipeBuilder(val template: DerivationRecipe?) {
     }
 
     fun updateLengthInChars(length: Int) {
-        lengthInChars = if(length in 6..999) length else 0
+        lengthInChars = if(length in 16..999) length else 0
+    }
+
+    fun updateLengthInBytes(length: Int) {
+        lengthInBytes = if(length in 16..999) length else 0
+    }
+
+    private fun getDomainList(): List<String> {
+        // Check if is valid URL
+        try{
+            val url = URL(domains)
+            return listOf(url.host)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
+        // or domain list
+        return domains
+            ?.split(",")
+            ?.map { it -> it.trim { it == '.' || it == '/' } } // remove leading and trailing chars
+            ?.filter { it.isNotBlank() }
+            ?.sorted() ?: listOf()
     }
 
     fun getDerivationRecipe(): DerivationRecipe? {
         return if(template == null) {
-            DerivationRecipe.createCustomOnlineRecipe(DerivationOptions.Type.Password, domainList, sequence, lengthInChars)
+
+            if(purpose.isNullOrBlank()) {
+                DerivationRecipe.createCustomOnlineRecipe(
+                    type = type,
+                    domains = getDomainList(),
+                    sequenceNumber = sequence,
+                    lengthInChars = lengthInChars,
+                    lengthInBytes = lengthInBytes
+                )
+            }else{
+                DerivationRecipe.createCustomPurposeRecipe(
+                    type = type,
+                    purpose =purpose ?: "",
+                    sequenceNumber = sequence,
+                    lengthInChars = lengthInChars,
+                    lengthInBytes = lengthInBytes
+                )
+            }
         } else {
-            DerivationRecipe(template, sequence)
+            DerivationRecipe(
+                template = template,
+                sequenceNumber = sequence,
+                lengthInChars = lengthInChars,
+                lengthInBytes = lengthInBytes
+            )
         }
     }
 }

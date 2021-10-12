@@ -8,12 +8,13 @@ import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.api.derivationRecipeTemplates
 import org.dicekeys.app.R
 import org.dicekeys.app.adapters.GenericAdapter
-import org.dicekeys.app.data.DeriveType
 import org.dicekeys.app.databinding.SecretsFragmentBinding
+import org.dicekeys.app.extensions.description
 import org.dicekeys.app.items.GenericListItem
 import org.dicekeys.app.items.HeaderListItem
 import org.dicekeys.app.items.TitleListItem
 import org.dicekeys.app.repositories.RecipeRepository
+import org.dicekeys.crypto.seeded.DerivationOptions
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,11 +25,7 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
     lateinit var recipesRepository: RecipeRepository
 
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if (isGuarded) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         val adapter = GenericAdapter(this)
 
         recipesRepository.getRecipesLiveData().observe(viewLifecycleOwner) {
@@ -59,11 +56,11 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
         }
 
         list += HeaderListItem(getString(R.string.custom_recipe))
-        list += TitleListItem("password", data1 = DeriveType.Password)
-        list += TitleListItem("seed or other secret", data1 = DeriveType.Secret)
-        list += TitleListItem("signing/authentication key", data1 = DeriveType.SigningKey)
-        list += TitleListItem("symmetric cryptographic key", data1 = DeriveType.SymmetricKey)
-        list += TitleListItem("public/private key pair", data1 = DeriveType.UnsealingKey)
+        list += TitleListItem(DerivationOptions.Type.Password.description(), data1 = DerivationOptions.Type.Password)
+        list += TitleListItem(DerivationOptions.Type.Secret.description(), data1 = DerivationOptions.Type.Secret)
+        list += TitleListItem(DerivationOptions.Type.SigningKey.description(), data1 = DerivationOptions.Type.SigningKey)
+        list += TitleListItem(DerivationOptions.Type.SymmetricKey.description(), data1 = DerivationOptions.Type.SymmetricKey)
+        list += TitleListItem(DerivationOptions.Type.UnsealingKey.description(), data1 = DerivationOptions.Type.UnsealingKey)
 
         adapter.set(list)
     }
@@ -72,14 +69,12 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
         if(item is TitleListItem){
             if(item.data1 is DerivationRecipe) {
                 if ((item.data2 as? Boolean) == true) {
-                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(template = item.data1, deriveType = DeriveType.Password))
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(template = item.data1, deriveType = item.data1.type))
                 } else {
-                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = item.data1, deriveType = DeriveType.Password))
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = item.data1, deriveType = item.data1.type))
                 }
-            }else if(item.data1 is DeriveType){
+            }else if(item.data1 is DerivationOptions.Type){
                 navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(deriveType = item.data1))
-            }else{
-                navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(deriveType = DeriveType.Password))
             }
         }
     }

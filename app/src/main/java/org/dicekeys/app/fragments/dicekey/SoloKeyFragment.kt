@@ -27,11 +27,7 @@ class SoloKeyFragment : AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout
         SoloKeyViewModel.provideFactory(viewModelFactory, requireActivity().application as Application, requireContext().getSystemService(Context.USB_SERVICE) as UsbManager, viewModel.diceKey.value!!)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isGuarded) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.diceKeyVM = viewModel
         binding.vm = soloKeyViewModel
 
@@ -68,7 +64,5 @@ class SoloKeyFragment : AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout
                     .setPositiveButton(android.R.string.ok, null)
                     .show()
         }
-
-        binding.textView5.text = Html.fromHtml("<font size=\"12\"><b>1</b></font> <b>abort</b>")
     }
 }

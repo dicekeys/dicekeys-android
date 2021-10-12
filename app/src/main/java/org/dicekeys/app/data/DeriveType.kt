@@ -4,9 +4,6 @@ import org.dicekeys.app.bip39.Mnemonics
 import org.dicekeys.app.extensions.toHexString
 import org.dicekeys.crypto.seeded.JsonSerializable
 
-enum class DeriveType {
-    Password, Secret, SigningKey, SymmetricKey, UnsealingKey
-}
 
 sealed class DerivedValueView(val description: String) {
     class JSON : DerivedValueView("JSON")

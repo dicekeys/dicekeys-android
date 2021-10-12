@@ -1,20 +1,13 @@
 package org.dicekeys.app.viewmodels
 
-import android.text.Html
-import android.text.Spanned
-import androidx.core.text.toSpanned
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import android.annotation.SuppressLint
+import androidx.lifecycle.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.app.RecipeBuilder
-import org.dicekeys.app.data.DeriveType
 import org.dicekeys.app.data.DerivedValue
 import org.dicekeys.app.data.DerivedValueView
-import org.dicekeys.app.data.DerivedValueView.BIP39
-import org.dicekeys.app.extensions.toHexString
 import org.dicekeys.app.repositories.RecipeRepository
 import org.dicekeys.crypto.seeded.*
 import org.dicekeys.dicekey.DiceKey
@@ -26,49 +19,86 @@ class RecipeViewModel @AssistedInject constructor(
         @Assisted val diceKey: DiceKey<Face>,
         @Assisted("recipe") val recipe: DerivationRecipe?,
         @Assisted("template") val template: DerivationRecipe?,
-        @Assisted val deriveType: DeriveType,
-) : ViewModel() {
+        @Assisted val deriveType: DerivationOptions.Type,
+) : ViewModel(), LifecycleOwner {
     private val showRecipe = recipe != null
     val isCustomRecipe = MutableLiveData(recipe == null && template == null)
 
     var derivationRecipe = MutableLiveData(recipe ?: template)
     var sequenceNumber = MutableLiveData(recipe?.sequence?.toString() ?: "1")
     var recipeIsSaved = MutableLiveData(if(recipe != null) recipeRepository.exists(recipe) else false)
-    var recipeBuilder = RecipeBuilder(template)
+    var recipeBuilder = RecipeBuilder(deriveType, template)
 
     var derivedValueView: MutableLiveData<DerivedValueView> = MutableLiveData()
     var derivedValue: MutableLiveData<DerivedValue> = MutableLiveData()
     var derivedValueAsString = MutableLiveData<String>(null)
 
+    val domain: MutableLiveData<String> = MutableLiveData()
+    val purpose: MutableLiveData<String> = MutableLiveData()
+    val rawJson: MutableLiveData<String> = MutableLiveData()
+    val lengthInChars: MutableLiveData<String> = MutableLiveData()
+    val lengthInBytes: MutableLiveData<String> = MutableLiveData()
+
     init {
+
+        domain.observe(viewLifecycleOwner){
+            recipeBuilder.updateDomains(it)
+            updateRecipe()
+        }
+
+        purpose.observe(viewLifecycleOwner){
+            recipeBuilder.updatePurpose(it)
+            updateRecipe()
+        }
+
+        rawJson.observe(viewLifecycleOwner){
+            // recipeBuilder.updatePurpose(it)
+        }
+
+        lengthInChars.observe(viewLifecycleOwner){
+            var lengthInChars = 0
+            try {
+                lengthInChars = it.toInt()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            recipeBuilder.updateLengthInChars(lengthInChars)
+            updateRecipe()
+        }
+
+        lengthInBytes.observe(viewLifecycleOwner){
+            var lengthInBytes = 0
+            try {
+                lengthInBytes = it.toInt()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            recipeBuilder.updateLengthInBytes(lengthInBytes)
+            updateRecipe()
+        }
+
         deriveValue()
     }
 
     private fun deriveValue(){
-        derivationRecipe.value?.recipeJson?.let{ recipeJson ->
+        derivedValue.value = derivationRecipe.value?.recipeJson?.let{ recipeJson ->
             diceKey.toCanonicalRotation().toHumanReadableForm().let { seed ->
-
-                derivedValue.value = when (deriveType) {
-                    DeriveType.Password -> DerivedValue.Password(Password.deriveFromSeed(seed, recipeJson))
-                    DeriveType.Secret -> DerivedValue.Secret(Secret.deriveFromSeed(seed, recipeJson))
-                    DeriveType.SigningKey -> DerivedValue.SigningKey(SigningKey.deriveFromSeed(seed, recipeJson))
-                    DeriveType.SymmetricKey -> DerivedValue.SymmetricKey(SymmetricKey.deriveFromSeed(seed, recipeJson))
-                    DeriveType.UnsealingKey -> DerivedValue.UnsealingKey(UnsealingKey.deriveFromSeed(seed, recipeJson))
+                when (deriveType) {
+                    DerivationOptions.Type.Password -> DerivedValue.Password(Password.deriveFromSeed(seed, recipeJson))
+                    DerivationOptions.Type.Secret -> DerivedValue.Secret(Secret.deriveFromSeed(seed, recipeJson))
+                    DerivationOptions.Type.SigningKey -> DerivedValue.SigningKey(SigningKey.deriveFromSeed(seed, recipeJson))
+                    DerivationOptions.Type.SymmetricKey -> DerivedValue.SymmetricKey(SymmetricKey.deriveFromSeed(seed, recipeJson))
+                    DerivationOptions.Type.UnsealingKey -> DerivedValue.UnsealingKey(UnsealingKey.deriveFromSeed(seed, recipeJson))
                 }
-
-                updateView()
             }
-
-            updateSavedState()
         }
+
+        updateSavedState()
+        updateView()
     }
 
     private fun updateView(){
-        derivedValue.value?.let {
-            it.valueForView(derivedValueView.value ?: DerivedValueView.JSON()).also {
-                derivedValueAsString.value = it
-            }
-        }
+        derivedValueAsString.value = derivedValue.value?.valueForView(derivedValueView.value ?: DerivedValueView.JSON())
     }
 
     fun setView(view: DerivedValueView){
@@ -104,16 +134,6 @@ class RecipeViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateDomains(domains: String){
-        recipeBuilder.updateDomains(domains)
-        updateRecipe()
-    }
-
-    fun updateLengthInChars(length: Int){
-        recipeBuilder.updateLengthInChars(length)
-        updateRecipe()
-    }
-
     private fun updateRecipe(){
         if(!showRecipe){
             if(template != null){
@@ -139,21 +159,41 @@ class RecipeViewModel @AssistedInject constructor(
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
+    private var lifecycleRegistry: LifecycleRegistry? = null
+
+    override fun onCleared() {
+        super.onCleared()
+        lifecycleRegistry?.currentState = Lifecycle.State.DESTROYED
+    }
+
+    override fun getLifecycle(): Lifecycle {
+        if(lifecycleRegistry == null) {
+            lifecycleRegistry = LifecycleRegistry(this)
+            lifecycleRegistry?.currentState = Lifecycle.State.STARTED
+        }
+
+        return lifecycleRegistry!!
+    }
+
+    val viewLifecycleOwner: LifecycleOwner
+        get() = this
+
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(diceKey: DiceKey<Face>,
                    @Assisted("recipe") recipe: DerivationRecipe?,
                    @Assisted("template") template: DerivationRecipe?,
-                   deriveType: DeriveType): RecipeViewModel
+                   deriveType: DerivationOptions.Type): RecipeViewModel
     }
 
-    companion object {
+    companion object{
         fun provideFactory(
                 assistedFactory: AssistedFactory,
                 diceKey: DiceKey<Face>,
                 recipe: DerivationRecipe?,
                 template: DerivationRecipe?,
-                deriveType: DeriveType
+                deriveType: DerivationOptions.Type
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
