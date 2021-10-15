@@ -154,4 +154,6 @@
     <string name="purpose">Purpose</string>
     <string name="web_address">Web Address</string>
 
+    <string name="derive_type_for">%s for %s</string>
+
 </resources>

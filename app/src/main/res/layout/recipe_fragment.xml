@@ -6,6 +6,7 @@
     <data>
 
         <import type="org.dicekeys.app.data.DerivedValueView" />
+        <import type="org.dicekeys.app.extensions.ExtensionsKt" />
 
         <variable
             name="diceKeyVM"
@@ -51,10 +52,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="@{String.format(@string/recipe_for, vm.derivationRecipe != null ? vm.derivationRecipe.name : '-')}"
+                        android:text="@{String.format(@string/derive_type_for, ExtensionsKt.description(vm.deriveType, true) ,vm.derivationRecipe != null ? vm.derivationRecipe.name : '-')}"
                         android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:textSize="17sp"
+                        android:ellipsize="end"
                         android:textColor="@color/white"
-                        tools:text="Recipe for Password" />
+                        tools:text="Password for purpose" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"

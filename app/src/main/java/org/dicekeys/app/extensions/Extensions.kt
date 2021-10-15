@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.view.View
 import org.dicekeys.crypto.seeded.DerivationOptions
+import java.util.*
 
 fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
 
@@ -35,10 +36,10 @@ fun View.pulse() {
     }
 }
 
-fun DerivationOptions.Type.description() = when(this){
+fun DerivationOptions.Type.description(capitalize: Boolean = false) = when(this){
         DerivationOptions.Type.Password ->"password"
         DerivationOptions.Type.Secret -> "seed or other secret"
         DerivationOptions.Type.SymmetricKey -> "symmetric cryptographic key"
         DerivationOptions.Type.UnsealingKey -> "public/private key pair"
         DerivationOptions.Type.SigningKey -> "signing/authentication key"
-    }
+    }.let { if(capitalize) it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } else it }
