@@ -156,4 +156,7 @@
 
     <string name="derive_type_for">%s for %s</string>
 
+    <string name="biometrics_authentication">Biometrics Authentication</string>
+    <string name="authenticate_using_biometrics">Authenticate using biometrics</string>
+
 </resources>

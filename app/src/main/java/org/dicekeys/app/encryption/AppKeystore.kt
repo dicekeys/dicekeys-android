@@ -6,6 +6,7 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
+import android.security.keystore.UserNotAuthenticatedException
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
 import java.security.KeyStore
@@ -38,6 +39,23 @@ class AppKeystore {
 
     private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
         load(null)
+    }
+
+    fun isAuthenticationRequired(keystoreType: KeystoreType): Boolean {
+        try{
+            when(keystoreType){
+                KeystoreType.KEYSTORE -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, KeystoreType.KEYSTORE)
+                KeystoreType.AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, KeystoreType.AUTHENTICATION)
+                KeystoreType.BIOMETRIC -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, KeystoreType.BIOMETRIC)
+            }
+        }catch (e: UserNotAuthenticatedException){
+            e.printStackTrace()
+            return true
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
+        return false
     }
 
     private fun keyStoreKeyExists(keystoreAlias: String): Boolean {
@@ -113,7 +131,7 @@ class AppKeystore {
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
+                    builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL)
                 } else {
                     builder.setUserAuthenticationValidityDurationSeconds(-1)
                 }
