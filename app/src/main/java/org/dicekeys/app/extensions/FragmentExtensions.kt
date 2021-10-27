@@ -84,7 +84,7 @@ fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
 }
 
 fun Fragment.toast(throwable: Throwable, duration: Int = Toast.LENGTH_SHORT) {
-    Toast.makeText(requireContext(), throwable.cause?.localizedMessage, duration).show()
+    Toast.makeText(requireContext(), throwable.cause?.message ?: throwable.message ?: throwable.toString(), duration).show()
 }
 
 fun Fragment.snackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
