@@ -1,14 +1,13 @@
 package org.dicekeys.app
 
 import org.dicekeys.api.DerivationRecipe
+import org.dicekeys.app.utils.getDepthOfPublicSuffix
 import org.dicekeys.crypto.seeded.DerivationOptions
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.junit.internal.runners.JUnit4ClassRunner
 import org.junit.runner.RunWith
 import org.junit.runners.BlockJUnit4ClassRunner
-import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(BlockJUnit4ClassRunner::class)
 class RecipeBuilderUnitTests {
@@ -35,7 +34,27 @@ class RecipeBuilderUnitTests {
         Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
 
         builder.reset()
+        builder.updateDomains("*.google.com")
+        builder.updateSequence(12)
+        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+
+        builder.reset()
         builder.updateDomains(".google.com/")
+        builder.updateSequence(12)
+        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+
+        builder.reset()
+        builder.updateDomains("*.google.com/")
+        builder.updateSequence(12)
+        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+
+        builder.reset()
+        builder.updateDomains( "  *.google.com/  ")
+        builder.updateSequence(12)
+        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+
+        builder.reset()
+        builder.updateDomains( "  *.google.com/  ,   *.google.com/  ")
         builder.updateSequence(12)
         Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
 
@@ -58,18 +77,18 @@ class RecipeBuilderUnitTests {
     @Test
     fun test_predefinedSolutions_Url(){
 
-//        builder.updateDomains("https://google.com/?q=DiceKeys")
-//        builder.updateSequence(12)
-//        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
-//
-//        builder.reset()
-//        builder.updateDomains("http://google.com/search?q=DiceKeys")
-//        builder.updateSequence(12)
-//        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        builder.updateDomains("https://google.com/?q=DiceKeys")
+        builder.updateSequence(12)
+        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+
+        builder.reset()
+        builder.updateDomains("http://google.com/search?q=DiceKeys")
+        builder.updateSequence(12)
+        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
 
         builder.reset()
         builder.updateDomains("http://subdomain.google.com/search?q=DiceKeys")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE_SUBDOMAIN, builder.getDerivationRecipe())
     }
 }

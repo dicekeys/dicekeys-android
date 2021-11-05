@@ -1,6 +1,7 @@
 package org.dicekeys.app
 
 import org.dicekeys.api.DerivationRecipe
+import org.dicekeys.app.utils.removeWildcardPrefixIfPresent
 import org.dicekeys.crypto.seeded.DerivationOptions
 import java.net.URL
 
@@ -47,24 +48,18 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
 
     private fun getDomainList(): List<String> {
         // Check if is valid URL
-        // On URLs remove the subdomain eg. keep last 2 elements of host, subdomain1.subdomain2.google.com -> google.com
         try {
             val url = URL(domains)
-            return listOf(
-                url.host
-                    .split(".").let {
-                        it.filterIndexed { i, _ -> i >= (it.size - 2) }
-                            .joinToString(".")
-                    }
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+            return listOf(url.host)
+        } catch (e: Exception) { }
 
         // or domain list
         return domains
             ?.split(",")
+            ?.map { it -> it.trim() }
+            ?.map { it -> removeWildcardPrefixIfPresent(it) }
             ?.map { it -> it.trim { it == '.' || it == '/' } } // remove leading and trailing chars
+            ?.distinct() // prevent duplicate unique values
             ?.filter { it.isNotBlank() }
             ?.sorted() ?: listOf()
     }

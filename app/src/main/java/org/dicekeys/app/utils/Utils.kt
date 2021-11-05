@@ -35,7 +35,7 @@ fun getClipboard(context: Context): String? =
             it.primaryClip?.getItemAt(0)?.text?.toString()
         }
 
-fun copyToClipboard(label: String, content: String, context: Context, viewToPulse : View? = null) {
+fun copyToClipboard(label: String, content: String?, context: Context, viewToPulse : View? = null) {
     (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
         it.setPrimaryClip(ClipData.newPlainText(label, content))
     }

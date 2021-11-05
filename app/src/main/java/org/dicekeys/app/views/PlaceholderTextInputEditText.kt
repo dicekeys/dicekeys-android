@@ -6,7 +6,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.dicekeys.app.R
 
-class PlaceholderTextInputEditText @JvmOverloads constructor(
+open class PlaceholderTextInputEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = com.google.android.material.R.attr.editTextStyle
