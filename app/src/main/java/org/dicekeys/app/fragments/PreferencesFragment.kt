@@ -12,7 +12,8 @@ class PreferencesFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        findPreference<Preference>("version")?.summary = getString(R.string.version_s, BuildConfig.VERSION_NAME)
+        findPreference<Preference>("version")?.summary = BuildConfig.VERSION_NAME
+        findPreference<Preference>("build")?.summary = BuildConfig.VERSION_CODE.toString(10)
 
     }
 }

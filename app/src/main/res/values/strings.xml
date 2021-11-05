@@ -80,7 +80,8 @@
     <string name="privacy">Privacy</string>
     <string name="about">About</string>
     <string name="version">Version</string>
-    <string name="version_s">Version %s</string>
+    <string name="build">Build</string>
+    <string name="release_date">Release Date</string>
     <string name="security">Security</string>
     <string name="pref_secure_display">Enable secure display</string>
     <string name="pref_privacy_summary">Disable screenshots &amp; screen preview on recent apps</string>
