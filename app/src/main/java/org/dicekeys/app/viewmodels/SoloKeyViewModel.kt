@@ -223,7 +223,7 @@ class SoloKeyViewModel @AssistedInject constructor(
                 diceKey: DiceKey<Face>
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(application, usbManager, diceKey) as T
             }
         }

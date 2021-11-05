@@ -59,6 +59,54 @@ Java_org_dicekeys_crypto_seeded_SigningKey_recipeGetterJNI(
   }
 }
 
+JNIEXPORT jstring JNICALL
+Java_org_dicekeys_crypto_seeded_SigningKey_openPgpPemFormatSecretKeyJNI(
+        JNIEnv *env,
+        jobject thiz,
+        jstring userIdPacketContent,
+        jlong timestamp
+) {
+  try {
+    return stringToJString(env,
+                           getNativeObjectPtr<SigningKey>(env, thiz)->toOpenPgpPemFormatSecretKey(jstringToString(env, userIdPacketContent), timestamp)
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return NULL;
+  }
+}
+
+JNIEXPORT jstring JNICALL
+Java_org_dicekeys_crypto_seeded_SigningKey_openSshPemPrivateKeyJNI(
+        JNIEnv *env,
+        jobject thiz,
+        jstring comment
+) {
+  try {
+    return stringToJString(env,
+                           getNativeObjectPtr<SigningKey>(env, thiz)->toOpenSshPemPrivateKey(jstringToString(env, comment))
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return NULL;
+  }
+}
+
+JNIEXPORT jstring JNICALL
+Java_org_dicekeys_crypto_seeded_SigningKey_openSshPublicKeyJNI(
+        JNIEnv *env,
+        jobject thiz
+) {
+  try {
+    return stringToJString(env,
+                           getNativeObjectPtr<SigningKey>(env, thiz)->toOpenSshPublicKey()
+    );
+  } catch (...) {
+    throwCppExceptionAsJavaException(env, std::current_exception());
+    return NULL;
+  }
+}
+
 JNIEXPORT jbyteArray JNICALL
 Java_org_dicekeys_crypto_seeded_SigningKey_signingKeyBytesGetterJNI(
   JNIEnv *env,

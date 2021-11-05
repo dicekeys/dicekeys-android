@@ -26,15 +26,23 @@ fun addLengthInCharsToDerivationOptionsJson(derivationOptionsWithoutLengthInChar
     return addFieldToEndOfJsonObjectString(derivationOptionsWithoutLengthInChars, "lengthInChars", lengthInChars.toString())
 }
 
+fun addLengthInBytesToDerivationOptionsJson(derivationOptionsWithoutLengthInBytes: String, lengthInBytes: Int = 0 ): String {
+    if (lengthInBytes <= 0) return derivationOptionsWithoutLengthInBytes
+    return addFieldToEndOfJsonObjectString(derivationOptionsWithoutLengthInBytes, "lengthInBytes", lengthInBytes.toString())
+}
+
 fun addSequenceNumberToDerivationOptionsJson(derivationOptionsWithoutSequenceNumber: String, sequenceNumber: Int): String {
     if (sequenceNumber == 1) return derivationOptionsWithoutSequenceNumber
     return addFieldToEndOfJsonObjectString(derivationOptionsWithoutSequenceNumber, "#", sequenceNumber.toString())
 }
 
-private fun augmentRecipeJson(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int): String {
+private fun augmentRecipeJson(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int, lengthInBytes: Int): String {
     var recipeJson = template.recipeJson
     if (template.type == DerivationOptions.Type.Password && lengthInChars > 0) {
         recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
+    }
+    if (template.type == DerivationOptions.Type.Secret && lengthInBytes > 0) {
+        recipeJson = addLengthInBytesToDerivationOptionsJson(recipeJson, lengthInBytes)
     }
     recipeJson =
             addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
@@ -52,27 +60,27 @@ data class DerivationRecipe constructor(
         val recipeJson: String
 ) : Parcelable {
 
-    constructor(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0):
+    constructor(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0, lengthInBytes: Int = 0):
         this(
             template.type,
         template.name +
                 when (template.type) {
                     DerivationOptions.Type.Password -> " Password"
+                    DerivationOptions.Type.Secret -> " Secret"
                     DerivationOptions.Type.SymmetricKey -> " Key"
                     DerivationOptions.Type.UnsealingKey -> " Key Pair"
-                    else -> ""
+                    DerivationOptions.Type.SigningKey -> " Signing Key"
                 } + (
                     if (sequenceNumber == 1) "" else " ($sequenceNumber)"
                 ),
-                augmentRecipeJson(template, sequenceNumber, lengthInChars)
+                augmentRecipeJson(template, sequenceNumber, lengthInChars, lengthInBytes)
         )
-
     companion object{
 
         /*
          * Create a custom Online Recipe
          */
-        fun createCustomOnlineRecipe(domains: List<String>, sequenceNumber: Int, lengthInChars: Int = 0): DerivationRecipe? {
+        fun createCustomOnlineRecipe(type: DerivationOptions.Type, domains: List<String>, sequenceNumber: Int, lengthInChars: Int = 0, lengthInBytes: Int = 0): DerivationRecipe? {
             if (domains.isEmpty()) {
                 return null
             }
@@ -81,10 +89,37 @@ data class DerivationRecipe constructor(
             val name = domains.joinToString(", ")
             var recipeJson = """{"allow":[${allowDomainList.joinToString(",")}]}"""
 
-            recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
+            if (type == DerivationOptions.Type.Password) {
+                recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
+            }else if (type == DerivationOptions.Type.Secret) {
+                recipeJson = addLengthInBytesToDerivationOptionsJson(recipeJson, lengthInBytes)
+            }
+
             recipeJson = addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
 
-            return DerivationRecipe(DerivationOptions.Type.Password, name, recipeJson)
+            return DerivationRecipe(type, name, recipeJson)
+        }
+
+        /*
+         * Create a custom Recipe with purpose
+         */
+        fun createCustomPurposeRecipe(type: DerivationOptions.Type, purpose: String, sequenceNumber: Int, lengthInChars: Int = 0, lengthInBytes: Int = 0): DerivationRecipe? {
+            if (purpose.isEmpty()) {
+                return null
+            }
+
+            var recipeJson = """{"purpose":"$purpose"}"""
+
+            if (type == DerivationOptions.Type.Password) {
+                recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
+            }else if (type == DerivationOptions.Type.Secret) {
+                recipeJson = addLengthInBytesToDerivationOptionsJson(recipeJson, lengthInBytes)
+            }
+
+            recipeJson = addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
+
+            val name = purpose.replaceFirstChar { it.uppercase() } // capitalize
+            return DerivationRecipe(type, name, recipeJson)
         }
     }
 

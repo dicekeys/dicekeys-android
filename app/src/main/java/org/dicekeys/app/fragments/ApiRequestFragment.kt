@@ -62,12 +62,11 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
             urlCommand = PermissionCheckedUrlCommands(
                     intent!!.data!!, ::loadDiceKeyAsync, ::requestUsersConsentAsync, requireActivity()
             )
-
-
-
         }catch (e: Exception){
+            e.printStackTrace()
             toast(e)
             findNavController().popBackStack()
+            return
         }
 
         getNavigationResult<String>(ScanFragment.READ_DICEKEY)?.observe(viewLifecycleOwner) { humanReadableOrNull ->

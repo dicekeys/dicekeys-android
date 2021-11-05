@@ -26,6 +26,29 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
         return BiometricManager.from(context).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK) == BiometricManager.BIOMETRIC_SUCCESS
     }
 
+    // On Android 12 the user must be authenticated in order to use any crypto-based key
+    private fun authenticateUser(fragment: Fragment, callback: AuthenticationCallback){
+        val biometricPrompt = BiometricPrompt(fragment, ContextCompat.getMainExecutor(fragment.requireContext()), object : AuthenticationCallback(fragment) {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                // Seems there is a bug and if we execute immediately before the callback is finished
+                // the new prompt won't execute the callback
+                ContextCompat.getMainExecutor(fragment.requireContext()).execute {
+                    callback.onAuthenticationSucceeded(result)
+                }
+            }})
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder().let {
+            it.setTitle(fragment.getString(R.string.biometrics_authentication))
+                .setSubtitle(fragment.getString(R.string.authenticate_using_biometrics))
+                .setNegativeButtonText(fragment.getString(android.R.string.cancel))
+                .setConfirmationRequired(false)
+            it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_WEAK)
+            it.build()
+
+        }
+        authenticate(biometricPrompt, promptInfo)
+    }
+
     fun encrypt(diceKey: DiceKey<*>, keystoreType: AppKeystore.KeystoreType, fragment: Fragment) {
 
         if (keystoreType == AppKeystore.KeystoreType.BIOMETRIC && !canUseBiometrics(fragment.requireContext())) {
@@ -34,16 +57,25 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
         }
 
         try {
+
+            if (appKeystore.isAuthenticationRequired(keystoreType)) {
+                authenticateUser(
+                    fragment,
+                    object : AuthenticationCallback(fragment) {
+                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                            encrypt(diceKey, keystoreType, fragment)
+                        }
+                    })
+                return
+            }
+
             val promptInfo = createBiometricPrompt(true, keystoreType, fragment)
 
             val biometricPrompt = BiometricPrompt(fragment, ContextCompat.getMainExecutor(fragment.requireContext()),
                     object : AuthenticationCallback(fragment) {
 
                         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                            super.onAuthenticationSucceeded(result)
-
                             try{
-
                                 val cipher: Cipher? = if(keystoreType == AppKeystore.KeystoreType.BIOMETRIC){
                                     result.cryptoObject?.cipher
                                 }else{
@@ -66,9 +98,8 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
                 val cryptoObject = BiometricPrompt.CryptoObject(appKeystore.getEncryptionCipher(keystoreType))
                 authenticate(biometricPrompt, promptInfo, cryptoObject)
             }else{
-                authenticate(biometricPrompt, promptInfo, null)
+                authenticate(biometricPrompt, promptInfo)
             }
-
         } catch (e: Exception) {
             fragment.errorDialog(e)
         }
@@ -76,6 +107,17 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
 
     fun decrypt(encryptedDiceKey: EncryptedDiceKey, fragment: Fragment, success: (diceKey: DiceKey<Face>) -> Unit) {
         try {
+            if (appKeystore.isAuthenticationRequired(encryptedDiceKey.keystoreType)) {
+                authenticateUser(
+                    fragment = fragment,
+                    callback = object : AuthenticationCallback(fragment) {
+                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                            decrypt(encryptedDiceKey, fragment, success)
+                        }
+                    })
+                return
+            }
+
             val promptInfo = createBiometricPrompt(false, encryptedDiceKey.keystoreType, fragment)
 
             val biometricPrompt = BiometricPrompt(fragment, ContextCompat.getMainExecutor(fragment.requireContext()),
@@ -116,7 +158,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
         }
     }
 
-    private fun authenticate(biometricPrompt: BiometricPrompt, promptInfo: BiometricPrompt.PromptInfo, cryptoObject: BiometricPrompt.CryptoObject?) {
+    private fun authenticate(biometricPrompt: BiometricPrompt, promptInfo: BiometricPrompt.PromptInfo, cryptoObject: BiometricPrompt.CryptoObject? = null) {
         if(cryptoObject == null){
             biometricPrompt.authenticate(promptInfo)
         }else{
@@ -147,14 +189,14 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
         return BiometricPrompt.PromptInfo.Builder().let {
             it.setTitle(title)
                     .setSubtitle(subtitle)
-                    .setConfirmationRequired(true)
+                    .setConfirmationRequired(false)
 
             if (keystoreType == AppKeystore.KeystoreType.BIOMETRIC) {
                 it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                 it.setNegativeButtonText(fragment.getString(android.R.string.cancel))
             }else{
-                if(Build.VERSION.SDK_INT == Build.VERSION_CODES.R){
-                    // SDK 30
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
                     it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
                     it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
@@ -167,9 +209,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
 }
 
 open class AuthenticationCallback(val fragment: Fragment) : BiometricPrompt.AuthenticationCallback() {
-
     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-        super.onAuthenticationError(errorCode, errString)
         if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
             // This is errorCode OK, no need to handle it
         } else {
@@ -178,7 +218,6 @@ open class AuthenticationCallback(val fragment: Fragment) : BiometricPrompt.Auth
     }
 
     override fun onAuthenticationFailed() {
-        super.onAuthenticationFailed()
         fragment.toast("Authentication failed")
     }
 }

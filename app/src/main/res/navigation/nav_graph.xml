@@ -92,6 +92,9 @@
             android:defaultValue="@null"
             app:argType="org.dicekeys.api.DerivationRecipe"
             app:nullable="true" />
+        <argument
+            android:name="deriveType"
+            app:argType="org.dicekeys.crypto.seeded.DerivationOptions$Type" />
 
     </fragment>
 
@@ -147,7 +150,9 @@
         android:label="@string/request"
         tools:layout="@layout/api_request_fragment">
 
-        <deepLink app:uri="https://dicekeys.app/" />
+        <deepLink
+            android:autoVerify="true"
+            app:uri="https://dicekeys.app/" />
 
     </fragment>
 

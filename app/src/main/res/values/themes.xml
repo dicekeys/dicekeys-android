@@ -44,6 +44,7 @@
         <!--Component styles-->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.Dialog.Alert</item>
         <item name="toolbarStyle">@style/Widget.DiceKeys.Toolbar</item>
+        <item name="bottomSheetDialogTheme">@style/DiceKeys.BottomSheetDialogTheme</item>
     </style>
 
     <style name="Base.Theme.MaterialThemeBuilder" parent="Theme.MaterialComponents.DayNight.NoActionBar">

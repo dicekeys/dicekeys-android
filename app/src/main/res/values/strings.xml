@@ -15,7 +15,8 @@
     <string name="your_dicekey">Your DiceKey</string>
     <string name="dicekey" translatable="false">DiceKey</string>
     <string name="url_or_comma_separeated_list">URL or comma-separated list of domains</string>
-    <string name="maximum_character">Maximum Character Length (6 – 999)</string>
+    <string name="maximum_character">Maximum Character Length (16 – 999)</string>
+    <string name="maximum_length">Maximum Length (16 – 999)</string>
     <string name="no_limit">no limit</string>
 
     <string name="complete_the_recipe">Complete the recipe above to see the output</string>
@@ -79,7 +80,8 @@
     <string name="privacy">Privacy</string>
     <string name="about">About</string>
     <string name="version">Version</string>
-    <string name="version_s">Version %s</string>
+    <string name="build">Build</string>
+    <string name="release_date">Release Date</string>
     <string name="security">Security</string>
     <string name="pref_secure_display">Enable secure display</string>
     <string name="pref_privacy_summary">Disable screenshots &amp; screen preview on recent apps</string>
@@ -122,6 +124,7 @@
     <string name="send_key">Send Key</string>
     <string name="send_encoded_message">Send Encoded Message</string>
     <string name="approve">Approve</string>
+    <string name="cancel">Cancel</string>
 
     <string name="recipe">Recipe</string>
     <string name="secret_created">Secret created</string>
@@ -141,4 +144,20 @@
     <string name="may_use_key_verify">May %s use your DiceKey to %s a key used to verify data it has signed?</string>
     <string name="may_use_keys_store_secrets">May %s use your DiceKey to %s keys to store secrets?</string>
     <string name="another_app_made_an_invalid_request">Another app made an invalid request of the DiceKeys app: %s</string>
+
+    <string name="build_in_recipes">Build-in Recipes</string>
+    <string name="saved_recipes">Saved Recipes</string>
+    <string name="copied_clipboard">Copied to clipboard</string>
+
+    <string name="paster_or_enter_the_address">Paste or enter the address of the website that will use this %s.</string>
+    <string name="enter_a_purpose_for_the">Enter a purpose for the %s.</string>
+
+    <string name="purpose">Purpose</string>
+    <string name="web_address">Web Address</string>
+
+    <string name="derive_type_for">%s for %s</string>
+
+    <string name="biometrics_authentication">Biometrics Authentication</string>
+    <string name="authenticate_using_biometrics">Authenticate using biometrics</string>
+
 </resources>

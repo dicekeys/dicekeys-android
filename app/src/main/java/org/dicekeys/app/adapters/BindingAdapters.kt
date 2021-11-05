@@ -5,6 +5,8 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import org.dicekeys.app.views.DiceBaseView
 import org.dicekeys.app.views.DiceKeyView
@@ -47,4 +49,11 @@ fun setProgress(progressIndicator: BaseProgressIndicator<*>, progress: Int) {
 @BindingAdapter("currentItem")
 fun setCurrentItem(viewPager: ViewPager, currentItem: Int) {
     viewPager.setCurrentItem(currentItem, true)
+}
+
+@BindingAdapter("checkedIndex")
+fun setChecked(toggleGroup: MaterialButtonToggleGroup, checkedIndexes: List<Int>) {
+    checkedIndexes.forEach {
+        (toggleGroup.getChildAt(it) as MaterialButton).isChecked = true
+    }
 }

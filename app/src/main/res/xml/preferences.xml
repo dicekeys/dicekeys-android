@@ -38,7 +38,13 @@
         <Preference
             app:key="version"
             app:title="@string/version"
-            app:summary="@string/version_s" />
+            app:summary="" />
+
+        <Preference
+            app:key="build"
+            app:title="@string/build"
+            app:summary="" />
+
 
     </PreferenceCategory>
 

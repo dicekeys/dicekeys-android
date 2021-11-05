@@ -3,6 +3,7 @@ package org.dicekeys.app.fragments.dicekey
 import android.content.Context
 import android.hardware.usb.UsbManager
 import android.os.Bundle
+import android.text.Html
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
@@ -26,11 +27,7 @@ class SoloKeyFragment : AbstractDiceKeyFragment<SolokeyFragmentBinding>(R.layout
         SoloKeyViewModel.provideFactory(viewModelFactory, requireActivity().application as Application, requireContext().getSystemService(Context.USB_SERVICE) as UsbManager, viewModel.diceKey.value!!)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isGuarded) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.diceKeyVM = viewModel
         binding.vm = soloKeyViewModel
 

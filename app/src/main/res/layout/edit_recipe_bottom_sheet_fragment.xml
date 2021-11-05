@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="org.dicekeys.crypto.seeded.DerivationOptions" />
+
+        <import type="org.dicekeys.app.extensions.ExtensionsKt" />
+
+        <import type="java.util.List" />
+
+        <variable
+            name="vm"
+            type="org.dicekeys.app.viewmodels.RecipeViewModel" />
+
+        <variable
+            name="checkedId"
+            type="Integer" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Describe your Recipe with:"
+                android:textAppearance="?attr/textAppearanceBody1" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <Button
+                    android:id="@+id/buttonWebAddress"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/web_address"
+                    android:textAllCaps="false" />
+
+                <Button
+                    android:id="@+id/buttonPurpose"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/purpose"
+                    android:textAllCaps="false" />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/websiteTextInputLayout"
+                isVisible="@{checkedId == @id/buttonWebAddress}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/web_address"
+                app:endIconMode="clear_text"
+                app:helperText="@{String.format(@string/paster_or_enter_the_address, ExtensionsKt.description(vm.deriveType, false))}"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/toggleButton"
+                app:layout_constraintStart_toStartOf="@+id/toggleButton"
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton"
+                tools:helperText="@string/paster_or_enter_the_address">
+
+                <org.dicekeys.app.views.DomainTextInputEditText
+                    android:id="@+id/domains"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri"
+                    android:text="@={vm.domain}"
+                    app:placeholder="https://example.com" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/purposeTextInputLayout"
+                isVisible="@{checkedId == @id/buttonPurpose}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/purpose"
+                app:endIconMode="clear_text"
+                app:helperText="@{String.format(@string/enter_a_purpose_for_the, ExtensionsKt.description(vm.deriveType, false))}"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/toggleButton"
+                app:layout_constraintStart_toStartOf="@+id/toggleButton"
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton"
+                tools:helperText="@string/enter_a_purpose_for_the">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/purpose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions"
+                    android:text="@={vm.purpose}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/rawTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Raw JSON recipe"
+                android:visibility="gone"
+                app:helperText="Paste or type the raw JSON recipe for the signing/authentication key."
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/toggleButton"
+                app:layout_constraintStart_toStartOf="@+id/toggleButton"
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions"
+                    android:text="@={vm.rawJson}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/maxCharsTextInputLayout"
+                isVisible="@{vm.deriveType == DerivationOptions.Type.Password}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Max Chars"
+                app:endIconMode="clear_text"
+                app:helperText="@string/maximum_character"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/toggleButton"
+                app:layout_constraintStart_toStartOf="@+id/toggleButton"
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton">
+
+                <org.dicekeys.app.views.PlaceholderTextInputEditText
+                    android:id="@+id/maxChars"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="@={vm.lengthInChars}"
+                    app:placeholder="@string/no_limit" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lengthTextInputLayout"
+                isVisible="@{vm.deriveType == DerivationOptions.Type.Secret}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Length"
+                app:endIconMode="clear_text"
+                app:helperText="@string/maximum_length"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/toggleButton"
+                app:layout_constraintStart_toStartOf="@+id/toggleButton"
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton">
+
+                <org.dicekeys.app.views.PlaceholderTextInputEditText
+                    android:id="@+id/length"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="@={vm.lengthInBytes}"
+                    app:placeholder="default (32 bytes)" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/buttonOk"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Close"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -12,11 +12,7 @@ import org.dicekeys.app.viewmodels.DiceKeyViewModel
 @AndroidEntryPoint
 class BackupSelectFragment: AbstractDiceKeyFragment<BackupSelectFragmentBinding>(R.layout.backup_select_fragment) {
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isGuarded) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
         binding.wrapStickeys.setOnClickListener {

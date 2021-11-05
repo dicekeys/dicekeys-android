@@ -31,5 +31,4 @@ val derivationRecipeTemplates: Array<DerivationRecipe> = arrayOf(
 	DerivationRecipe(DerivationOptions.Type.Password, "Microsoft", """{"allow":[{"host":"*.microsoft.com"},{"host":"*.live.com"}]}""")  
 )
 
-
 val seedSecurityKeyRecipeTemplate = DerivationRecipe(DerivationOptions.Type.Secret, "Seed Security Key", """{"purpose":"seedSecurityKey"}""")

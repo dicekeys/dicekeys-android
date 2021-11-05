@@ -15,11 +15,7 @@ class SaveFragment: AbstractDiceKeyFragment<SaveFragmentBinding>(R.layout.save_f
     @Inject
     lateinit var biometricsHelper: BiometricsHelper
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isGuarded) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
         binding.buttonSave.setOnClickListener {

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="PlaceholderTextInputEditText">
+        <attr name="placeholder" format="string" />
+    </declare-styleable>
     <declare-styleable name="DiceBaseView">
         <attr name="dicekey" format="enum">
             <enum name="example" value="0" />

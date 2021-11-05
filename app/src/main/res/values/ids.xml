@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="list_item_header" type="id" />
+    <item name="list_item_title" type="id" />
+    <item name="list_item_bip39_word" type="id" />
+</resources>
