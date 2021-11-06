@@ -16,8 +16,8 @@ android {
         applicationId "com.dicekeys.app"
         minSdkVersion 23
         targetSdkVersion 31
-        versionCode 4
-        versionName "1.03"
+        versionCode 5
+        versionName "1.04"
 
         testApplicationId "com.dicekeys.test"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -70,7 +70,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation "androidx.fragment:fragment-ktx:1.3.6"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-    implementation "androidx.biometric:biometric:1.2.0-alpha03"
+    implementation "androidx.biometric:biometric-ktx:1.2.0-alpha03"
     implementation "androidx.preference:preference-ktx:1.1.1"
     implementation 'com.google.android.material:material:1.4.0'
     implementation "androidx.preference:preference-ktx:1.1.1"
