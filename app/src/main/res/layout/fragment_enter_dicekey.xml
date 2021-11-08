@@ -42,10 +42,10 @@
             android:layout_marginStart="16dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_baseline_rotate_left_24"
-            android:tint="@color/colorPrimary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/diceKeyWrap"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints"
+            app:tint="@color/colorPrimary" />
 
         <ImageButton
             android:id="@+id/btnrtRight"
@@ -54,9 +54,9 @@
             android:layout_marginLeft="7dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_baseline_rotate_right_24"
-            android:tint="@color/colorPrimary"
             app:layout_constraintStart_toEndOf="@+id/btnrtLeft"
-            app:layout_constraintTop_toTopOf="@+id/btnrtLeft" />
+            app:layout_constraintTop_toTopOf="@+id/btnrtLeft"
+            app:tint="@color/colorPrimary" />
 
         <ImageButton
             android:id="@+id/btnDelete"
@@ -65,10 +65,10 @@
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_baseline_backspace_24"
-            android:tint="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="@+id/btnrtRight"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btnrtRight" />
+            app:layout_constraintTop_toTopOf="@+id/btnrtRight"
+            app:tint="@color/colorPrimary" />
 
 
         <androidx.recyclerview.widget.RecyclerView

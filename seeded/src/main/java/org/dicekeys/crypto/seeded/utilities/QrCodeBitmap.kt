@@ -2,8 +2,6 @@ package org.dicekeys.crypto.seeded.utilities
 
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.os.Build
-import androidx.annotation.RequiresApi
 import  com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.BarcodeFormat.QR_CODE
 
@@ -44,7 +42,6 @@ internal fun QrCodeBitmap(
     return bmp
 }
 
-@RequiresApi(Build.VERSION_CODES.KITKAT)
 internal fun QrCodeBitmap(
     urlBase: String,
     json: String,

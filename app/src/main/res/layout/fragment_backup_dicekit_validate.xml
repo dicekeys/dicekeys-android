@@ -19,8 +19,8 @@
         android:id="@+id/two_diceview_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center|top"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/text_header">
@@ -33,7 +33,7 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_marginStart="@dimen/fab_margin"
+            android:layout_marginStart="16dp"
             app:srcCompat="@drawable/ic_scanning_side_view" />
     </org.dicekeys.app.views.TwoDiceViewLayout>
 
@@ -41,7 +41,7 @@
         android:id="@+id/btn_scan_copy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_marginTop="16dp"
         android:text="Scan copy to validate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
