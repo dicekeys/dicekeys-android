@@ -195,10 +195,9 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
                 it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                 it.setNegativeButtonText(fragment.getString(android.R.string.cancel))
             }else{
-
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
                     it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-                } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
+                } else {
                     it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 }
             }
