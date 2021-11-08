@@ -53,3 +53,16 @@ When you set both references to sourceDiceView and targetDiceView it will displa
 
 ### Other important classes
 `DiceSizeModel` describes layouts, sizes, proportions of dice views.
+
+## Releasing
+
+* Open project in Android Studio
+* Make sure the version and build number are incremented in app/build.gradle under `android { ... defaultConfig { ... versionCode,versionName }}`
+* Go to build menu, Generate signed bundle/APK
+* Select "Android App Bundle" and press the "Next" button
+* With keys in place, "Next" button again
+* Select "release" and press "Finish" button
+* Go to Google Play website
+* Create production release
+* Upload the file in app/release/app-release.aab
+* Tag the release in Git
