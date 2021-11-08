@@ -66,4 +66,3 @@ When you set both references to sourceDiceView and targetDiceView it will displa
 * Create production release
 * Upload the file in app/release/app-release.aab
 * Tag the release in Git
-e
