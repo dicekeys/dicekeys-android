@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="@dimen/fab_margin">
+    android:padding="16dp">
 
     <org.dicekeys.app.views.DiceKeyView
         android:id="@+id/dice_key"

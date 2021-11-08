@@ -76,7 +76,7 @@
             android:id="@+id/view_pager"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginBottom="16dp"
             currentItem="@{vm.page}"
             app:layout_constraintBottom_toTopOf="@id/btn_prev"
             app:layout_constraintEnd_toEndOf="parent"

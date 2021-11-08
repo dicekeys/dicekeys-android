@@ -9,7 +9,7 @@
         android:id="@+id/text_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/fab_margin"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Scan your backup to validate it."
         android:textAppearance="?attr/textAppearanceHeadline5"
@@ -22,8 +22,8 @@
         app:layout_constraintTop_toBottomOf="@id/text_header"
         android:orientation="horizontal"
         android:gravity="center|top"
-        android:layout_marginTop="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <org.dicekeys.app.views.StickerTargetSheetView
@@ -32,7 +32,7 @@
             android:layout_height="160dp" />
         <androidx.appcompat.widget.AppCompatImageView
             app:srcCompat="@drawable/ic_scanning_side_view"
-            android:layout_marginStart="@dimen/fab_margin"
+            android:layout_marginStart="16dp"
             android:layout_width="150dp"
             android:layout_height="150dp" />
     </org.dicekeys.app.views.TwoDiceViewLayout>
@@ -43,7 +43,7 @@
         app:layout_constraintTop_toBottomOf="@id/two_diceview_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_marginTop="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

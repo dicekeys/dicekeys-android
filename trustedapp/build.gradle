@@ -7,34 +7,11 @@ plugins {
     id 'org.jetbrains.dokka'
 }
 
-
-//https://developer.android.com/studio/publish/app-signing#secure-key
-// Create a variable called keystorePropertiesFile, and initialize it to your
-// keystore.properties file, in the rootProject folder.
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-
-// Initialize a new Properties() object called keystoreProperties.
-def keystoreProperties = new Properties()
-
-// Load your keystore.properties file into the keystoreProperties object.
-if (keystorePropertiesFile.exists()){
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
-
 android {
     ndkVersion '21.3.6528147' // Latest LTS
 
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
-
-    signingConfigs {
-        release {
-            storeFile keystoreProperties.containsKey("storeFile") ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties.containsKey("storePassword") ? keystoreProperties['storePassword'] : ""
-            keyAlias keystoreProperties.containsKey("keyAlias") ? keystoreProperties['keyAlias'] : ""
-            keyPassword keystoreProperties.containsKey("keyPassword") ? keystoreProperties['keyPassword'] : ""
-        }
-    }
 
     defaultConfig {
         minSdkVersion 23
@@ -49,7 +26,6 @@ android {
             release {
                 minifyEnabled false
                 proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-                signingConfig signingConfigs.release
             }
 
             debug {

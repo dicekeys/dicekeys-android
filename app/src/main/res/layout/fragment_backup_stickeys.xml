@@ -43,7 +43,7 @@
                 android:id="@+id/sticker_target_sheet_view"
                 android:layout_width="160dp"
                 android:layout_height="160dp"
-                android:layout_marginStart="@dimen/fab_margin" />
+                android:layout_marginStart="16dp" />
         </org.dicekeys.app.views.TwoDiceViewLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -51,8 +51,8 @@
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/fab_margin"
-            android:paddingEnd="@dimen/fab_margin"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:text="Find the A die."
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
