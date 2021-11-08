@@ -112,7 +112,7 @@ class SoloKeyViewModel @AssistedInject constructor(
     fun askForPermissions(v: View?){
         soloDevice.value?.let{
             val permissionIntent =
-                    PendingIntent.getBroadcast(getApplication(), 0, Intent(ACTION_USB_PERMISSION), 0)
+                    PendingIntent.getBroadcast(getApplication(), 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE)
             usbManager.requestPermission(it, permissionIntent)
         }
     }
