@@ -20,10 +20,12 @@
     <string name="no_limit">no limit</string>
 
     <string name="complete_the_recipe">Complete the recipe above to see the output</string>
-    <string name="enter_dicekey_by_hand">Enter the DiceKey by Hand</string>
+    <string name="enter_dicekey_by_hand">Enter the DiceKey by hand</string>
     <string name="save_the_dicekey">Save the DiceKey</string>
+    <string name="dicekey_saved_on_device">DiceKey saved on device</string>
     <string name="save_center_die_notice">Your DiceKey will be stored encrypted and identified by the center die.</string>
     <string name="how_to_unlock">How would you like to unlock the other 24 dice?</string>
+    <string name="you_dicekey_is_now_in_encrypted">Your DiceKey is now in encrypted long-term storage and will be available even if you restart the app or your device. You will unlock it the same way you unlock your device.</string>
 
     <string name="tap_to_show">tap to show dice</string>
 
