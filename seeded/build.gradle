@@ -54,11 +54,6 @@ android {
 }
 
 dependencies {
-    /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    /** ----------------------------------------------------------------------------------------- */
-
     implementation 'com.google.zxing:core:3.4.1'
-
     testImplementation 'junit:junit:4.13.2'
 }
