@@ -10,6 +10,7 @@
     <string name="derive_secret">Derive  a Secret</string>
     <string name="secrets">Secrets</string>
     <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
     <string name="scan">Scan</string>
     <string name="scan_again">Scan again</string>
     <string name="your_dicekey">Your DiceKey</string>
@@ -80,6 +81,7 @@
     <string name="thats_it">That\'s it!</string>
     <string name="preferences">Preferences</string>
     <string name="privacy">Privacy</string>
+    <string name="recipes">Recipes</string>
     <string name="about">About</string>
     <string name="version">Version</string>
     <string name="build">Build</string>

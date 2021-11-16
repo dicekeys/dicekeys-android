@@ -90,6 +90,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textUri"
                     android:text="@={vm.domain}"
+                    android:enabled="@{checkedId == @id/buttonWebAddress}"
                     app:placeholder="https://example.com" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -114,6 +115,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textNoSuggestions"
+                    android:enabled="@{checkedId == @id/buttonPurpose}"
                     android:text="@={vm.purpose}" />
 
             </com.google.android.material.textfield.TextInputLayout>

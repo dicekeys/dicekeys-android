@@ -83,12 +83,36 @@ class RecipeViewModel @AssistedInject constructor(
     private fun deriveValue(){
         derivedValue.value = derivationRecipe.value?.recipeJson?.let{ recipeJson ->
             diceKey.toCanonicalRotation().toHumanReadableForm().let { seed ->
-                when (deriveType) {
-                    DerivationOptions.Type.Password -> DerivedValue.Password(Password.deriveFromSeed(seed, recipeJson))
-                    DerivationOptions.Type.Secret -> DerivedValue.Secret(Secret.deriveFromSeed(seed, recipeJson))
-                    DerivationOptions.Type.SigningKey -> DerivedValue.SigningKey(SigningKey.deriveFromSeed(seed, recipeJson))
-                    DerivationOptions.Type.SymmetricKey -> DerivedValue.SymmetricKey(SymmetricKey.deriveFromSeed(seed, recipeJson))
-                    DerivationOptions.Type.UnsealingKey -> DerivedValue.UnsealingKey(UnsealingKey.deriveFromSeed(seed, recipeJson))
+                try {
+                    when (deriveType) {
+                        DerivationOptions.Type.Password -> DerivedValue.Password(
+                            Password.deriveFromSeed(
+                                seed,
+                                recipeJson
+                            )
+                        )
+                        DerivationOptions.Type.Secret -> DerivedValue.Secret(
+                            Secret.deriveFromSeed(
+                                seed,
+                                recipeJson
+                            )
+                        )
+                        DerivationOptions.Type.SigningKey -> DerivedValue.SigningKey(
+                            SigningKey.deriveFromSeed(
+                                seed,
+                                recipeJson
+                            )
+                        )
+                        DerivationOptions.Type.SymmetricKey -> DerivedValue.SymmetricKey(
+                            SymmetricKey.deriveFromSeed(seed, recipeJson)
+                        )
+                        DerivationOptions.Type.UnsealingKey -> DerivedValue.UnsealingKey(
+                            UnsealingKey.deriveFromSeed(seed, recipeJson)
+                        )
+                    }
+                }catch (e: Exception){
+                    e.printStackTrace()
+                    null
                 }
             }
         }

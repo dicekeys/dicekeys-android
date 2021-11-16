@@ -32,6 +32,23 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:key="recipes_category"
+        app:title="@string/recipes">
+
+        <Preference
+            app:key="backup"
+            android:title="@string/backup"
+            app:summary="Backup your recipes into a file"
+            />
+
+        <Preference
+            app:key="restore"
+            android:title="@string/restore"
+            app:summary="Restore your recipes from a file"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:key="about_category"
         app:title="@string/about">
 
