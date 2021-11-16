@@ -1,31 +1,49 @@
 package org.dicekeys.dicekey
 
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonClass
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
-@JsonClass(generateAdapter = true)
-class Point(
+@Serializable
+data class Point(
         val x: Float,
         val y: Float
 )
 
-@JsonClass(generateAdapter = true)
-class Line(
+@Serializable
+data class Line(
         val start: Point,
         val end: Point
 )
 
-@JsonClass(generateAdapter = true)
-class Undoverline(
+@Serializable
+data class Undoverline(
         val line: Line,
         val code: Int
 )
 
+@Serializable
+data class FaceReadSerializable(
+    val underline: Undoverline?,
+    val overline: Undoverline?,
+    val orientationAsLowercaseLetterTrbl: Char,
+    val ocrLetterCharsFromMostToLeastLikely: String,
+    val ocrDigitCharsFromMostToLeastLikely: String,
+    val center: Point
+){
+    fun toFaceRead(): FaceRead =
+        FaceRead(
+            underline = underline,
+            overline = overline,
+            orientationAsLowercaseLetterTrbl = orientationAsLowercaseLetterTrbl,
+            ocrLetterCharsFromMostToLeastLikely = ocrLetterCharsFromMostToLeastLikely,
+            ocrDigitCharsFromMostToLeastLikely = ocrDigitCharsFromMostToLeastLikely,
+            center = center
+        )
+}
 
-@JsonClass(generateAdapter = true)
+// https://youtrack.jetbrains.com/issue/KT-38958
 class FaceRead constructor(
         val underline: Undoverline?,
         val overline: Undoverline?,
@@ -51,15 +69,13 @@ class FaceRead constructor(
  {
 
     companion object {
-        val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .build()
-        val faceReadJsonAdapter: JsonAdapter<List<FaceRead>> =
-                moshi.adapter(Types.newParameterizedType(List::class.java, FaceRead::class.java))
-
+        val JsonDeserializer = Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }
 
         fun diceKeyFromListOfFacesRead(facesRead: List<FaceRead>): DiceKey<FaceRead> {
-            return DiceKey<FaceRead>(facesRead)
+            return DiceKey(facesRead)
         }
 
         fun diceKeyFromJsonFacesRead(json: String): DiceKey<FaceRead>? {
@@ -67,9 +83,12 @@ class FaceRead constructor(
 
                 if (json == "null" || json[0] != '[')
                     return null
-                val faces = faceReadJsonAdapter.fromJson(json)
+                val faces = JsonDeserializer.decodeFromString<List<FaceReadSerializable>?>(json)?.map {
+                    it.toFaceRead()
+                }
                 return if (faces == null) null else diceKeyFromListOfFacesRead(faces)
             } catch (e: Exception) {
+                e.printStackTrace()
                 return null
             }
         }

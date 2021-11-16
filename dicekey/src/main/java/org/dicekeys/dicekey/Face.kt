@@ -1,6 +1,6 @@
 package org.dicekeys.dicekey
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -8,7 +8,7 @@ import com.squareup.moshi.JsonClass
  */
 class InvalidHumanReadableFormException(message: String) : java.lang.Exception(message)
 
-@JsonClass(generateAdapter = true)
+@Serializable
 open class Face constructor(
     open val letter: Char,
     open val digit: Char,
