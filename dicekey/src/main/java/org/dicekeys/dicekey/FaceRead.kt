@@ -69,10 +69,7 @@ class FaceRead constructor(
  {
 
     companion object {
-        val JsonDeserializer = Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-        }
+        private val JsonDeserializer = Json
 
         fun diceKeyFromListOfFacesRead(facesRead: List<FaceRead>): DiceKey<FaceRead> {
             return DiceKey(facesRead)
