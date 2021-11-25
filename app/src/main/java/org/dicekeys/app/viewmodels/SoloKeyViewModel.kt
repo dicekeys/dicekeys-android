@@ -199,7 +199,7 @@ class SoloKeyViewModel @AssistedInject constructor(
 
     fun updateSequence(sequence: Int){
         if(sequence > 0) {
-            derivationRecipe.value = DerivationRecipe(seedSecurityKeyRecipeTemplate, sequence)
+            derivationRecipe.value = DerivationRecipe.createRecipeFromTemplate(seedSecurityKeyRecipeTemplate, sequence)
             sequenceNumber.value = sequence.toString()
 
             generateSeed()

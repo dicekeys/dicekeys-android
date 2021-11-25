@@ -155,6 +155,9 @@
 
     <string name="paster_or_enter_the_address">Paste or enter the address of the website that will use this %s.</string>
     <string name="enter_a_purpose_for_the">Enter a purpose for the %s.</string>
+    <string name="even_the_smallest_change">Even the smallest change to any field changes the entire %s.</string>
+
+
 
     <string name="purpose">Purpose</string>
     <string name="web_address">Web Address</string>

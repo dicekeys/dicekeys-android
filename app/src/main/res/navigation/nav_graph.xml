@@ -88,13 +88,11 @@
             app:nullable="true" />
 
         <argument
-            android:name="template"
-            android:defaultValue="@null"
-            app:argType="org.dicekeys.api.DerivationRecipe"
-            app:nullable="true" />
-        <argument
             android:name="deriveType"
             app:argType="org.dicekeys.crypto.seeded.DerivationOptions$Type" />
+        <argument
+            android:name="editable"
+            app:argType="boolean" />
 
     </fragment>
 

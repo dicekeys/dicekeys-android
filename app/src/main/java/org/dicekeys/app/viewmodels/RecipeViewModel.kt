@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.app.RecipeBuilder
 import org.dicekeys.app.data.DerivedValue
@@ -15,69 +18,33 @@ import org.dicekeys.dicekey.Face
 
 
 class RecipeViewModel @AssistedInject constructor(
-        private val recipeRepository: RecipeRepository,
-        @Assisted val diceKey: DiceKey<Face>,
-        @Assisted("recipe") val recipe: DerivationRecipe?,
-        @Assisted("template") val template: DerivationRecipe?,
-        @Assisted val deriveType: DerivationOptions.Type,
+    private val recipeRepository: RecipeRepository,
+    @Assisted val diceKey: DiceKey<Face>,
+    @Assisted val recipe: DerivationRecipe?,
+    @Assisted val isEditable: Boolean,
+    @Assisted val deriveType: DerivationOptions.Type,
 ) : ViewModel(), LifecycleOwner {
-    private val showRecipe = recipe != null
-    val isCustomRecipe = MutableLiveData(recipe == null && template == null)
+    val recipeBuilder = RecipeBuilder(type = deriveType, template = recipe)
+    val isCustomRecipe = recipe == null
 
-    var derivationRecipe = MutableLiveData(recipe ?: template)
+    var derivationRecipe = recipeBuilder.derivationRecipe//MutableLiveData(recipe)
     var sequenceNumber = MutableLiveData(recipe?.sequence?.toString() ?: "1")
     var recipeIsSaved = MutableLiveData(if(recipe != null) recipeRepository.exists(recipe) else false)
-    var recipeBuilder = RecipeBuilder(deriveType, template)
 
     var derivedValueView: MutableLiveData<DerivedValueView> = MutableLiveData()
     var derivedValue: MutableLiveData<DerivedValue> = MutableLiveData()
     var derivedValueAsString = MutableLiveData<String>(null)
 
-    val domain: MutableLiveData<String> = MutableLiveData()
-    val purpose: MutableLiveData<String> = MutableLiveData()
-    val rawJson: MutableLiveData<String> = MutableLiveData()
-    val lengthInChars: MutableLiveData<String> = MutableLiveData()
-    val lengthInBytes: MutableLiveData<String> = MutableLiveData()
-
     init {
-
-        domain.observe(viewLifecycleOwner){
-            recipeBuilder.updateDomains(it)
-            updateRecipe()
-        }
-
-        purpose.observe(viewLifecycleOwner){
-            recipeBuilder.updatePurpose(it)
-            updateRecipe()
-        }
-
-        rawJson.observe(viewLifecycleOwner){
-            // recipeBuilder.updatePurpose(it)
-        }
-
-        lengthInChars.observe(viewLifecycleOwner){
-            var lengthInChars = 0
-            try {
-                lengthInChars = it.toInt()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            recipeBuilder.updateLengthInChars(lengthInChars)
-            updateRecipe()
-        }
-
-        lengthInBytes.observe(viewLifecycleOwner){
-            var lengthInBytes = 0
-            try {
-                lengthInBytes = it.toInt()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            recipeBuilder.updateLengthInBytes(lengthInBytes)
-            updateRecipe()
-        }
-
         deriveValue()
+
+        recipeBuilder
+            .derivationRecipe
+            .asFlow()
+            .drop(1) // drop initial value
+            .onEach {
+                deriveValue()
+            }.launchIn(viewModelScope)
     }
 
     private fun deriveValue(){
@@ -153,27 +120,21 @@ class RecipeViewModel @AssistedInject constructor(
     fun updateSequence(sequence: Int){
         if(sequence > 0) {
             sequenceNumber.value = sequence.toString()
-            recipeBuilder.updateSequence(sequence)
             updateRecipe()
         }
     }
 
     private fun updateRecipe(){
-        if(!showRecipe){
-            if(template != null){
-                derivationRecipe.value = DerivationRecipe(template, sequenceNumber.value!!.toInt())
-            }else{
-                derivationRecipe.value = recipeBuilder.getDerivationRecipe()
+            recipe?.let { recipe ->
+                derivationRecipe.value = recipe.createDerivationRecipeForSequence(sequenceNumber.value!!.toInt())
             }
-
             deriveValue()
-        }
     }
 
     /**
      * Up/down sequence number
      */
-    fun sequencUpDown(isUp: Boolean) {
+    fun sequenceUpDown(isUp: Boolean) {
         try{
             sequenceNumber.value?.toInt()?.let { seq ->
                 updateSequence(seq + if (isUp) 1 else -1)
@@ -206,8 +167,8 @@ class RecipeViewModel @AssistedInject constructor(
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(diceKey: DiceKey<Face>,
-                   @Assisted("recipe") recipe: DerivationRecipe?,
-                   @Assisted("template") template: DerivationRecipe?,
+                   recipe: DerivationRecipe?,
+                   isEditable: Boolean,
                    deriveType: DerivationOptions.Type): RecipeViewModel
     }
 
@@ -216,12 +177,12 @@ class RecipeViewModel @AssistedInject constructor(
                 assistedFactory: AssistedFactory,
                 diceKey: DiceKey<Face>,
                 recipe: DerivationRecipe?,
-                template: DerivationRecipe?,
+                isEditable: Boolean,
                 deriveType: DerivationOptions.Type
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(diceKey = diceKey, recipe = recipe, template = template, deriveType = deriveType) as T
+                return assistedFactory.create(diceKey = diceKey, recipe = recipe, isEditable = isEditable, deriveType = deriveType) as T
             }
         }
     }

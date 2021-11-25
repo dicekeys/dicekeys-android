@@ -69,12 +69,12 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
         if(item is TitleListItem){
             if(item.data1 is DerivationRecipe) {
                 if ((item.data2 as? Boolean) == true) {
-                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(template = item.data1, deriveType = item.data1.type))
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = item.data1, deriveType = item.data1.type, editable = true))
                 } else {
-                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = item.data1, deriveType = item.data1.type))
+                    navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = item.data1, deriveType = item.data1.type, editable = false))
                 }
             }else if(item.data1 is DerivationOptions.Type){
-                navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(deriveType = item.data1))
+                navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(deriveType = item.data1, editable = true))
             }
         }
     }

@@ -52,6 +52,8 @@ class ListDiceKeysFragment : AbstractListDiceKeysFragment<ListDicekeysFragmentBi
         binding.assemble.setOnClickListener {
             navigate(ListDiceKeysFragmentDirections.actionListDiceKeysFragmentToAssembleFragment())
         }
+
+        navigateToDiceKey(DiceKey.example)
     }
 
     override fun clickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) {

@@ -45,7 +45,7 @@ class DiceKeyWithDerivedValue : AppCompatActivity() {
 
         /*Observer sequence number changes & update derivationRecipe object*/
         sequenceNumber.observe(this, Observer { intValue ->
-            derivationRecipe.value = DerivationRecipe(derivationRecipeTemplates.get(intent.getIntExtra("derivationRecipeTemplateIndex", 0)), intValue )
+            derivationRecipe.value = DerivationRecipe.createRecipeFromTemplate(derivationRecipeTemplates[intent.getIntExtra("derivationRecipeTemplateIndex", 0)], intValue)
         })
 
         /*Observer derivation recipe change and update password, recipeJson */

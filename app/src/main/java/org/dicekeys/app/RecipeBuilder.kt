@@ -1,5 +1,6 @@
 package org.dicekeys.app
 
+import androidx.lifecycle.MutableLiveData
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.app.utils.removeWildcardPrefixIfPresent
 import org.dicekeys.crypto.seeded.DerivationOptions
@@ -13,9 +14,21 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
         private set
     var purpose: String? = null
         private set
-    private var sequence = 1
-    private var lengthInChars = 0
-    private var lengthInBytes = 0
+    var rawJson: String? = null
+        private set
+
+    var sequence = 1
+        private set
+    var lengthInChars = template?.lengthInChars ?: 0
+        private set
+    var lengthInBytes = template?.lengthInBytes ?: 0
+        private set
+
+    val derivationRecipe = MutableLiveData<DerivationRecipe?>()
+
+    init {
+        build()
+    }
 
     fun reset() {
         domains = null
@@ -25,13 +38,22 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
         lengthInBytes = 0
     }
 
-    fun updateDomains(d: String) {
+    fun updateDomains(d: String?) {
         domains = d
         purpose = null
+        rawJson = null
     }
 
     fun updatePurpose(p: String?) {
         purpose = p
+        rawJson = null
+    }
+
+    fun updateRawJson(json: String?) {
+        // Reset everything on default values so that we can replace from raw
+        reset()
+
+        rawJson = json
     }
 
     fun updateSequence(s: Int) {
@@ -64,33 +86,53 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
             ?.sorted() ?: listOf()
     }
 
-    fun getDerivationRecipe(): DerivationRecipe? {
-        return if (template == null) {
-
-            if (purpose.isNullOrBlank()) {
-                DerivationRecipe.createCustomOnlineRecipe(
-                    type = type,
-                    domains = getDomainList(),
-                    sequenceNumber = sequence,
-                    lengthInChars = lengthInChars,
-                    lengthInBytes = lengthInBytes
-                )
-            } else {
-                DerivationRecipe.createCustomPurposeRecipe(
-                    type = type,
-                    purpose = purpose ?: "",
-                    sequenceNumber = sequence,
-                    lengthInChars = lengthInChars,
-                    lengthInBytes = lengthInBytes
-                )
+    fun build(): DerivationRecipe? {
+        return (try {
+            when{
+                template != null -> {
+                    DerivationRecipe.createRecipeFromTemplate(
+                        template = template,
+                        sequenceNumber = sequence,
+                        lengthInChars = lengthInChars,
+                        lengthInBytes = lengthInBytes
+                    )
+                }
+                !rawJson.isNullOrBlank() -> {
+                    DerivationRecipe.createCustomRawJsonRecipe(
+                        type = type,
+                        rawJson = rawJson ?: "",
+                        sequenceNumber = sequence,
+                        lengthInChars = lengthInChars,
+                        lengthInBytes = lengthInBytes
+                    )
+                }
+                !purpose.isNullOrBlank() -> {
+                    DerivationRecipe.createCustomPurposeRecipe(
+                        type = type,
+                        purpose = purpose ?: "",
+                        sequenceNumber = sequence,
+                        lengthInChars = lengthInChars,
+                        lengthInBytes = lengthInBytes
+                    )
+                }
+                else -> {
+                    DerivationRecipe.createCustomOnlineRecipe(
+                        type = type,
+                        domains = getDomainList(),
+                        sequenceNumber = sequence,
+                        lengthInChars = lengthInChars,
+                        lengthInBytes = lengthInBytes
+                    )
+                }
             }
-        } else {
-            DerivationRecipe(
-                template = template,
-                sequenceNumber = sequence,
-                lengthInChars = lengthInChars,
-                lengthInBytes = lengthInBytes
-            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }).also {
+            derivationRecipe.value = it
         }
     }
+
+    @JvmName("getDerivationRecipeValue")
+    fun getDerivationRecipe(): DerivationRecipe? = derivationRecipe.value
 }
