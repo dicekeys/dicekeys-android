@@ -1,16 +1,23 @@
 package org.dicekeys.app
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.app.utils.getDepthOfPublicSuffix
 import org.dicekeys.crypto.seeded.DerivationOptions
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.BlockJUnit4ClassRunner
+import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(BlockJUnit4ClassRunner::class)
+@RunWith(MockitoJUnitRunner::class)
 class RecipeBuilderUnitTests {
+
+    @get:Rule
+    val taskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var builder: RecipeBuilder
 
@@ -31,47 +38,47 @@ class RecipeBuilderUnitTests {
 
         builder.updateDomains("google.com")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
         builder.updateDomains("*.google.com")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
         builder.updateDomains(".google.com/")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
         builder.updateDomains("*.google.com/")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
         builder.updateDomains( "  *.google.com/  ")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
         builder.updateDomains( "  *.google.com/  ,   *.google.com/  ")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
         builder.updateDomains(".subdomain.google.com/")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE_SUBDOMAIN, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE_SUBDOMAIN, builder.build())
 
         builder.reset()
         builder.updateDomains("google.com,food.com")
-        Assert.assertEquals(GOOGLE_FOOD, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE_FOOD, builder.build())
 
         builder.reset()
         builder.updateDomains(".apple.com/,.icloud.com/")
         builder.updateSequence(2)
         builder.updateLengthInChars(64)
-        Assert.assertEquals(APPLE, builder.getDerivationRecipe())
+        Assert.assertEquals(APPLE, builder.build())
     }
 
     @Test
@@ -79,16 +86,40 @@ class RecipeBuilderUnitTests {
 
         builder.updateDomains("https://google.com/?q=DiceKeys")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
         builder.updateDomains("http://google.com/search?q=DiceKeys")
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
         builder.updateDomains("http://subdomain.google.com/search?q=DiceKeys")
+        builder.updateSequence(10)
+        builder.build()
         builder.updateSequence(12)
-        Assert.assertEquals(GOOGLE_SUBDOMAIN, builder.getDerivationRecipe())
+        Assert.assertEquals(GOOGLE_SUBDOMAIN, builder.build())
+    }
+
+    @Test
+    fun test_createDerivationRecipeForSequence(){
+        builder.updateDomains("google.com")
+        val original = builder.build()!!
+
+        var changing = original.createDerivationRecipeForSequence(12)
+        Assert.assertNotEquals(original.recipeJson, changing.recipeJson)
+        changing = changing.createDerivationRecipeForSequence(2)
+        Assert.assertNotEquals(original.recipeJson, changing.recipeJson)
+
+
+        changing = changing.createDerivationRecipeForSequence(1)
+        Assert.assertEquals(original.recipeJson, changing.recipeJson)
+        changing = changing.createDerivationRecipeForSequence(0)
+        Assert.assertEquals(original.recipeJson, changing.recipeJson)
+        changing = changing.createDerivationRecipeForSequence(-1)
+        Assert.assertEquals(original.recipeJson, changing.recipeJson)
+
+        val checkLength = DerivationRecipe.createRecipeFromTemplate(original, original.sequence, lengthInChars = 44)
+        Assert.assertNotEquals(checkLength.recipeJson, DerivationRecipe.createRecipeFromTemplate(checkLength, checkLength.sequence))
     }
 }

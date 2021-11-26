@@ -9,8 +9,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import org.dicekeys.crypto.seeded.DerivationOptions
 
-fun JsonObject.update(updateJsonObject: JsonObject): JsonObject {
-    return JsonObject(toMutableMap().apply {
+/*
+ *   Rebuilding the JsonObject without predefined keys.
+ */
+fun JsonObject.rebuild(updateJsonObject: JsonObject): JsonObject {
+    return JsonObject(filterKeys { key ->
+        key != "#" && key != "lengthInChars" && key != "lengthInBytes"
+    }.toMutableMap().apply {
         updateJsonObject.forEach { (key, value) ->
             put(key, value)
         }
@@ -71,7 +76,7 @@ data class DerivationRecipe constructor(
     fun createDerivationRecipeForSequence(sequenceNumber: Int): DerivationRecipe{
         val jsonObject = recipeAsJsonElement
             .jsonObject
-            .update(
+            .rebuild(
                 buildJsonObject {
                     addSequenceNumberToDerivationOptionsJson(sequenceNumber)
                 }
@@ -110,15 +115,15 @@ data class DerivationRecipe constructor(
             val jsonObject = template
                 .recipeAsJsonElement
                 .jsonObject
-                .update(
-                buildJsonObject {
-                    if (type == DerivationOptions.Type.Password) {
-                        addLengthInCharsToDerivationOptionsJson(lengthInChars)
-                    }else if (type == DerivationOptions.Type.Secret) {
-                        addLengthInBytesToDerivationOptionsJson(lengthInBytes)
+                .rebuild(
+                    buildJsonObject {
+                        if (type == DerivationOptions.Type.Password) {
+                            addLengthInCharsToDerivationOptionsJson(lengthInChars)
+                        } else if (type == DerivationOptions.Type.Secret) {
+                            addLengthInBytesToDerivationOptionsJson(lengthInBytes)
+                        }
+                        addSequenceNumberToDerivationOptionsJson(sequenceNumber)
                     }
-                    addSequenceNumberToDerivationOptionsJson( sequenceNumber)
-                }
                 )
 
 
@@ -193,7 +198,7 @@ data class DerivationRecipe constructor(
                     addLengthInBytesToDerivationOptionsJson(lengthInBytes)
                 }
                 addSequenceNumberToDerivationOptionsJson( sequenceNumber)
-            }.update(Json.parseToJsonElement(rawJson).jsonObject)
+            }.rebuild(Json.parseToJsonElement(rawJson).jsonObject)
 
             val name = "RawJSON"// purpose.replaceFirstChar { it.uppercase() } // capitalize
             return DerivationRecipe(type, name, jsonObject.canonicalize())
