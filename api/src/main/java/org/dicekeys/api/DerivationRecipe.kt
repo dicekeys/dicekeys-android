@@ -109,25 +109,14 @@ data class DerivationRecipe constructor(
          * Create a Recipe from Template
          */
         fun createRecipeFromTemplate(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0, lengthInBytes: Int = 0): DerivationRecipe {
-            val type = template.type
-            val name = createRecipeName(template, sequenceNumber)
-
-            val jsonObject = template
-                .recipeAsJsonElement
-                .jsonObject
-                .rebuild(
-                    buildJsonObject {
-                        if (type == DerivationOptions.Type.Password) {
-                            addLengthInCharsToDerivationOptionsJson(lengthInChars)
-                        } else if (type == DerivationOptions.Type.Secret) {
-                            addLengthInBytesToDerivationOptionsJson(lengthInBytes)
-                        }
-                        addSequenceNumberToDerivationOptionsJson(sequenceNumber)
-                    }
-                )
-
-
-            return DerivationRecipe(type, name, jsonObject.canonicalize())
+            return createRecipe(
+                name = createRecipeName(template, sequenceNumber),
+                type = template.type,
+                recipeJson = template.recipeAsJsonElement.jsonObject,
+                sequenceNumber = sequenceNumber,
+                lengthInChars = lengthInChars,
+                lengthInBytes = lengthInBytes
+            )
         }
 
         /*
@@ -146,20 +135,20 @@ data class DerivationRecipe constructor(
                         }
                     }
                 }
-
-                if (type == DerivationOptions.Type.Password) {
-                    addLengthInCharsToDerivationOptionsJson(lengthInChars)
-                }else if (type == DerivationOptions.Type.Secret) {
-                    addLengthInBytesToDerivationOptionsJson(lengthInBytes)
-                }
-                addSequenceNumberToDerivationOptionsJson( sequenceNumber)
             }
 
             val name = domains.joinToString(", ") {
                 removeWildcardPrefixIfPresent(it)
             }
 
-            return DerivationRecipe(type, name, jsonObject.canonicalize())
+            return createRecipe(
+                name = name,
+                type = type,
+                recipeJson = jsonObject,
+                sequenceNumber = sequenceNumber,
+                lengthInChars = lengthInChars,
+                lengthInBytes = lengthInBytes
+            )
         }
 
         /*
@@ -172,17 +161,16 @@ data class DerivationRecipe constructor(
 
             val jsonObject = buildJsonObject {
                 put("purpose", purpose)
-
-                if (type == DerivationOptions.Type.Password) {
-                    addLengthInCharsToDerivationOptionsJson(lengthInChars)
-                }else if (type == DerivationOptions.Type.Secret) {
-                    addLengthInBytesToDerivationOptionsJson(lengthInBytes)
-                }
-                addSequenceNumberToDerivationOptionsJson( sequenceNumber)
             }
 
-            val name = purpose.replaceFirstChar { it.uppercase() } // capitalize
-            return DerivationRecipe(type, name, jsonObject.canonicalize())
+            return createRecipe(
+                name = purpose.replaceFirstChar { it.uppercase() }, // capitalize,
+                type = type,
+                recipeJson = jsonObject,
+                sequenceNumber = sequenceNumber,
+                lengthInChars = lengthInChars,
+                lengthInBytes = lengthInBytes
+            )
         }
 
         /*
@@ -193,16 +181,38 @@ data class DerivationRecipe constructor(
                 return null
             }
 
-            val jsonObject = buildJsonObject {
-                if (type == DerivationOptions.Type.Password) {
-                    addLengthInCharsToDerivationOptionsJson(lengthInChars)
-                }else if (type == DerivationOptions.Type.Secret) {
-                    addLengthInBytesToDerivationOptionsJson(lengthInBytes)
-                }
-                addSequenceNumberToDerivationOptionsJson( sequenceNumber)
-            }.rebuild(Json.parseToJsonElement(rawJson).jsonObject)
-
             val name = "RawJSON"// purpose.replaceFirstChar { it.uppercase() } // capitalize
+
+            return createRecipe(
+                name = name,
+                type = type,
+                recipeJson = Json.parseToJsonElement(rawJson).jsonObject,
+                sequenceNumber = sequenceNumber,
+                lengthInChars = lengthInChars,
+                lengthInBytes = lengthInBytes
+            )
+        }
+
+        private fun createRecipe(
+            name : String,
+            type: DerivationOptions.Type,
+            recipeJson: JsonObject,
+            sequenceNumber: Int,
+            lengthInChars: Int,
+            lengthInBytes: Int
+        ): DerivationRecipe {
+            
+            val jsonObject = recipeJson.rebuild(
+                buildJsonObject {
+                    if (type == DerivationOptions.Type.Password) {
+                        addLengthInCharsToDerivationOptionsJson(lengthInChars)
+                    }else if (type == DerivationOptions.Type.Secret) {
+                        addLengthInBytesToDerivationOptionsJson(lengthInBytes)
+                    }
+                    addSequenceNumberToDerivationOptionsJson(sequenceNumber)
+                }
+            )
+
             return DerivationRecipe(type, name, jsonObject.canonicalize())
         }
     }
