@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.utils.getClipboard
-import org.dicekeys.app.utils.getWildcardOfRegisteredDomainFromCandidateWebUrl
+import org.dicekeys.api.getWildcardOfRegisteredDomainFromCandidateWebUrl
 
 class DomainTextInputEditText @JvmOverloads constructor(
     context: Context,

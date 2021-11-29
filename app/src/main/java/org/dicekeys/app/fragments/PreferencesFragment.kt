@@ -13,9 +13,9 @@ import org.dicekeys.app.R
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
-import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.app.data.BackupRecipes
 import org.dicekeys.app.extensions.dialog
+import org.dicekeys.app.extensions.errorDialog
 import org.dicekeys.app.repositories.RecipeRepository
 import java.io.FileDescriptor
 import java.io.FileInputStream
@@ -30,6 +30,10 @@ class PreferencesFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var recipeRepository: RecipeRepository
 
+    /*
+     * Register an ActivityResultContract to prompt the user to select a path for creating a new file.
+     * On returning with a valid uri/file, serialize all recipes in the app.
+     */
     private val createDocument =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
             uri?.let { uri ->
@@ -39,6 +43,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                             requireContext().contentResolver.openFileDescriptor(uri, "w")
                         fileDescriptor?.use {  // auto close resource
                             FileOutputStream(fileDescriptor.fileDescriptor).use { fileStream ->
+
                                 recipeRepository.getRecipesLiveData().value?.let {
                                     val backupRecipes = BackupRecipes(version = 1, recipes = it)
                                     Json.encodeToStream(backupRecipes, fileStream)
@@ -48,11 +53,16 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
+                        errorDialog(e)
                     }
                 }
             }
         }
 
+    /*
+     * Register an ActivityResultContract to prompt the user to open a file.
+     * On returning with a valid uri/file, deserialize and import all recipes in the app.
+     */
     private val openDocument =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             uri?.let { uri ->
@@ -70,12 +80,12 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
                         } catch (e: Exception) {
                             e.printStackTrace()
+                            errorDialog(e)
                         }
                     }
                 }
             }
         }
-
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -89,11 +99,13 @@ class PreferencesFragment : PreferenceFragmentCompat() {
             createDocument.launch(proposedFilename)
             true
         }
+        findPreference<Preference>("backup")?.isVisible = false // Disable until we finalize the backup file structure
 
         findPreference<Preference>("restore")?.setOnPreferenceClickListener {
             openDocument.launch(arrayOf(JsonMimeType))
             true
         }
+        findPreference<Preference>("restore")?.isVisible = false // Disable until we finalize the backup file structure
     }
 
     companion object {

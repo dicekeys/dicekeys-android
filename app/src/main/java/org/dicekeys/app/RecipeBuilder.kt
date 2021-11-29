@@ -2,7 +2,7 @@ package org.dicekeys.app
 
 import androidx.lifecycle.MutableLiveData
 import org.dicekeys.api.DerivationRecipe
-import org.dicekeys.app.utils.removeWildcardPrefixIfPresent
+import org.dicekeys.api.getWildcardOfRegisteredDomainFromCandidateWebUrl
 import org.dicekeys.crypto.seeded.DerivationOptions
 import java.net.URL
 
@@ -69,20 +69,19 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
     }
 
     private fun getDomainList(): List<String> {
-        // Check if is valid URL
-        try {
-            val url = URL(domains)
-            return listOf(url.host)
-        } catch (e: Exception) { }
-
-        // or domain list
         return domains
             ?.split(",")
-            ?.map { it -> it.trim() }
-            ?.map { it -> removeWildcardPrefixIfPresent(it) }
+            ?.map { it -> it.trim() } // trim whitespace
             ?.map { it -> it.trim { it == '.' || it == '/' } } // remove leading and trailing chars
             ?.distinct() // prevent duplicate unique values
             ?.filter { it.isNotBlank() }
+            ?.map { urlOrDomain ->
+                try {
+                    getWildcardOfRegisteredDomainFromCandidateWebUrl(urlOrDomain) ?: urlOrDomain
+                } catch (e: Exception) {
+                    urlOrDomain
+                }
+            }
             ?.sorted() ?: listOf()
     }
 

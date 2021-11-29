@@ -142,7 +142,7 @@ data class DerivationRecipe constructor(
                 putJsonArray("allow"){
                     domains.forEach { domain ->
                         addJsonObject {
-                            put("host", "*.$domain")
+                            put("host", "$domain")
                         }
                     }
                 }
@@ -155,7 +155,9 @@ data class DerivationRecipe constructor(
                 addSequenceNumberToDerivationOptionsJson( sequenceNumber)
             }
 
-            val name = domains.joinToString(", ")
+            val name = domains.joinToString(", ") {
+                removeWildcardPrefixIfPresent(it)
+            }
 
             return DerivationRecipe(type, name, jsonObject.canonicalize())
         }
