@@ -1,29 +1,14 @@
 package org.dicekeys.app.viewmodels
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.*
-import org.dicekeys.api.DerivationRecipe
-import org.dicekeys.app.R
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.dicekeys.app.RecipeBuilder
-import org.dicekeys.app.data.DerivedValue
-import org.dicekeys.app.data.DerivedValueView
-import org.dicekeys.app.databinding.EditRecipeBottomSheetFragmentBinding
-import org.dicekeys.app.fragments.dicekey.RecipeFragment
-import org.dicekeys.app.repositories.RecipeRepository
-import org.dicekeys.crypto.seeded.*
-import org.dicekeys.dicekey.DiceKey
-import org.dicekeys.dicekey.Face
 
 
 class EditRecipeViewModel @AssistedInject constructor(
@@ -32,14 +17,15 @@ class EditRecipeViewModel @AssistedInject constructor(
     val deriveType = recipeBuilder.type
     val isRawJson = MutableLiveData(recipeBuilder.rawJson != null)
 
+    val recipeName = MutableLiveData(if(recipeBuilder.rawJson != null) recipeBuilder.name else "")
+
     val domains = MutableLiveData(recipeBuilder.domains ?: "")
     val purpose = MutableLiveData(recipeBuilder.purpose ?: "")
-    val rawJson = MutableLiveData(recipeBuilder.rawJson ?: "")
+    val rawJson = MutableLiveData(if(isRawJson.value!!) recipeBuilder.getDerivationRecipe()?.recipeJson ?: "{}" else recipeBuilder.rawJson)
     val lengthInChars = MutableLiveData(if(recipeBuilder.lengthInChars > 0) recipeBuilder.lengthInChars.toString() else "")
     val lengthInBytes = MutableLiveData(if(recipeBuilder.lengthInBytes > 0) recipeBuilder.lengthInBytes.toString() else "")
 
     init {
-
         domains
             .asFlow()
             .drop(1) // drop initial value
@@ -68,6 +54,14 @@ class EditRecipeViewModel @AssistedInject constructor(
                 updateRecipe()
             }.launchIn(viewModelScope)
 
+        recipeName
+            .asFlow()
+            .drop(1) // drop initial value
+            .filterNotNull()
+            .onEach { recipeName ->
+                recipeBuilder.updateName(recipeName)
+                updateRecipe()
+            }.launchIn(viewModelScope)
 
         lengthInChars
             .asFlow()
@@ -81,7 +75,6 @@ class EditRecipeViewModel @AssistedInject constructor(
                 recipeBuilder.updateLengthInChars(lengthInChars)
                 updateRecipe()
             }.launchIn(viewModelScope)
-
 
         lengthInBytes
             .asFlow()
@@ -99,32 +92,11 @@ class EditRecipeViewModel @AssistedInject constructor(
 
     fun editRawJson() {
         isRawJson.value = true
-//        rawJson.value = derivationRecipe.value?.recipeJson
-//        recipeBuilder.updateRawJson(recipeBuilder.getDerivationRecipe()?.recipeJson ?: "{}")
         rawJson.value = recipeBuilder.getDerivationRecipe()?.recipeJson ?: "{}"
     }
 
     private fun updateRecipe() {
         recipeBuilder.build()
-
-
-//            if (template != null) {
-//                derivationRecipe.value = DerivationRecipe.createRecipeFromTemplate(
-//                    template,
-//                    sequenceNumber.value!!.toInt()
-//                )
-//            } else {
-//                derivationRecipe.value = recipeBuilder.getDerivationRecipe()
-//            }
-
-//            if (isRawJson.value == true) {
-//                derivationRecipe.value.let { recipe ->
-//                    rawJson.value = recipe?.recipeJson
-//                    lengthInBytes.value = recipe?.lengthInBytes?.toString(10) ?: ""
-//                    lengthInChars.value = recipe?.lengthInChars?.toString(10) ?: ""
-//                }
-//            }
-
     }
 
     @SuppressLint("StaticFieldLeak")

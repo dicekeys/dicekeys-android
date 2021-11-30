@@ -24,10 +24,10 @@ class RecipeViewModel @AssistedInject constructor(
     @Assisted val isEditable: Boolean,
     @Assisted val deriveType: DerivationOptions.Type,
 ) : ViewModel(), LifecycleOwner {
-    val recipeBuilder = RecipeBuilder(type = deriveType, template = recipe)
+    val recipeBuilder = if(isEditable) RecipeBuilder(type = deriveType, template = recipe) else null
     val isCustomRecipe = recipe == null
 
-    var derivationRecipe = recipeBuilder.derivationRecipe//MutableLiveData(recipe)
+    var derivationRecipe = if(isEditable) recipeBuilder!!.derivationRecipeLiveData else MutableLiveData(recipe)
     var sequenceNumber = MutableLiveData(recipe?.sequence?.toString() ?: "1")
     var recipeIsSaved = MutableLiveData(if(recipe != null) recipeRepository.exists(recipe) else false)
 
@@ -39,12 +39,12 @@ class RecipeViewModel @AssistedInject constructor(
         deriveValue()
 
         recipeBuilder
-            .derivationRecipe
-            .asFlow()
-            .drop(1) // drop initial value
-            .onEach {
+            ?.derivationRecipeLiveData
+            ?.asFlow()
+            ?.drop(1) // drop initial value
+            ?.onEach {
                 deriveValue()
-            }.launchIn(viewModelScope)
+            }?.launchIn(viewModelScope)
     }
 
     private fun deriveValue(){
@@ -120,15 +120,9 @@ class RecipeViewModel @AssistedInject constructor(
     fun updateSequence(sequence: Int){
         if(sequence > 0) {
             sequenceNumber.value = sequence.toString()
-            updateRecipe()
+            recipeBuilder?.updateSequence(sequence)
+            recipeBuilder?.build()
         }
-    }
-
-    private fun updateRecipe(){
-            recipe?.let { recipe ->
-                derivationRecipe.value = recipe.createDerivationRecipeForSequence(sequenceNumber.value!!.toInt())
-            }
-            deriveValue()
     }
 
     /**

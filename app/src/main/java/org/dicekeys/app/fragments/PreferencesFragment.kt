@@ -8,6 +8,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.dicekeys.app.BuildConfig
 import org.dicekeys.app.R
 import kotlinx.serialization.json.Json
@@ -41,11 +43,14 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                     try {
                         val fileDescriptor: ParcelFileDescriptor? =
                             requireContext().contentResolver.openFileDescriptor(uri, "w")
-                        fileDescriptor?.use {  // auto close resource
+                        fileDescriptor?.use {  // auto close file after use
                             FileOutputStream(fileDescriptor.fileDescriptor).use { fileStream ->
 
+                                // get all recipes
                                 recipeRepository.getRecipesLiveData().value?.let {
+                                    // create a BackupRecipes data object
                                     val backupRecipes = BackupRecipes(version = 1, recipes = it)
+                                    // serialize it and write it to the file
                                     Json.encodeToStream(backupRecipes, fileStream)
                                     dialog("Backup", "Recipes backup files created")
                                 }
@@ -69,15 +74,14 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                 lifecycleScope.launchWhenStarted {
                     val fileDescriptor: ParcelFileDescriptor? =
                         requireContext().contentResolver.openFileDescriptor(uri, "r")
-                    fileDescriptor?.use {  // auto close
+                    fileDescriptor?.use {  // auto close file after use
                         try {
                             val fd: FileDescriptor = fileDescriptor.fileDescriptor
                             val fileStream = FileInputStream(fd)
-                            val recipes: BackupRecipes = Json.decodeFromStream(fileStream)
+                            val recipes: BackupRecipes = Json.decodeFromStream(fileStream) // Decode file contents into BackupRecipes
                             recipeRepository.save(recipes.recipes)
 
                             dialog("Restore", "Restored recipes: ${recipes.recipes.size}")
-
                         } catch (e: Exception) {
                             e.printStackTrace()
                             errorDialog(e)

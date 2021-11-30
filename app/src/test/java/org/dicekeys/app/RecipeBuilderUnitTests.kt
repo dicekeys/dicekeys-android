@@ -19,11 +19,11 @@ class RecipeBuilderUnitTests {
     private lateinit var builder: RecipeBuilder
 
     companion object{
-        val GOOGLE = DerivationRecipe(DerivationOptions.Type.Password, "google.com", """{"allow":[{"host":"*.google.com"}],"#":12}""")
-        val GOOGLE_WITHOUT_WILDCARD = DerivationRecipe(DerivationOptions.Type.Password, "google.com", """{"allow":[{"host":"google.com"}],"#":12}""")
-        val GOOGLE_SUBDOMAIN = DerivationRecipe(DerivationOptions.Type.Password, "subdomain.google.com", """{"allow":[{"host":"*.subdomain.google.com"}],"#":12}""")
-        val GOOGLE_FOOD = DerivationRecipe(DerivationOptions.Type.Password, "food.com, google.com", """{"allow":[{"host":"*.food.com"},{"host":"*.google.com"}]}""")
-        val APPLE = DerivationRecipe(DerivationOptions.Type.Password, "apple.com, icloud.com", """{"allow":[{"host":"*.apple.com"},{"host":"*.icloud.com"}],"lengthInChars":64,"#":2}""")
+        val GOOGLE = DerivationRecipe(DerivationOptions.Type.Password, "google.com Password (12)", """{"allow":[{"host":"*.google.com"}],"#":12}""")
+        val GOOGLE_WITHOUT_WILDCARD = DerivationRecipe(DerivationOptions.Type.Password, "google.com Password (12)", """{"allow":[{"host":"google.com"}],"#":12}""")
+        val GOOGLE_SUBDOMAIN = DerivationRecipe(DerivationOptions.Type.Password, "subdomain.google.com Password (12)", """{"allow":[{"host":"*.subdomain.google.com"}],"#":12}""")
+        val GOOGLE_FOOD = DerivationRecipe(DerivationOptions.Type.Password, "food.com, google.com Password", """{"allow":[{"host":"*.food.com"},{"host":"*.google.com"}]}""")
+        val APPLE = DerivationRecipe(DerivationOptions.Type.Password, "apple.com, icloud.com Password (2)", """{"allow":[{"host":"*.apple.com"},{"host":"*.icloud.com"}],"lengthInChars":64,"#":2}""")
     }
 
     @Before

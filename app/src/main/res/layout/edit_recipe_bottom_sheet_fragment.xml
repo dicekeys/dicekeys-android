@@ -6,9 +6,7 @@
     <data>
 
         <import type="org.dicekeys.crypto.seeded.DerivationOptions" />
-
         <import type="org.dicekeys.app.extensions.ExtensionsKt" />
-
         <import type="java.util.List" />
 
         <variable
@@ -38,7 +36,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@{vm.isRawJson ? `Describee your Recipe with Raw JSON` : `Describe your Recipe with:`}"
+                android:text="@{vm.isRawJson ? `Edit Raw JSON` : `Describe your Recipe with:`}"
                 tools:text="Describe your Recipe with:"
                 android:textAppearance="?attr/textAppearanceBody1" />
 
@@ -122,10 +120,30 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/nameTextInputLayout"
+                isVisible="@{vm.isRawJson}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Recipe name"
+                app:endIconMode="clear_text"
+                app:layout_constraintEnd_toEndOf="@id/toggleButton"
+                app:layout_constraintStart_toStartOf="@+id/toggleButton"
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions"
+                    android:text="@={vm.recipeName}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/maxCharsTextInputLayout"
-                isVisible="@{vm.deriveType == DerivationOptions.Type.Password}"
+                isVisible="@{vm.deriveType == DerivationOptions.Type.Password &amp;&amp; !vm.isRawJson()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -149,7 +167,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lengthTextInputLayout"
-                isVisible="@{vm.deriveType == DerivationOptions.Type.Secret}"
+                isVisible="@{vm.deriveType == DerivationOptions.Type.Secret &amp;&amp; !vm.isRawJson()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -180,7 +198,7 @@
                 android:hint="Raw Json"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true"
-                error="@{vm.recipeBuilder.derivationRecipe == null ? `JSON is not parselable` : null}"
+                error="@{vm.recipeBuilder.derivationRecipeLiveData == null ? `JSON is not parselable` : null}"
                 app:helperText="@{String.format(@string/even_the_smallest_change, ExtensionsKt.description(vm.deriveType, false))}"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"

@@ -1,10 +1,10 @@
 package org.dicekeys.app
 
 import androidx.lifecycle.MutableLiveData
+import kotlinx.serialization.json.*
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.api.getWildcardOfRegisteredDomainFromCandidateWebUrl
 import org.dicekeys.crypto.seeded.DerivationOptions
-import java.net.URL
 
 /*
  * A builder to create custom or template based Recipes
@@ -24,7 +24,11 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
     var lengthInBytes = template?.lengthInBytes ?: 0
         private set
 
-    val derivationRecipe = MutableLiveData<DerivationRecipe?>()
+    // used only in raw json
+    var name: String? = null
+        private set
+
+    val derivationRecipeLiveData = MutableLiveData<DerivationRecipe?>()
 
     init {
         build()
@@ -50,10 +54,23 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
     }
 
     fun updateRawJson(json: String?) {
-        // Reset everything on default values so that we can replace from raw
-        reset()
-
         rawJson = json
+
+        try{
+            json?.let { json
+                // update sequence from raw json
+                Json.parseToJsonElement(json).jsonObject["#"]?.jsonPrimitive?.intOrNull?.let { sequenceFromRaw ->
+                    updateSequence(sequenceFromRaw)
+                }
+            }
+
+        }catch (e: Exception){
+
+        }
+    }
+
+    fun updateName(n: String?){
+        name = n
     }
 
     fun updateSequence(s: Int) {
@@ -61,7 +78,7 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
     }
 
     fun updateLengthInChars(length: Int) {
-        lengthInChars = if (length in 16..999) length else 0
+        lengthInChars = if (length in 8..999) length else 0
     }
 
     fun updateLengthInBytes(length: Int) {
@@ -76,11 +93,7 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
             ?.distinct() // prevent duplicate unique values
             ?.filter { it.isNotBlank() }
             ?.map { urlOrDomain ->
-                try {
-                    getWildcardOfRegisteredDomainFromCandidateWebUrl(urlOrDomain) ?: urlOrDomain
-                } catch (e: Exception) {
-                    urlOrDomain
-                }
+                getWildcardOfRegisteredDomainFromCandidateWebUrl(urlOrDomain) ?: urlOrDomain
             }
             ?.sorted() ?: listOf()
     }
@@ -99,10 +112,9 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
                 !rawJson.isNullOrBlank() -> {
                     DerivationRecipe.createCustomRawJsonRecipe(
                         type = type,
+                        name = name,
                         rawJson = rawJson ?: "",
-                        sequenceNumber = sequence,
-                        lengthInChars = lengthInChars,
-                        lengthInBytes = lengthInBytes
+                        sequenceNumber = sequence
                     )
                 }
                 !purpose.isNullOrBlank() -> {
@@ -128,10 +140,10 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
             e.printStackTrace()
             null
         }).also {
-            derivationRecipe.value = it
+            derivationRecipeLiveData.value = it
         }
     }
 
     @JvmName("getDerivationRecipeValue")
-    fun getDerivationRecipe(): DerivationRecipe? = derivationRecipe.value
+    fun getDerivationRecipe(): DerivationRecipe? = derivationRecipeLiveData.value
 }

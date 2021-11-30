@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -13,7 +12,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.EditRecipeBottomSheetFragmentBinding
-import org.dicekeys.app.extensions.dialog
 import org.dicekeys.app.viewmodels.EditRecipeViewModel
 import org.dicekeys.app.viewmodels.RecipeViewModel
 import javax.inject.Inject
@@ -23,7 +21,7 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var binding: EditRecipeBottomSheetFragmentBinding
 
-    internal val recipeViewModel: RecipeViewModel by lazy {
+    private val recipeViewModel: RecipeViewModel by lazy {
         (requireParentFragment() as RecipeFragment).recipeViewModel
     }
 
@@ -33,7 +31,7 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
     val viewModel: EditRecipeViewModel by viewModels {
         EditRecipeViewModel.provideFactory(
             assistedFactory = viewModelFactory,
-            recipeBuilder = recipeViewModel.recipeBuilder,
+            recipeBuilder = recipeViewModel.recipeBuilder!!,
         )
     }
 
@@ -41,7 +39,7 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(
             layoutInflater,
             R.layout.edit_recipe_bottom_sheet_fragment,
@@ -49,7 +47,6 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
             false
         )
         binding.lifecycleOwner = viewLifecycleOwner
-
         binding.vm = viewModel
 
         binding.toggleButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
@@ -57,7 +54,7 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
                 binding.checkedId = checkedId
             }
 
-            // Chear purpose
+            // Clear purpose
             if(checkedId == R.id.buttonWebAddress){
                 viewModel.purpose.postValue("")
             }
