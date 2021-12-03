@@ -90,11 +90,11 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val template: 
             ?.split(",")
             ?.map { it -> it.trim() } // trim whitespace
             ?.map { it -> it.trim { it == '.' || it == '/' } } // remove leading and trailing chars
-            ?.distinct() // prevent duplicate unique values
             ?.filter { it.isNotBlank() }
             ?.map { urlOrDomain ->
                 getWildcardOfRegisteredDomainFromCandidateWebUrl(urlOrDomain) ?: urlOrDomain
             }
+            ?.distinct() // prevent duplicate unique values
             ?.sorted() ?: listOf()
     }
 
