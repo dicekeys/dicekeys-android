@@ -7,15 +7,12 @@
 
         <import type="org.dicekeys.crypto.seeded.DerivationOptions" />
         <import type="org.dicekeys.app.extensions.ExtensionsKt" />
+        <import type="org.dicekeys.app.RecipeBuilder.BuildType" />
         <import type="java.util.List" />
 
         <variable
             name="vm"
             type="org.dicekeys.app.viewmodels.EditRecipeViewModel" />
-
-        <variable
-            name="checkedId"
-            type="Integer" />
     </data>
 
 
@@ -36,7 +33,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@{vm.isRawJson ? `Edit Raw JSON` : `Describe your Recipe with:`}"
+                android:text="@{vm.recipeBuilder.buildType == BuildType.Raw ? `Edit Raw JSON` : `Describe your Recipe with:`}"
                 tools:text="Describe your Recipe with:"
                 android:textAppearance="?attr/textAppearanceBody1" />
 
@@ -45,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                isVisible="@{vm.isRawJson == false}"
+                isVisible="@{vm.recipeBuilder.buildType != BuildType.Raw}"
                 app:selectionRequired="true"
                 app:singleSelection="true">
 
@@ -71,7 +68,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/websiteTextInputLayout"
-                isVisible="@{checkedId == @id/buttonWebAddress &amp;&amp; vm.isRawJson == false}"
+                isVisible="@{vm.recipeBuilder.buildType == BuildType.Online}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -89,15 +86,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textUri"
-                    android:text="@={vm.domains}"
-                    android:enabled="@{checkedId == @id/buttonWebAddress}"
+                    android:text="@={vm.recipeBuilder.domains}"
+                    android:enabled="@{vm.recipeBuilder.buildType == BuildType.Online}"
                     app:placeholder="https://example.com" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/purposeTextInputLayout"
-                isVisible="@{checkedId == @id/buttonPurpose &amp;&amp; vm.isRawJson == false}"
+                isVisible="@{vm.recipeBuilder.buildType == BuildType.Purpose}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -115,14 +112,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textNoSuggestions"
-                    android:enabled="@{checkedId == @id/buttonPurpose}"
-                    android:text="@={vm.purpose}" />
+                    android:enabled="@{vm.recipeBuilder.buildType == BuildType.Purpose}"
+                    android:text="@={vm.recipeBuilder.purpose}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameTextInputLayout"
-                isVisible="@{vm.isRawJson}"
+                isVisible="@{vm.recipeBuilder.buildType == BuildType.Raw}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -137,13 +134,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textNoSuggestions"
-                    android:text="@={vm.recipeName}" />
+                    android:text="@={vm.recipeBuilder.name}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/maxCharsTextInputLayout"
-                isVisible="@{vm.deriveType == DerivationOptions.Type.Password &amp;&amp; !vm.isRawJson()}"
+                isVisible="@{vm.deriveType == DerivationOptions.Type.Password &amp;&amp; vm.recipeBuilder.buildType != BuildType.Raw}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -160,14 +157,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:text="@={vm.lengthInChars}"
+                    android:text="@={vm.recipeBuilder.lengthInChars}"
                     app:placeholder="@string/no_limit" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lengthTextInputLayout"
-                isVisible="@{vm.deriveType == DerivationOptions.Type.Secret &amp;&amp; !vm.isRawJson()}"
+                isVisible="@{vm.deriveType == DerivationOptions.Type.Secret &amp;&amp; vm.recipeBuilder.buildType != BuildType.Raw}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -184,14 +181,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:text="@={vm.lengthInBytes}"
+                    android:text="@={vm.recipeBuilder.lengthInBytes}"
                     app:placeholder="default (32 bytes)" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/rawJsonTextInputLayout"
-                isVisible="@{vm.isRawJson}"
+                isVisible="@{vm.recipeBuilder.buildType == BuildType.Raw}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -211,7 +208,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textNoSuggestions"
-                    android:text="@={vm.rawJson}" />
+                    android:text="@={vm.recipeBuilder.rawJson}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -226,7 +223,7 @@
             android:layout_height="wrap_content"
             android:text="Edit Raw Json"
             android:textAllCaps="false"
-            isVisible="@{!vm.isRawJson}"
+            isVisible="@{vm.recipeBuilder.buildType != BuildType.Raw}"
             app:layout_constraintBottom_toBottomOf="@+id/buttonOk"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/buttonOk" />

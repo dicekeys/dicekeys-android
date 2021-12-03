@@ -67,25 +67,6 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
             }
         }
 
-        // If the recipe has different sequence number eg. raw json, update the ui
-        recipeViewModel.derivationRecipe.observe(viewLifecycleOwner) { derivationRecipe ->
-            derivationRecipe?.let {
-                if (derivationRecipe.sequence.toString() != recipeViewModel.sequenceNumber.value) {
-                    recipeViewModel.sequenceNumber.value = derivationRecipe.sequence.toString()
-                }
-            }
-        }
-
-        binding.etSequenceNumber.doAfterTextChanged { edittext ->
-            var seq = 1
-            try {
-                seq = edittext.toString().toInt()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            recipeViewModel.updateSequence(seq)
-        }
-
         binding.derivedValue.setOnClickListener {
             copyDerivedValue()
         }
