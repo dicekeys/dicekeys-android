@@ -8,6 +8,7 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.progressindicator.BaseProgressIndicator
+import com.google.android.material.textfield.TextInputLayout
 import org.dicekeys.app.views.DiceBaseView
 import org.dicekeys.app.views.DiceKeyView
 import org.dicekeys.app.views.StickerTargetSheetView
@@ -32,6 +33,11 @@ fun bindIsInvisible(view: View, isInvisible: Boolean) {
 @BindingAdapter("dicekey")
 fun dicekey(view: DiceBaseView, dicekey: DiceKey<*>?) {
     dicekey?.let { view.diceKey = it as DiceKey<Face>}
+}
+
+@BindingAdapter("error")
+fun error(view: TextInputLayout, error: String?) {
+    view.error = error
 }
 
 @BindingAdapter("hideDiceExceptCenterDie")

@@ -13,8 +13,6 @@ import org.dicekeys.app.R
 import org.dicekeys.app.adapters.GenericAdapter
 import org.dicekeys.app.data.DerivedValueView
 import org.dicekeys.app.databinding.RecipeFragmentBinding
-import org.dicekeys.app.extensions.dialog
-import org.dicekeys.app.extensions.toast
 import org.dicekeys.app.items.Bip39WordItem
 import org.dicekeys.app.items.GenericListItem
 import org.dicekeys.app.repositories.RecipeRepository
@@ -35,15 +33,15 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
     lateinit var viewModelFactory: RecipeViewModel.AssistedFactory
 
     val recipeViewModel: RecipeViewModel by viewModels {
-        RecipeViewModel.provideFactory(assistedFactory = viewModelFactory, diceKey = viewModel.diceKey.value!!, recipe = args.recipe, template = args.template, args.deriveType)
+        RecipeViewModel.provideFactory(assistedFactory = viewModelFactory, diceKey = viewModel.diceKey.value!!, recipe = args.recipe, deriveType = args.deriveType, isEditable = args.editable)
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.diceKeyVM = viewModel
         binding.vm = recipeViewModel
 
-        binding.btnDown.setOnClickListener { recipeViewModel.sequencUpDown(false) }
-        binding.btnUp.setOnClickListener { recipeViewModel.sequencUpDown(true) }
+        binding.btnDown.setOnClickListener { recipeViewModel.sequenceUpDown(false) }
+        binding.btnUp.setOnClickListener { recipeViewModel.sequenceUpDown(true) }
 
 
         val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mutableListOf<String>())
@@ -65,6 +63,15 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
                 if(currentSelection.isBlank() || list.find { it == currentSelection } == null){
                     binding.type.setText(derivedValue.views[0].description, false)
                     recipeViewModel.setView(derivedValue.views[0])
+                }
+            }
+        }
+
+        // If the recipe has different sequence number eg. raw json, update the ui
+        recipeViewModel.derivationRecipe.observe(viewLifecycleOwner) { derivationRecipe ->
+            derivationRecipe?.let {
+                if (derivationRecipe.sequence.toString() != recipeViewModel.sequenceNumber.value) {
+                    recipeViewModel.sequenceNumber.value = derivationRecipe.sequence.toString()
                 }
             }
         }
@@ -149,5 +156,4 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
     override fun onItemClicked(view: View, position: Int, item: GenericListItem<*>) {
         copyDerivedValue()
     }
-
 }

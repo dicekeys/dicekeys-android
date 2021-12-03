@@ -1,8 +1,7 @@
 package org.dicekeys.app
 
-import org.dicekeys.app.utils.getWildcardOfRegisteredDomainFromCandidateWebUrl
+import org.dicekeys.api.getWildcardOfRegisteredDomainFromCandidateWebUrl
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.BlockJUnit4ClassRunner

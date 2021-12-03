@@ -1,52 +1,47 @@
 package org.dicekeys.api
+
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.Json.Default.decodeFromString
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import org.dicekeys.crypto.seeded.DerivationOptions
 
-fun addFieldToEndOfJsonObjectString(originalJsonObjectString: String, fieldName: String, fieldValue: String): String {
-    val lastClosingBraceIndex = originalJsonObjectString.lastIndexOf("}")
-    if (lastClosingBraceIndex < 0) return originalJsonObjectString
-    val prefixUpToFinalClosingBrace = originalJsonObjectString.substring(0, lastClosingBraceIndex)
-    val suffixIncludingFinalCloseBrace = originalJsonObjectString.substring(lastClosingBraceIndex)
-    val commaIfObjectNonEmpty = if (prefixUpToFinalClosingBrace.contains (':')) "," else  ""
-    return "$prefixUpToFinalClosingBrace$commaIfObjectNonEmpty\"$fieldName\":$fieldValue$suffixIncludingFinalCloseBrace"
+/*
+ *   Rebuilding the JsonObject without predefined keys.
+ */
+fun JsonObject.rebuild(updateJsonObject: JsonObject, skipProperties: List<String>): JsonObject {
+    return JsonObject(filterKeys { key ->
+        !skipProperties.contains(key)
+    }.toMutableMap().apply {
+        updateJsonObject.forEach { (key, value) ->
+            put(key, value)
+        }
+    })
 }
 
-fun addLengthInCharsToDerivationOptionsJson(derivationOptionsWithoutLengthInChars: String, lengthInChars: Int = 0 ): String {
-    if (lengthInChars <= 0) return derivationOptionsWithoutLengthInChars
-    return addFieldToEndOfJsonObjectString(derivationOptionsWithoutLengthInChars, "lengthInChars", lengthInChars.toString())
+fun JsonObject.canonicalize(): String{
+    return toCanonicalizeRecipeJson(this)
 }
 
-fun addLengthInBytesToDerivationOptionsJson(derivationOptionsWithoutLengthInBytes: String, lengthInBytes: Int = 0 ): String {
-    if (lengthInBytes <= 0) return derivationOptionsWithoutLengthInBytes
-    return addFieldToEndOfJsonObjectString(derivationOptionsWithoutLengthInBytes, "lengthInBytes", lengthInBytes.toString())
-}
-
-fun addSequenceNumberToDerivationOptionsJson(derivationOptionsWithoutSequenceNumber: String, sequenceNumber: Int): String {
-    if (sequenceNumber == 1) return derivationOptionsWithoutSequenceNumber
-    return addFieldToEndOfJsonObjectString(derivationOptionsWithoutSequenceNumber, "#", sequenceNumber.toString())
-}
-
-private fun augmentRecipeJson(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int, lengthInBytes: Int): String {
-    var recipeJson = template.recipeJson
-    if (template.type == DerivationOptions.Type.Password && lengthInChars > 0) {
-        recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
+fun JsonObjectBuilder.addLengthInCharsToDerivationOptionsJson(lengthInChars: Int){
+    if(lengthInChars > 0){
+        put("lengthInChars", lengthInChars)
     }
-    if (template.type == DerivationOptions.Type.Secret && lengthInBytes > 0) {
-        recipeJson = addLengthInBytesToDerivationOptionsJson(recipeJson, lengthInBytes)
+}
+
+fun JsonObjectBuilder.addLengthInBytesToDerivationOptionsJson(lengthInBytes: Int){
+    if(lengthInBytes > 0){
+        put("lengthInBytes", lengthInBytes)
     }
-    recipeJson =
-            addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
-    return recipeJson
+}
+
+fun JsonObjectBuilder.addSequenceNumberToDerivationOptionsJson(sequenceNumber: Int){
+    if(sequenceNumber > 1){
+        put("#", sequenceNumber)
+    }
 }
 
 @Serializable
@@ -60,22 +55,71 @@ data class DerivationRecipe constructor(
         val recipeJson: String
 ) : Parcelable {
 
-    constructor(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0, lengthInBytes: Int = 0):
-        this(
-            template.type,
-        template.name +
-                when (template.type) {
-                    DerivationOptions.Type.Password -> " Password"
-                    DerivationOptions.Type.Secret -> " Secret"
-                    DerivationOptions.Type.SymmetricKey -> " Key"
-                    DerivationOptions.Type.UnsealingKey -> " Key Pair"
-                    DerivationOptions.Type.SigningKey -> " Signing Key"
-                } + (
-                    if (sequenceNumber == 1) "" else " ($sequenceNumber)"
-                ),
-                augmentRecipeJson(template, sequenceNumber, lengthInChars, lengthInBytes)
-        )
+    @IgnoredOnParcel
+    val recipeAsJsonElement: JsonElement = Json.parseToJsonElement(recipeJson)
+
+    @IgnoredOnParcel
+    val sequence by lazy {
+        recipeAsJsonElement.jsonObject["#"]?.jsonPrimitive?.int ?: 1
+    }
+
+    @IgnoredOnParcel
+    val lengthInChars by lazy {
+        recipeAsJsonElement.jsonObject["lengthInChars"]?.jsonPrimitive?.int
+    }
+
+    @IgnoredOnParcel
+    val lengthInBytes by lazy {
+        recipeAsJsonElement.jsonObject["lengthInBytes"]?.jsonPrimitive?.int
+    }
+
+    fun createDerivationRecipeForSequence(sequenceNumber: Int): DerivationRecipe{
+        val jsonObject = recipeAsJsonElement
+            .jsonObject
+            .rebuild(
+                buildJsonObject {
+                    addSequenceNumberToDerivationOptionsJson(sequenceNumber)
+                }
+            , rebuildSkipJsonProperties)
+
+        return DerivationRecipe(type = type, name = createRecipeName(prefix = name, type = type, sequenceNumber = sequenceNumber), recipeJson = jsonObject.canonicalize())
+    }
+
+    /*
+     * An easy way to have a unique identifier for this Recipe
+     */
+    val id by lazy { recipeJson.hashCode().toString() }
+
+    override fun toString(): String = Json.encodeToString(this)
+
     companion object{
+        val rebuildSkipJsonProperties = listOf("#", "lengthInChars", "lengthInBytes")
+
+        fun createRecipeName(prefix: String, type: DerivationOptions.Type, sequenceNumber: Int): String{
+            return prefix +
+                    when (type) {
+                        DerivationOptions.Type.Password -> " Password"
+                        DerivationOptions.Type.Secret -> " Secret"
+                        DerivationOptions.Type.SymmetricKey -> " Key"
+                        DerivationOptions.Type.UnsealingKey -> " Key Pair"
+                        DerivationOptions.Type.SigningKey -> " Signing Key"
+                    } + (if (sequenceNumber == 1) "" else " ($sequenceNumber)")
+        }
+
+        /*
+         * Create a Recipe from Template
+         */
+        fun createRecipeFromTemplate(template: DerivationRecipe, sequenceNumber: Int, lengthInChars: Int = 0, lengthInBytes: Int = 0): DerivationRecipe {
+            return createRecipe(
+                name = createRecipeName(prefix = template.name, type = template.type, sequenceNumber = sequenceNumber),
+                type = template.type,
+                recipeJson = template.recipeAsJsonElement.jsonObject,
+                skipJsonProperties = rebuildSkipJsonProperties,
+                sequenceNumber = sequenceNumber,
+                lengthInChars = lengthInChars,
+                lengthInBytes = lengthInBytes
+            )
+        }
 
         /*
          * Create a custom Online Recipe
@@ -85,19 +129,29 @@ data class DerivationRecipe constructor(
                 return null
             }
 
-            val allowDomainList = domains.map { """{"host":"*.$it"}""" }
-            val name = domains.joinToString(", ")
-            var recipeJson = """{"allow":[${allowDomainList.joinToString(",")}]}"""
-
-            if (type == DerivationOptions.Type.Password) {
-                recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
-            }else if (type == DerivationOptions.Type.Secret) {
-                recipeJson = addLengthInBytesToDerivationOptionsJson(recipeJson, lengthInBytes)
+            val jsonObject = buildJsonObject {
+                putJsonArray("allow"){
+                    domains.forEach { domain ->
+                        addJsonObject {
+                            put("host", "$domain")
+                        }
+                    }
+                }
             }
 
-            recipeJson = addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
+            val prefix = domains.joinToString(", ") {
+                removeWildcardPrefixIfPresent(it)
+            }
 
-            return DerivationRecipe(type, name, recipeJson)
+            return createRecipe(
+                name = createRecipeName(prefix = prefix, type = type, sequenceNumber = sequenceNumber),
+                type = type,
+                recipeJson = jsonObject,
+                skipJsonProperties = rebuildSkipJsonProperties,
+                sequenceNumber = sequenceNumber,
+                lengthInChars = lengthInChars,
+                lengthInBytes = lengthInBytes
+            )
         }
 
         /*
@@ -108,31 +162,67 @@ data class DerivationRecipe constructor(
                 return null
             }
 
-            var recipeJson = """{"purpose":"$purpose"}"""
-
-            if (type == DerivationOptions.Type.Password) {
-                recipeJson = addLengthInCharsToDerivationOptionsJson(recipeJson, lengthInChars)
-            }else if (type == DerivationOptions.Type.Secret) {
-                recipeJson = addLengthInBytesToDerivationOptionsJson(recipeJson, lengthInBytes)
+            val jsonObject = buildJsonObject {
+                put("purpose", purpose)
             }
 
-            recipeJson = addSequenceNumberToDerivationOptionsJson(recipeJson, sequenceNumber)
+            return createRecipe(
+                name = createRecipeName(prefix = purpose.replaceFirstChar { it.uppercase() }, type = type, sequenceNumber = sequenceNumber), // capitalize,
+                type = type,
+                recipeJson = jsonObject,
+                skipJsonProperties = rebuildSkipJsonProperties,
+                sequenceNumber = sequenceNumber,
+                lengthInChars = lengthInChars,
+                lengthInBytes = lengthInBytes
+            )
+        }
 
-            val name = purpose.replaceFirstChar { it.uppercase() } // capitalize
-            return DerivationRecipe(type, name, recipeJson)
+        /*
+         * Create a custom Recipe with raw json
+         */
+        fun createCustomRawJsonRecipe(type: DerivationOptions.Type, name: String?, rawJson: String, sequenceNumber: Int): DerivationRecipe? {
+            if (rawJson.isEmpty()) {
+                return null
+            }
+
+            return createRecipe(
+                name = createRecipeName(
+                    prefix = if (name.isNullOrBlank()) "RawJSON" else name,
+                    type = type,
+                    sequenceNumber = sequenceNumber
+                ),
+                type = type,
+                recipeJson = Json.parseToJsonElement(rawJson).jsonObject,
+                skipJsonProperties = listOf("#"), // allow # to be changed
+                sequenceNumber = sequenceNumber,
+                lengthInChars = 0,
+                lengthInBytes = 0
+            )
+
+        }
+
+        private fun createRecipe(
+            name : String,
+            type: DerivationOptions.Type,
+            recipeJson: JsonObject,
+            skipJsonProperties: List<String>,
+            sequenceNumber: Int,
+            lengthInChars: Int,
+            lengthInBytes: Int
+        ): DerivationRecipe {
+
+            val jsonObject = recipeJson.rebuild(
+                buildJsonObject {
+                    if (type == DerivationOptions.Type.Password) {
+                        addLengthInCharsToDerivationOptionsJson(lengthInChars)
+                    }else if (type == DerivationOptions.Type.Secret) {
+                        addLengthInBytesToDerivationOptionsJson(lengthInBytes)
+                    }
+                    addSequenceNumberToDerivationOptionsJson(sequenceNumber)
+                }
+            , skipJsonProperties)
+
+            return DerivationRecipe(type, name, jsonObject.canonicalize())
         }
     }
-
-    @IgnoredOnParcel
-    val sequence by lazy {
-        Json.parseToJsonElement(recipeJson).jsonObject["#"]?.jsonPrimitive?.int ?: 1
-    }
-
-    /*
-     * An easy way to have a unique identifier for this Recipe
-     */
-    val id
-        get() = recipeJson.hashCode().toString()
-
-    override fun toString(): String = Json.encodeToString(this)
 }

@@ -1,11 +1,11 @@
-package org.dicekeys.app.utils
+package org.dicekeys.api
 
 
 import java.net.URL
 import kotlin.math.min
 
 
-val domainRegexp = Regex("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]")
+val domainRegexp = Regex("^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$")
 
 fun isValidDomainSyntax(candidate: String): Boolean {
     return domainRegexp.matches(candidate)
@@ -106,7 +106,7 @@ fun getRegisteredDomainFromValidNonwildcardDomain(domain: String): String{
  * @param domainOrUrl A domain name or an HTTP(s) URL.
  */
 fun getWildcardOfRegisteredDomainFromCandidateWebUrl(candidateUrl: String?): String? {
-    val domain = extractDomainIfWebUrl(candidateUrl);
+    val domain = extractDomainIfWebUrl(candidateUrl)
     return domain?.let { domain ->
         // Return the domain with prefixed with '*.' to indicate it's a wildcard
         "*.${getRegisteredDomainFromValidNonwildcardDomain(domain)}"

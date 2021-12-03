@@ -54,10 +54,16 @@ class RecipeRepository(private val sharedPreferences: SharedPreferences) {
     }
 
     fun save(recipe: DerivationRecipe) {
-        sharedPreferences
-                .edit()
-                .putString(recipe.id, recipe.toString())
-                .apply()
+        with(sharedPreferences.edit()) {
+            putString(recipe.id, recipe.toString())
+            apply()
+        }
+    }
+
+    fun save(recipes: List<DerivationRecipe>) {
+        for(recipe in recipes){
+            save(recipe)
+        }
     }
 
     fun remove(recipe: DerivationRecipe) {

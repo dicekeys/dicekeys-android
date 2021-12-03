@@ -161,6 +161,7 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
         }
 
         analyzeDiceKey.onActionDone = fun(diceKeyAsJson) {
+            println("WTF: $diceKeyAsJson")
             cameraProviderFuture.get().unbindAll()
 
             FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
