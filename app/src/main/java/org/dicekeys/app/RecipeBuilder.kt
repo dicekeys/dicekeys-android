@@ -78,6 +78,11 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val scope: Cor
         build()
     }
 
+    fun editRawJson(){
+        buildType.value = BuildType.Raw
+        rawJson.value = getDerivationRecipe()?.recipeJson ?: "{}"
+    }
+
     fun reset() {
         domains.value = ""
         purpose.value = ""
