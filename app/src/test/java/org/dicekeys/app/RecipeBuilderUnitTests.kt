@@ -1,6 +1,7 @@
 package org.dicekeys.app
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import kotlinx.coroutines.GlobalScope
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.crypto.seeded.DerivationOptions
 import org.junit.Assert
@@ -28,87 +29,87 @@ class RecipeBuilderUnitTests {
 
     @Before
     fun setup(){
-        builder = RecipeBuilder(DerivationOptions.Type.Password, null)
+        builder = RecipeBuilder(DerivationOptions.Type.Password, GlobalScope, null)
     }
 
     @Test
     fun test_predefinedSolutions_listOfDomains(){
 
-        builder.updateDomains("google.com")
-        builder.updateSequence(12)
+        builder.domains.value = "google.com"
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE_WITHOUT_WILDCARD, builder.build())
 
         builder.reset()
-        builder.updateDomains("*.google.com")
-        builder.updateSequence(12)
+        builder.domains.value = "*.google.com"
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
-        builder.updateDomains(".google.com/")
-        builder.updateSequence(12)
+        builder.domains.value = ".google.com/"
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE_WITHOUT_WILDCARD, builder.build())
 
         builder.reset()
-        builder.updateDomains("*.google.com/")
-        builder.updateSequence(12)
+        builder.domains.value = "*.google.com/"
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
-        builder.updateDomains( "  *.google.com/  ")
-        builder.updateSequence(12)
+        builder.domains.value = "  *.google.com/  "
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
-        builder.updateDomains( "  *.google.com/  ,   *.google.com/  ")
-        builder.updateSequence(12)
+        builder.domains.value = "  *.google.com/  ,   *.google.com/  "
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
-        builder.updateDomains("*.subdomain.google.com/")
-        builder.updateSequence(12)
+        builder.domains.value = "*.subdomain.google.com/"
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE_SUBDOMAIN, builder.build())
 
         builder.reset()
-        builder.updateDomains("*.google.com,*.food.com")
+        builder.domains.value = "*.google.com,*.food.com"
         Assert.assertEquals(GOOGLE_FOOD, builder.build())
 
         builder.reset()
-        builder.updateDomains("*.apple.com/,*.icloud.com/")
-        builder.updateSequence(2)
-        builder.updateLengthInChars(64)
+        builder.domains.value = "*.apple.com/,*.icloud.com/"
+        builder.sequence.value = "2"
+        builder.lengthInChars.value = "64"
         Assert.assertEquals(APPLE, builder.build())
     }
 
     @Test
     fun test_predefinedSolutions_Url(){
-        builder.updateDomains("https://google.com/?q=DiceKeys")
-        builder.updateSequence(12)
+        builder.domains.value = "https://google.com/?q=DiceKeys"
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE, builder.build())
 
-        builder.updateDomains("https://www.google.com/?q=DiceKeys")
-        builder.updateSequence(12)
+        builder.domains.value = "https://www.google.com/?q=DiceKeys"
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
-        builder.updateDomains("https://food.com/?q=DiceKeys, https://google.com/?q=DiceKeys")
+        builder.domains.value = "https://food.com/?q=DiceKeys, https://google.com/?q=DiceKeys"
         Assert.assertEquals(GOOGLE_FOOD.recipeJson, builder.build()!!.recipeJson)
 
         builder.reset()
-        builder.updateDomains("http://google.com/search?q=DiceKeys")
-        builder.updateSequence(12)
+        builder.domains.value = "http://google.com/search?q=DiceKeys"
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE.recipeJson, builder.build()!!.recipeJson)
 
         builder.reset()
-        builder.updateDomains("http://subdomain.google.com/search?q=DiceKeys")
-        builder.updateSequence(10)
+        builder.domains.value = "http://subdomain.google.com/search?q=DiceKeys"
+        builder.sequence.value = "10"
         builder.build()
-        builder.updateSequence(12)
+        builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE.recipeJson, builder.build()!!.recipeJson)
     }
 
     @Test
     fun test_createDerivationRecipeForSequence(){
-        builder.updateDomains("google.com")
+        builder.domains.value = "google.com"
         val original = builder.build()!!
 
         var changing = original.createDerivationRecipeForSequence(12)

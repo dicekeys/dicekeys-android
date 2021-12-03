@@ -24,11 +24,10 @@ class RecipeViewModel @AssistedInject constructor(
     @Assisted val isEditable: Boolean,
     @Assisted val deriveType: DerivationOptions.Type,
 ) : ViewModel(), LifecycleOwner {
-    val recipeBuilder = if(isEditable) RecipeBuilder(type = deriveType, template = recipe) else null
+    val recipeBuilder = if(isEditable) RecipeBuilder(type = deriveType, scope = viewModelScope, template = recipe) else null
     val isCustomRecipe = recipe == null
 
     var derivationRecipe = if(isEditable) recipeBuilder!!.derivationRecipeLiveData else MutableLiveData(recipe)
-    var sequenceNumber = MutableLiveData(recipe?.sequence?.toString() ?: "1")
     var recipeIsSaved = MutableLiveData(if(recipe != null) recipeRepository.exists(recipe) else false)
 
     var derivedValueView: MutableLiveData<DerivedValueView> = MutableLiveData()
@@ -117,10 +116,9 @@ class RecipeViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateSequence(sequence: Int){
+    private fun updateSequence(sequence: Int){
         if(sequence > 0) {
-            sequenceNumber.value = sequence.toString()
-            recipeBuilder?.updateSequence(sequence)
+            recipeBuilder?.sequence?.postValue(sequence.toString())
             recipeBuilder?.build()
         }
     }
@@ -130,7 +128,7 @@ class RecipeViewModel @AssistedInject constructor(
      */
     fun sequenceUpDown(isUp: Boolean) {
         try{
-            sequenceNumber.value?.toInt()?.let { seq ->
+            recipeBuilder?.sequence?.value?.toInt()?.let { seq ->
                 updateSequence(seq + if (isUp) 1 else -1)
             }
         }catch (e : Exception){

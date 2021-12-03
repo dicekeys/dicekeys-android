@@ -11,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
+import org.dicekeys.app.RecipeBuilder
 import org.dicekeys.app.databinding.EditRecipeBottomSheetFragmentBinding
 import org.dicekeys.app.viewmodels.EditRecipeViewModel
 import org.dicekeys.app.viewmodels.RecipeViewModel
@@ -50,17 +51,16 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
         binding.vm = viewModel
 
         binding.toggleButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
-            if(isChecked) {
-                binding.checkedId = checkedId
-            }
-
-            // Clear purpose
             if(checkedId == R.id.buttonWebAddress){
-                viewModel.purpose.postValue("")
+                viewModel.recipeBuilder.buildType.postValue(RecipeBuilder.BuildType.Online)
+            }else{
+                viewModel.recipeBuilder.buildType.postValue(RecipeBuilder.BuildType.Purpose)
             }
         }
 
-        binding.toggleButton.check(if (viewModel.recipeBuilder.purpose.isNullOrBlank()) R.id.buttonWebAddress else R.id.buttonPurpose)
+        if(viewModel.recipeBuilder.buildType.value != RecipeBuilder.BuildType.Raw) {
+            binding.toggleButton.check(if (viewModel.recipeBuilder.buildType.value == RecipeBuilder.BuildType.Online) R.id.buttonWebAddress else R.id.buttonPurpose)
+        }
 
         binding.buttonOk.setOnClickListener {
             dismiss()

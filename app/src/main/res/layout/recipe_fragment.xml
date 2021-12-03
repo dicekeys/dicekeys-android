@@ -99,14 +99,14 @@
                                     android:orientation="vertical">
 
                                     <EditText
-                                        android:id="@+id/etSequenceNumber"
+                                        android:id="@+id/sequenceNumber"
                                         android:layout_width="50dp"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
                                         android:background="@android:color/transparent"
                                         android:gravity="center"
                                         android:inputType="number"
-                                        android:text="@{vm.sequenceNumber}"
+                                        android:text="@={vm.recipeBuilder.sequence}"
                                         android:textSize="20sp" />
 
                                     <TextView
