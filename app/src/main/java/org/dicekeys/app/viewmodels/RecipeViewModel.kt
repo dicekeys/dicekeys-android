@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.app.RecipeBuilder
 import org.dicekeys.app.data.DerivedValue
@@ -47,44 +50,49 @@ class RecipeViewModel @AssistedInject constructor(
     }
 
     private fun deriveValue(){
-        derivedValue.value = derivationRecipe.value?.recipeJson?.let{ recipeJson ->
-            diceKey.toCanonicalRotation().toHumanReadableForm().let { seed ->
-                try {
-                    when (deriveType) {
-                        DerivationOptions.Type.Password -> DerivedValue.Password(
-                            Password.deriveFromSeed(
-                                seed,
-                                recipeJson
-                            )
-                        )
-                        DerivationOptions.Type.Secret -> DerivedValue.Secret(
-                            Secret.deriveFromSeed(
-                                seed,
-                                recipeJson
-                            )
-                        )
-                        DerivationOptions.Type.SigningKey -> DerivedValue.SigningKey(
-                            SigningKey.deriveFromSeed(
-                                seed,
-                                recipeJson
-                            )
-                        )
-                        DerivationOptions.Type.SymmetricKey -> DerivedValue.SymmetricKey(
-                            SymmetricKey.deriveFromSeed(seed, recipeJson)
-                        )
-                        DerivationOptions.Type.UnsealingKey -> DerivedValue.UnsealingKey(
-                            UnsealingKey.deriveFromSeed(seed, recipeJson)
-                        )
+        viewModelScope.launch {
+            derivedValue.value = derivationRecipe.value?.recipeJson?.let { recipeJson ->
+                // Run in IO thread for performance reasons
+                withContext(Dispatchers.IO) {
+                    try {
+                        diceKey.toCanonicalRotation().toHumanReadableForm().let { seed ->
+                            when (deriveType) {
+                                DerivationOptions.Type.Password -> DerivedValue.Password(
+                                    Password.deriveFromSeed(
+                                        seed,
+                                        recipeJson
+                                    )
+                                )
+                                DerivationOptions.Type.Secret -> DerivedValue.Secret(
+                                    Secret.deriveFromSeed(
+                                        seed,
+                                        recipeJson
+                                    )
+                                )
+                                DerivationOptions.Type.SigningKey -> DerivedValue.SigningKey(
+                                    SigningKey.deriveFromSeed(
+                                        seed,
+                                        recipeJson
+                                    )
+                                )
+                                DerivationOptions.Type.SymmetricKey -> DerivedValue.SymmetricKey(
+                                    SymmetricKey.deriveFromSeed(seed, recipeJson)
+                                )
+                                DerivationOptions.Type.UnsealingKey -> DerivedValue.UnsealingKey(
+                                    UnsealingKey.deriveFromSeed(seed, recipeJson)
+                                )
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        null
                     }
-                }catch (e: Exception){
-                    e.printStackTrace()
-                    null
                 }
             }
-        }
 
-        updateSavedState()
-        updateView()
+            updateSavedState()
+            updateView()
+        }
     }
 
     private fun updateView(){
