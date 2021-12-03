@@ -4,10 +4,13 @@ import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
 import org.dicekeys.api.DerivationRecipe
 import org.dicekeys.api.canonicalizeRecipeJson
@@ -17,7 +20,7 @@ import org.dicekeys.crypto.seeded.DerivationOptions
 /*
  * A builder to create custom or template based Recipes
  */
-class RecipeBuilder constructor(val type: DerivationOptions.Type, scope: CoroutineScope, val template: DerivationRecipe?) {
+class RecipeBuilder constructor(val type: DerivationOptions.Type, val scope: CoroutineScope, val template: DerivationRecipe?) {
 
     enum class BuildType {
         Online, Purpose, Raw, Template
@@ -146,21 +149,26 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, scope: Corouti
                         sequenceNumber = sequenceNumber
                     )?.also {
 
+                        scope.launch {
 
-                        // update rawJson if it different from the recipe
-                        val canonicalized = canonicalizeRecipeJson(rawJson.value)
-                        if(canonicalized != null && it.recipeJson != canonicalized){
-                            rawJson.value = it.recipeJson
-                        }
-
-                        try {
-                            // update sequence from raw json
-                            Json.parseToJsonElement(rawJson.value!!).jsonObject["#"]?.jsonPrimitive?.intOrNull?.let { sequenceFromRaw ->
-                                if (sequence.value != sequenceFromRaw.toString()) {
-                                    sequence.value = sequenceFromRaw.toString()
-                                }
+                            // run in in IO Dispatcher for performance reasons
+                            val canonicalized = withContext(Dispatchers.IO) {
+                                canonicalizeRecipeJson(rawJson.value)
                             }
-                        } catch (e: Exception) { }
+                            // update rawJson if it different from the recipe
+                            if(canonicalized != null && it.recipeJson != canonicalized){
+                                rawJson.value = it.recipeJson
+                            }
+
+                            try {
+                                // update sequence from raw json
+                                Json.parseToJsonElement(rawJson.value!!).jsonObject["#"]?.jsonPrimitive?.intOrNull?.let { sequenceFromRaw ->
+                                    if (sequence.value != sequenceFromRaw.toString()) {
+                                        sequence.value = sequenceFromRaw.toString()
+                                    }
+                                }
+                            } catch (e: Exception) { }
+                        }
                     }
                 }
                 BuildType.Template -> {
