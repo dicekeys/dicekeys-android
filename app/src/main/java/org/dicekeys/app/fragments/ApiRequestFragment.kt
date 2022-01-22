@@ -153,7 +153,7 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
         }
 
         binding.buttonConfirm.setOnClickListener {
-            lifecycleScope.launch {
+            lifecycleScope.launchWhenStarted {
                 urlCommand.send()
                 findNavController().popBackStack()
             }

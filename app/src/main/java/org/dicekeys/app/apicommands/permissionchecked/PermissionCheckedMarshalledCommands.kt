@@ -177,6 +177,7 @@ abstract class PermissionCheckedMarshalledCommands(
     try {
       result!!.sendSuccess()
     } catch (e: Exception) {
+      e.printStackTrace()
       sendException(e)
     }
   }

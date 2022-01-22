@@ -53,9 +53,7 @@ class PermissionCheckedUrlCommands(
   ): this(
     requestUri, loadDiceKey, requestUsersConsent, { uri ->
       Intent(Intent.ACTION_VIEW, uri).let { intent ->
-        intent.resolveActivity(activity.packageManager)?.let {
-          activity.startActivity(intent)
-        }
+        activity.startActivity(intent)
       }
     }
   )
