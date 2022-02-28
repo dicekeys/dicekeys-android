@@ -1,6 +1,5 @@
 package org.dicekeys.app.viewmodels
 
-import com.nhaarman.mockitokotlin2.*
 import org.dicekeys.app.TestViewModel
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
@@ -10,6 +9,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @RunWith(MockitoJUnitRunner::class)
 class ListDiceKeysViewModelUnitTests : TestViewModel<ListDiceKeysViewModel>() {
