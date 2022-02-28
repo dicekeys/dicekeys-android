@@ -76,9 +76,7 @@ class DiceKeysWebApiClient(
       apiUriString: String
     ): DiceKeysWebApiClient = DiceKeysWebApiClient(apiUriString, respondToUriString) { uri ->
         val intent = Intent(Intent.ACTION_VIEW, uri)
-        if (intent.resolveActivity(activity.packageManager) != null) {
-          activity.startActivity(intent)
-        }
+        activity.startActivity(intent)
       }
 
 
@@ -109,9 +107,7 @@ class DiceKeysWebApiClient(
       apiUriString: String
     ): DiceKeysWebApiClient = DiceKeysWebApiClient(apiUriString, respondToUriString) { uri ->
       val intent = Intent(Intent.ACTION_VIEW, uri)
-      if (intent.resolveActivity(fragment.activity!!.packageManager) != null) {
-        fragment.startActivity(intent)
-      }
+      fragment.startActivity(intent)
     }
   }
 
