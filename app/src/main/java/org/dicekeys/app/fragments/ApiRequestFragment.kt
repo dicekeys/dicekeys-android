@@ -154,16 +154,27 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
 
         binding.buttonConfirm.setOnClickListener {
             lifecycleScope.launchWhenStarted {
-                urlCommand.send()
-                findNavController().popBackStack()
+                try {
+                    urlCommand.send()
+                    popBackStack()
+                }catch (e: Exception) {
+                    errorDialog(e.message ?: "Error") {
+                        popBackStack()
+                    }
+                }
             }
         }
 
         binding.buttonCancel.setOnClickListener {
             urlCommand.sendException(UserDeclinedToAuthorizeOperation("User Declined To Authorize Operation"))
-            findNavController().popBackStack()
+            popBackStack()
         }
+    }
 
+    private fun popBackStack(){
+        if(!findNavController().popBackStack()){
+            requireActivity().finish()
+        }
     }
 
     private fun setDiceKey(diceKey: DiceKey<Face>){
