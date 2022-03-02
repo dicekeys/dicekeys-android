@@ -28,7 +28,7 @@ open class ApiPermissionChecksForUrls(
     return when {
       pathExpected.endsWith("/*") -> {
         // exact prefix match but without the closing "/"
-        pathObserved === pathExpected.substring(0, pathExpected.length - 2) ||
+        pathObserved == pathExpected.substring(0, pathExpected.length - 2) ||
           // exact prefix match including the closing "/", with an arbitrary-length suffix
           // as permitted by the "*"
           pathObserved.startsWith(pathExpected.substring(0, pathExpected.length -1))
@@ -39,17 +39,50 @@ open class ApiPermissionChecksForUrls(
       }
       else -> {
         // This path requirement does not specify a prefix, so test for exact match
-        pathExpected === pathObserved
+        pathExpected == pathObserved
       }
     }
   }
+
+  private fun doesHostMatchRequirement(hostExpected: String, hostObserved: String): Boolean {
+    // (A)
+    // There is no "*." prefix in the hostExpected specification so an exact
+    // match is required
+    return (hostObserved == hostExpected ||
+    // (B)
+    // The hostExpected specification has a wildcard subdomain prefix ".*"
+    (
+      hostExpected.startsWith("*.") && // and
+        (
+          // The host is not a subdomain, but the parent domain
+          // (e.g. "example.com" satisfies "*.example.com" with
+          //  hostExpected is "*.example.com" and hostObserved is "example.com")
+          hostObserved == hostExpected.substring(2) ||
+          // Or the host is a valid subdomain, with a prefix that ends in a "."
+          // (e.g. "sub.example.com" ends in (".example.com" with
+          //  hostExpected of "*.example.com" and hostObserved of "example.com")
+          hostObserved.endsWith(hostExpected.substring(1))
+        )
+    ))
+  }
+
+  private fun isHostOnAllowList(host: String, webBasedApplicationIdentity: WebBasedApplicationIdentity): Boolean {
+    return webBasedApplicationIdentity.host?.let { doesHostMatchRequirement(it, host) } ?: true
+  }
+
   private fun matchesWebBasedApplicationIdentity(
     webBasedApplicationIdentity: WebBasedApplicationIdentity,
     uri: Uri,
   ): Boolean {
+    val hostObserved = uri.host ?: ""
     val pathObserved = uri.path ?: ""
-    val host = webBasedApplicationIdentity.host;
-    val paths = webBasedApplicationIdentity.paths;
+    val host = webBasedApplicationIdentity.host
+    val paths = webBasedApplicationIdentity.paths
+
+    if(!isHostOnAllowList(hostObserved, webBasedApplicationIdentity)){
+      return false
+    }
+
     if (host != webBasedApplicationIdentity.host) return false;
     return if (paths == null) {
       doesPathMatchRequirement("/--derived-secret-api--/*", pathObserved)

@@ -72,7 +72,7 @@ fun getDomainFromDomainOrUrlString(domainOrUrl: String): String?{
     try {
         val url = URL(if(domainOrUrl.indexOf(":") != -1) domainOrUrl else "https://${domainOrUrl}/")
         if (
-            (url.protocol == "http:" || url.protocol == "https:" || url.protocol === "mailto:") &&
+            (url.protocol == "http:" || url.protocol == "https:" || url.protocol == "mailto:") &&
             getDepthOfPublicSuffix(url.host) > 0
         ) {
             return if(isValidDomainSyntax(url.host)) url.host else null
