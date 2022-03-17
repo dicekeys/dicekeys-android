@@ -28,7 +28,7 @@ open class ClientUriNotAuthorizedException(
       if (allowClause == null)
         "as no allow clause is present in the key derivation options"
       else ("as no prefix in {${
-        allowClause.joinToString(",", "'", "'") { wbai -> "$wbai.host : ${wbai.paths?.joinToString { "," }}" }
+        allowClause.joinToString(",", "'", "'") { wbai -> "${wbai.host} : ${wbai.paths?.joinToString { "," }}" }
       }) matches $clientsUri")
   ) {
   }

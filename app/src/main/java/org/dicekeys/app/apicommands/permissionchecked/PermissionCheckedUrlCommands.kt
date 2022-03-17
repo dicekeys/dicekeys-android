@@ -1,12 +1,11 @@
 package org.dicekeys.app.apicommands.permissionchecked
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Base64
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiStrings
-import org.dicekeys.api.SuspendApi
 import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.dicekey.SimpleDiceKey
 import java.net.URI
@@ -49,11 +48,11 @@ class PermissionCheckedUrlCommands(
     requestUsersConsent: (
         UnsealingInstructions.RequestForUsersConsent
       ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>,
-    activity: Activity
+    context: Context
   ): this(
     requestUri, loadDiceKey, requestUsersConsent, { uri ->
       Intent(Intent.ACTION_VIEW, uri).let { intent ->
-        activity.startActivity(intent)
+        context.startActivity(intent)
       }
     }
   )
@@ -108,6 +107,8 @@ class PermissionCheckedUrlCommands(
   override suspend fun executeCommand() {
     executeCommand(command)
   }
+
+  fun getResponse(): Uri = responseUriBuilder.build()
 
   fun sendException() = exception?.let { sendException(it) }
 }

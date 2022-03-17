@@ -182,7 +182,6 @@ abstract class PermissionCheckedMarshalledCommands(
     }
   }
 
-
   abstract suspend fun executeCommand()
 
 }

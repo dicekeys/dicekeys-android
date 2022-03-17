@@ -28,7 +28,7 @@ open class ApiPermissionChecksForUrls(
     return when {
       pathExpected.endsWith("/*") -> {
         // exact prefix match but without the closing "/"
-        pathObserved === pathExpected.substring(0, pathExpected.length - 2) ||
+        pathObserved == pathExpected.substring(0, pathExpected.length - 2) ||
           // exact prefix match including the closing "/", with an arbitrary-length suffix
           // as permitted by the "*"
           pathObserved.startsWith(pathExpected.substring(0, pathExpected.length -1))
@@ -39,7 +39,7 @@ open class ApiPermissionChecksForUrls(
       }
       else -> {
         // This path requirement does not specify a prefix, so test for exact match
-        pathExpected === pathObserved
+        pathExpected == pathObserved
       }
     }
   }
