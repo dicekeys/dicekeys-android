@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         navController.addOnDestinationChangedListener { navController, destination, _ ->
 
-            val insideDiceKeyNav = navController.backStack.firstOrNull { it.destination.id == R.id.dicekey
+            val insideDiceKeyNav = navController.backQueue.firstOrNull { it.destination.id == R.id.dicekey
                     || it.destination.id == R.id.solokey
                     || it.destination.id == R.id.backupSelect
                     || it.destination.id == R.id.secrets
