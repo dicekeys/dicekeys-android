@@ -138,7 +138,7 @@
     <string name="message_to_seal">Message to seal</string>
 
     <string name="may_use_password">May %s use your DiceKey to %s a password?</string>
-    <string name="may_use_secret_security_code">May %s use your DiceKey to %s a secret security code?</string>
+    <string name="may_use_secret_code">May %s use your DiceKey to %s a secret code?</string>
     <string name="may_use_keys_encode_decode_secrets">May %s use your DiceKey to %s keys to encode and decode secrets?</string>
     <string name="may_use_key_encode_decode_secrets">May %s use your DiceKey to %s a key to encode and decode secrets?</string>
     <string name="may_use_encode_secret">May %s use your DiceKey to encode a secret?</string>
@@ -147,6 +147,7 @@
     <string name="may_use_digital_signature">May %s use your DiceKey to add its digital signature to data?</string>
     <string name="may_use_key_verify">May %s use your DiceKey to %s a key used to verify data it has signed?</string>
     <string name="may_use_keys_store_secrets">May %s use your DiceKey to %s keys to store secrets?</string>
+
     <string name="another_app_made_an_invalid_request">Another app made an invalid request of the DiceKeys app: %s</string>
 
     <string name="build_in_recipes">Build-in Recipes</string>

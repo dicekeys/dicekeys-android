@@ -80,7 +80,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="@string/recipe">
+                android:hint="@string/recipe"
+                isVisible="@{!vm.recipe.empty}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -96,7 +97,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:hint="@{vm.createLabel}"
-                tools:hint="Secret created">
+                tools:hint="Secret created"
+                isVisible="@{!vm.dataCreated.empty}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"

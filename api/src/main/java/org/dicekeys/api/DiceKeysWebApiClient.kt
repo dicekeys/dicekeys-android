@@ -23,7 +23,7 @@ class DiceKeysWebApiClient(
         marshallParameters(
             object: ApiMarshaller.ParameterMarshaller {
               override fun marshallParameter(name: String, value: ByteArray): Unit {
-                appendQueryParameter(name, Base64.encodeToString(value, Base64.URL_SAFE))
+                appendQueryParameter(name, Base64.encodeToString(value, Base64.URL_SAFE or Base64.NO_WRAP))
               }
               override fun marshallParameter(name: String, value: JsonSerializable): Unit {
                 appendQueryParameter(name, value.toJson())

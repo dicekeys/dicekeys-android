@@ -33,7 +33,7 @@ class ApiMarshaller<T>(
    * brute-forcing attacks.
    */
   private fun getRequestId() = "$commandName:${
-    Base64.encodeToString(SecureRandom().generateSeed(16), Base64.URL_SAFE)
+    Base64.encodeToString(SecureRandom().generateSeed(16), Base64.URL_SAFE or Base64.NO_WRAP)
   }"
 
   private var authToken: String? = null
