@@ -86,7 +86,7 @@ class PermissionCheckedUrlCommands(
   }
 
   override fun marshallResult(responseParameterName: String, value: ByteArray): PermissionCheckedMarshalledCommands {
-    marshallResult(responseParameterName, Base64.encodeToString(value, Base64.URL_SAFE))
+    marshallResult(responseParameterName, Base64.encodeToString(value, Base64.URL_SAFE or Base64.NO_WRAP))
     return this
   }
 
