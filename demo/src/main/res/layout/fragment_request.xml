@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:padding="16dp">
+
+            <Button
+                android:id="@+id/buttonGetSealingKey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="getSealingKey"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Seal and Unseal Data with Public Key Pair Derived from the User's DiceKeys" />
+
+            <Button
+                android:id="@+id/buttonSealWithSymmetricKey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="sealWithSymmetricKey"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Seal Data with a Symmetric Key Derived from the User's DiceKeys" />
+
+            <Button
+                android:id="@+id/buttonUnsealWithSymmetricKey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="unsealWithSymmetricKey"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Unseal Data with a Symmetric Key Derived from the User's DiceKeys" />
+
+            <Button
+                android:id="@+id/buttonGetPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="getPassword"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Get a Password Derived from the User's DiceKeys" />
+
+
+            <Button
+                android:id="@+id/buttonGetSecret"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="getSecret"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Get a Secret Derived from the User's DiceKeys" />
+
+            <Button
+                android:id="@+id/buttonGetUnsealingKey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="getUnsealingKey"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Get a Sealing and Unsealing Key Pair Derived from the User's DiceKeys" />
+
+            <Button
+                android:id="@+id/buttonGetSymmetricKey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="getSymmetricKey"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Get a Symmetric Key Derived from the User's DiceKeys" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

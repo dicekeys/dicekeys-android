@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/FirstFragment">
+
+    <fragment
+        android:id="@+id/FirstFragment"
+        android:name="org.dicekeys.demo.RequestFragment"
+        android:label="DiceKeys API Request"
+        tools:layout="@layout/fragment_request">
+
+        <action
+            android:id="@+id/action_FirstFragment_to_responseFragment"
+            app:destination="@id/responseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/responseFragment"
+        android:name="org.dicekeys.demo.ResponseFragment"
+        android:label="Response"
+        tools:layout="@layout/fragment_response">
+
+        <deepLink
+            android:autoVerify="true"
+            app:uri="https://dicekeys.app/--derived-secret-api--/?requestId={requestId}&amp;exception={exception}&amp;message={message}&amp;passwordJson={passwordJson}&amp;secretJson={secretJson}&amp;sealingKeyJson={sealingKeyJson}&amp;unsealingKeyJson={unsealingKeyJson}&amp;symmetricKeyJson={symmetricKeyJson}&amp;packagedSealedMessageJson={packagedSealedMessageJson}&amp;plaintext={plaintext}" />
+
+        <argument
+            android:name="exception"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="message"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="requestId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="passwordJson"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="secretJson"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="sealingKeyJson"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="unsealingKeyJson"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="symmetricKeyJson"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="packagedSealedMessageJson"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="plaintext"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+    </fragment>
+
+</navigation>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="rawUrl"
+            type="String" />
+
+        <variable
+            name="requestId"
+            type="String" />
+
+        <variable
+            name="exception"
+            type="String" />
+
+        <variable
+            name="message"
+            type="String" />
+
+        <variable
+            name="passwordJson"
+            type="String" />
+
+        <variable
+            name="secretJson"
+            type="String" />
+
+        <variable
+            name="sealingKeyJson"
+            type="String" />
+
+        <variable
+            name="unsealingKeyJson"
+            type="String" />
+
+        <variable
+            name="symmetricKeyJson"
+            type="String" />
+
+        <variable
+            name="packagedSealedMessageJson"
+            type="String" />
+
+        <variable
+            name="base64urlDecode"
+            type="String" />
+
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:text="@{`response url: ` + rawUrl}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                android:text="@{`requestId: ` + requestId}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{exception != null}"
+                android:text="@{`exception: ` + exception}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{message != null}"
+                android:text="@{`message: ` + message}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{passwordJson != null}"
+                android:text="@{`passwordJson: ` + passwordJson}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{secretJson != null}"
+                android:text="@{`secretJson: ` + secretJson}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{sealingKeyJson != null}"
+                android:text="@{`sealingKeyJson: ` + sealingKeyJson}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{unsealingKeyJson != null}"
+                android:text="@{`unsealingKeyJson: ` + unsealingKeyJson}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{symmetricKeyJson != null}"
+                android:text="@{`symmetricKeyJson: ` + symmetricKeyJson}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{packagedSealedMessageJson != null}"
+                android:text="@{`packagedSealedMessageJson: ` + packagedSealedMessageJson}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{base64urlDecode != null}"
+                android:text="@{`base64urlDecode: ` + base64urlDecode}" />
+
+
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
