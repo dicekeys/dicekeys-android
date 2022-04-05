@@ -20,7 +20,6 @@ class ApiRequestViewModel @Inject constructor() : ViewModel() {
     var createLabel = MutableLiveData("")
     var dataCreated = MutableLiveData("")
 
-
     override fun onCleared() {
         super.onCleared()
     }

@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration(
-                setOf(R.id.listDiceKeysFragment)
+                setOf(R.id.listDiceKeysFragment, R.id.apiRequestFragment)
         )
 
         binding.toolbar.also {

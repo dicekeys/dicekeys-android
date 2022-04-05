@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -41,8 +42,8 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
 
         // Needs Decryption
         if(diceKey == null){
-            biometricsHelper.decrypt(encryptedDiceKey, this) { diceKey ->
-                setDiceKey(diceKey)
+            biometricsHelper.decrypt(encryptedDiceKey, this) {
+                setDiceKey(it)
             }
         }else{
             setDiceKey(diceKey)
@@ -50,6 +51,12 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
     }
 
     override fun longClickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) { }
+
+    private val onBackCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            userCancel()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -95,7 +102,7 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
                 getString(R.string.may_use_password, host, create)
             }
             ApiStrings.Commands.getSecret -> {
-                getString(R.string.may_use_secret_security_code, host, create)
+                getString(R.string.may_use_secret_code, host, create)
             }
             ApiStrings.Commands.getUnsealingKey -> {
                 getString(R.string.may_use_keys_encode_decode_secrets, host, create)
@@ -116,10 +123,10 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
                 getString(R.string.may_use_digital_signature, host)
             }
             ApiStrings.Commands.getSignatureVerificationKey -> {
-                getString(R.string.may_use_key_verify, create, host)
+                getString(R.string.may_use_key_verify, host, create)
             }
             ApiStrings.Commands.getSealingKey -> {
-                getString(R.string.may_use_keys_store_secrets, create, host)
+                getString(R.string.may_use_keys_store_secrets, host, create)
             }
             else -> ""
         }
@@ -166,9 +173,16 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
         }
 
         binding.buttonCancel.setOnClickListener {
-            urlCommand.sendException(UserDeclinedToAuthorizeOperation("User Declined To Authorize Operation"))
-            popBackStack()
+            userCancel()
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
+    }
+
+    private fun userCancel(){
+        onBackCallback.isEnabled = false
+        urlCommand.sendException(UserDeclinedToAuthorizeOperation("User Declined To Authorize Operation"))
+        popBackStack()
     }
 
     private fun popBackStack(){
@@ -187,7 +201,7 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
             if(urlCommand.hasException()){
                 dialog(getString(R.string.error), getString(R.string.another_app_made_an_invalid_request, urlCommand.exception?.message ?: "unknown error")) {
                     urlCommand.sendException()
-                    findNavController().popBackStack()
+                    popBackStack()
                 }
             }else{
                 viewModel.createLabel.value = when (urlCommand.command) {
@@ -212,7 +226,7 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
                     else -> getString(R.string.message_to_sign) // ApiStrings.Commands.generateSignature
                 }
 
-                viewModel.dataCreated.value = urlCommand.createdDataOrPlainText
+                viewModel.dataCreated.value = urlCommand.createdDataOrPlainText ?: ""
             }
         }
     }
