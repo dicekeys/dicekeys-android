@@ -11,9 +11,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.navArgs
 import org.dicekeys.demo.databinding.FragmentResponseBinding
 
-/**
- * A simple [Fragment] subclass as the second destination in the navigation.
- */
 class ResponseFragment : Fragment() {
 
     private val args: ResponseFragmentArgs by navArgs()
