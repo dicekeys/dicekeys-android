@@ -8,11 +8,15 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import org.dicekeys.app.AppFragment
+import org.dicekeys.app.R
+import org.dicekeys.app.data.DiceKeyDescription
 import org.dicekeys.app.databinding.ListItemDicekeyBinding
 import org.dicekeys.app.encryption.BiometricsHelper
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
+import org.dicekeys.dicekey.DiceKey
+import org.dicekeys.dicekey.Face
 import javax.inject.Inject
 
 abstract class AbstractListDiceKeysFragment<T : ViewDataBinding>(
@@ -32,59 +36,60 @@ abstract class AbstractListDiceKeysFragment<T : ViewDataBinding>(
     abstract val staticViewsCount : Int
     abstract val linearLayoutContainer: LinearLayout
 
-    abstract fun clickOnDiceKey(view: View, encryptedDiceKey : EncryptedDiceKey)
-    abstract fun longClickOnDiceKey(view: View, encryptedDiceKey : EncryptedDiceKey)
+    abstract fun clickOnDiceKey(view: View, diceKeyDescription: DiceKeyDescription)
+    abstract fun longClickOnDiceKey(view: View, diceKeyDescription : DiceKeyDescription)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        encryptedStorage.getDiceKeysLiveData().observe(viewLifecycleOwner) {
+        diceKeyRepository.availableDiceKeys.observe(viewLifecycleOwner) {
             it?.let {
                 updateDiceKeys(it)
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        // Update DiceKeys list as could have been kicked from memory
-        encryptedStorage.getDiceKeysLiveData().value?.let {
-            updateDiceKeys(it)
-        }
-    }
-
-    private fun updateDiceKeys(list: List<EncryptedDiceKey>) {
+    private fun updateDiceKeys(list: List<DiceKeyDescription>) {
         // 2 elements are hardcoded in the xml, the rest are dynamically generated
         while (linearLayoutContainer.childCount > staticViewsCount) {
             linearLayoutContainer.removeViewAt(0)
         }
 
-        for ((index, encryptedDiceKey) in list.withIndex()) {
-            val diceKeyView = ListItemDicekeyBinding.inflate(LayoutInflater.from(requireContext()))
-            diceKeyView.diceKey = encryptedDiceKey
-            diceKeyView.isInMemory = diceKeyRepository.exists(encryptedDiceKey)
-
-            diceKeyView.centerView.centerFace = encryptedDiceKey.centerFaceAsFace
-
-            diceKeyView.root.layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    0,
-                    1.0f
-            )
-
-            diceKeyView.root.setOnClickListener {
-                clickOnDiceKey(it, encryptedDiceKey)
-            }
-
-            diceKeyView.root.setOnLongClickListener {
-                longClickOnDiceKey(it, encryptedDiceKey)
-                true
-            }
-
-            linearLayoutContainer.addView(diceKeyView.root, index)
+        for (diceKey in list) {
+            addDiceKeyView(diceKey)
         }
     }
 
+    private fun addDiceKeyView(diceKeyDescription: DiceKeyDescription){
+        val diceKeyView = ListItemDicekeyBinding.inflate(LayoutInflater.from(requireContext()))
 
+
+        diceKeyView.title = getString(
+            if (diceKeyRepository.exists(diceKeyDescription)) {
+                R.string.open_dicekey_with_center
+            } else {
+                R.string.unlock_dicekey_with_center
+            }, diceKeyDescription.centerFaceAsFace.toHumanReadableForm(false)
+        )
+
+        diceKeyView.centerView.centerFace = diceKeyDescription.centerFaceAsFace
+
+        diceKeyView.root.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            0,
+            1.0f
+        )
+
+
+        diceKeyView.root.setOnClickListener {
+            clickOnDiceKey(it, diceKeyDescription)
+        }
+
+        diceKeyView.root.setOnLongClickListener {
+            longClickOnDiceKey(it, diceKeyDescription)
+            true
+        }
+
+        linearLayoutContainer.addView(diceKeyView.root, linearLayoutContainer.childCount - staticViewsCount)
+    }
 }

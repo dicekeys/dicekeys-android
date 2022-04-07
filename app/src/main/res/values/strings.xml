@@ -49,6 +49,7 @@
     <string name="save">Save</string>
     <string name="saved">Saved</string>
     <string name="lock_this_dicekey">Lock this DiceKey</string>
+    <string name="forget_this_dicekey">Forget this DiceKey</string>
 
     <string name="ask_dicekey_delete">Are you sure you want to delete the DiceKey from the device?</string>
 

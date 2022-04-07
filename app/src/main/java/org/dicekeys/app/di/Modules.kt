@@ -46,8 +46,8 @@ class Modules {
 
     @Singleton
     @Provides
-    fun provideDiceKeyRepository(sharedPreferences: SharedPreferences): DiceKeyRepository {
-        return DiceKeyRepository(sharedPreferences)
+    fun provideDiceKeyRepository(sharedPreferences: SharedPreferences, encryptedStorage: EncryptedStorage): DiceKeyRepository {
+        return DiceKeyRepository(sharedPreferences, encryptedStorage)
     }
 
     @Singleton

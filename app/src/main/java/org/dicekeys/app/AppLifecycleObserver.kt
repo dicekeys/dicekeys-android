@@ -2,16 +2,13 @@ package org.dicekeys.app
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
 import org.dicekeys.app.repositories.DiceKeyRepository
 import java.util.*
 import kotlin.concurrent.schedule
 
-class AppLifecycleObserver(context: Context, val diceKeyRepository: DiceKeyRepository) : LifecycleObserver{
+class AppLifecycleObserver(context: Context, val diceKeyRepository: DiceKeyRepository) : DefaultLifecycleObserver{
     private val timer = Timer()
     private  var timerTask: TimerTask? = null
 
@@ -21,13 +18,11 @@ class AppLifecycleObserver(context: Context, val diceKeyRepository: DiceKeyRepos
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun onEnterForeground() {
+    override fun onResume(owner: LifecycleOwner) {
         timerTask?.cancel()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onEnterBackground() {
+    override fun onPause(owner: LifecycleOwner) {
         var delay = DELAY
         
         try {

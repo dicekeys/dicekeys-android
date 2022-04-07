@@ -17,6 +17,7 @@ import org.dicekeys.api.UnsealingInstructions
 import org.dicekeys.api.UserDeclinedToAuthorizeOperation
 import org.dicekeys.app.R
 import org.dicekeys.app.apicommands.permissionchecked.PermissionCheckedUrlCommands
+import org.dicekeys.app.data.DiceKeyDescription
 import org.dicekeys.app.databinding.ApiRequestFragmentBinding
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.extensions.*
@@ -37,20 +38,22 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
     override val linearLayoutContainer: LinearLayout
         get() = binding.container
 
-    override fun clickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) {
-        val diceKey = diceKeyRepository.get(encryptedDiceKey.keyId)
+    override fun clickOnDiceKey(view: View, diceKeyDescription: DiceKeyDescription) {
+        val diceKey = diceKeyRepository.get(diceKeyDescription.keyId)
 
         // Needs Decryption
         if(diceKey == null){
-            biometricsHelper.decrypt(encryptedDiceKey, this) {
-                setDiceKey(it)
+            encryptedStorage.getEncryptedData(diceKeyDescription.keyId)?.let {
+                biometricsHelper.decrypt(it , this) {
+                    setDiceKey(it)
+                }
             }
         }else{
             setDiceKey(diceKey)
         }
     }
 
-    override fun longClickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) { }
+    override fun longClickOnDiceKey(view: View, diceKey: DiceKeyDescription) {}
 
     private val onBackCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
