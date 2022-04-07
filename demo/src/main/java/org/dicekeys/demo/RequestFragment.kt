@@ -20,10 +20,6 @@ import org.dicekeys.demo.databinding.FragmentRequestBinding
 import java.net.URLEncoder
 import kotlin.math.roundToInt
 
-
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 class RequestFragment : Fragment() {
 
     private var requestId = 0
@@ -127,9 +123,7 @@ class RequestFragment : Fragment() {
             }
         } else ""
 
-        return "https://dicekeys.app/?command=$command&requestId=${requestId++}${recipe}&respondTo=${respondTo}${base64Plaintext}${packagedSealedMessageJsonUrlEncoded}&recipeMayBeModified=false".also {
-            println(it)
-        }
+        return "https://dicekeys.app/?command=$command&requestId=${requestId++}${recipe}&respondTo=${respondTo}${base64Plaintext}${packagedSealedMessageJsonUrlEncoded}&recipeMayBeModified=false"
     }
 
     private fun sendRequest(request: String) {
@@ -137,5 +131,4 @@ class RequestFragment : Fragment() {
         browserIntent.data = Uri.parse(request)
         startActivity(browserIntent)
     }
-
 }
