@@ -6,12 +6,8 @@
     <data>
 
         <variable
-            name="diceKey"
-            type="org.dicekeys.app.encryption.EncryptedDiceKey" />
-
-        <variable
-            name="isInMemory"
-            type="Boolean" />
+            name="title"
+            type="String" />
 
     </data>
 
@@ -35,7 +31,7 @@
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:text="@{String.format(isInMemory ? @string/open_dicekey_with_center : @string/unlock_dicekey_with_center, diceKey.centerFaceAsFace.toHumanReadableForm(false))}"
+            android:text="@{title}"
             android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintBottom_toBottomOf="parent"

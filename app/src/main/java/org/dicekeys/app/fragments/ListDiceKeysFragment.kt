@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.*
+import org.dicekeys.app.data.DiceKeyDescription
 import org.dicekeys.app.databinding.ListDicekeysFragmentBinding
 import org.dicekeys.app.databinding.ListItemDicekeyBinding
 import org.dicekeys.app.encryption.BiometricsHelper
@@ -54,25 +55,27 @@ class ListDiceKeysFragment : AbstractListDiceKeysFragment<ListDicekeysFragmentBi
         }
     }
 
-    override fun clickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) {
-        val diceKey = listViewModel.getDiceKey(encryptedDiceKey)
+    override fun clickOnDiceKey(view: View, diceKeyDescription: DiceKeyDescription) {
+        val diceKey = listViewModel.getDiceKey(diceKeyDescription)
 
         // Needs Decryption
         if(diceKey == null){
-            biometricsHelper.decrypt(encryptedDiceKey, this@ListDiceKeysFragment) { diceKey ->
-                navigateToDiceKey(diceKey)
+            encryptedStorage.getEncryptedData(diceKeyDescription.keyId)?.let {
+                biometricsHelper.decrypt(it, this@ListDiceKeysFragment) { diceKey ->
+                    navigateToDiceKey(diceKey)
+                }
             }
         }else{
             navigateToDiceKey(diceKey)
         }
     }
 
-    override fun longClickOnDiceKey(view: View, encryptedDiceKey: EncryptedDiceKey) {
+    override fun longClickOnDiceKey(view: View, diceKeyDescription: DiceKeyDescription) {
         showPopupMenu(view, R.menu.dicekey_popup) { menuItem ->
             when (menuItem.itemId) {
                 R.id.delete -> {
                     openDialogDeleteDiceKey(requireContext()) {
-                        listViewModel.remove(encryptedDiceKey)
+                        listViewModel.remove(diceKeyDescription)
                     }
                 }
             }

@@ -1,10 +1,15 @@
 package org.dicekeys.app.repositories
 
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import org.dicekeys.app.encryption.EncryptedDiceKey
+import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -18,13 +23,22 @@ class DiceKeyRepositoryUnitTests {
     private lateinit var repo: DiceKeyRepository
 
     @Mock
+    lateinit var encryptedStorage: EncryptedStorage
+
+    @Mock
     private lateinit var diceKey: DiceKey<Face>
+
+    @get:Rule
+    val taskExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun setup() {
-        repo = DiceKeyRepository(mock())
+        whenever(encryptedStorage.getDiceKeysLiveData()).thenReturn(mock())
+
+        repo = DiceKeyRepository(mock(), encryptedStorage)
 
         whenever(diceKey.keyId).thenReturn("keyId")
+        whenever(diceKey.centerFace()).thenReturn(Face.fromHumanReadableForm("A1t"))
     }
 
     @Test

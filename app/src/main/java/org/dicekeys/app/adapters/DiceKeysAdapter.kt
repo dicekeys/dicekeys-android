@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import org.dicekeys.app.R
 import org.dicekeys.app.databinding.ListItemDicekeyBinding
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.dicekey.DiceKey
@@ -23,7 +24,7 @@ class DiceKeysAdapter : RecyclerView.Adapter<DiceKeysAdapter.DiceKeyViewHolder>(
 
     override fun onBindViewHolder(holder: DiceKeyViewHolder, position: Int) {
         val diceKey = diceKeys[position]
-        holder.binding.diceKey = diceKey
+        holder.binding.title = holder.itemView.context.getString(R.string.unlock_dicekey_with_center, diceKey.centerFace)
 
         holder.binding.root.setOnClickListener {
             diceKeyClickListener?.onClick(it, diceKey)

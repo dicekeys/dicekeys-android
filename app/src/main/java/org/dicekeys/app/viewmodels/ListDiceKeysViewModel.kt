@@ -2,6 +2,7 @@ package org.dicekeys.app.viewmodels
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import org.dicekeys.app.data.DiceKeyDescription
 import org.dicekeys.app.encryption.EncryptedDiceKey
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
@@ -13,12 +14,14 @@ class ListDiceKeysViewModel @Inject constructor(private val encryptedStorage: En
 
     fun isDiceKeyInMemory(encryptedDiceKey: EncryptedDiceKey) = diceKeyRepository.exists(encryptedDiceKey)
 
-    fun getDiceKey(encryptedDiceKey: EncryptedDiceKey)  = diceKeyRepository.get(encryptedDiceKey.keyId)
+    fun getDiceKey(diceKeyDescription: DiceKeyDescription)  = diceKeyRepository.get(diceKeyDescription.keyId)
 
-    fun remove(encryptedDiceKey: EncryptedDiceKey){
-        // Remove from Storage
-        encryptedStorage.remove(encryptedDiceKey)
+    fun remove(diceKeyDescription: DiceKeyDescription) {
+        encryptedStorage.getEncryptedData(diceKeyDescription.keyId)?.let {
+            // Remove from Storage
+            encryptedStorage.remove(it)
+        }
         // Remove from Memory
-        diceKeyRepository.remove(encryptedDiceKey.keyId)
+        diceKeyRepository.remove(diceKeyDescription.keyId)
     }
 }
