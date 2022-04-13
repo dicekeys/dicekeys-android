@@ -52,7 +52,8 @@ class EnterDiceKeyFragment : AppFragment<FragmentEnterDicekeyBinding>(R.layout.f
 
         binding.buttonContinue.setOnClickListener {
 
-            viewModel.diceKey.value?.let {
+            // Rotate to center-face-upright orientation
+            viewModel.diceKey.value?.toCenterUprightRotation()?.let {
                 diceKeyRepository.set(it)
 
                 // Go To MainDiceKey view and remove Assemble from the backstack
