@@ -7,6 +7,7 @@ import android.util.SizeF
 import android.view.View
 import androidx.core.content.ContextCompat
 import org.dicekeys.app.R
+import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
 
 class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
@@ -14,7 +15,14 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
-    var centerFace: Face = Face(letter = 'A', digit = '1')
+    private var _centerFace: Face = Face(letter = 'A', digit = '1')
+
+    var centerFace: Face
+        get() = _centerFace
+        set(value) {
+            _centerFace = value.toUprightRotation()
+            invalidate()
+        }
 
     var size: SizeF = SizeF(50f, 50f)
 

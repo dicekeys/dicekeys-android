@@ -134,7 +134,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
 
                                 cipher?.let { cipher ->
                                     val humanReadable = String(appKeystore.decryptData(cipher, encryptedDiceKey.encryptedData))
-                                    val diceKey = DiceKey.fromHumanReadableForm(humanReadable)
+                                    val diceKey = DiceKey.fromHumanReadableForm(humanReadable).toCenterUprightRotation()
                                     success.invoke(diceKey)
                                 }
 

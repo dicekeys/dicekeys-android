@@ -97,6 +97,14 @@ open class Face constructor(
         )
     }
 
+    fun toUprightRotation(): Face {
+        return Face(
+            letter,
+            digit,
+            't'
+        )
+    }
+
     val undoverlineCodes: FaceWithUnderlineAndOverlineCode?
         get() {
             val letterIndex = FaceLetters.indexOf(letter)

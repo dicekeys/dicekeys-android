@@ -110,6 +110,16 @@ open class DiceKey<F: Face>(val faces: List<F>) {
     return winningRotation
   }
 
+  fun toCenterUprightRotation(): DiceKey<Face> {
+    for (clockwiseTurns in 1..3) {
+      val candidate = rotate(clockwiseTurns)
+      if(candidate.centerFace().orientationAsDegrees == 0f){
+        return candidate
+      }
+    }
+    return rotate(0)
+  }
+
   fun toKeySeed(
     excludeOrientationOfFaces : Boolean
   ) : String =

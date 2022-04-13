@@ -165,8 +165,8 @@ class ScanFragment : AppFragment<ScanFragmentBinding>(R.layout.scan_fragment, 0)
 
             FaceRead.diceKeyFromJsonFacesRead(diceKeyAsJson)?.let { diceKey ->
 
-                // Rotate 90 degrees
-                diceKey.rotate(1).also {
+                // Rotate to center-face-upright orientation
+                diceKey.toCenterUprightRotation().also {
                     setNavigationResult(result = it.toHumanReadableForm(), key = READ_DICEKEY)
                     findNavController().popBackStack()
                 }
