@@ -1,5 +1,6 @@
 package org.dicekeys.app.fragments.dicekey
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,16 +21,22 @@ class SaveFragment: AbstractDiceKeyFragment<SaveFragmentBinding>(R.layout.save_f
 
         binding.buttonSave.setOnClickListener {
             when(binding.keystoreType.checkedRadioButtonId){
-                R.id.unlock_biometrics -> {
-                    biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.BIOMETRIC, this)
-                }
                 R.id.unlock_screen_lock -> {
                     biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.AUTHENTICATION, this)
+                }
+                R.id.unlock_device_credentials -> {
+                    biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.DEVICE_CREDENTIALS, this)
+                }
+                R.id.unlock_biometrics -> {
+                    biometricsHelper.encrypt(viewModel.diceKey.value!!,  AppKeystore.KeystoreType.BIOMETRIC, this)
                 }
             }
         }
 
-        binding.keystoreType.check(if(biometricsHelper.canUseBiometrics(requireContext())) R.id.unlock_biometrics else  R.id.unlock_screen_lock )
+        // DEVICE_CREDENTIAL is unsupported prior to API 30
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            binding.unlockDeviceCredentials.isEnabled = false
+        }
 
         binding.buttonRemove.setOnClickListener{
             viewModel.remove()

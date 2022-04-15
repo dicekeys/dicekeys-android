@@ -96,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:checkedButton="@+id/radio_button_1"
+                    android:checkedButton="@+id/unlock_screen_lock"
                     app:layout_constraintTop_toBottomOf="@+id/textView3"
                     tools:layout_editor_absoluteX="16dp">
 
@@ -107,11 +107,24 @@
                         android:text="@string/unlock_with_lock_screen" />
 
                     <RadioButton
+                        android:id="@+id/unlock_device_credentials"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/unlock_with_device_credentials" />
+
+                    <RadioButton
                         android:id="@+id/unlock_biometrics"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:enabled="@{canUseBiometrics}"
                         android:text="@string/unlock_with_biometrics" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.DiceKeys.Caption"
+                        android:layout_marginStart="30dp"
+                        android:text="*Stored DiceKeys will be erased if you add new fingerprints, faceprints, or other biometrics."/>
 
                 </RadioGroup>
 

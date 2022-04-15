@@ -42,6 +42,12 @@ open class DiceKey<F: Face>(val faces: List<F>) {
         Face(FaceLetters[index], FaceDigits[index % 6], orientationAsLowercaseLetterTrbl = FaceRotationLetters[index % 4])
       })
 
+    // Useful for UI inspection
+    val exampleA1: DiceKey<Face>
+      get() = DiceKey(faces = (0 until 25).map { index ->
+        Face(FaceLetters[0], FaceDigits[index % 5], orientationAsLowercaseLetterTrbl = FaceRotationLetters[0])
+      })
+
     @JvmStatic
     fun fromHumanReadableForm(hrf: String): DiceKey<Face> {
       return when (hrf.length) {
@@ -57,6 +63,7 @@ open class DiceKey<F: Face>(val faces: List<F>) {
       }
     }
 
+    // Note: not secure randomness is provided
     fun createFromRandom(): DiceKey<Face> = DiceKey(faces = (0 until 25).map { Face(
             letter = FaceLetters.random(),
             digit = FaceDigits.random(),

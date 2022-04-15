@@ -31,7 +31,8 @@
     <string name="tap_to_show">tap to show dice</string>
 
     <string name="unlock_with_lock_screen">Use my lock screen unlock options</string>
-    <string name="unlock_with_biometrics">Use only my fingerprint or other biometrics</string>
+    <string name="unlock_with_device_credentials">Use only my PIN/Pattern/Password</string>
+    <string name="unlock_with_biometrics">Use only my fingerprint or other biometrics*</string>
 
     <string name="custom_recipe">Custom Recipe</string>
 
