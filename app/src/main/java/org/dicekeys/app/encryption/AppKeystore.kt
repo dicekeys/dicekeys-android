@@ -5,6 +5,8 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.security.KeyStore
 import java.security.KeyStoreException
 import javax.crypto.Cipher
@@ -37,11 +39,14 @@ class AppKeystore {
      * [1] https://developer.android.com/training/sign-in/biometric-auth
      * [2] https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder
      */
+
+    @Serializable
     enum class KeystoreType {
-        BIOMETRIC,
-        AUTHENTICATION,
-        DEVICE_CREDENTIALS,
-        KEYSTORE,
+        // Use @SerialName to make serializable enum backwards compatible
+        @SerialName("BIOMETRIC") ALLOW_ONLY_BIOMETRIC_AUTHENTICATION,
+        @SerialName("AUTHENTICATION") ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION,
+        @SerialName("DEVICE_CREDENTIALS") ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION,
+        @SerialName("KEYSTORE") KEYSTORE,
     }
 
     private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
@@ -52,8 +57,8 @@ class AppKeystore {
         try{
             when(keystoreType){
                 KeystoreType.KEYSTORE -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keystoreType)
-                KeystoreType.AUTHENTICATION, KeystoreType.DEVICE_CREDENTIALS -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keystoreType)
-                KeystoreType.BIOMETRIC -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keystoreType)
+                KeystoreType.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeystoreType.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keystoreType)
+                KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keystoreType)
             }
         }catch (e: UserNotAuthenticatedException){
             e.printStackTrace()
@@ -115,7 +120,7 @@ class AppKeystore {
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
 
         when(keystoreType){
-            KeystoreType.BIOMETRIC  -> {
+            KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION  -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     builder.setUnlockedDeviceRequired(true)
                 }
@@ -132,7 +137,7 @@ class AppKeystore {
                     builder.setInvalidatedByBiometricEnrollment(true)
                 }
             }
-            KeystoreType.AUTHENTICATION, KeystoreType.DEVICE_CREDENTIALS -> {
+            KeystoreType.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeystoreType.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     builder.setUnlockedDeviceRequired(true)
                 }
@@ -183,8 +188,8 @@ class AppKeystore {
     fun getEncryptionCipher(keystoreType: KeystoreType): Cipher {
         return when(keystoreType){
             KeystoreType.KEYSTORE -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keystoreType)
-            KeystoreType.AUTHENTICATION, KeystoreType.DEVICE_CREDENTIALS -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keystoreType)
-            KeystoreType.BIOMETRIC -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keystoreType)
+            KeystoreType.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeystoreType.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keystoreType)
+            KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keystoreType)
         }
     }
 
@@ -192,8 +197,8 @@ class AppKeystore {
     fun getDecryptionCipher(encryptedData: EncryptedData, keystoreType: KeystoreType): Cipher {
         return when(keystoreType){
             KeystoreType.KEYSTORE -> getDecryptionCipher(BASIC_KEYSTORE_ALIAS, encryptedData)
-            KeystoreType.AUTHENTICATION, KeystoreType.DEVICE_CREDENTIALS -> getDecryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, encryptedData)
-            KeystoreType.BIOMETRIC -> getDecryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, encryptedData)
+            KeystoreType.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeystoreType.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getDecryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, encryptedData)
+            KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getDecryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, encryptedData)
         }
     }
 
