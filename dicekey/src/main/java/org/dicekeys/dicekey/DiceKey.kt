@@ -2,9 +2,13 @@ package org.dicekeys.dicekey
 import android.util.Base64
 import org.dicekeys.crypto.seeded.Secret
 import java.security.InvalidParameterException
+import java.security.SecureRandom
+import kotlin.random.Random
 
 open class DiceKey<F: Face>(val faces: List<F>) {
   companion object {
+    private val SecureRandom by lazy { Random(SecureRandom().nextInt()) }
+
     const val NumberOfFacesInKey = 25
     val rotationIndexes = listOf<List<Byte>>(
       listOf<Byte>(
@@ -42,6 +46,12 @@ open class DiceKey<F: Face>(val faces: List<F>) {
         Face(FaceLetters[index], FaceDigits[index % 6], orientationAsLowercaseLetterTrbl = FaceRotationLetters[index % 4])
       })
 
+    // Useful for UI inspection
+    val exampleA1: DiceKey<Face>
+      get() = DiceKey(faces = (0 until 25).map { index ->
+        Face(FaceLetters[0], FaceDigits[index % 5], orientationAsLowercaseLetterTrbl = FaceRotationLetters[0])
+      })
+
     @JvmStatic
     fun fromHumanReadableForm(hrf: String): DiceKey<Face> {
       return when (hrf.length) {
@@ -58,9 +68,9 @@ open class DiceKey<F: Face>(val faces: List<F>) {
     }
 
     fun createFromRandom(): DiceKey<Face> = DiceKey(faces = (0 until 25).map { Face(
-            letter = FaceLetters.random(),
-            digit = FaceDigits.random(),
-            orientationAsLowercaseLetterTrbl = FaceRotationLetters.random()
+            letter = FaceLetters.random(SecureRandom),
+            digit = FaceDigits.random(SecureRandom),
+            orientationAsLowercaseLetterTrbl = FaceRotationLetters.random(SecureRandom)
         )
     })
 
