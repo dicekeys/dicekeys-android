@@ -1,7 +1,3 @@
-# com.dicekeys.fidowriter
-
-This *sample* application seeds FIDO security keys with cryptographic keys derived from the user's DiceKey.
-
 # org.dicekeys.dicekey
 This *primarily internal* library is used by the DiceKeys app to represent DiceKeys as a square of
 faces, which can not only represent boxes of six-sided dice but also square of
@@ -56,10 +52,3 @@ message with a derived key. You can create these
 These instructions are not sealed, but are stored in plaintext within a
 [PackagedSealedMessage], along with the ciphertext and the key-derivation
 options needed to re-derive the unsealing key from the user's DiceKey.
-
-# org.dicekeys.trustedapp
-The DiceKeys Application, which uses the device camera to read user's DiceKey
-and responds to other applications' requests for access to key _derived_
-from that DiceKey.  Since the DiceKey is a master key from which all other
-keys are derived,  The API and functionality of this application is kept
-small to limit the attack surface. 

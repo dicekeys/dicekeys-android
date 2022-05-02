@@ -25,15 +25,6 @@ as well as a general-purpose derived [Secret].
 When messages are sealed with the _seal_ operation of [SymmetricKey] or [PublicKey],
 the ciphertext is stored within a [PackagedSealedMessage].
 
-The FIDO writer application, [com.dicekeys.fidowriter], is a real-world
-use case which is also small enough to be a good sample application.
-It seeds FIDO security keys with a secret it has the DiceKeys app derive
-from the user's DiceKey.
-If the FIDO security key is lost, the user can use this app to re-derive the
-secret from their DiceKey, and turn a replacement key into a perfect replica
-of the security key they lost.
-(Only a limited set of FIDO security keys support this write operation.)
-
 <!-- #### Packages primarily intended for internal use by the DiceKeys App
 The DiceKeys app itself uses the [org.dicekeys.read] package to scan in a DiceKey via the
 Android devices camera, representing the result in a format represented by [org.dicekeys.dicekey].
