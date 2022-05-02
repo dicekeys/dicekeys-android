@@ -1,6 +1,5 @@
 package org.dicekeys.app.encryption
 
-import android.graphics.drawable.GradientDrawable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -17,15 +16,15 @@ import org.dicekeys.dicekey.Face
 
 @Serializable
 data class EncryptedDiceKey constructor(
-        @SerialName("key_id")
-        val keyId: String,
-        @SerialName("center_face")
-        val centerFace: String,
-        @SerialName("encrypted_data")
-        val encryptedData: EncryptedData,
-        // Set Biometric for backward compatibility by default
-        @SerialName("keystore_type")
-        val keystoreType: AppKeystore.KeystoreType = AppKeystore.KeystoreType.BIOMETRIC,
+    @SerialName("key_id")
+    val keyId: String,
+    @SerialName("center_face")
+    val centerFace: String,
+    @SerialName("encrypted_data")
+    val encryptedData: EncryptedData,
+    // Set Biometric for backward compatibility by default
+    @SerialName("keystore_type")
+    val keystoreType: AppKeystore.KeystoreType = AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION,
 ) {
 
     val centerFaceAsFace: Face by lazy {

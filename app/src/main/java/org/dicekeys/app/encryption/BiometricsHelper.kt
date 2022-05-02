@@ -51,7 +51,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
 
     fun encrypt(diceKey: DiceKey<*>, keystoreType: AppKeystore.KeystoreType, fragment: Fragment) {
 
-        if (keystoreType == AppKeystore.KeystoreType.BIOMETRIC && !canUseBiometrics(fragment.requireContext())) {
+        if (keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION && !canUseBiometrics(fragment.requireContext())) {
             fragment.toast(R.string.biometrics_unavailable_message)
             return
         }
@@ -76,7 +76,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
 
                         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                             try{
-                                val cipher: Cipher? = if(keystoreType == AppKeystore.KeystoreType.BIOMETRIC){
+                                val cipher: Cipher? = if(keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION){
                                     result.cryptoObject?.cipher
                                 }else{
                                     appKeystore.getEncryptionCipher(keystoreType)
@@ -94,7 +94,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
                         }
                     })
 
-            if(keystoreType == AppKeystore.KeystoreType.BIOMETRIC){
+            if(keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION){
                 val cryptoObject = BiometricPrompt.CryptoObject(appKeystore.getEncryptionCipher(keystoreType))
                 authenticate(biometricPrompt, promptInfo, cryptoObject)
             }else{
@@ -126,7 +126,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
                             super.onAuthenticationSucceeded(result)
                             try{
 
-                                val cipher: Cipher? = if(encryptedDiceKey.keystoreType == AppKeystore.KeystoreType.BIOMETRIC){
+                                val cipher: Cipher? = if(encryptedDiceKey.keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION){
                                     result.cryptoObject?.cipher
                                 }else{
                                     appKeystore.getDecryptionCipher(encryptedDiceKey.encryptedData, encryptedDiceKey.keystoreType)
@@ -144,7 +144,7 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
                         }
                     })
 
-            if(encryptedDiceKey.keystoreType == AppKeystore.KeystoreType.BIOMETRIC){
+            if(encryptedDiceKey.keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION){
                 val cryptoObject = BiometricPrompt.CryptoObject(appKeystore.getDecryptionCipher(encryptedDiceKey.encryptedData, encryptedDiceKey.keystoreType))
                 authenticate(biometricPrompt, promptInfo, cryptoObject)
             }else{
@@ -172,14 +172,14 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
 
         if (promptForEncryption) {
             title = fragment.getString(R.string.biometrics_encryption_title)
-            subtitle = if (keystoreType == AppKeystore.KeystoreType.BIOMETRIC) {
+            subtitle = if (keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION) {
                 fragment.getString(R.string.biometrics_encryption_subtitle)
             }else{
                 fragment.getString(R.string.authenticate_encryption_subtitle)
             }
         } else {
             title = fragment.getString(R.string.biometrics_decryption_title)
-            subtitle = if (keystoreType == AppKeystore.KeystoreType.BIOMETRIC) {
+            subtitle = if (keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION) {
                 fragment.getString(R.string.biometrics_decryption_subtitle)
             }else{
                 fragment.getString(R.string.authenticate_decryption_subtitle)
@@ -191,11 +191,11 @@ class BiometricsHelper(private val appKeystore: AppKeystore, private val encrypt
                     .setSubtitle(subtitle)
                     .setConfirmationRequired(false)
 
-            if (keystoreType == AppKeystore.KeystoreType.BIOMETRIC) {
+            if (keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION) {
                 it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                 it.setNegativeButtonText(fragment.getString(android.R.string.cancel))
             }else{
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && keystoreType == AppKeystore.KeystoreType.DEVICE_CREDENTIALS) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && keystoreType == AppKeystore.KeystoreType.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION) {
                     it.setAllowedAuthenticators(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 } else {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
