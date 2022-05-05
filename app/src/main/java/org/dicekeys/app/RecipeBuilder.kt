@@ -99,7 +99,7 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val scope: Cor
     private fun getDomainList(): List<String> {
         return domains.value
             ?.split(",")
-            ?.map { it -> it.trim() } // trim whitespace
+            ?.map { it -> it.replace(" ", "") } // remove all whitespace
             ?.map { it -> it.trim { it == '.' || it == '/' } } // remove leading and trailing chars
             ?.filter { it.isNotBlank() }
             ?.map { urlOrDomain ->

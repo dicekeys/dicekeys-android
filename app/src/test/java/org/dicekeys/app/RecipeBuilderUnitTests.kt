@@ -60,6 +60,11 @@ class RecipeBuilderUnitTests {
         Assert.assertEquals(GOOGLE, builder.build())
 
         builder.reset()
+        builder.domains.value = "*.goo gle.com/  "
+        builder.sequence.value = "12"
+        Assert.assertEquals(GOOGLE, builder.build())
+
+        builder.reset()
         builder.domains.value = "  *.google.com/  ,   *.google.com/  "
         builder.sequence.value = "12"
         Assert.assertEquals(GOOGLE, builder.build())
