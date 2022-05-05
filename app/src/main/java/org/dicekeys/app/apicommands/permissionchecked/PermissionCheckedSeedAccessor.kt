@@ -1,6 +1,5 @@
 package org.dicekeys.app.apicommands.permissionchecked
 
-import android.app.Activity
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiRecipe
 import org.dicekeys.api.ApiStrings
@@ -22,31 +21,6 @@ open class PermissionCheckedSeedAccessor(
   private suspend fun getDiceKey(): SimpleDiceKey = loadDiceKey().await()
 
   companion object {
-    /**
-     * Try to construct a permission-checked accessor for DiceKey seeds.
-     *
-     * If there is a DiceKey loaded into the DiceKeyState, this function returns a
-     * PermissionCheckedSeedAccessor which will generate seeds for the API while
-     * protecting the raw DiceKey.
-     *
-     * If there is no DiceKey loaded into memory, this function will launch
-     * an activity to load the DiceKey into memory.  The caller should
-     * wait for the result with onActivityResult, put the loaded DiceKey
-     * into the DiceKeyState, and try to create the seed accessor again.
-     */
-    fun createForIntentApi(
-      activity: Activity,
-      loadDiceKey: () -> Deferred<SimpleDiceKey>,
-      requestUsersConsent: (UnsealingInstructions.RequestForUsersConsent
-      ) -> Deferred<UnsealingInstructions.RequestForUsersConsent.UsersResponse>
-    ): PermissionCheckedSeedAccessor = PermissionCheckedSeedAccessor(
-      ApiPermissionChecksForPackages(
-        activity.callingActivity?.packageName ?: "",
-        requestUsersConsent
-      ),
-      loadDiceKey
-    )
-
     /**
      * Try to construct a permission-checked accessor for DiceKey seeds.
      *

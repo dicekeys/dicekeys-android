@@ -22,28 +22,28 @@ class ApiPermissionChecksInstrumentedTest {
   @Test
   fun isClientAuthorizedInFaceOfRestrictionsMostlyHarmless() {
 
-    Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredAllow }
+    Assert.assertTrue(ApiPermissionChecksForUrls("com.example", null){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
         ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       ))
 
-    Assert.assertTrue(ApiPermissionChecksForPackages("com.example"){ deferredAllow }
+    Assert.assertTrue(ApiPermissionChecksForUrls("com.example", null){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
         ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example.", "com.other")
         }
       ))
 
-      Assert.assertTrue(ApiPermissionChecksForPackages("com.example."){ deferredAllow }
+      Assert.assertTrue(ApiPermissionChecksForUrls("com.example.", null){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
         ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example", "com.other")
         }
       ))
 
-      Assert.assertFalse(ApiPermissionChecksForPackages("com.examplespoof"){ deferredAllow }
+      Assert.assertFalse(ApiPermissionChecksForUrls("com.examplespoof", null){ deferredAllow }
       .doesClientMeetAuthenticationRequirements(
         ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example", "com.other")
@@ -54,7 +54,7 @@ class ApiPermissionChecksInstrumentedTest {
 
   @Test(expected = ClientPackageNotAuthorizedException::class)
   fun preventsLengthExtensionAttack() {
-    ApiPermissionChecksForPackages("com.examplespoof"){ deferredAllow }
+    ApiPermissionChecksForUrls("com.examplespoof", null){ deferredAllow }
       .throwIfClientNotAuthorized(
         ApiRecipe().apply {
           allowAndroidPrefixes = listOf("com.example", "com.other")
@@ -64,7 +64,7 @@ class ApiPermissionChecksInstrumentedTest {
 
   @Test(expected = ClientPackageNotAuthorizedException::class)
   fun throwsIfAndroidPackagePrefixesNotSet() {
-    ApiPermissionChecksForPackages("com.example"){ deferredAllow }
+    ApiPermissionChecksForUrls("com.example", null){ deferredAllow }
       .throwIfClientNotAuthorized(
         ApiRecipe().apply{
           allowAndroidPrefixes = listOf("https://someplaceotherthanhere.com/")
