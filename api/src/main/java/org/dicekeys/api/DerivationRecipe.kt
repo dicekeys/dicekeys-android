@@ -1,8 +1,8 @@
 package org.dicekeys.api
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
 import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -71,6 +71,11 @@ data class DerivationRecipe constructor(
     @IgnoredOnParcel
     val lengthInBytes by lazy {
         recipeAsJsonElement.jsonObject["lengthInBytes"]?.jsonPrimitive?.int
+    }
+
+    @IgnoredOnParcel
+    val purpose: String? by lazy {
+        recipeAsJsonElement.jsonObject["purpose"]?.jsonPrimitive?.content
     }
 
     fun createDerivationRecipeForSequence(sequenceNumber: Int): DerivationRecipe{

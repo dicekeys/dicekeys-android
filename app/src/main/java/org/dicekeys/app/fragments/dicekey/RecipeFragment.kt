@@ -18,6 +18,7 @@ import org.dicekeys.app.items.GenericListItem
 import org.dicekeys.app.repositories.RecipeRepository
 import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.viewmodels.RecipeViewModel
+import org.dicekeys.crypto.seeded.DerivationOptions
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -61,8 +62,22 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
 
                 val currentSelection = binding.type.text.toString()
                 if(currentSelection.isBlank() || list.find { it == currentSelection } == null){
-                    binding.type.setText(derivedValue.views[0].description, false)
-                    recipeViewModel.setView(derivedValue.views[0])
+
+                    // If recipe has a specific purpose select the appropriate view
+                    when {
+                        recipeViewModel.derivationRecipe.value?.let { it.purpose == "pgp" && it.type == DerivationOptions.Type.SigningKey } == true -> {
+                            DerivedValueView.OpenPGPPrivateKey()
+                        }
+                        recipeViewModel.derivationRecipe.value?.let { it.purpose == "ssh" && it.type == DerivationOptions.Type.SigningKey } == true -> {
+                            DerivedValueView.OpenSSHPrivateKey()
+                        }
+                        else -> {
+                            derivedValue.views[0]
+                        }
+                    }.also { derivedValueView ->
+                        binding.type.setText(derivedValueView.description, false)
+                        recipeViewModel.setView(derivedValueView)
+                    }
                 }
             }
         }
