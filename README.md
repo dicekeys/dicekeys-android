@@ -25,13 +25,13 @@ bash scripts/install-android-studio-and-ndk.sh
 ANDROID_HOME should be set to $HOME/Library/Android/sdk
 
 #### Windows
-```
+
  1. Download and install CMake version >= 3.15.0. https://cmake.org/download/
- 1. Download ninja-build. https://github.com/ninja-build/ninja/releases and put it on your PATH
+ 1. Download ninja-build. https://github.com/ninja-build/ninja/releases and put it on your PATH.
+ **Note: as of 2022-05-02, due a bug in gradle, you may need to put ninja.exe into the same directory as the CMAKE executable (under cmake\bin).**
  1. Install Android Studio and the Android SDK in it
  1. set environment variable ANDROID_HOME to to $HOME/AppData/Local/Android/Sdk (may not actually be necessary, since I succeeded without doing this on 2020-2-11 - Stuart)
 
-```
 
 ## UI Widgets
 

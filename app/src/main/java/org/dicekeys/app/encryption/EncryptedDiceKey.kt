@@ -24,7 +24,7 @@ data class EncryptedDiceKey constructor(
     val encryptedData: EncryptedData,
     // Set Biometric for backward compatibility by default
     @SerialName("keystore_type")
-    val keystoreType: AppKeystore.KeystoreType = AppKeystore.KeystoreType.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION,
+    val keyStoreType: AppKeyStore.KeyStoreCredentialsAllowed = AppKeyStore.KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION,
 ) {
 
     val centerFaceAsFace: Face by lazy {

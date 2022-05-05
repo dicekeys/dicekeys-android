@@ -9,7 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.dicekeys.app.AppLifecycleObserver
-import org.dicekeys.app.encryption.AppKeystore
+import org.dicekeys.app.encryption.AppKeyStore
 import org.dicekeys.app.encryption.BiometricsHelper
 import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.repositories.DiceKeyRepository
@@ -22,8 +22,8 @@ class Modules {
 
     @Singleton
     @Provides
-    fun provideAppKeystore(): AppKeystore {
-        return AppKeystore()
+    fun provideAppKeystore(): AppKeyStore {
+        return AppKeyStore()
     }
 
     @Singleton
@@ -40,8 +40,8 @@ class Modules {
 
     @Singleton
     @Provides
-    fun provideBiometricsHelper(appKeystore: AppKeystore, encryptedStorage: EncryptedStorage): BiometricsHelper {
-        return BiometricsHelper(appKeystore, encryptedStorage)
+    fun provideBiometricsHelper(appKeyStore: AppKeyStore, encryptedStorage: EncryptedStorage): BiometricsHelper {
+        return BiometricsHelper(appKeyStore, encryptedStorage)
     }
 
     @Singleton
