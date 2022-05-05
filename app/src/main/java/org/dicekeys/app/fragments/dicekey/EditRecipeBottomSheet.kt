@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -84,4 +86,8 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setSoftInputMode(SOFT_INPUT_ADJUST_RESIZE)
+    }
 }

@@ -31,6 +31,8 @@ abstract class AppFragment<T : ViewDataBinding>(
 ) : Fragment() {
     internal lateinit var binding: T
 
+    open val isAdjustResize = false
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -44,6 +46,11 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().window.setSoftInputMode(if (isAdjustResize) WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE else WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
