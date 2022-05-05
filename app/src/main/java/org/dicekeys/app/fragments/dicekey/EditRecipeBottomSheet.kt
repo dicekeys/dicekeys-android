@@ -68,12 +68,16 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
             dismiss()
         }
 
+        binding.buttonEditRawJsonCancel.setOnClickListener {
+            viewModel.editRawJson(false)
+        }
+
         binding.buttonRawJson.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Edit Raw Json")
                 .setMessage("Entering a recipe in raw JSON format can be dangerous. \n\nIf you enter a recipe provided by someone else, it could be a trick to get you to re-create a secret you use for another application or purpose.\n\nIf you generate the recipe yourself and forget even a single character, you will be unable to re-generate the same secret again. (Saving the recipe won't help you if you lose the device(s) it's saved on.)")
                 .setPositiveButton("I accept the risk") { _: DialogInterface, _: Int ->
-                    viewModel.editRawJson()
+                    viewModel.editRawJson(true)
                     true
                 }
                 .setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int ->

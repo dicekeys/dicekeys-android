@@ -229,11 +229,23 @@
             app:layout_constraintTop_toTopOf="@+id/buttonOk" />
 
         <Button
+            android:id="@+id/buttonEditRawJsonCancel"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            isVisible="@{vm.recipeBuilder.buildType == BuildType.Raw}"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonOk"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/buttonOk" />
+
+        <Button
             android:id="@+id/buttonOk"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:enabled="@{vm.recipeBuilder.derivationRecipeLiveData != null}"
             android:text="Done"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

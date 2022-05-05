@@ -25,15 +25,15 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val scope: Cor
     enum class BuildType {
         Online, Purpose, Raw, Template
     }
-    var buildType = MutableLiveData(if(template == null) BuildType.Online else BuildType.Template)
+    val buildType = MutableLiveData(if(template == null) BuildType.Online else BuildType.Template)
 
-    var domains = MutableLiveData("")
-    var purpose = MutableLiveData("")
-    var rawJson = MutableLiveData("")
+    val domains = MutableLiveData("")
+    val purpose = MutableLiveData("")
+    val rawJson = MutableLiveData("")
 
-    var sequence = MutableLiveData("1")
-    var lengthInChars : MutableLiveData<String> = MutableLiveData(template?.lengthInChars?.toString() ?: "")
-    var lengthInBytes : MutableLiveData<String> = MutableLiveData(template?.lengthInBytes?.toString() ?: "")
+    val sequence = MutableLiveData("1")
+    val lengthInChars : MutableLiveData<String> = MutableLiveData(template?.lengthInChars?.toString() ?: "")
+    val lengthInBytes : MutableLiveData<String> = MutableLiveData(template?.lengthInBytes?.toString() ?: "")
 
     // used only in raw json
     var name = MutableLiveData("")
@@ -78,9 +78,14 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val scope: Cor
         build()
     }
 
-    fun editRawJson(){
-        buildType.value = BuildType.Raw
-        rawJson.value = getDerivationRecipe()?.recipeJson ?: "{}"
+    fun setEditRawJson(isEditRawJson: Boolean){
+        if(isEditRawJson) {
+            rawJson.value = getDerivationRecipe()?.recipeJson ?:  "{}"
+            name.value = getDerivationRecipe()?.name ?: ""
+            buildType.value = BuildType.Raw
+        }else{
+            buildType.value = if(template == null) if(domains.value.isNullOrBlank() && !purpose.value.isNullOrBlank()) BuildType.Purpose else BuildType.Online else BuildType.Template
+        }
     }
 
     fun reset() {
