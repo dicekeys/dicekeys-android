@@ -43,14 +43,14 @@ class AppKeyStoreUnitTests {
 
     @Test(expected = Exception::class)
     fun on_duplicate_initialization_throw_exception() {
-        appKeyStore.initializeKeyStoreKey(ALIAS, AppKeyStore.KeyStoreCredentialsAllowed.KEYSTORE)
-        appKeyStore.initializeKeyStoreKey(ALIAS, AppKeyStore.KeyStoreCredentialsAllowed.KEYSTORE)
+        appKeyStore.initializeKeyStoreKey(ALIAS, AppKeyStore.KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION)
+        appKeyStore.initializeKeyStoreKey(ALIAS, AppKeyStore.KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION)
     }
 
     @Test
     fun test_key_alias_removal() {
-        appKeyStore.initializeKeyStoreKey(ALIAS, AppKeyStore.KeyStoreCredentialsAllowed.KEYSTORE)
+        appKeyStore.initializeKeyStoreKey(ALIAS, AppKeyStore.KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION)
         appKeyStore.deleteFromKeyStore(ALIAS)
-        appKeyStore.initializeKeyStoreKey(ALIAS, AppKeyStore.KeyStoreCredentialsAllowed.KEYSTORE)
+        appKeyStore.initializeKeyStoreKey(ALIAS, AppKeyStore.KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION)
     }
 }
