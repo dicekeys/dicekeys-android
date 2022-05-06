@@ -26,15 +26,16 @@ class AppKeyStore {
 
     /*
      * Check [initializeKeyStoreKey] for initialization settings for each option.
-     * The general idea is to have the most strict/secure options for BIOMETRIC, and simple device authentication
-     * with AUTHENTICATION option. Keystore exists as an option but is not used.
+     * The general idea is to have the most strict/secure options for ALLOW_ONLY_BIOMETRIC_AUTHENTICATION, and simple device authentication
+     * with ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION option. Keystore exists as an option but is not used.
      *
-     * - BIOMETRIC has the most strict keystore settings, requires any form of supported biometrics to unlock the encryption key (fingerprint, face). [1]
-     * - AUTHENTICATION requires user to authenticate himself by the use of PIN/PATTERN/PASSWORD or a Biometric method. Similar to what he is using to unlock his screen lock.
-     * - DEVICE_CREDENTIALS exactly the same as AUTHENTICATION (keystore settings/key alias). User is requested to unlock only with PIN/PATTERN/PASSWORD.
+     * - ALLOW_ONLY_BIOMETRIC_AUTHENTICATION has the most strict keystore settings, requires any form of supported biometrics to unlock the encryption key (fingerprint, face). [1]
+     * - ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION requires user to authenticate himself by the use of PIN/PATTERN/PASSWORD or a Biometric method. Similar to what he is using to unlock his screen lock.
+     * - ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION exactly the same as ALLOW_ONLY_BIOMETRIC_AUTHENTICATION (keystore settings/key alias). User is requested to unlock only with PIN/PATTERN/PASSWORD.
+     * - ALLOW_ACCESS_WITHOUT_REAUTHENTICATION basic security provided by Android Keystore. No user re-authentication is required to decrypt the data.
      *
      * Note: Encryption key can be invalidated when setInvalidatedByBiometricEnrollment is set to true and new biometrics are enrolled. This option is enabled
-     * only on BIOMETRIC type. Check Android documentation for more information. [2]
+     * only on ALLOW_ONLY_BIOMETRIC_AUTHENTICATION type. Check Android documentation for more information. [2]
      *
      * [1] https://developer.android.com/training/sign-in/biometric-auth
      * [2] https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder
@@ -46,7 +47,7 @@ class AppKeyStore {
         @SerialName("BIOMETRIC") ALLOW_ONLY_BIOMETRIC_AUTHENTICATION,
         @SerialName("AUTHENTICATION") ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION,
         @SerialName("DEVICE_CREDENTIALS") ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION,
-        @SerialName("KEYSTORE") KEYSTORE,
+        @SerialName("KEYSTORE") ALLOW_ACCESS_WITHOUT_REAUTHENTICATION,
     }
 
     private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
@@ -56,7 +57,7 @@ class AppKeyStore {
     fun isAuthenticationRequired(keyStoreCredentialsAllowed: KeyStoreCredentialsAllowed): Boolean {
         try{
             when(keyStoreCredentialsAllowed){
-                KeyStoreCredentialsAllowed.KEYSTORE -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
+                KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
                 KeyStoreCredentialsAllowed.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeyStoreCredentialsAllowed.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
                 KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
             }
@@ -148,7 +149,7 @@ class AppKeyStore {
                     builder.setUserAuthenticationValidityDurationSeconds(-1)
                 }
             }
-            KeyStoreCredentialsAllowed.KEYSTORE -> {
+            KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION -> {
                // No need to init anything
             }
         }
@@ -187,7 +188,7 @@ class AppKeyStore {
     @Throws(Exception::class)
     fun getEncryptionCipher(keyStoreCredentialsAllowed: KeyStoreCredentialsAllowed): Cipher {
         return when(keyStoreCredentialsAllowed){
-            KeyStoreCredentialsAllowed.KEYSTORE -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
+            KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
             KeyStoreCredentialsAllowed.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeyStoreCredentialsAllowed.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
             KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
         }
@@ -196,7 +197,7 @@ class AppKeyStore {
     @Throws(Exception::class)
     fun getDecryptionCipher(encryptedData: EncryptedData, keyStoreCredentialsAllowed: KeyStoreCredentialsAllowed): Cipher {
         return when(keyStoreCredentialsAllowed){
-            KeyStoreCredentialsAllowed.KEYSTORE -> getDecryptionCipher(BASIC_KEYSTORE_ALIAS, encryptedData)
+            KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION -> getDecryptionCipher(BASIC_KEYSTORE_ALIAS, encryptedData)
             KeyStoreCredentialsAllowed.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeyStoreCredentialsAllowed.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getDecryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, encryptedData)
             KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getDecryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, encryptedData)
         }
@@ -205,7 +206,7 @@ class AppKeyStore {
     @Throws(Exception::class)
     fun encryptData(dataToEncrypt: ByteArray): EncryptedData {
         if (!keyStoreKeyExists(BASIC_KEYSTORE_ALIAS)) {
-            initializeKeyStoreKey(BASIC_KEYSTORE_ALIAS, KeyStoreCredentialsAllowed.KEYSTORE)
+            initializeKeyStoreKey(BASIC_KEYSTORE_ALIAS, KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION)
         }
 
         val cipher = getEncryptionCipher(BASIC_KEYSTORE_ALIAS)

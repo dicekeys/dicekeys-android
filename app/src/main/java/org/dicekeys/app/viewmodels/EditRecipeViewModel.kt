@@ -16,8 +16,8 @@ class EditRecipeViewModel @AssistedInject constructor(
 ) : ViewModel(), LifecycleOwner {
     val deriveType = recipeBuilder.type
 
-    fun editRawJson() {
-        recipeBuilder.editRawJson()
+    fun editRawJson(isEditRawJson: Boolean) {
+        recipeBuilder.setEditRawJson(isEditRawJson)
     }
 
     @SuppressLint("StaticFieldLeak")
