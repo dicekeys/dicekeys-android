@@ -7,7 +7,6 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
 import org.dicekeys.app.databinding.DicekeyFragmentBinding
-import org.dicekeys.app.encryption.AppKeystore
 import org.dicekeys.app.encryption.BiometricsHelper
 import javax.inject.Inject
 

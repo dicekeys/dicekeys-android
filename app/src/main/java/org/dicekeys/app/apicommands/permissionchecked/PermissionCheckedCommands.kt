@@ -1,7 +1,6 @@
 package org.dicekeys.app.apicommands.permissionchecked
 
 import org.dicekeys.api.ApiStrings
-import org.dicekeys.api.DiceKeysIntentApiClient
 import org.dicekeys.crypto.seeded.*
 
 /**

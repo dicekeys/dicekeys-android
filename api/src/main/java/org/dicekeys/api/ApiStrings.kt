@@ -2,11 +2,6 @@ package org.dicekeys.api
 
 class ApiStrings {
 
-  object AndroidIntent {
-    const val packageName = "org.dicekeys.app"
-    const val className = "org.dicekeys.app.activities.FIXME"
-  }
-
   object Commands {
     const val generateSignature = "generateSignature"
     const val getPassword = "getPassword"

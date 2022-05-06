@@ -42,11 +42,11 @@ class EncryptedStorage(private val sharedPreferences: SharedPreferences) {
 
     fun getDiceKeysLiveData(): LiveData<List<EncryptedDiceKey>> = diceKeysLiveData
 
-    fun save(diceKey: DiceKey<*>, encryptedData: EncryptedData, keystoreType: AppKeystore.KeystoreType) {
+    fun save(diceKey: DiceKey<*>, encryptedData: EncryptedData, keyStoreType: AppKeyStore.KeyStoreCredentialsAllowed) {
         val encryptedDiceKey = EncryptedDiceKey(keyId = diceKey.keyId,
                 centerFace = diceKey.centerFace().toHumanReadableForm(true),
                 encryptedData = encryptedData,
-                keystoreType = keystoreType
+                keyStoreType = keyStoreType
         )
 
         sharedPreferences
