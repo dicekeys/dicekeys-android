@@ -38,7 +38,7 @@ class AppLifecycleObserver(context: Context, val diceKeyRepository: DiceKeyRepos
     }
 
     companion object{
-        // 30 seconds 
-        const val DELAY = 30 * 1000L
+        // 60 seconds
+        const val DELAY = 60 * 1000L
     }
 }
