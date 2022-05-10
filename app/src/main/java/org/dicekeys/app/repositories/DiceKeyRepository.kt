@@ -39,7 +39,7 @@ class DiceKeyRepository constructor(
         val inMemoryOnlyDiceKeys = diceKeys.values.filter { inMemory -> encryptedDiceKeys.find { encrypted -> inMemory.keyId == encrypted.keyId } == null }
 
         // Combine both
-        availableDiceKeys.value = inMemoryOnlyDiceKeys.map { DiceKeyDescription(it) } + encryptedDiceKeys.map { DiceKeyDescription(it) }
+        availableDiceKeys.postValue(inMemoryOnlyDiceKeys.map { DiceKeyDescription(it) } + encryptedDiceKeys.map { DiceKeyDescription(it) })
     }
 
     fun toggleHideFaces(){
