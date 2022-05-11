@@ -34,7 +34,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             app:srcCompat="@drawable/ic_phonelet"
-            app:tint="@color/colorPrimary" />
+            app:tint="?attr/colorPrimary" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardViewSave"

@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
-        tools:background="@color/diceViewBgColor">
+        tools:background="?colorOnPrimaryContainer">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:alpha="0.25"
-                android:background="@color/white" />
+                android:background="@android:color/white" />
 
         </LinearLayout>
 

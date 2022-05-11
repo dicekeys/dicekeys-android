@@ -138,7 +138,7 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
         linePaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_lineColor,
                 Color.argb(255 / 2, 255, 255, 255))
         diceBoxPaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_boxColor,
-            ContextCompat.getColor(context, R.color.alexandrasBlueLighter))
+            ContextCompat.getColor(context, R.color.md_theme_light_tertiary))
         diePenPaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_penColor, Color.BLACK)
         faceSurfacePaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_faceColor, Color.WHITE)
         borderColor.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_borderColor, Color.GRAY)

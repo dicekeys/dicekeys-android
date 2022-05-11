@@ -45,7 +45,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/diceKeyWrap"
             tools:ignore="MissingConstraints"
-            app:tint="@color/colorPrimary" />
+            app:tint="?colorPrimary" />
 
         <ImageButton
             android:id="@+id/btnrtRight"
@@ -56,7 +56,7 @@
             android:src="@drawable/ic_baseline_rotate_right_24"
             app:layout_constraintStart_toEndOf="@+id/btnrtLeft"
             app:layout_constraintTop_toTopOf="@+id/btnrtLeft"
-            app:tint="@color/colorPrimary" />
+            app:tint="?colorPrimary" />
 
         <ImageButton
             android:id="@+id/btnDelete"
@@ -68,7 +68,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnrtRight"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/btnrtRight"
-            app:tint="@color/colorPrimary" />
+            app:tint="?colorPrimary" />
 
 
         <androidx.recyclerview.widget.RecyclerView

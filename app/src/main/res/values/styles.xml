@@ -7,17 +7,9 @@
     </style>
 
     <style name="ThemeOverlay.DiceKeys.Toolbar" parent="">
-        <item name="android:colorControlActivated">@color/white</item>
-        <item name="android:colorControlNormal">@color/white</item>
-        <item name="colorControlNormal">@color/white</item>
-    </style>
-
-    <style name="DiceKeys.BottomSheetDialogTheme" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/DiceKeys.BottomSheetStyle</item>
-    </style>
-
-    <style name="DiceKeys.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/rounded_bottom_sheet</item>
+        <item name="android:colorControlActivated">@android:color/white</item>
+        <item name="android:colorControlNormal">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
     </style>
 
 </resources>

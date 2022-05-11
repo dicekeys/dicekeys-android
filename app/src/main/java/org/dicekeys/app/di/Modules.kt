@@ -58,7 +58,7 @@ class Modules {
 
     @Singleton
     @Provides
-    fun provideAppLifecycleObserver(@ApplicationContext context: Context, diceKeyRepository: DiceKeyRepository): AppLifecycleObserver {
-        return AppLifecycleObserver(context, diceKeyRepository)
+    fun provideAppLifecycleObserver(sharedPreferences: SharedPreferences, diceKeyRepository: DiceKeyRepository): AppLifecycleObserver {
+        return AppLifecycleObserver(sharedPreferences, diceKeyRepository)
     }
 }

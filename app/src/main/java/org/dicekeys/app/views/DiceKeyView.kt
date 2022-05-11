@@ -49,11 +49,11 @@ class DiceKeyView @JvmOverloads constructor(
         if (diceKeyContent == DiceKeyContent.HALF_EMPTY) {
             highlightedIndexes = listOf(diceKey.faces.size / 2 + 1).toSet()
         }
-        diceBoxPaint.color = typedArray.getColor(R.styleable.DiceKeyView_boxColor, ContextCompat.getColor(context, R.color.diceColor))
-        diceBoxDieSlotPaint.color = typedArray.getColor(R.styleable.DiceKeyView_slotColor, ContextCompat.getColor(context, R.color.diceBoxDieSlot))
+        diceBoxPaint.color = typedArray.getColor(R.styleable.DiceKeyView_boxColor, ContextCompat.getColor(context, R.color.md_theme_light_primary))
+        diceBoxDieSlotPaint.color = typedArray.getColor(R.styleable.DiceKeyView_slotColor, ContextCompat.getColor(context, R.color.md_theme_light_primaryInverse))
         diePenPaint.color = typedArray.getColor(R.styleable.DiceKeyView_penColor, Color.BLACK)
         faceSurfacePaint.color = typedArray.getColor(R.styleable.DiceKeyView_faceColor, Color.WHITE)
-        highlighterPaint.color = typedArray.getColor(R.styleable.DiceKeyView_hightlighColor, ContextCompat.getColor(context, R.color.highlighter))
+        highlighterPaint.color = typedArray.getColor(R.styleable.DiceKeyView_hightlighColor, ContextCompat.getColor(context, R.color.highlight))
         typedArray.recycle()
         
         diceBoxDieSlotHiddenPaint.color = diceBoxPaint.color

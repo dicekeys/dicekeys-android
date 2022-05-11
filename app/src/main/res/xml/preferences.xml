@@ -3,6 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
+        app:key="appearance_category"
+        app:title="Appearance">
+
+        <ListPreference
+            app:key="appearance"
+            app:title="Appearance"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/appearance_entries"
+            app:entryValues="@array/appearance_values"
+            app:defaultValue="system"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:key="security_category"
         app:title="@string/security">
 
@@ -38,18 +52,20 @@
 
     <PreferenceCategory
         app:key="recipes_category"
-        app:title="@string/recipes">
+        app:title="@string/recipes"
+        app:isPreferenceVisible="false">
 
         <Preference
             app:key="backup"
             android:title="@string/backup"
             app:summary="Backup your recipes into a file"
-            />
+            app:isPreferenceVisible="false"/>
 
         <Preference
             app:key="restore"
             android:title="@string/restore"
-            app:summary="Restore your recipes from a file"/>
+            app:summary="Restore your recipes from a file"
+            app:isPreferenceVisible="false"/>
 
     </PreferenceCategory>
 

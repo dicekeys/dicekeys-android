@@ -53,10 +53,12 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
         binding.vm = viewModel
 
         binding.toggleButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
-            if(checkedId == R.id.buttonWebAddress){
-                viewModel.recipeBuilder.buildType.postValue(RecipeBuilder.BuildType.Online)
-            }else{
-                viewModel.recipeBuilder.buildType.postValue(RecipeBuilder.BuildType.Purpose)
+            if(isChecked) {
+                if (checkedId == R.id.buttonWebAddress) {
+                    viewModel.recipeBuilder.buildType.postValue(RecipeBuilder.BuildType.Online)
+                } else {
+                    viewModel.recipeBuilder.buildType.postValue(RecipeBuilder.BuildType.Purpose)
+                }
             }
         }
 

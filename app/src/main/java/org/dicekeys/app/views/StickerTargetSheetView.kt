@@ -46,7 +46,7 @@ class StickerTargetSheetView @JvmOverloads constructor(
         }
         diePenPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_penColor, Color.BLACK)
         faceSurfacePaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_faceColor, Color.WHITE)
-        highlighterPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_hightlighColor, ContextCompat.getColor(context, R.color.highlighter))
+        highlighterPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_hightlighColor, ContextCompat.getColor(context, R.color.highlight))
         borderPaint.color = typedArray.getColor(R.styleable.StickerTargetSheetView_borderColor, Color.GRAY)
         typedArray.recycle()
     }

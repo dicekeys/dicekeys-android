@@ -15,4 +15,16 @@
         <item>300</item>
         <item>600</item>
     </string-array>
+
+    <string-array name="appearance_entries">
+        <item>System</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <string-array name="appearance_values" translatable="false">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
 </resources>
