@@ -70,6 +70,7 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
 
         binding.buttonEditRawJsonCancel.setOnClickListener {
             viewModel.editRawJson(false)
+            binding.toggleButton.check(if (viewModel.recipeBuilder.buildType.value == RecipeBuilder.BuildType.Online) R.id.buttonWebAddress else R.id.buttonPurpose)
         }
 
         binding.buttonRawJson.setOnClickListener {

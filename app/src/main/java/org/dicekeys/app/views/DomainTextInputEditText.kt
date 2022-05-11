@@ -2,6 +2,7 @@ package org.dicekeys.app.views
 
 import android.content.Context
 import android.util.AttributeSet
+import com.google.android.material.textfield.TextInputEditText
 import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.utils.getClipboard
 import org.dicekeys.api.getWildcardOfRegisteredDomainFromCandidateWebUrl
@@ -10,7 +11,7 @@ class DomainTextInputEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = com.google.android.material.R.attr.editTextStyle
-) : PlaceholderTextInputEditText(context, attrs, defStyleAttr) {
+) : TextInputEditText(context, attrs, defStyleAttr) {
 
     // Override _paste_ operation on the domain text field to replace pasted URLs with
     // the registered domain in the URL's host field preceded by a wildcard.

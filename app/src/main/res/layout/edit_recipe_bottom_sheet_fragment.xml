@@ -72,7 +72,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="@string/web_address"
+                android:hint="Web Address*"
+                app:placeholderText="example.com"
+                app:expandedHintEnabled="true"
                 app:endIconMode="clear_text"
                 app:helperText="@{String.format(@string/paster_or_enter_the_address, ExtensionsKt.description(vm.deriveType, false))}"
                 app:helperTextEnabled="true"
@@ -87,8 +89,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textUri"
                     android:text="@={vm.recipeBuilder.domains}"
-                    android:enabled="@{vm.recipeBuilder.buildType == BuildType.Online}"
-                    app:placeholder="https://example.com" />
+                    android:enabled="@{vm.recipeBuilder.buildType == BuildType.Online}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="@string/purpose"
+                android:hint="Purpose*"
                 app:endIconMode="clear_text"
                 app:helperText="@{String.format(@string/enter_a_purpose_for_the, ExtensionsKt.description(vm.deriveType, false))}"
                 app:helperTextEnabled="true"
@@ -144,21 +145,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Max Chars"
+                android:hint="Max Chars (Optional)"
+                app:hintEnabled="true"
+                app:placeholderText="no length limit"
+                app:expandedHintEnabled="true"
                 app:endIconMode="clear_text"
-                app:helperText="@string/maximum_character"
+                app:helperText="Maximum length, in characters (16-999)"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
                 app:layout_constraintStart_toStartOf="@+id/toggleButton"
                 app:layout_constraintTop_toBottomOf="@+id/toggleButton">
 
-                <org.dicekeys.app.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/maxChars"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:text="@={vm.recipeBuilder.lengthInChars}"
-                    app:placeholder="@string/no_limit" />
+                    android:text="@={vm.recipeBuilder.lengthInChars}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -168,21 +171,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Length"
+                android:hint="Length (Optional)"
+                app:expandedHintEnabled="true"
+                app:placeholderText="32"
                 app:endIconMode="clear_text"
-                app:helperText="@string/maximum_length"
+                app:helperText="Length, in bytes (16-999)"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
                 app:layout_constraintStart_toStartOf="@+id/toggleButton"
                 app:layout_constraintTop_toBottomOf="@+id/toggleButton">
 
-                <org.dicekeys.app.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/length"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:text="@={vm.recipeBuilder.lengthInBytes}"
-                    app:placeholder="default (32 bytes)" />
+                    />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -203,7 +208,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/toggleButton"
                 tools:helperText="@string/even_the_smallest_change ">
 
-                <org.dicekeys.app.views.PlaceholderTextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/rawJson"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
