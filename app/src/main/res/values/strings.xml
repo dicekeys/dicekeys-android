@@ -93,8 +93,9 @@
     <string name="pref_privacy_summary">Disable screenshots &amp; screen preview on recent apps</string>
     <string name="pref_privacy_summary_extra">Do not be tricked taking screenshots or recording images of your DiceKey. Anyone who sees the image of your key can replicate it. Enable this feature only when using sample DiceKeys, such as if recording a demo video or product review. To allow recording, type "I know any key I record will be compromised" in the field below.</string>
 
-    <string name="pref_autolock">Auto-Lock your DiceKeys</string>
+    <string name="pref_autolock">Automatically lock or erase DiceKeys when the app is in the background for</string>
     <string name="pref_autolock_summary">Automatically lock your DiceKeys when the app is in the background</string>
+    <string name="pref_autolock_summary_extra">(If you have saved your DiceKey on this device, you will need to unlock it. If you have not saved it, you will need to re-scan it.)</string>
 
     <string name="ask_for_permissions">Ask for Permissions to read USB device</string>
 

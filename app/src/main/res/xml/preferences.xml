@@ -10,9 +10,14 @@
             app:key="autolock"
             app:title="@string/pref_autolock"
             app:useSimpleSummaryProvider="true"
+            app:singleLineTitle="false"
+            android:dialogTitle="Lock or erase DiceKeys"
             app:entries="@array/autolock_entries"
             app:entryValues="@array/autolock_values"
             app:defaultValue="60"/>
+
+        <Preference
+            app:summary="@string/pref_autolock_summary_extra" />
 
     </PreferenceCategory>
 
