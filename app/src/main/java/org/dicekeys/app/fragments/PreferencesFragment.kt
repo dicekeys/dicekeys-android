@@ -1,9 +1,11 @@
 package org.dicekeys.app.fragments
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.text.format.DateFormat
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -27,10 +29,13 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class PreferencesFragment : PreferenceFragmentCompat() {
+class PreferencesFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject
     lateinit var recipeRepository: RecipeRepository
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     /*
      * Register an ActivityResultContract to prompt the user to select a path for creating a new file.
@@ -110,6 +115,35 @@ class PreferencesFragment : PreferenceFragmentCompat() {
             true
         }
         findPreference<Preference>("restore")?.isVisible = false // Disable until we finalize the backup file structure
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sp: SharedPreferences?, key: String?) {
+        if(key == "appearance"){
+            val appearance = sharedPreferences.getString(key, null)
+            AppCompatDelegate.setDefaultNightMode(
+                when (appearance) {
+                    "dark" -> {
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    }
+                    "light" -> {
+                        AppCompatDelegate.MODE_NIGHT_NO
+                    }
+                    else -> {
+                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    }
+                }
+            )
+        }
     }
 
     companion object {

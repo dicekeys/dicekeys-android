@@ -8,11 +8,9 @@ import org.dicekeys.app.repositories.DiceKeyRepository
 import java.util.*
 import kotlin.concurrent.schedule
 
-class AppLifecycleObserver(context: Context, val diceKeyRepository: DiceKeyRepository) : DefaultLifecycleObserver{
+class AppLifecycleObserver constructor(val sharedPreferences: SharedPreferences, val diceKeyRepository: DiceKeyRepository) : DefaultLifecycleObserver{
     private val timer = Timer()
     private  var timerTask: TimerTask? = null
-
-    private var sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     init {
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)

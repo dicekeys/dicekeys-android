@@ -27,7 +27,7 @@
             android:text="@{vm.isSaved() ? @string/lock_this_dicekey : @string/forget_this_dicekey}"
             android:textAllCaps="false"
             app:icon="@{vm.isSaved() ? @drawable/ic_baseline_lock_24 : @drawable/ic_baseline_delete_24}"
-            app:iconTint="@color/colorPrimary"
+            app:tint="?attr/colorPrimary"
             tools:text="@string/lock_this_dicekey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

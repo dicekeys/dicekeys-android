@@ -34,7 +34,7 @@ class StickerSheetView @JvmOverloads constructor(
         pageIndex = typedArray.getInteger(R.styleable.StickerSheetView_pageIndex, 0)
         diePenPaint.color = typedArray.getColor(R.styleable.StickerSheetView_penColor, Color.BLACK)
         faceSurfacePaint.color = typedArray.getColor(R.styleable.StickerSheetView_faceColor, Color.WHITE)
-        highlighterPaint.color = typedArray.getColor(R.styleable.StickerSheetView_hightlighColor, ContextCompat.getColor(context, R.color.highlighter))
+        highlighterPaint.color = typedArray.getColor(R.styleable.StickerSheetView_hightlighColor, ContextCompat.getColor(context, R.color.highlight))
         borderPaint.color = typedArray.getColor(R.styleable.StickerSheetView_borderColor, Color.GRAY)
         typedArray.recycle()
     }

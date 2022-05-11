@@ -18,8 +18,8 @@ fun openBrowser(context: Context, url: String) {
         builder.setShowTitle(true)
         builder.setUrlBarHidingEnabled(false)
         builder.setDefaultColorSchemeParams(CustomTabColorSchemeParams.Builder()
-                .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                .setNavigationBarColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                .setToolbarColor(ContextCompat.getColor(context, R.color.md_theme_light_primary))
+                .setNavigationBarColor(ContextCompat.getColor(context, R.color.md_theme_light_primary))
                 .build()
         )
 
