@@ -116,9 +116,9 @@ class DiceKeyView @JvmOverloads constructor(
                         dieStepSize * facePosition.column,
                         dieStepSize * facePosition.row
                 )
-
+                val showFace = computedShowDiceAtIndexes.contains(facePosition.id)
                 val dieIsCenterDie = (i == 12)
-                if (hideDiceExceptCenterDie && !dieIsCenterDie){
+                if (hideDiceExceptCenterDie && !dieIsCenterDie || !showFace){
                     canvas.drawRoundRect(0f, 0f, faceSize, faceSize,
                             sizeModel.faceRadius, sizeModel.faceRadius, diceBoxDieSlotPaint)
                 }else{
