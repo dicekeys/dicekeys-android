@@ -51,6 +51,10 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         binding.bottomNavigation.setupWithNavController(navController)
 
+        binding.bottomNavigation.setOnItemReselectedListener {
+            navController.popBackStack(destinationId = it.itemId, inclusive = false)
+        }
+
         navController.addOnDestinationChangedListener { navController, destination, _ ->
 
             val insideDiceKeyNav = navController.backQueue.firstOrNull { it.destination.id == R.id.dicekey
