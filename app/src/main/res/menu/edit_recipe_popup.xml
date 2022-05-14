@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/edit_json"
+        android:title="Edit Raw JSON" />
+
+    <item
+        android:id="@+id/cancel_edit"
+        android:title="Cancel Raw JSON editing" />
+
+</menu>

@@ -21,28 +21,53 @@
         android:layout_height="match_parent"
         android:padding="24dp">
 
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{ExtensionsKt.description(vm.recipeBuilder.type, true)}"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            app:layout_constraintEnd_toStartOf="@+id/buttonMenu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Password" />
+
+        <ImageButton
+            android:id="@+id/buttonMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="-8dp"
+            android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_more_vert_24"
+            app:layout_constraintBottom_toBottomOf="@+id/textView10"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorPrimary" />
+
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/textView10">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@{vm.recipeBuilder.buildType == BuildType.Raw ? `Edit Raw JSON` : `What is this recipe for?`}"
-                tools:text="What is this recipe for?"
-                android:textAppearance="?attr/textAppearanceBody1" />
+                android:text="What is this recipe for?"
+                android:textAppearance="?attr/textAppearanceBody1"
+                />
 
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/toggleButton"
+                isVisible="@{vm.recipeBuilder.buildType != BuildType.Raw}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                isVisible="@{vm.recipeBuilder.buildType != BuildType.Raw}"
                 app:selectionRequired="true"
                 app:singleSelection="true">
 
@@ -73,23 +98,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Web Address*"
-                app:placeholderText="example.com"
-                app:expandedHintEnabled="true"
                 app:endIconMode="clear_text"
+                app:expandedHintEnabled="true"
                 app:helperText="@{String.format(@string/paster_or_enter_the_address, ExtensionsKt.description(vm.deriveType, false))}"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
                 app:layout_constraintStart_toStartOf="@+id/toggleButton"
                 app:layout_constraintTop_toBottomOf="@+id/toggleButton"
+                app:placeholderText="example.com"
                 tools:helperText="@string/paster_or_enter_the_address">
 
                 <org.dicekeys.app.views.DomainTextInputEditText
                     android:id="@+id/domains"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:enabled="@{vm.recipeBuilder.buildType == BuildType.Online}"
                     android:inputType="textUri"
-                    android:text="@={vm.recipeBuilder.domains}"
-                    android:enabled="@{vm.recipeBuilder.buildType == BuildType.Online}" />
+                    android:text="@={vm.recipeBuilder.domains}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -112,9 +137,32 @@
                     android:id="@+id/purpose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textNoSuggestions"
                     android:enabled="@{vm.recipeBuilder.buildType == BuildType.Purpose}"
+                    android:inputType="textNoSuggestions"
                     android:text="@={vm.recipeBuilder.purpose}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/sequenceTextInputLayout"
+                isVisible="@{vm.recipeBuilder.buildType != BuildType.Raw}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/sequence_number"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/toggleButton"
+                app:layout_constraintStart_toStartOf="@+id/toggleButton"
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton"
+                app:placeholderText="1"
+                tools:helperText="@string/enter_a_purpose_for_the">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/sequenceNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="@={vm.recipeBuilder.sequence}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -146,15 +194,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Max Chars (Optional)"
-                app:hintEnabled="true"
-                app:placeholderText="no length limit"
-                app:expandedHintEnabled="true"
                 app:endIconMode="clear_text"
+                app:expandedHintEnabled="true"
                 app:helperText="Maximum length, in characters (16-999)"
                 app:helperTextEnabled="true"
+                app:hintEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
                 app:layout_constraintStart_toStartOf="@+id/toggleButton"
-                app:layout_constraintTop_toBottomOf="@+id/toggleButton">
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton"
+                app:placeholderText="no length limit">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/maxChars"
@@ -172,27 +220,27 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Length (Optional)"
-                app:expandedHintEnabled="true"
-                app:placeholderText="32"
                 app:endIconMode="clear_text"
+                app:expandedHintEnabled="true"
                 app:helperText="Length, in bytes (16-999)"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
                 app:layout_constraintStart_toStartOf="@+id/toggleButton"
-                app:layout_constraintTop_toBottomOf="@+id/toggleButton">
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton"
+                app:placeholderText="32">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/length"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:text="@={vm.recipeBuilder.lengthInBytes}"
-                    />
+                    android:text="@={vm.recipeBuilder.lengthInBytes}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/rawJsonTextInputLayout"
+                error="@{vm.recipeBuilder.derivationRecipeLiveData == null ? `JSON is not parseable` : null}"
                 isVisible="@{vm.recipeBuilder.buildType == BuildType.Raw}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -200,7 +248,6 @@
                 android:hint="Raw Json"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true"
-                error="@{vm.recipeBuilder.derivationRecipeLiveData == null ? `JSON is not parseable` : null}"
                 app:helperText="@{String.format(@string/even_the_smallest_change, ExtensionsKt.description(vm.deriveType, false))}"
                 app:helperTextEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
@@ -220,26 +267,12 @@
 
         </LinearLayout>
 
-
         <Button
-            android:id="@+id/buttonRawJson"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Edit Raw Json"
-            android:textAllCaps="false"
-            isVisible="@{vm.recipeBuilder.buildType != BuildType.Raw}"
-            app:layout_constraintBottom_toBottomOf="@+id/buttonOk"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/buttonOk" />
-
-        <Button
-            android:id="@+id/buttonEditRawJsonCancel"
+            android:id="@+id/buttonCancel"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel"
-            isVisible="@{vm.recipeBuilder.buildType == BuildType.Raw}"
             app:layout_constraintBottom_toBottomOf="@+id/buttonOk"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/buttonOk" />

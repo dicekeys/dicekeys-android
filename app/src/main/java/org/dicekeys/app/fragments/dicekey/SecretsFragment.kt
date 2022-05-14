@@ -74,7 +74,7 @@ class SecretsFragment : AbstractDiceKeyFragment<SecretsFragmentBinding>(R.layout
                     navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(recipe = item.data1, deriveType = item.data1.type, editable = false))
                 }
             }else if(item.data1 is DerivationOptions.Type){
-                navigate(SecretsFragmentDirections.actionSecretsToRecipeFragment(deriveType = item.data1, editable = true))
+                EditRecipeBottomSheet.show(item.data1, childFragmentManager)
             }
         }
     }
