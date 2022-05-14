@@ -1,30 +1,21 @@
 package org.dicekeys.app.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import org.dicekeys.app.*
+import org.dicekeys.app.R
 import org.dicekeys.app.data.DiceKeyDescription
 import org.dicekeys.app.databinding.ListDicekeysFragmentBinding
-import org.dicekeys.app.databinding.ListItemDicekeyBinding
-import org.dicekeys.app.encryption.BiometricsHelper
-import org.dicekeys.app.encryption.EncryptedDiceKey
-import org.dicekeys.app.encryption.EncryptedStorage
 import org.dicekeys.app.extensions.clearNavigationResult
 import org.dicekeys.app.extensions.getNavigationResult
 import org.dicekeys.app.extensions.showPopupMenu
-import org.dicekeys.app.repositories.DiceKeyRepository
-import org.dicekeys.app.viewmodels.DiceKeyViewModel
+import org.dicekeys.app.openDialogDeleteDiceKey
 import org.dicekeys.app.viewmodels.ListDiceKeysViewModel
 import org.dicekeys.dicekey.DiceKey
 import org.dicekeys.dicekey.Face
-import org.dicekeys.dicekey.FaceRead
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ListDiceKeysFragment : AbstractListDiceKeysFragment<ListDicekeysFragmentBinding>(R.layout.list_dicekeys_fragment, R.menu.preferences) {

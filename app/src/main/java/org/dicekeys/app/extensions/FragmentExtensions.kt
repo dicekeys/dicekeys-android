@@ -97,9 +97,10 @@ fun Fragment.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
     }
 }
 
-fun Fragment.showPopupMenu(view: View, @MenuRes menuRes: Int, listener: PopupMenu.OnMenuItemClickListener) {
+fun Fragment.showPopupMenu(view: View, @MenuRes menuRes: Int, fn: ((popupMenu: PopupMenu) -> Unit)? = null , listener: PopupMenu.OnMenuItemClickListener) {
     val popup = PopupMenu(requireContext(), view, Gravity.END)
     popup.menuInflater.inflate(menuRes, popup.menu)
     popup.setOnMenuItemClickListener(listener)
+    fn?.invoke(popup)
     popup.show()
 }

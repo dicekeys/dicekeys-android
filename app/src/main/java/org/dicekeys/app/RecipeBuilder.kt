@@ -31,7 +31,7 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val scope: Cor
     val purpose = MutableLiveData("")
     val rawJson = MutableLiveData("")
 
-    val sequence = MutableLiveData("1")
+    val sequence = MutableLiveData(template?.sequence?.toString() ?: "1")
     val lengthInChars : MutableLiveData<String> = MutableLiveData(template?.lengthInChars?.toString() ?: "")
     val lengthInBytes : MutableLiveData<String> = MutableLiveData(template?.lengthInBytes?.toString() ?: "")
 

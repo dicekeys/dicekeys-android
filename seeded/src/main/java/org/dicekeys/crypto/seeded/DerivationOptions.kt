@@ -1,4 +1,6 @@
 package org.dicekeys.crypto.seeded
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
 
@@ -44,7 +46,8 @@ open class DerivationOptions(
      * The keyType values currently supported by this library as an enum,
      * with names matching the string values in the JSON format.
      */
-    enum class Type {
+    @Parcelize
+    enum class Type : Parcelable {
         Password, Secret, SymmetricKey, UnsealingKey, SigningKey;
     }
 
