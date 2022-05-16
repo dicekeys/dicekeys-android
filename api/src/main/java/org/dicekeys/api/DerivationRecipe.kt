@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import org.dicekeys.crypto.seeded.DerivationOptions
+import java.security.MessageDigest
 
 /*
  *   Rebuilding the JsonObject without predefined keys.
@@ -51,7 +52,8 @@ data class DerivationRecipe constructor(
         val type: DerivationOptions.Type,
         @SerialName("name")
         val name: String,
-        @SerialName("derivation_options_json")
+        @JsonNames("derivation_options_json") // keep backward compatibility
+        @SerialName("recipeJson")
         val recipeJson: String
 ) : Parcelable {
 
@@ -93,7 +95,13 @@ data class DerivationRecipe constructor(
     /*
      * An easy way to have a unique identifier for this Recipe
      */
-    val id by lazy { recipeJson.hashCode().toString() }
+    @IgnoredOnParcel
+    val id by lazy {
+        MessageDigest.getInstance("MD5").also {
+            it.update(type.toString().toByteArray())
+            it.update(recipeJson.toByteArray())
+        }.digest().toHexString()
+    }
 
     override fun toString(): String = Json.encodeToString(this)
 

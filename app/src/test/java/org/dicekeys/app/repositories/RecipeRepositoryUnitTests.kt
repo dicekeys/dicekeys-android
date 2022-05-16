@@ -2,6 +2,7 @@ package org.dicekeys.app.repositories
 
 import android.content.SharedPreferences
 import org.dicekeys.api.DerivationRecipe
+import org.dicekeys.crypto.seeded.DerivationOptions
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -51,5 +52,28 @@ class RecipeRepositoryUnitTests {
     fun test_remove_isCalled() {
         repo.remove(derivationRecipe)
         verify(editor).remove(derivationRecipe.id)
+    }
+
+    // Move to DerivationRecipes unit test
+    @Test
+    fun test_derivationRecipes_id() {
+        val derivationRecipe1 = DerivationRecipe(type = DerivationOptions.Type.Password, name = "name1", recipeJson = """{"purpose":"ssh"}""")
+        val derivationRecipe2 = DerivationRecipe(type = DerivationOptions.Type.Password, name = "name2", recipeJson = """{"purpose":"ssh"}""")
+        val derivationRecipe3 = DerivationRecipe(type = DerivationOptions.Type.Secret, name = "name3", recipeJson = """{"purpose":"ssh"}""")
+        val derivationRecipe4 = DerivationRecipe(type = DerivationOptions.Type.Secret, name = "name4", recipeJson = """{"purpose":"ssh"}""")
+
+        assertEquals(derivationRecipe1.id, derivationRecipe1.id)
+        assertEquals(derivationRecipe1.id, derivationRecipe2.id)
+        assertEquals(derivationRecipe1.recipeJson, derivationRecipe2.recipeJson)
+
+        assertEquals(derivationRecipe3.id, derivationRecipe4.id)
+        assertEquals(derivationRecipe3.id, derivationRecipe4.id)
+        assertEquals(derivationRecipe3.recipeJson, derivationRecipe4.recipeJson)
+
+
+        assertNotEquals(derivationRecipe1, derivationRecipe2)
+        assertNotEquals(derivationRecipe1.toString(), derivationRecipe2.recipeJson)
+
+        assertNotEquals(derivationRecipe1.id, derivationRecipe3.id)
     }
 }

@@ -4,7 +4,6 @@ import org.dicekeys.api.*
 import org.dicekeys.crypto.seeded.PackagedSealedMessage
 import org.dicekeys.api.ApiStrings.Inputs
 import org.dicekeys.api.ApiStrings.Outputs
-import org.dicekeys.app.extensions.toHexString
 
 /**
  * Wrap the [PermissionCheckedCommands] to unmarshall parameters from the

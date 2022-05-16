@@ -7,7 +7,6 @@ import android.view.View
 import org.dicekeys.crypto.seeded.DerivationOptions
 import java.util.*
 
-fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
 
 fun String.fromHex(): ByteArray {
     val len = length

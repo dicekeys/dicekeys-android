@@ -7,6 +7,7 @@ import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 import java.security.KeyStore
 import java.security.KeyStoreException
 import javax.crypto.Cipher
@@ -43,11 +44,11 @@ class AppKeyStore {
 
     @Serializable
     enum class KeyStoreCredentialsAllowed {
-        // Use @SerialName to make serializable enum backwards compatible
-        @SerialName("BIOMETRIC") ALLOW_ONLY_BIOMETRIC_AUTHENTICATION,
-        @SerialName("AUTHENTICATION") ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION,
-        @SerialName("DEVICE_CREDENTIALS") ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION,
-        @SerialName("KEYSTORE") ALLOW_ACCESS_WITHOUT_REAUTHENTICATION,
+        // Use @JsonNames to make serializable enum backwards compatible
+        @JsonNames("BIOMETRIC") ALLOW_ONLY_BIOMETRIC_AUTHENTICATION,
+        @JsonNames("AUTHENTICATION") ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION,
+        @JsonNames("DEVICE_CREDENTIALS") ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION,
+        @JsonNames("KEYSTORE") ALLOW_ACCESS_WITHOUT_REAUTHENTICATION,
     }
 
     private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
