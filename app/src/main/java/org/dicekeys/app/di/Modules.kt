@@ -9,9 +9,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.dicekeys.app.AppLifecycleObserver
+import org.dicekeys.app.data.BackupManager
 import org.dicekeys.app.encryption.AppKeyStore
 import org.dicekeys.app.encryption.BiometricsHelper
 import org.dicekeys.app.encryption.EncryptedStorage
+import org.dicekeys.app.migrations.Migrator
 import org.dicekeys.app.repositories.DiceKeyRepository
 import org.dicekeys.app.repositories.RecipeRepository
 import javax.inject.Singleton
@@ -60,5 +62,17 @@ class Modules {
     @Provides
     fun provideAppLifecycleObserver(sharedPreferences: SharedPreferences, diceKeyRepository: DiceKeyRepository): AppLifecycleObserver {
         return AppLifecycleObserver(sharedPreferences, diceKeyRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMigrator(@ApplicationContext context: Context, sharedPreferences: SharedPreferences): Migrator {
+        return Migrator(context, sharedPreferences)
+    }
+
+    @Singleton
+    @Provides
+    fun provideBackupManager(@ApplicationContext context: Context, recipeRepository :RecipeRepository): BackupManager {
+        return BackupManager(context, recipeRepository)
     }
 }

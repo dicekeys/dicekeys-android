@@ -1,7 +1,7 @@
 package org.dicekeys.app.data
 
+import org.dicekeys.api.toHexString
 import org.dicekeys.app.bip39.Mnemonics
-import org.dicekeys.app.extensions.toHexString
 import org.dicekeys.crypto.seeded.JsonSerializable
 
 

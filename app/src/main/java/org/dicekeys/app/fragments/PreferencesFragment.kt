@@ -10,14 +10,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.dicekeys.app.BuildConfig
-import org.dicekeys.app.R
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
-import org.dicekeys.app.data.BackupRecipes
+import org.dicekeys.api.DerivationRecipe
+import org.dicekeys.app.BuildConfig
+import org.dicekeys.app.R
+import org.dicekeys.app.data.BackupManager
 import org.dicekeys.app.extensions.dialog
 import org.dicekeys.app.extensions.errorDialog
 import org.dicekeys.app.repositories.RecipeRepository
@@ -37,6 +36,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), SharedPreferences.OnShar
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
+    @Inject
+    lateinit var backupManager: BackupManager
+
     /*
      * Register an ActivityResultContract to prompt the user to select a path for creating a new file.
      * On returning with a valid uri/file, serialize all recipes in the app.
@@ -44,28 +46,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), SharedPreferences.OnShar
     private val createDocument =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
             uri?.let { uri ->
-                lifecycleScope.launchWhenStarted {
-                    try {
-                        val fileDescriptor: ParcelFileDescriptor? =
-                            requireContext().contentResolver.openFileDescriptor(uri, "w")
-                        fileDescriptor?.use {  // auto close file after use
-                            FileOutputStream(fileDescriptor.fileDescriptor).use { fileStream ->
-
-                                // get all recipes
-                                recipeRepository.getRecipesLiveData().value?.let {
-                                    // create a BackupRecipes data object
-                                    val backupRecipes = BackupRecipes(version = 1, recipes = it)
-                                    // serialize it and write it to the file
-                                    Json.encodeToStream(backupRecipes, fileStream)
-                                    dialog("Backup", "Recipes backup files created")
-                                }
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        errorDialog(e)
-                    }
-                }
+                backupManager.backup(this, uri)
             }
         }
 
@@ -76,23 +57,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), SharedPreferences.OnShar
     private val openDocument =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             uri?.let { uri ->
-                lifecycleScope.launchWhenStarted {
-                    val fileDescriptor: ParcelFileDescriptor? =
-                        requireContext().contentResolver.openFileDescriptor(uri, "r")
-                    fileDescriptor?.use {  // auto close file after use
-                        try {
-                            val fd: FileDescriptor = fileDescriptor.fileDescriptor
-                            val fileStream = FileInputStream(fd)
-                            val recipes: BackupRecipes = Json.decodeFromStream(fileStream) // Decode file contents into BackupRecipes
-                            recipeRepository.save(recipes.recipes)
-
-                            dialog("Restore", "Restored recipes: ${recipes.recipes.size}")
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            errorDialog(e)
-                        }
-                    }
-                }
+                backupManager.restore(this, uri)
             }
         }
 
@@ -103,18 +68,16 @@ class PreferencesFragment : PreferenceFragmentCompat(), SharedPreferences.OnShar
         findPreference<Preference>("build")?.summary = BuildConfig.VERSION_CODE.toString(10)
 
         findPreference<Preference>("backup")?.setOnPreferenceClickListener {
-            val date = DateFormat.format("yyyy-MM-dd", Date())
+            val date = DateFormat.format("yyyy-MM-dd_HH:mm", Date())
             val proposedFilename = "DiceKeys_Recipes_$date.json"
             createDocument.launch(proposedFilename)
             true
         }
-        findPreference<Preference>("backup")?.isVisible = false // Disable until we finalize the backup file structure
 
         findPreference<Preference>("restore")?.setOnPreferenceClickListener {
             openDocument.launch(arrayOf(JsonMimeType))
             true
         }
-        findPreference<Preference>("restore")?.isVisible = false // Disable until we finalize the backup file structure
     }
 
     override fun onResume() {

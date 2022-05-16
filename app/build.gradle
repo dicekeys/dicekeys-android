@@ -16,7 +16,7 @@ android {
         applicationId "com.dicekeys.app"
         minSdkVersion 23
         targetSdkVersion 31
-        versionCode 8
+        versionCode 9
         versionName "1.07"
 
         testApplicationId "com.dicekeys.test"
@@ -46,7 +46,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    ndkVersion '21.1.6352462'
     lint {
         abortOnError false
     }
@@ -67,6 +66,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinx_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.0")
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Android  --------------------------------------------------------------------------- */
