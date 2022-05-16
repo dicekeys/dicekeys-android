@@ -33,7 +33,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
     @Inject
     lateinit var viewModelFactory: RecipeViewModel.AssistedFactory
 
-    val recipeViewModel: RecipeViewModel by viewModels {
+    private val recipeViewModel: RecipeViewModel by viewModels {
         RecipeViewModel.provideFactory(assistedFactory = viewModelFactory, diceKey = viewModel.diceKey.value!!, recipe = args.recipe, deriveType = args.deriveType, isEditable = args.editable)
     }
 
@@ -48,7 +48,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mutableListOf<String>())
         binding.type.setAdapter(typeAdapter)
 
-        binding.type.setOnItemClickListener { _, _, position, id ->
+        binding.type.setOnItemClickListener { _, _, position, _ ->
             recipeViewModel.derivedValue.value?.views?.get(position)?.let{
                 recipeViewModel.setView(it)
             }
