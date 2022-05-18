@@ -1,5 +1,4 @@
 include ':app'
-include ':seeded'
 include ':dicekey'
 include ':read'
 include ':api'
