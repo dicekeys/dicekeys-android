@@ -9,6 +9,7 @@ buildscript {
     ext.hilt_version = '2.41'
     ext.dokka_version = '0.10.1'
     ext.seeded_crypto = 'main-SNAPSHOT'
+    ext.read_dicekey = 'main-SNAPSHOT'
     repositories {
         google()
         mavenCentral()

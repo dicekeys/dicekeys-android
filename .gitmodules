@@ -1,3 +1,0 @@
-[submodule "read/src/main/cpp/read-keysqr"]
-	path = read/src/main/cpp/read-dicekey
-	url = https://github.com/dicekeys/read-keysqr.git
