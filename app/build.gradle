@@ -55,11 +55,11 @@ android {
 dependencies {
     /**  --- Modules  --------------------------------------------------------------------------- */
     implementation project(path: ':dicekey')
-    implementation project(path: ':read')
     implementation project(path: ':api')
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- DiceKeys --------------------------------------------------------------------------- */
+    implementation "com.github.dicekeys:read-dicekey-android:$read_dicekey"
     implementation "com.github.dicekeys:seeded-crypto-android:$seeded_crypto"
     /** ----------------------------------------------------------------------------------------- */
 
