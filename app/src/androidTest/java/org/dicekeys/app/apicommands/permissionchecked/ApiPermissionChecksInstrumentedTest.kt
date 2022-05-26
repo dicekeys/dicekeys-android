@@ -3,7 +3,7 @@ package org.dicekeys.app.apicommands.permissionchecked
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.CompletableDeferred
 import org.dicekeys.api.ApiRecipe
-import org.dicekeys.api.ClientPackageNotAuthorizedException
+import org.dicekeys.api.ClientUriNotAuthorizedException
 import org.dicekeys.api.UnsealingInstructions
 import org.junit.Assert
 import org.junit.Test
@@ -52,7 +52,7 @@ class ApiPermissionChecksInstrumentedTest {
 
   }
 
-  @Test(expected = ClientPackageNotAuthorizedException::class)
+  @Test(expected = ClientUriNotAuthorizedException::class)
   fun preventsLengthExtensionAttack() {
     ApiPermissionChecksForUrls("com.examplespoof", null){ deferredAllow }
       .throwIfClientNotAuthorized(
@@ -62,7 +62,7 @@ class ApiPermissionChecksInstrumentedTest {
       )
   }
 
-  @Test(expected = ClientPackageNotAuthorizedException::class)
+  @Test(expected = ClientUriNotAuthorizedException::class)
   fun throwsIfAndroidPackagePrefixesNotSet() {
     ApiPermissionChecksForUrls("com.example", null){ deferredAllow }
       .throwIfClientNotAuthorized(
