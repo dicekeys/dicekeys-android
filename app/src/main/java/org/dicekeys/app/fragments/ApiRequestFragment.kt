@@ -165,9 +165,10 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
         binding.buttonConfirm.setOnClickListener {
             lifecycleScope.launchWhenStarted {
                 try {
-                    urlCommand.send()
+                    val sendCenterLetterAndDigit = binding.centerLetterAndDigitSwitch.isChecked
+                    urlCommand.send(sendCenterLetterAndDigit = sendCenterLetterAndDigit)
                     popBackStack()
-                }catch (e: Exception) {
+                } catch (e: Exception) {
                     errorDialog(e.message ?: "Error") {
                         popBackStack()
                     }

@@ -33,6 +33,7 @@ class ResponseFragment : Fragment() {
         binding.rawUrl = arguments?.getParcelable<Intent>(NavController.KEY_DEEP_LINK_INTENT)?.data.toString()
 
         binding.requestId = args.requestId
+        binding.centerLetterAndDigit = args.centerLetterAndDigit
         binding.exception = args.exception
         binding.message = args.message
         binding.passwordJson = args.passwordJson

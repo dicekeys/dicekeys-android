@@ -18,7 +18,7 @@ open class PermissionCheckedSeedAccessor(
   private val permissionChecks: ApiPermissionChecks,
   private val loadDiceKey: () -> Deferred<SimpleDiceKey>
 ) {
-  private suspend fun getDiceKey(): SimpleDiceKey = loadDiceKey().await()
+  suspend fun getDiceKey(): SimpleDiceKey = loadDiceKey().await()
 
   companion object {
     /**

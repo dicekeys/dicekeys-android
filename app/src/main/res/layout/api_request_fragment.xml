@@ -108,6 +108,13 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/centerLetterAndDigitSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Send Center Letter and Digit as a hint"/>
+
         </LinearLayout>
 
         <LinearLayout
