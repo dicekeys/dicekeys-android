@@ -92,8 +92,8 @@ class PermissionCheckedUrlCommands(
 
   private fun sendResponse(uriBuilder: Uri.Builder) = sendResponse(uriBuilder.build())
 
-  override fun sendSuccess() {
-    super.sendSuccess()
+  override suspend fun sendSuccess(sendCenterLetterAndDigit: Boolean) {
+    super.sendSuccess(sendCenterLetterAndDigit = sendCenterLetterAndDigit)
     sendResponse(responseUriBuilder)
   }
 

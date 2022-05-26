@@ -11,6 +11,10 @@
             type="String" />
 
         <variable
+            name="centerLetterAndDigit"
+            type="String" />
+
+        <variable
             name="exception"
             type="String" />
 
@@ -79,6 +83,14 @@
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
                 android:text="@{`requestId: ` + requestId}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:layout_marginTop="16dp"
+                isVisible="@{centerLetterAndDigit != null}"
+                android:text="@{`centerLetterAndDigit: ` + centerLetterAndDigit}" />
 
             <TextView
                 android:layout_width="match_parent"

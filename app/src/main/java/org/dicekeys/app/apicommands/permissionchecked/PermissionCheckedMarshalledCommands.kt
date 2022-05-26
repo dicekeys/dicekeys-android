@@ -14,7 +14,7 @@ import org.dicekeys.app.extensions.toHexString
  *  The caller is responsible for catching exceptions and marshalling them
  */
 abstract class PermissionCheckedMarshalledCommands(
-  permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
+  private val permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
 ) {
   protected var result: PermissionCheckedMarshalledCommands? = null
   var createdDataOrPlainText: String? = null
@@ -36,11 +36,17 @@ abstract class PermissionCheckedMarshalledCommands(
   protected abstract fun marshallResult(responseParameterName: String, value: String): PermissionCheckedMarshalledCommands
   protected abstract fun marshallResult(responseParameterName: String, value: ByteArray): PermissionCheckedMarshalledCommands
 
-  protected open fun sendSuccess() {
+  protected open suspend fun sendSuccess(sendCenterLetterAndDigit: Boolean) {
     marshallResult(
-      ApiStrings.MetaInputs.requestId,
+      ApiStrings.MetaOutputs.requestId,
       unmarshallRequiredStringParameter(ApiStrings.MetaInputs.requestId)
     )
+    if(sendCenterLetterAndDigit){
+      marshallResult(
+        ApiStrings.MetaOutputs.centerLetterAndDigit,
+        permissionCheckedSeedAccessor.getDiceKey().centerFace().toHumanReadableForm(false)
+      )
+    }
   }
 
   abstract fun sendException(exception: Throwable)
@@ -173,9 +179,9 @@ abstract class PermissionCheckedMarshalledCommands(
     }
   }
 
-  fun send() {
+  suspend fun send(sendCenterLetterAndDigit: Boolean) {
     try {
-      result!!.sendSuccess()
+      result!!.sendSuccess(sendCenterLetterAndDigit = sendCenterLetterAndDigit)
     } catch (e: Exception) {
       e.printStackTrace()
       sendException(e)

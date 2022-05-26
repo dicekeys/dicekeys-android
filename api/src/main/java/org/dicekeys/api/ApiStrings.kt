@@ -117,6 +117,7 @@ class ApiStrings {
 
   object MetaOutputs {
     const val requestId = "requestId"
+    const val centerLetterAndDigit = "centerLetterAndDigit"
   }
 
   object ExceptionMetaOutputs {
