@@ -23,9 +23,10 @@ class BackupManager constructor(val context: Context, val recipeRepository: Reci
                 fileDescriptor?.use {  // auto close file after use
                     FileOutputStream(fileDescriptor.fileDescriptor).use { fileStream ->
 
-                        // get all recipes
+                        // Get all recipes
                         recipeRepository.getRecipesLiveData().value?.let {
-                            Json.encodeToStream(BackupRecipes.create(it), fileStream)
+                            // Save it as an array of DerivationRecipes, until all clients supports BackupRecipes Structure
+                            Json.encodeToStream(it, fileStream)
                             fragment.dialog("Backup", "Recipes backup files created")
                         }
                     }
