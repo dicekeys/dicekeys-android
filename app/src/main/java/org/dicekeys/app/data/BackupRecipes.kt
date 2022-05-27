@@ -8,6 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.dicekeys.api.DerivationRecipe
 
+// Currently unused as support for this filestructure should be added to the other clients.
 @Serializable
 data class BackupRecipes constructor(
     @SerialName("version")
