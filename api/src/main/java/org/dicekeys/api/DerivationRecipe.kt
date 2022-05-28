@@ -48,12 +48,9 @@ fun JsonObjectBuilder.addSequenceNumberToDerivationOptionsJson(sequenceNumber: I
 @Serializable
 @Parcelize
 data class DerivationRecipe constructor(
-        @SerialName("type")
         val type: DerivationOptions.Type,
-        @SerialName("name")
         val name: String,
         @JsonNames("derivation_options_json") // keep backward compatibility
-        @SerialName("recipeJson")
         val recipeJson: String
 ) : Parcelable {
 

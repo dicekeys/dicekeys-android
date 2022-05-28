@@ -11,13 +11,8 @@ import org.dicekeys.api.DerivationRecipe
 // Currently unused as support for this filestructure should be added to the other clients.
 @Serializable
 data class BackupRecipes constructor(
-    @SerialName("version")
     val version: Int? = null,
-
-    @SerialName("createdAt")
     val createdAt: Instant? = null,
-
-    @SerialName("recipes")
     val recipes: List<DerivationRecipe>,
 ) {
 
