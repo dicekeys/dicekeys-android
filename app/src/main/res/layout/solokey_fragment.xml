@@ -99,7 +99,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            app:cardBackgroundColor="?attr/colorOnPrimaryContainer"
+            app:cardBackgroundColor="@color/material_card_bg"
+            app:strokeColor="@color/material_card_stroke"
             app:cardCornerRadius="7dp"
             app:contentPadding="5dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -124,6 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
+                    app:strokeColor="@color/material_card_stroke"
                     app:cardCornerRadius="7dp">
 
                     <LinearLayout
