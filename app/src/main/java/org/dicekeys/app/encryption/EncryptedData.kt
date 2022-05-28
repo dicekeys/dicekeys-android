@@ -7,6 +7,7 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNames
 
 /*
  * EncryptedData
@@ -17,10 +18,10 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class EncryptedData(
-        @SerialName("encrypted_data")
-        private val encryptedData: String,
-        @SerialName("iv")
-        private val iv: String) {
+    @JsonNames("encrypted_data")
+    private val encryptedData: String,
+    private val iv: String
+) {
 
     fun getEncryptedData(): ByteArray = Base64.decode(encryptedData, Base64.NO_WRAP)
 
@@ -32,8 +33,8 @@ data class EncryptedData(
         fun fromJson(json: String): EncryptedData = Json.decodeFromString(json)
 
         fun fromByteArray(encryptedData: ByteArray, iv: ByteArray) = EncryptedData(
-                Base64.encodeToString(encryptedData, Base64.NO_WRAP),
-                Base64.encodeToString(iv, Base64.NO_WRAP)
+            Base64.encodeToString(encryptedData, Base64.NO_WRAP),
+            Base64.encodeToString(iv, Base64.NO_WRAP)
         )
     }
 }

@@ -4,6 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNames
 import org.dicekeys.dicekey.Face
 
 /*
@@ -16,14 +17,14 @@ import org.dicekeys.dicekey.Face
 
 @Serializable
 data class EncryptedDiceKey constructor(
-    @SerialName("key_id")
+    @JsonNames("key_id")
     val keyId: String,
-    @SerialName("center_face")
+    @JsonNames("center_face")
     val centerFace: String,
-    @SerialName("encrypted_data")
+    @JsonNames("encrypted_data")
     val encryptedData: EncryptedData,
     // Set Biometric for backward compatibility by default
-    @SerialName("keystore_type")
+    @JsonNames("keystore_type")
     val keyStoreType: AppKeyStore.KeyStoreCredentialsAllowed = AppKeyStore.KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION,
 ) {
 
