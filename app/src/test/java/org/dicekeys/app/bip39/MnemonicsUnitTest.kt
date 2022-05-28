@@ -38,5 +38,6 @@ class MnemonicsUnitTest {
 
 @Serializable
 data class BIP39TestDataSet constructor(
+    @SerialName("english")
     val values: List<List<String>>
 )
