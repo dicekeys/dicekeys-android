@@ -36,7 +36,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                app:cardBackgroundColor="?attr/colorOnPrimaryContainer"
+                app:cardBackgroundColor="@color/material_card_bg"
+                app:strokeColor="@color/material_card_stroke"
                 app:cardCornerRadius="7dp"
                 app:contentPadding="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -63,6 +64,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
+                        app:strokeColor="@color/material_card_stroke"
                         app:cardCornerRadius="7dp">
 
                         <LinearLayout
@@ -285,7 +287,8 @@
                 android:layout_marginBottom="8dp"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="?attr/colorOnPrimaryContainer"
+                app:cardBackgroundColor="@color/material_card_bg"
+                app:strokeColor="@color/material_card_stroke"
                 app:cardCornerRadius="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

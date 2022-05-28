@@ -59,4 +59,7 @@
     <color name="md_theme_dark_primaryInverse">#3D58B1</color>
 
     <color name="highlight">#FEFF8A</color>
+
+    <color name="material_card_bg">@color/md_theme_light_onPrimaryContainer</color>
+    <color name="material_card_stroke">@color/md_theme_light_secondary</color>
 </resources>
