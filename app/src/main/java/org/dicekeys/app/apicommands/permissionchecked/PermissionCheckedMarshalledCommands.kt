@@ -15,6 +15,7 @@ import org.dicekeys.api.ApiStrings.Outputs
 abstract class PermissionCheckedMarshalledCommands(
   private val permissionCheckedSeedAccessor: PermissionCheckedSeedAccessor
 ) {
+  protected var sequence: Int? = null
   protected var result: PermissionCheckedMarshalledCommands? = null
   var createdDataOrPlainText: String? = null
 
@@ -32,6 +33,7 @@ abstract class PermissionCheckedMarshalledCommands(
     unmarshallBinaryParameter(parameterName) ?:
     throw java.lang.IllegalArgumentException("API call must include binary parameter '$parameterName'")
 
+  protected abstract fun reset()
   protected abstract fun marshallResult(responseParameterName: String, value: String): PermissionCheckedMarshalledCommands
   protected abstract fun marshallResult(responseParameterName: String, value: ByteArray): PermissionCheckedMarshalledCommands
 
@@ -46,12 +48,20 @@ abstract class PermissionCheckedMarshalledCommands(
         permissionCheckedSeedAccessor.getDiceKey().centerFace().toHumanReadableForm(false)
       )
     }
+
+    if ((sequence ?: 1) > 1) {
+      marshallResult(ApiStrings.MetaOutputs.sequence, sequence.toString())
+    }
   }
 
   abstract fun sendException(exception: Throwable)
 
+  fun setRecipeSequence(sequence: Int?){
+    this.sequence = sequence
+  }
+
   private fun getCommonDerivationOptionsJsonParameter() : String =
-    unmarshallRequiredStringParameter((Inputs.getSecret.recipeJson))
+    unmarshallRequiredStringParameter((ApiStrings.MetaInputs.recipe))
 
   private fun getAuthToken(): PermissionCheckedMarshalledCommands = marshallResult(
     ApiStrings.UrlMetaInputs.authToken,
@@ -60,14 +70,14 @@ abstract class PermissionCheckedMarshalledCommands(
 
   private suspend fun getPassword(): PermissionCheckedMarshalledCommands = marshallResult(
           Outputs.getPassword.passwordJson,
-          api.getPassword(unmarshallRequiredStringParameter((Inputs.getPassword.recipeJson))).also {
+          api.getPassword(unmarshallRequiredStringParameter((ApiStrings.MetaInputs.recipe)).recipeWithSequence(sequence)).also {
             createdDataOrPlainText = it.password
           }.toJson()
   )
 
   private suspend fun getSecret(): PermissionCheckedMarshalledCommands = marshallResult(
     Outputs.getSecret.secretJson,
-    api.getSecret(getCommonDerivationOptionsJsonParameter()).also {
+    api.getSecret(getCommonDerivationOptionsJsonParameter().recipeWithSequence(sequence)).also {
       createdDataOrPlainText = it.secretBytes.toHexString()
     }.toJson()
     )
@@ -155,6 +165,7 @@ abstract class PermissionCheckedMarshalledCommands(
   fun hasException() = exception != null
 
   protected suspend fun executeCommand(command: String) {
+    reset()
     try {
       result = when (command) {
          ::getAuthToken.name -> getAuthToken()
@@ -186,8 +197,5 @@ abstract class PermissionCheckedMarshalledCommands(
       sendException(e)
     }
   }
-
-  abstract suspend fun executeCommand()
-
 }
 

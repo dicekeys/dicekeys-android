@@ -3,6 +3,7 @@ package org.dicekeys.app
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.GlobalScope
 import org.dicekeys.api.DerivationRecipe
+import org.dicekeys.api.recipeWithSequence
 import org.dicekeys.crypto.seeded.DerivationOptions
 import org.junit.Assert
 import org.junit.Before
@@ -132,5 +133,24 @@ class RecipeBuilderUnitTests {
 
         val checkLength = DerivationRecipe.createRecipeFromTemplate(original, original.sequence, lengthInChars = 44)
         Assert.assertNotEquals(checkLength.recipeJson, DerivationRecipe.createRecipeFromTemplate(checkLength, checkLength.sequence))
+    }
+
+    @Test
+    fun test_recipeWithSequence() {
+        Assert.assertEquals(GOOGLE_FOOD.recipeJson, GOOGLE_FOOD.recipeJson.recipeWithSequence(null))
+        Assert.assertEquals(GOOGLE_FOOD.recipeJson, GOOGLE_FOOD.recipeJson.recipeWithSequence(-1))
+        Assert.assertEquals(GOOGLE_FOOD.recipeJson, GOOGLE_FOOD.recipeJson.recipeWithSequence(0))
+        Assert.assertEquals(GOOGLE_FOOD.recipeJson, GOOGLE_FOOD.recipeJson.recipeWithSequence(1))
+
+        Assert.assertEquals(GOOGLE.recipeJson, GOOGLE.recipeJson.recipeWithSequence(12))
+
+        Assert.assertNotEquals(GOOGLE.recipeJson, GOOGLE.recipeJson.recipeWithSequence(10))
+        Assert.assertNotEquals(GOOGLE.recipeJson, GOOGLE.recipeJson.recipeWithSequence(null))
+        Assert.assertNotEquals(GOOGLE.recipeJson, GOOGLE.recipeJson.recipeWithSequence(0))
+
+
+        // Check properties order
+        Assert.assertEquals("""{"allow":[{"host":"*.google.com"}],"#":12}""", """{"allow":[{"host":"*.google.com"}],"#":12}""".recipeWithSequence(12))
+        Assert.assertEquals("""{"allow":[{"host":"*.google.com"}],"#":12}""", """{"#":12,"allow":[{"host":"*.google.com"}]}""".recipeWithSequence(12))
     }
 }

@@ -140,6 +140,9 @@
     <string name="message_to_sign">Message to sign</string>
     <string name="message_to_seal">Message to seal</string>
 
+
+    <string name="reveal_that_the_center_die">Reveal that the center die is %s so that %s can remind you next time</string>
+    <string name="will_not_see_your_dicekey">%s will not see your DiceKey.</string>
     <string name="may_use_password">May %s use your DiceKey to %s a password?</string>
     <string name="may_use_secret_code">May %s use your DiceKey to %s a secret code?</string>
     <string name="may_use_keys_encode_decode_secrets">May %s use your DiceKey to %s keys to encode and decode secrets?</string>

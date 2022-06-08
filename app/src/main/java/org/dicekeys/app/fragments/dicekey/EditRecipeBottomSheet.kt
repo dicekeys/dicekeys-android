@@ -59,6 +59,15 @@ class EditRecipeBottomSheet : BottomSheetDialogFragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.vm = viewModel
 
+
+        binding.buttonSequenceUp.setOnClickListener {
+            viewModel.recipeBuilder.sequenceUp()
+        }
+
+        binding.buttonSequenceDown.setOnClickListener {
+            viewModel.recipeBuilder.sequenceDown()
+        }
+
         binding.toggleButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) {
                 if (checkedId == R.id.buttonWebAddress) {

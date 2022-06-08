@@ -7,10 +7,11 @@ import android.util.Base64
 import kotlinx.coroutines.Deferred
 import org.dicekeys.api.ApiStrings
 import org.dicekeys.api.UnsealingInstructions
+import org.dicekeys.api.recipeWithSequence
 import org.dicekeys.dicekey.SimpleDiceKey
 import java.net.URI
 
-class PermissionCheckedUrlCommands(
+class PermissionCheckedUrlCommands constructor(
   private val requestUri: Uri,
   loadDiceKey: () -> Deferred<SimpleDiceKey>,
   requestUsersConsent: (
@@ -60,8 +61,16 @@ class PermissionCheckedUrlCommands(
   val command: String = unmarshallRequiredStringParameter(ApiStrings.MetaInputs.command)
   val recipe: String = unmarshallStringParameter(ApiStrings.MetaInputs.recipe) ?: ""
 
+  override fun reset() {
+    responseUriBuilder = Uri.parse(respondTo).buildUpon()!!
+  }
+
+  fun recipeWithSequence(): String{
+    return (unmarshallStringParameter(ApiStrings.MetaInputs.recipe) ?: "").recipeWithSequence(sequence)
+  }
+
   private val respondTo: String = getRespondToFieldFromFromUri(requestUri)
-  private val responseUriBuilder = Uri.parse(respondTo).buildUpon()!!
+  private var responseUriBuilder = Uri.parse(respondTo).buildUpon()!!
 
   fun getHost(): String? {
     try {
@@ -104,11 +113,9 @@ class PermissionCheckedUrlCommands(
       .appendQueryParameter(ApiStrings.ExceptionMetaOutputs.message, exception.message)
   )
 
-  override suspend fun executeCommand() {
+  suspend fun executeCommand() {
     executeCommand(command)
   }
-
-  fun getResponse(): Uri = responseUriBuilder.build()
 
   fun sendException() = exception?.let { sendException(it) }
 }

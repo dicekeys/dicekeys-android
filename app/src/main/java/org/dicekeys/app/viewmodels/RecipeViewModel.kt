@@ -124,24 +124,16 @@ class RecipeViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateSequence(sequence: Int){
-        if(sequence > 0) {
-            recipeBuilder?.sequence?.postValue(sequence.toString())
-            recipeBuilder?.build()
-        }
-    }
-
     /**
      * Up/down sequence number
      */
     fun sequenceUpDown(isUp: Boolean) {
-        try{
-            recipeBuilder?.sequence?.value?.toInt()?.let { seq ->
-                updateSequence(seq + if (isUp) 1 else -1)
-            }
-        }catch (e : Exception){
-            e.printStackTrace()
+        if (isUp) {
+            recipeBuilder?.sequenceUp()
+        } else {
+            recipeBuilder?.sequenceDown()
         }
+        recipeBuilder?.build()
     }
 
     @SuppressLint("StaticFieldLeak")

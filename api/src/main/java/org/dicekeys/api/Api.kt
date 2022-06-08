@@ -66,7 +66,7 @@ abstract class Api(
       message: ByteArray
     ): GenerateSignatureResult =
       generateSignatureMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-        marshallParameter(Inputs.generateSignature::recipeJson.name, recipeJson )
+        marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson )
         marshallParameter(Inputs.generateSignature::message.name, message)
       }
 
@@ -88,7 +88,7 @@ abstract class Api(
             recipeJson: String
     ): Password =
             getPasswordMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-            marshallParameter(Inputs.getPassword::recipeJson.name, recipeJson)
+            marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson)
           }
 
     private val getPasswordMarshaller =
@@ -105,7 +105,7 @@ abstract class Api(
       recipeJson: String
     ): Secret =
       getSecretMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-        marshallParameter(Inputs.getSecret::recipeJson.name, recipeJson)
+        marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson)
       }
 
     private val getSecretMarshaller =
@@ -125,7 +125,7 @@ abstract class Api(
       recipeJson: String
     ): UnsealingKey =
       getUnsealingKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-        marshallParameter(Inputs.getUnsealingKey::recipeJson.name, recipeJson)
+        marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson)
       }
 
     private val getUnsealingKeyMarshaller =
@@ -145,7 +145,7 @@ abstract class Api(
       recipeJson: String
     ): SymmetricKey =
       getSymmetricKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-        marshallParameter(Inputs.getSymmetricKey::recipeJson.name, recipeJson)
+        marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson)
       }
 
     private val getSymmetricKeyMarshaller =
@@ -164,7 +164,7 @@ abstract class Api(
       recipeJson: String
     ): SigningKey =
       getSigningKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-        marshallParameter(Inputs.getSigningKey::recipeJson.name, recipeJson)
+        marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson)
       }
 
     private val getSigningKeyMarshaller =
@@ -182,7 +182,7 @@ abstract class Api(
       recipeJson: String
     ): SealingKey =
       getSealingKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-        marshallParameter(Inputs.getSealingKey::recipeJson.name, recipeJson)
+        marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson)
       }
 
     private val getSealingKeyMarshaller =
@@ -231,7 +231,7 @@ abstract class Api(
       unsealingInstructions: String
     ): PackagedSealedMessage =
       sealWithSymmetricKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-        marshallParameter(Inputs.sealWithSymmetricKey::recipeJson.name, recipeJson)
+        marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson)
         marshallParameter(Inputs.sealWithSymmetricKey::plaintext.name, plaintext)
         marshallParameter(Inputs.sealWithSymmetricKey::unsealingInstructions.name, unsealingInstructions)
       }
@@ -276,7 +276,7 @@ abstract class Api(
       recipeJson: String
     ): SignatureVerificationKey =
       getSignatureVerificationKeyMarshaller.call(authTokenIfRequired(ApiRecipe(recipeJson))) {
-        marshallParameter(Inputs.getSignatureVerificationKey::recipeJson.name, recipeJson)
+        marshallParameter(ApiStrings.MetaInputs.recipe, recipeJson)
       }
 
     private val getSignatureVerificationKeyMarshaller =

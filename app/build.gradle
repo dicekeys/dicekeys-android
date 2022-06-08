@@ -71,12 +71,12 @@ dependencies {
 
     /**  --- Android  --------------------------------------------------------------------------- */
     implementation "androidx.core:core-ktx:$core_ktx_version"
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.biometric:biometric-ktx:1.2.0-alpha04"
     implementation "androidx.preference:preference-ktx:1.2.0"
-    implementation "com.google.android.material:material:1.6.0"
+    implementation "com.google.android.material:material:1.6.1"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.browser:browser:1.4.0"
@@ -97,10 +97,10 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Navigation ------------------------------------------------------------------------- */
-    implementation "androidx.navigation:navigation-fragment-ktx:2.4.2"
-    implementation "androidx.navigation:navigation-ui-ktx:2.4.2"
-    testImplementation "androidx.navigation:navigation-testing:2.4.2"
-    androidTestImplementation "androidx.navigation:navigation-testing:2.4.2"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.0-rc01"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.0-rc01"
+    testImplementation "androidx.navigation:navigation-testing:2.5.0-rc01"
+    androidTestImplementation "androidx.navigation:navigation-testing:2.5.0-rc01"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
