@@ -23,7 +23,7 @@
 
         <deepLink
             android:autoVerify="true"
-            app:uri="https://dicekeys.app/--derived-secret-api--/?requestId={requestId}&amp;exception={exception}&amp;message={message}&amp;passwordJson={passwordJson}&amp;secretJson={secretJson}&amp;sealingKeyJson={sealingKeyJson}&amp;unsealingKeyJson={unsealingKeyJson}&amp;symmetricKeyJson={symmetricKeyJson}&amp;packagedSealedMessageJson={packagedSealedMessageJson}&amp;plaintext={plaintext}&amp;centerLetterAndDigit={centerLetterAndDigit}" />
+            app:uri="https://dicekeys.app/--derived-secret-api--/?requestId={requestId}&amp;exception={exception}&amp;message={message}&amp;passwordJson={passwordJson}&amp;secretJson={secretJson}&amp;sealingKeyJson={sealingKeyJson}&amp;unsealingKeyJson={unsealingKeyJson}&amp;symmetricKeyJson={symmetricKeyJson}&amp;packagedSealedMessageJson={packagedSealedMessageJson}&amp;plaintext={plaintext}&amp;centerLetterAndDigit={centerLetterAndDigit}&amp;%23={sequence}" />
 
         <argument
             android:name="exception"
@@ -45,6 +45,12 @@
 
         <argument
             android:name="centerLetterAndDigit"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="sequence"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />

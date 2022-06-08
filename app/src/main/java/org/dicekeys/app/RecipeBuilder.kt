@@ -78,6 +78,20 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val scope: Cor
         build()
     }
 
+    fun sequenceUp(){
+        updateSequence( (sequence.value?.toIntOrNull() ?: 1) + 1)
+    }
+
+    fun sequenceDown(){
+        updateSequence( (sequence.value?.toIntOrNull() ?: 2) - 1)
+    }
+
+    fun updateSequence(s: Int){
+        if(s > 0) {
+            sequence.postValue(s.toString())
+        }
+    }
+
     fun setEditRawJson(isEditRawJson: Boolean){
         if(isEditRawJson) {
             rawJson.value = getDerivationRecipe()?.recipeJson ?:  "{}"

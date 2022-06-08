@@ -143,21 +143,28 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/sequenceTextInputLayout"
                 isVisible="@{vm.recipeBuilder.buildType != BuildType.Raw}"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_weight="1"
                 android:hint="Sequence Number (optional)"
+                app:helperText="@{String.format(@string/enter_a_sequence, ExtensionsKt.description(vm.deriveType, false))}"
+                tools:helperText="@string/enter_a_sequence"
+                app:helperTextEnabled="true"
                 app:hintEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
                 app:layout_constraintStart_toStartOf="@+id/toggleButton"
                 app:layout_constraintTop_toBottomOf="@+id/toggleButton"
-                app:placeholderText="1"
-                app:helperText="@{String.format(@string/enter_a_sequence, ExtensionsKt.description(vm.deriveType, false))}"
-                app:helperTextEnabled="true"
-                >
+                app:placeholderText="1">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/sequenceNumber"
@@ -167,6 +174,29 @@
                     android:text="@={vm.recipeBuilder.sequence}" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/buttonSequenceDown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:padding="8dp"
+                android:src="@drawable/ic_baseline_remove_24"
+                app:tint="?attr/colorPrimary" />
+
+            <ImageButton
+                android:id="@+id/buttonSequenceUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:padding="8dp"
+                android:src="@drawable/ic_baseline_add_24"
+                app:tint="?attr/colorPrimary" />
+        </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameTextInputLayout"

@@ -22,39 +22,30 @@ class ApiStrings {
 
   object Inputs {
     object generateSignature {
-      const val recipeJson = "recipe"
       const val message = "message"
     }
     object getPassword {
-      const val recipeJson = "recipe"
       const val recipeJsonMayBeModified = "recipeJsonMayBeModified"
     }
     object getSealingKey {
-      const val recipeJson = "recipe"
       const val recipeJsonMayBeModified = "recipeJsonMayBeModified"
     }
     object getSecret {
-      const val recipeJson = "recipe"
       const val recipeJsonMayBeModified = "recipeJsonMayBeModified"
     }
     object getSigningKey {
-      const val recipeJson = "recipe"
       const val recipeJsonMayBeModified = "recipeJsonMayBeModified"
     }
     object getSignatureVerificationKey {
-      const val recipeJson = "recipe"
       const val recipeJsonMayBeModified = "recipeJsonMayBeModified"
     }
     object getSymmetricKey {
-      const val recipeJson = "recipe"
       const val recipeJsonMayBeModified = "recipeJsonMayBeModified"
     }
     object getUnsealingKey {
-      const val recipeJson = "recipe"
       const val recipeJsonMayBeModified = "recipeJsonMayBeModified"
     }
     object sealWithSymmetricKey {
-      const val recipeJson = "recipe"
       const val recipeJsonMayBeModified = "recipeJsonMayBeModified"
       const val plaintext = "plaintext"
       const val unsealingInstructions = "unsealingInstructions"
@@ -118,6 +109,7 @@ class ApiStrings {
   object MetaOutputs {
     const val requestId = "requestId"
     const val centerLetterAndDigit = "centerLetterAndDigit"
+    const val sequence = "#"
   }
 
   object ExceptionMetaOutputs {

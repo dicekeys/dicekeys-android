@@ -45,6 +45,16 @@ fun JsonObjectBuilder.addSequenceNumberToDerivationOptionsJson(sequenceNumber: I
     }
 }
 
+fun String.recipeWithSequence(sequence: Int?): String {
+    return Json.parseToJsonElement(this)
+        .jsonObject
+        .rebuild(
+            buildJsonObject {
+                sequence?.let { addSequenceNumberToDerivationOptionsJson(it) }
+            }, DerivationRecipe.rebuildSkipJsonProperties)
+        .canonicalize()
+}
+
 @Serializable
 @Parcelize
 data class DerivationRecipe constructor(
