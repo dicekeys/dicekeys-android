@@ -86,10 +86,8 @@ class RecipeBuilder constructor(val type: DerivationOptions.Type, val scope: Cor
         updateSequence( (sequence.value?.toIntOrNull() ?: 2) - 1)
     }
 
-    fun updateSequence(s: Int){
-        if(s > 0) {
-            sequence.postValue(s.toString())
-        }
+    private fun updateSequence(seq: Int){
+        sequence.postValue(if (seq > 1) seq.toString() else "")
     }
 
     fun setEditRawJson(isEditRawJson: Boolean){

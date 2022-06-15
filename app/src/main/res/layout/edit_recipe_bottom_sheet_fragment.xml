@@ -161,10 +161,11 @@
                 tools:helperText="@string/enter_a_sequence"
                 app:helperTextEnabled="true"
                 app:hintEnabled="true"
+                app:placeholderText="none"
+                app:expandedHintEnabled="false"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
                 app:layout_constraintStart_toStartOf="@+id/toggleButton"
-                app:layout_constraintTop_toBottomOf="@+id/toggleButton"
-                app:placeholderText="1">
+                app:layout_constraintTop_toBottomOf="@+id/toggleButton">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/sequenceNumber"
