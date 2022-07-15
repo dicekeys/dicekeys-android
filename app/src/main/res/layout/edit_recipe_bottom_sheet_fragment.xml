@@ -229,7 +229,7 @@
                 android:hint="Max Chars (optional)"
                 app:endIconMode="clear_text"
                 app:expandedHintEnabled="false"
-                app:helperText="Maximum length, in characters (16-999)"
+                app:helperText="Maximum length, in characters (8-999)"
                 app:helperTextEnabled="true"
                 app:hintEnabled="true"
                 app:layout_constraintEnd_toEndOf="@id/toggleButton"
