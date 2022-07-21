@@ -183,7 +183,7 @@ data class DerivationRecipe constructor(
             }
 
             val jsonObject = buildJsonObject {
-                put("purpose", purpose)
+                put("purpose", purpose.trim())
             }
 
             return createRecipe(
