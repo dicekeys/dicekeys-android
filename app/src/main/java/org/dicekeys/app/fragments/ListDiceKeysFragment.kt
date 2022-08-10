@@ -82,6 +82,10 @@ class ListDiceKeysFragment : AbstractListDiceKeysFragment<ListDicekeysFragmentBi
                 navigate(R.id.preferencesFragment)
                 true
             }
+            R.id.bip39Randomness -> {
+                navigate(R.id.bip39RandomnessFragment)
+                true
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }

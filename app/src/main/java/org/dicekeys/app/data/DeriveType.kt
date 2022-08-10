@@ -12,10 +12,12 @@ sealed class DerivedValueView(val description: String) {
     class HexSigningKey : DerivedValueView("HEX (Signing Key)")
     class HexUnsealing : DerivedValueView("HEX (Unsealing Key)")
     class HexSealing : DerivedValueView("HEX (Sealing Key)")
-    class BIP39 : DerivedValueView("BIP39")
     class OpenPGPPrivateKey : DerivedValueView("OpenPGP Private Key")
     class OpenSSHPrivateKey : DerivedValueView("OpenSSH Private Key")
     class OpenSSHPublicKey : DerivedValueView("OpenSSH Public Key")
+    abstract class BIP39(description: String) : DerivedValueView(description)
+    class BIP39_12 : BIP39("BIP39 (12 words)")
+    class BIP39_24 : BIP39("BIP39 (24 words)")
 }
 
 sealed class DerivedValue(
@@ -38,11 +40,12 @@ sealed class DerivedValue(
 
     class Secret(private val secret: org.dicekeys.crypto.seeded.Secret) : DerivedValue(
         secret,
-        listOf(DerivedValueView.JSON(), DerivedValueView.Hex(), DerivedValueView.BIP39())
+        listOf(DerivedValueView.JSON(), DerivedValueView.Hex(), DerivedValueView.BIP39_12(), DerivedValueView.BIP39_24())
     ) {
         override fun valueForView(view: DerivedValueView): String = when (view) {
             is DerivedValueView.Hex -> secret.secretBytes.toHexString()
-            is DerivedValueView.BIP39 -> String(Mnemonics.MnemonicCode(secret.secretBytes).chars)
+            is DerivedValueView.BIP39_12 -> String(Mnemonics.MnemonicCode(secret.secretBytes.copyOfRange(0, 16)).chars)
+            is DerivedValueView.BIP39_24 -> String(Mnemonics.MnemonicCode(secret.secretBytes).chars)
             else -> super.valueForView(view)
         }
     }

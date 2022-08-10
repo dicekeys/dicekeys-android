@@ -3,11 +3,9 @@ package org.dicekeys.app.fragments.dicekey
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
 import org.dicekeys.app.adapters.GenericAdapter
@@ -18,7 +16,6 @@ import org.dicekeys.app.extensions.dialogQR
 import org.dicekeys.app.items.Bip39WordItem
 import org.dicekeys.app.items.GenericListItem
 import org.dicekeys.app.repositories.RecipeRepository
-import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.viewmodels.RecipeViewModel
 import org.dicekeys.crypto.seeded.DerivationOptions
 import javax.inject.Inject
@@ -43,8 +40,8 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         binding.diceKeyVM = viewModel
         binding.vm = recipeViewModel
 
-        binding.btnDown.setOnClickListener { recipeViewModel.sequenceUpDown(false) }
-        binding.btnUp.setOnClickListener { recipeViewModel.sequenceUpDown(true) }
+        binding.btnDown.setOnClickListener { recipeViewModel.recipeBuilder?.sequenceDown() }
+        binding.btnUp.setOnClickListener { recipeViewModel.recipeBuilder?.sequenceUp() }
 
 
         val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mutableListOf<String>())
@@ -120,7 +117,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         }
 
         recipeViewModel.derivedValueAsString.observe(viewLifecycleOwner) {
-            if(recipeViewModel.derivedValueView.value is DerivedValueView.BIP39){
+            if (recipeViewModel.derivedValueView.value is DerivedValueView.BIP39) {
                 updateBip39Words(it)
             }
         }
@@ -141,8 +138,8 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
     private fun updateBip39Words(value: String) {
         val list = mutableListOf<GenericListItem<*>>()
 
-        for((index, word) in value.split(" ").withIndex()){
-            list += Bip39WordItem((index + 1).toString(),word)
+        for ((index, word) in value.split(" ").withIndex()) {
+            list += Bip39WordItem((index + 1).toString(), word)
         }
 
         bip39Adapter.set(list)

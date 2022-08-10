@@ -187,6 +187,12 @@ open class DiceKey<F: Face>(val faces: List<F>) {
   val keyId: String
       get() = Base64.encodeToString(keyIdBytes, Base64.URL_SAFE or Base64.NO_WRAP)
 
+  override fun equals(other: Any?): Boolean {
+    if(other is DiceKey<*>) {
+      return toHumanReadableForm() == other.toHumanReadableForm()
+    }
+    return super.equals(other)
+  }
 }
 
 typealias SimpleDiceKey = DiceKey<Face>

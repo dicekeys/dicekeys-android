@@ -34,3 +34,5 @@ val derivationRecipeTemplates: Array<DerivationRecipe> = arrayOf(
 )
 
 val seedSecurityKeyRecipeTemplate = DerivationRecipe(DerivationOptions.Type.Secret, "Seed Security Key", """{"purpose":"seedSecurityKey"}""")
+
+val bip39RandomnessRecipeTemplate = DerivationRecipe(DerivationOptions.Type.Secret, "Random BIP39", """{"purpose":"bip39Randomness"}""")
