@@ -2,6 +2,11 @@ package org.dicekeys.api
 
 import kotlinx.serialization.json.*
 
+// These functions should match the
+// [Reference Implementation in TypeScript](https://github.com/dicekeys/dicekeys-app-typescript/blob/main/web/src/dicekeys/canonicalizeRecipeJson.ts)
+// and its functionality should not be changed without ensuring that the reference implementation
+// and dependent implementations are changed to match.
+
 fun compareObjectFieldNames(a: String, b: String):Int{
     return when{
         // The "#" (sequence number) field always comes last
