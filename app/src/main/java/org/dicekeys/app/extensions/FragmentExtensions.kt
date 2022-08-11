@@ -2,8 +2,8 @@ package org.dicekeys.app.extensions
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.BitmapDrawable
 import android.view.Gravity
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -12,12 +12,14 @@ import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.dicekeys.app.R
+import org.dicekeys.app.databinding.DialogQrCodeBinding
+import org.dicekeys.app.utils.copyToClipboard
+import org.dicekeys.app.utils.createQrBitmap
 
 
 fun <T> Fragment.getNavigationResult(key: String = "result") = findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)
@@ -103,4 +105,34 @@ fun Fragment.showPopupMenu(view: View, @MenuRes menuRes: Int, fn: ((popupMenu: P
     popup.setOnMenuItemClickListener(listener)
     fn?.invoke(popup)
     popup.show()
+}
+
+fun Fragment.askToCopyToClipboard(message: String, content: String, animateView: View? = null){
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle("Copy to clipboard?")
+        .setMessage(message)
+        .setPositiveButton("Copy") { _, _ ->
+            copyToClipboard("Derived Value", content, requireContext(), animateView)
+        }
+        .setNegativeButton(R.string.cancel) { _, _ ->
+
+        }
+        .show()
+}
+
+fun Fragment.dialogQR(title: String, content: String, listener: (() -> Unit)? = null) {
+    val binding = DialogQrCodeBinding.inflate(layoutInflater)
+
+    binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(content)).also { bitmap ->
+        bitmap.isFilterBitmap = false
+    })
+
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle(title)
+        .setView(binding.root)
+        .setPositiveButton(android.R.string.ok, null)
+        .setOnDismissListener {
+            listener?.invoke()
+        }
+        .show()
 }

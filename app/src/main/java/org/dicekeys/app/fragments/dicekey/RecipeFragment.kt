@@ -13,6 +13,8 @@ import org.dicekeys.app.R
 import org.dicekeys.app.adapters.GenericAdapter
 import org.dicekeys.app.data.DerivedValueView
 import org.dicekeys.app.databinding.RecipeFragmentBinding
+import org.dicekeys.app.extensions.askToCopyToClipboard
+import org.dicekeys.app.extensions.dialogQR
 import org.dicekeys.app.items.Bip39WordItem
 import org.dicekeys.app.items.GenericListItem
 import org.dicekeys.app.repositories.RecipeRepository
@@ -86,6 +88,12 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
             copyDerivedValue()
         }
 
+        binding.buttonQrCode.setOnClickListener {
+            recipeViewModel.derivedValueAsString.value?.let {
+                dialogQR(title = recipeViewModel.derivedValueView.value!!.description, content = it)
+            }
+        }
+
         binding.btnSaveRecipeInMenu.setOnClickListener {
             recipeViewModel.saveRecipeInMenu()
         }
@@ -126,16 +134,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
 
     private fun copyDerivedValue(){
         recipeViewModel.derivedValueAsString.value?.let {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Copy to Clipboard?")
-                .setMessage("Do you want to copy the derived value to the Clipboard?")
-                .setPositiveButton("Copy") { _, _ ->
-                    copyToClipboard("Derived Value", it, requireContext(), binding.cardDerivedValue)
-                }
-                .setNegativeButton(R.string.cancel) { _, _ ->
-
-                }
-                .show()
+            askToCopyToClipboard("Do you want to copy the derived value to the clipboard?", it, binding.cardDerivedValue)
         }
     }
 
