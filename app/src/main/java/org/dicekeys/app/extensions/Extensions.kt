@@ -24,16 +24,27 @@ fun Context.toPixels(size: Float): Float {
     return resources.displayMetrics.density * size
 }
 
-fun View.pulse() {
+fun View.pulse(scale: Float = 1.05f, duration: Long = 400L) {
     AnimatorSet().also {
         it.playTogether(
-            ObjectAnimator.ofFloat(this, "scaleY", 1f, 1.05f, 1f),
-            ObjectAnimator.ofFloat(this, "scaleX", 1f, 1.05f, 1f),
+            ObjectAnimator.ofFloat(this, "scaleY", 1f, scale, 1f),
+            ObjectAnimator.ofFloat(this, "scaleX", 1f, scale, 1f),
         )
-        it.duration = 400
+        it.duration = duration
         it.start()
     }
 }
+
+fun View.flash(duration: Long = 1000L) {
+    AnimatorSet().also {
+        it.playTogether(
+            ObjectAnimator.ofFloat(this, "alpha", 1f, 0.1f, 1f, 0.1f, 1f, 0.1f, 1f),
+        )
+        it.duration = duration
+        it.start()
+    }
+}
+
 
 fun DerivationOptions.Type.description(capitalize: Boolean = false) = when(this){
         DerivationOptions.Type.Password ->"password"

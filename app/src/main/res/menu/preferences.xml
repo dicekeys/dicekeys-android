@@ -3,6 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/bip39Randomness"
+        android:title="BIP39 Randomness" />
+
+    <item
         android:id="@+id/preferences"
         android:title="@string/preferences" />
+
 </menu>

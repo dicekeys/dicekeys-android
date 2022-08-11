@@ -124,18 +124,6 @@ class RecipeViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Up/down sequence number
-     */
-    fun sequenceUpDown(isUp: Boolean) {
-        if (isUp) {
-            recipeBuilder?.sequenceUp()
-        } else {
-            recipeBuilder?.sequenceDown()
-        }
-        recipeBuilder?.build()
-    }
-
     @SuppressLint("StaticFieldLeak")
     private var lifecycleRegistry: LifecycleRegistry? = null
 

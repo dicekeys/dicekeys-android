@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_listDiceKeysFragment_to_assembleFragment"
             app:destination="@id/assembleFragment" />
+        <action
+            android:id="@+id/action_listDiceKeysFragment_to_bip39RandomizerFragment"
+            app:destination="@id/bip39RandomnessFragment" />
     </fragment>
 
     <fragment
@@ -153,5 +156,11 @@
             app:uri="https://dicekeys.app/" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/bip39RandomnessFragment"
+        android:name="org.dicekeys.app.fragments.Bip39RandomnessFragment"
+        tools:layout="@layout/bip39_randomness_fragment"
+        android:label="BIP39 Randomness" />
 
 </navigation>
