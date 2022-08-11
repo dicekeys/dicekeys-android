@@ -89,8 +89,8 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         }
 
         binding.buttonQrCode.setOnClickListener {
-            recipeViewModel.derivedValueAsString.value?.let {
-                dialogQR(title = recipeViewModel.derivedValueView.value!!.description, content = it)
+            recipeViewModel.derivedQrCodeTextAsString.value?.let { derivedQrCodeTextAsString ->
+                dialogQR(title = recipeViewModel.derivedValueView.value!!.description, content = derivedQrCodeTextAsString)
             }
         }
 

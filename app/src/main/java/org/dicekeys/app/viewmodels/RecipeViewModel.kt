@@ -36,6 +36,7 @@ class RecipeViewModel @AssistedInject constructor(
     var derivedValueView: MutableLiveData<DerivedValueView> = MutableLiveData()
     var derivedValue: MutableLiveData<DerivedValue> = MutableLiveData()
     var derivedValueAsString = MutableLiveData<String>(null)
+    var derivedQrCodeTextAsString = MutableLiveData<String>(null)
 
     init {
         deriveValue()
@@ -96,7 +97,15 @@ class RecipeViewModel @AssistedInject constructor(
     }
 
     private fun updateView(){
-        derivedValueAsString.value = derivedValue.value?.valueForView(derivedValueView.value ?: DerivedValueView.JSON())
+        val view = derivedValueView.value ?: DerivedValueView.JSON()
+        derivedValue.value?.valueForView(view).let { value ->
+            derivedValueAsString.value = value
+
+            // Provide a different content for QR codes if required in the future
+            derivedQrCodeTextAsString.value = when(view){
+                else -> { value }
+            }
+        }
     }
 
     fun setView(view: DerivedValueView){
