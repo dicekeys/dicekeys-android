@@ -20,6 +20,7 @@ import org.dicekeys.app.R
 import org.dicekeys.app.databinding.DialogQrCodeBinding
 import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.utils.createQrBitmap
+import java.net.URLEncoder
 
 
 fun <T> Fragment.getNavigationResult(key: String = "result") = findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)
@@ -120,12 +121,30 @@ fun Fragment.askToCopyToClipboard(message: String, content: String, animateView:
         .show()
 }
 
-fun Fragment.dialogQR(title: String, content: String, listener: (() -> Unit)? = null) {
+fun Fragment.dialogQR(title: String, content: String, scheme: String, listener: (() -> Unit)? = null) {
     val binding = DialogQrCodeBinding.inflate(layoutInflater)
 
-    binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(content)).also { bitmap ->
+    val contentAsUri = URLEncoder.encode(content, "UTF-8").let { urlEncoded ->
+        "$scheme://$urlEncoded"
+    }
+
+    binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(contentAsUri)).also { bitmap ->
         bitmap.isFilterBitmap = false
     })
+
+    binding.toggleButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
+        if (isChecked) {
+            if (checkedId == R.id.buttonURI) {
+                binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(contentAsUri)).also { bitmap ->
+                    bitmap.isFilterBitmap = false
+                })
+            } else {
+                binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(content)).also { bitmap ->
+                    bitmap.isFilterBitmap = false
+                })
+            }
+        }
+    }
 
     MaterialAlertDialogBuilder(requireContext())
         .setTitle(title)

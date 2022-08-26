@@ -24,6 +24,7 @@
             android:background="@android:color/white"
             android:backgroundTint="@android:color/white"
             android:scaleType="fitCenter"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_max="350dp"
@@ -42,5 +43,38 @@
                 tools:src="@mipmap/ic_launcher" />
 
         </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/qrWrap"
+            app:layout_constraintStart_toStartOf="@+id/qrWrap"
+            app:layout_constraintTop_toBottomOf="@+id/qrWrap"
+            app:selectionRequired="true"
+            app:singleSelection="true"
+            app:checkedButton="@id/buttonURI">
+
+            <Button
+                android:id="@+id/buttonURI"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="URI"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/buttonRaw"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Raw"
+                android:textAllCaps="false" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

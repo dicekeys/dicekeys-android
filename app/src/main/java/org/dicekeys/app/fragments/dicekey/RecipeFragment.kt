@@ -3,11 +3,9 @@ package org.dicekeys.app.fragments.dicekey
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
 import org.dicekeys.app.adapters.GenericAdapter
@@ -18,7 +16,6 @@ import org.dicekeys.app.extensions.dialogQR
 import org.dicekeys.app.items.Bip39WordItem
 import org.dicekeys.app.items.GenericListItem
 import org.dicekeys.app.repositories.RecipeRepository
-import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.viewmodels.RecipeViewModel
 import org.dicekeys.crypto.seeded.DerivationOptions
 import javax.inject.Inject
@@ -89,8 +86,8 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         }
 
         binding.buttonQrCode.setOnClickListener {
-            recipeViewModel.derivedQrCodeTextAsString.value?.let { derivedQrCodeTextAsString ->
-                dialogQR(title = recipeViewModel.derivedValueView.value!!.description, content = derivedQrCodeTextAsString)
+            recipeViewModel.derivedValueAsString.value?.let { derivedValueAsString ->
+                dialogQR(title = recipeViewModel.derivedValueView.value!!.description, content = derivedValueAsString, scheme = recipeViewModel.derivedValueView.value?.scheme ?: "")
             }
         }
 
