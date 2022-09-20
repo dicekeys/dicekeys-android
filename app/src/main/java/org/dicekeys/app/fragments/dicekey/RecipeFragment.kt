@@ -70,6 +70,9 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
                         recipeViewModel.derivationRecipe.value?.let { it.purpose == "ssh" && it.type == DerivationOptions.Type.SigningKey } == true -> {
                             DerivedValueView.OpenSSHPrivateKey()
                         }
+                        recipeViewModel.derivationRecipe.value?.let { it.purpose == "wallet" && it.type == DerivationOptions.Type.Secret } == true -> {
+                            DerivedValueView.BIP39()
+                        }
                         else -> {
                             derivedValue.views[0]
                         }
@@ -87,7 +90,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
 
         binding.buttonQrCode.setOnClickListener {
             recipeViewModel.derivedValueAsString.value?.let { derivedValueAsString ->
-                dialogQR(title = recipeViewModel.derivedValueView.value!!.description, content = derivedValueAsString, scheme = recipeViewModel.derivedValueView.value?.scheme ?: "")
+                dialogQR(title = recipeViewModel.derivedValueView.value!!.description, content = derivedValueAsString)
             }
         }
 

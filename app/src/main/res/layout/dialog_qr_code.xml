@@ -4,7 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="ask"
+            type="Boolean" />
 
+        <variable
+            name="askiOS"
+            type="Boolean" />
 
     </data>
 
@@ -24,6 +30,8 @@
             android:background="@android:color/white"
             android:backgroundTint="@android:color/white"
             android:scaleType="fitCenter"
+            isInvisible="@{ask}"
+            tools:visibility="invisible"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,37 +52,96 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/toggleButton"
+        <TextView
+            android:id="@+id/qrContent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:textAppearance="?attr/textAppearanceCaption"
             app:layout_constraintEnd_toEndOf="@+id/qrWrap"
             app:layout_constraintStart_toStartOf="@+id/qrWrap"
             app:layout_constraintTop_toBottomOf="@+id/qrWrap"
-            app:selectionRequired="true"
-            app:singleSelection="true"
-            app:checkedButton="@id/buttonURI">
+            android:lines="4"
+            android:ellipsize="end"
+            tools:text="qr content"
+            isInvisible="@{ask}"
+            tools:visibility="invisible"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="invisible"
+            isVisible="@{ask &amp;&amp; !askiOS}">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:text="I will be reading this QR code with:" />
 
             <Button
-                android:id="@+id/buttonURI"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="0dp"
+                android:id="@+id/buttoniOS"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="URI"
-                android:textAllCaps="false" />
+                android:lines="2"
+                android:text="The camera app on an iPhone or iPad"/>
 
             <Button
-                android:id="@+id/buttonRaw"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="0dp"
+                android:id="@+id/buttonAndroid"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Raw"
-                android:textAllCaps="false" />
+                android:lines="2"
+                android:text="The camera app on an Android phone or tablet"/>
 
-        </com.google.android.material.button.MaterialButtonToggleGroup>
+            <Button
+                android:id="@+id/buttonOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="2"
+                android:text="A different app or device"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            isVisible="@{ask &amp;&amp; askiOS}">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textStyle="bold"
+                android:text="Be careful: iPhone and iPads can leak to contents of QR codes" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:text="If you click on the contents, iOS will launch a web search, sending the secret in your QR code over the Internet to your search engine.\n\nTo prevent this, once your QR code is scanned you will need to very carefully swipe your finger downward to cause iOS to expose the the copy option instead of searching." />
+
+            <Button
+                android:id="@+id/buttonCareful"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="2"
+                android:text="I'll be careful"/>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

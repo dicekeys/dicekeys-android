@@ -121,28 +121,26 @@ fun Fragment.askToCopyToClipboard(message: String, content: String, animateView:
         .show()
 }
 
-fun Fragment.dialogQR(title: String, content: String, scheme: String, listener: (() -> Unit)? = null) {
+fun Fragment.dialogQR(title: String, content: String, listener: (() -> Unit)? = null) {
     val binding = DialogQrCodeBinding.inflate(layoutInflater)
+    binding.ask = true
 
-    val contentAsUri = URLEncoder.encode(content, "UTF-8").let { urlEncoded ->
-        "$scheme://$urlEncoded"
-    }
-
-    binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(contentAsUri)).also { bitmap ->
+    binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(content)).also { bitmap ->
         bitmap.isFilterBitmap = false
     })
+    binding.qrContent.text = content
 
-    binding.toggleButton.addOnButtonCheckedListener { group, checkedId, isChecked ->
-        if (isChecked) {
-            if (checkedId == R.id.buttonURI) {
-                binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(contentAsUri)).also { bitmap ->
-                    bitmap.isFilterBitmap = false
-                })
-            } else {
-                binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(content)).also { bitmap ->
-                    bitmap.isFilterBitmap = false
-                })
-            }
+    binding.buttoniOS.setOnClickListener {
+        binding.askiOS = true
+    }
+    binding.buttonCareful.setOnClickListener {
+        binding.askiOS = false
+        binding.ask = false
+    }
+
+    listOf(binding.buttonAndroid, binding.buttonOther).forEach { button ->
+        button.setOnClickListener {
+            binding.ask = false
         }
     }
 

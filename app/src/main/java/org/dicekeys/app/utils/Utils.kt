@@ -48,7 +48,7 @@ fun copyToClipboard(label: String, content: String?, context: Context, viewToPul
 
 fun createQrBitmap(content: String): Bitmap? {
     try {
-        val matrix = Encoder.encode(content, ErrorCorrectionLevel.M).matrix
+        val matrix = Encoder.encode(content, ErrorCorrectionLevel.H).matrix
 
         val height: Int = matrix.height
         val width: Int = matrix.width

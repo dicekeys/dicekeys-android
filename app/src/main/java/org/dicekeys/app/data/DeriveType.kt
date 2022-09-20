@@ -5,17 +5,17 @@ import org.dicekeys.app.bip39.Mnemonics
 import org.dicekeys.crypto.seeded.JsonSerializable
 
 
-sealed class DerivedValueView(val description: String, val scheme: String) {
-    class JSON : DerivedValueView("JSON", "json")
-    class Password : DerivedValueView("Password", "password")
-    class Hex : DerivedValueView("HEX", "hex")
-    class HexSigningKey : DerivedValueView("HEX (Signing Key)", "signing_key")
-    class HexUnsealing : DerivedValueView("HEX (Unsealing Key)", "unsealing_key")
-    class HexSealing : DerivedValueView("HEX (Sealing Key)", "sealing_key")
-    class BIP39 : DerivedValueView("BIP39", "bip39")
-    class OpenPGPPrivateKey : DerivedValueView("OpenPGP Private Key", "openpgp_private_key")
-    class OpenSSHPrivateKey : DerivedValueView("OpenSSH Private Key", "openssh_private_key")
-    class OpenSSHPublicKey : DerivedValueView("OpenSSH Public Key", "openssh_public_key")
+sealed class DerivedValueView(val description: String) {
+    class JSON : DerivedValueView("JSON")
+    class Password : DerivedValueView("Password")
+    class Hex : DerivedValueView("HEX")
+    class HexSigningKey : DerivedValueView("HEX (Signing Key)")
+    class HexUnsealing : DerivedValueView("HEX (Unsealing Key)")
+    class HexSealing : DerivedValueView("HEX (Sealing Key)")
+    class BIP39 : DerivedValueView("BIP39")
+    class OpenPGPPrivateKey : DerivedValueView("OpenPGP Private Key")
+    class OpenSSHPrivateKey : DerivedValueView("OpenSSH Private Key")
+    class OpenSSHPublicKey : DerivedValueView("OpenSSH Public Key")
 }
 
 sealed class DerivedValue(

@@ -335,7 +335,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
-                    isVisible="@{vm.derivedValueView instanceof DerivedValueView.BIP39 &amp;&amp; vm.derivedValueAsString != null}"
+                    isVisible="@{(vm.derivedValueView instanceof DerivedValueView.BIP39) &amp;&amp; vm.derivedValueAsString != null}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clickable="false"
