@@ -1,11 +1,14 @@
 package org.dicekeys.app.utils
 
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
+import android.os.PersistableBundle
 import android.view.View
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -39,9 +42,15 @@ fun getClipboard(context: Context): String? =
             it.primaryClip?.getItemAt(0)?.text?.toString()
         }
 
-fun copyToClipboard(label: String, content: String?, context: Context, viewToPulse : View? = null) {
+fun copyToClipboard(label: String, content: String?, context: Context, viewToPulse: View? = null) {
     (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
-        it.setPrimaryClip(ClipData.newPlainText(label, content))
+        it.setPrimaryClip(ClipData.newPlainText(label, content).apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                description.extras = PersistableBundle().apply {
+                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                }
+            }
+        })
     }
     viewToPulse?.pulse()
 }
