@@ -35,6 +35,7 @@ android {
         viewBinding true
         dataBinding true
     }
+    namespace 'org.dicekeys.demo'
 }
 
 dependencies {

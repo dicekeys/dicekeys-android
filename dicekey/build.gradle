@@ -44,6 +44,7 @@ android {
     }
 
     viewBinding.enabled = true
+    namespace 'org.dicekeys'
 }
 
 dependencies {

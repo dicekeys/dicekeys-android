@@ -29,6 +29,7 @@ android {
             includeAndroidResources = true
         }
     }
+    namespace 'org.dicekeys.api'
 
 }
 
