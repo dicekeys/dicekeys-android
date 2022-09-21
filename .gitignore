@@ -18,3 +18,9 @@ keys.jks
 docs/
 app/build/
 app/release/
+*/build/.transforms
+*/build/intermediates
+*/build/generated
+*/build/kotlin
+*/build/tmp
+*/build/outputs
