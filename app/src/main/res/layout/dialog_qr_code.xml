@@ -5,11 +5,11 @@
 
     <data>
         <variable
-            name="ask"
+            name="askForUsage"
             type="Boolean" />
 
         <variable
-            name="askiOS"
+            name="warnAboutiOS"
             type="Boolean" />
 
     </data>
@@ -30,7 +30,7 @@
             android:background="@android:color/white"
             android:backgroundTint="@android:color/white"
             android:scaleType="fitCenter"
-            isInvisible="@{ask}"
+            isInvisible="@{askForUsage}"
             tools:visibility="invisible"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
             app:layout_constraintDimensionRatio="1:1"
@@ -64,7 +64,7 @@
             android:lines="4"
             android:ellipsize="end"
             tools:text="qr content"
-            isInvisible="@{ask}"
+            isInvisible="@{askForUsage}"
             tools:visibility="invisible"
             />
 
@@ -77,7 +77,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="invisible"
-            isVisible="@{ask &amp;&amp; !askiOS}">
+            isVisible="@{askForUsage &amp;&amp; !warnAboutiOS}">
 
             <TextView
                 android:layout_width="match_parent"
@@ -117,7 +117,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            isVisible="@{ask &amp;&amp; askiOS}">
+            isVisible="@{askForUsage &amp;&amp; warnAboutiOS}">
 
             <TextView
                 android:layout_width="match_parent"
@@ -125,21 +125,21 @@
                 android:layout_marginBottom="16dp"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:textStyle="bold"
-                android:text="Be careful: iPhone and iPads can leak to contents of QR codes" />
+                android:text="Caution: iPhone and iPads can leak secrets from QR codes" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:textAppearance="?attr/textAppearanceBody2"
-                android:text="If you click on the contents, iOS will launch a web search, sending the secret in your QR code over the Internet to your search engine.\n\nTo prevent this, once your QR code is scanned you will need to very carefully swipe your finger downward to cause iOS to expose the the copy option instead of searching." />
+                android:text="Clicking on the notification that appears when the camera has scanned your QR code will start a web search. The web search sends your secrets to your search engine over the Internet. Your search engine will likely store them.\n\nTo prevent your secrets from being exposed, swipe the notification downward to the bottom of the screen to expose the copy option. This option copies the secret to the clipboard on your device." />
 
             <Button
                 android:id="@+id/buttonCareful"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lines="2"
-                android:text="I'll be careful"/>
+                android:text="Got it. I'll be careful"/>
 
         </LinearLayout>
 

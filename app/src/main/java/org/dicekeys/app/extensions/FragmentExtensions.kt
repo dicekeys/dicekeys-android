@@ -123,7 +123,7 @@ fun Fragment.askToCopyToClipboard(message: String, content: String, animateView:
 
 fun Fragment.dialogQR(title: String, content: String, listener: (() -> Unit)? = null) {
     val binding = DialogQrCodeBinding.inflate(layoutInflater)
-    binding.ask = true
+    binding.askForUsage = true
 
     binding.qr.setImageDrawable(BitmapDrawable(resources, createQrBitmap(content)).also { bitmap ->
         bitmap.isFilterBitmap = false
@@ -131,16 +131,16 @@ fun Fragment.dialogQR(title: String, content: String, listener: (() -> Unit)? = 
     binding.qrContent.text = content
 
     binding.buttoniOS.setOnClickListener {
-        binding.askiOS = true
+        binding.warnAboutiOS = true
     }
     binding.buttonCareful.setOnClickListener {
-        binding.askiOS = false
-        binding.ask = false
+        binding.askForUsage = false
+        binding.warnAboutiOS = false
     }
 
     listOf(binding.buttonAndroid, binding.buttonOther).forEach { button ->
         button.setOnClickListener {
-            binding.ask = false
+            binding.askForUsage = false
         }
     }
 
