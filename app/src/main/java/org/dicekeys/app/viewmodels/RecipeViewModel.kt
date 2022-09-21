@@ -96,7 +96,10 @@ class RecipeViewModel @AssistedInject constructor(
     }
 
     private fun updateView(){
-        derivedValueAsString.value = derivedValue.value?.valueForView(derivedValueView.value ?: DerivedValueView.JSON())
+        val view = derivedValueView.value ?: DerivedValueView.JSON()
+        derivedValue.value?.valueForView(view).let { value ->
+            derivedValueAsString.value = value
+        }
     }
 
     fun setView(view: DerivedValueView){

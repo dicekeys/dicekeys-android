@@ -9,13 +9,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "31.0.0"
+    compileSdkVersion 33
+    buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "com.dicekeys.app"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 9
         versionName "1.07"
 
@@ -49,6 +49,7 @@ android {
     lint {
         abortOnError false
     }
+    namespace 'org.dicekeys.app'
 }
 
 dependencies {
@@ -66,13 +67,13 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinx_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Android  --------------------------------------------------------------------------- */
     implementation "androidx.core:core-ktx:$core_ktx_version"
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation "androidx.fragment:fragment-ktx:1.5.2"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.biometric:biometric-ktx:1.2.0-alpha04"
     implementation "androidx.preference:preference-ktx:1.2.0"
@@ -83,24 +84,24 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Camera ----------------------------------------------------------------------------- */
-    implementation "androidx.camera:camera-camera2:1.1.0-rc01"
-    implementation "androidx.camera:camera-view:1.1.0-rc01"
-    implementation "androidx.camera:camera-lifecycle:1.1.0-rc01"
+    implementation "androidx.camera:camera-camera2:1.1.0"
+    implementation "androidx.camera:camera-view:1.1.0"
+    implementation "androidx.camera:camera-lifecycle:1.1.0"
     implementation 'com.google.zxing:core:3.4.1'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-process:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Navigation ------------------------------------------------------------------------- */
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.0-rc01"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.0-rc01"
-    testImplementation "androidx.navigation:navigation-testing:2.5.0-rc01"
-    androidTestImplementation "androidx.navigation:navigation-testing:2.5.0-rc01"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.2"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.2"
+    testImplementation "androidx.navigation:navigation-testing:2.5.2"
+    androidTestImplementation "androidx.navigation:navigation-testing:2.5.2"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Hilt Dependency Injection  --------------------------------------------------------- */

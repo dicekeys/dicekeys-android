@@ -260,13 +260,14 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/typeTextInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                isVisible="@{vm.derivationRecipe != null}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:hint="Output Format"
-                isVisible="@{vm.derivationRecipe != null}"
                 app:layout_constraintBottom_toTopOf="@+id/cardDerivedValue"
-                app:layout_constraintEnd_toEndOf="@+id/cardDerivedValue"
+                app:layout_constraintEnd_toStartOf="@+id/buttonQrCode"
                 app:layout_constraintStart_toStartOf="@+id/cardDerivedValue">
 
                 <AutoCompleteTextView
@@ -276,6 +277,19 @@
                     android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/buttonQrCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/transparent"
+                android:padding="8dp"
+                android:src="@drawable/ic_baseline_qr_code_24"
+                app:layout_constraintBottom_toBottomOf="@+id/typeTextInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/typeTextInputLayout"
+                app:tint="?attr/colorPrimary" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDerivedValue"
@@ -321,7 +335,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
-                    isVisible="@{vm.derivedValueView instanceof DerivedValueView.BIP39 &amp;&amp; vm.derivedValueAsString != null}"
+                    isVisible="@{(vm.derivedValueView instanceof DerivedValueView.BIP39) &amp;&amp; vm.derivedValueAsString != null}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clickable="false"

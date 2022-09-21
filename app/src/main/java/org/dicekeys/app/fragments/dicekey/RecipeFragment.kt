@@ -3,20 +3,19 @@ package org.dicekeys.app.fragments.dicekey
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import org.dicekeys.app.R
 import org.dicekeys.app.adapters.GenericAdapter
 import org.dicekeys.app.data.DerivedValueView
 import org.dicekeys.app.databinding.RecipeFragmentBinding
+import org.dicekeys.app.extensions.askToCopyToClipboard
+import org.dicekeys.app.extensions.dialogQR
 import org.dicekeys.app.items.Bip39WordItem
 import org.dicekeys.app.items.GenericListItem
 import org.dicekeys.app.repositories.RecipeRepository
-import org.dicekeys.app.utils.copyToClipboard
 import org.dicekeys.app.viewmodels.RecipeViewModel
 import org.dicekeys.crypto.seeded.DerivationOptions
 import javax.inject.Inject
@@ -71,6 +70,9 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
                         recipeViewModel.derivationRecipe.value?.let { it.purpose == "ssh" && it.type == DerivationOptions.Type.SigningKey } == true -> {
                             DerivedValueView.OpenSSHPrivateKey()
                         }
+                        recipeViewModel.derivationRecipe.value?.let { it.purpose == "wallet" && it.type == DerivationOptions.Type.Secret } == true -> {
+                            DerivedValueView.BIP39()
+                        }
                         else -> {
                             derivedValue.views[0]
                         }
@@ -84,6 +86,12 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
 
         binding.derivedValue.setOnClickListener {
             copyDerivedValue()
+        }
+
+        binding.buttonQrCode.setOnClickListener {
+            recipeViewModel.derivedValueAsString.value?.let { derivedValueAsString ->
+                dialogQR(title = recipeViewModel.derivedValueView.value!!.description, content = derivedValueAsString)
+            }
         }
 
         binding.btnSaveRecipeInMenu.setOnClickListener {
@@ -126,16 +134,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
 
     private fun copyDerivedValue(){
         recipeViewModel.derivedValueAsString.value?.let {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Copy to Clipboard?")
-                .setMessage("Do you want to copy the derived value to the Clipboard?")
-                .setPositiveButton("Copy") { _, _ ->
-                    copyToClipboard("Derived Value", it, requireContext(), binding.cardDerivedValue)
-                }
-                .setNegativeButton(R.string.cancel) { _, _ ->
-
-                }
-                .show()
+            askToCopyToClipboard("Do you want to copy the derived value to the clipboard?", it, binding.cardDerivedValue)
         }
     }
 

@@ -31,6 +31,7 @@ val derivationRecipeTemplates: Array<DerivationRecipe> = arrayOf(
 	DerivationRecipe(DerivationOptions.Type.Password, "Microsoft", """{"allow":[{"host":"*.microsoft.com"},{"host":"*.live.com"}]}"""),
 	DerivationRecipe(DerivationOptions.Type.SigningKey, "SSH", """{"purpose":"ssh"}"""),
 	DerivationRecipe(DerivationOptions.Type.SigningKey, "PGP", """{"purpose":"pgp"}"""),
+	DerivationRecipe(DerivationOptions.Type.Secret, "Cryptocurrency wallet seed", """{"purpose":"wallet"}"""),
 )
 
 val seedSecurityKeyRecipeTemplate = DerivationRecipe(DerivationOptions.Type.Secret, "Seed Security Key", """{"purpose":"seedSecurityKey"}""")
