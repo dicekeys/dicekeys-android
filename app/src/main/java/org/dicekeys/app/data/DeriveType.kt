@@ -16,13 +16,14 @@ sealed class DerivedValueView(val description: String) {
     class OpenPGPPrivateKey : DerivedValueView("OpenPGP Private Key")
     class OpenSSHPrivateKey : DerivedValueView("OpenSSH Private Key")
     class OpenSSHPublicKey : DerivedValueView("OpenSSH Public Key")
+
+    override fun toString(): String = description
 }
 
 sealed class DerivedValue(
     private val derivedValue: JsonSerializable,
     val views: List<DerivedValueView> = listOf(DerivedValueView.JSON())
 ) {
-
     open fun valueForView(view: DerivedValueView): String {
         return derivedValue.toJson()
     }
@@ -36,13 +37,15 @@ sealed class DerivedValue(
 
     }
 
-    class Secret(private val secret: org.dicekeys.crypto.seeded.Secret) : DerivedValue(
+    class Secret(private val secret: org.dicekeys.crypto.seeded.Secret, showBIP39: Boolean) : DerivedValue(
         secret,
-        listOf(DerivedValueView.JSON(), DerivedValueView.Hex(), DerivedValueView.BIP39())
+        mutableListOf(DerivedValueView.JSON(), DerivedValueView.Hex()) + (if (showBIP39) listOf(
+            DerivedValueView.BIP39()
+        ) else listOf())
     ) {
         override fun valueForView(view: DerivedValueView): String = when (view) {
             is DerivedValueView.Hex -> secret.secretBytes.toHexString()
-            is DerivedValueView.BIP39 -> String(Mnemonics.MnemonicCode(secret.secretBytes).chars)
+            is DerivedValueView.BIP39 -> secret.secretBytes.let { if(it.size % 4 == 0) String(Mnemonics.MnemonicCode(secret.secretBytes).chars) else "invalid" }
             else -> super.valueForView(view)
         }
     }
