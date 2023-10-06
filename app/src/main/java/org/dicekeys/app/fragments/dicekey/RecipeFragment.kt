@@ -44,7 +44,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         binding.btnUp.setOnClickListener { recipeViewModel.sequenceUpDown(true) }
 
 
-        val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mutableListOf<String>())
+        val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mutableListOf<DerivedValueView>())
         binding.type.setAdapter(typeAdapter)
 
         binding.type.setOnItemClickListener { _, _, position, _ ->
@@ -56,11 +56,11 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
         recipeViewModel.derivedValue.observe(viewLifecycleOwner){ derivedValue ->
             typeAdapter.clear()
 
-            derivedValue?.views?.map { it.description }?.also { list ->
+            derivedValue?.views?.also { list ->
                 typeAdapter.addAll(list)
 
                 val currentSelection = binding.type.text.toString()
-                if(currentSelection.isBlank() || list.find { it == currentSelection } == null){
+                if(currentSelection.isBlank() || list.find { it.description == currentSelection } == null){
 
                     // If recipe has a specific purpose select the appropriate view
                     when {
@@ -70,7 +70,7 @@ class RecipeFragment : AbstractDiceKeyFragment<RecipeFragmentBinding>(R.layout.r
                         recipeViewModel.derivationRecipe.value?.let { it.purpose == "ssh" && it.type == DerivationOptions.Type.SigningKey } == true -> {
                             DerivedValueView.OpenSSHPrivateKey()
                         }
-                        recipeViewModel.derivationRecipe.value?.let { it.purpose == "wallet" && it.type == DerivationOptions.Type.Secret } == true -> {
+                        recipeViewModel.derivationRecipe.value?.let { it.purpose == "wallet" && it.type == DerivationOptions.Type.Secret && (derivedValue.views.find { it is DerivedValueView.BIP39 } != null) } == true -> {
                             DerivedValueView.BIP39()
                         }
                         else -> {
