@@ -233,7 +233,11 @@ class AppKeyStore {
 
     @Throws(Exception::class)
     fun decryptData(cipher: Cipher, encryptedData: EncryptedData): ByteArray {
-        return cipher.doFinal(encryptedData.getEncryptedData())
+        try {
+            return cipher.doFinal(encryptedData.getEncryptedData())
+        } catch (e: Exception) {
+            throw KeyStoreException("Cannot decrypt ${encryptedData.getIv().size} ${cipher.parameters} ${e.message}");
+        }
     }
 
     companion object {
