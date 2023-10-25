@@ -62,7 +62,8 @@ When you set both references to sourceDiceView and targetDiceView it will displa
 * Select "Android App Bundle" and press the "Next" button
 * With keys in place, "Next" button again
 * Select "release" and press "Finish" button
-* Go to Google Play website
-* Create production release
+* Go to Google Play website [console](https://play.google.com/console)
+* Navigate to DiceKeys, then Production item on lefthand menu
+* Click create new release button
 * Upload the file in app/release/app-release.aab
 * Tag the release in Git
