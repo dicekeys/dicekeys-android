@@ -27,7 +27,7 @@ class BiometricsHelper(private val appKeyStore: AppKeyStore, private val encrypt
     }
 
     // On Android 12 the user must be authenticated in order to use any crypto-based key
-    private fun authenticateUser(fragment: Fragment, callback: AuthenticationCallback){
+    private fun authenticateUser(fragment: Fragment, callback: AuthenticationCallback, onlyDeviceCredentials: Boolean = false){
         val biometricPrompt = BiometricPrompt(fragment, ContextCompat.getMainExecutor(fragment.requireContext()), object : AuthenticationCallback(fragment) {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 // Seems there is a bug and if we execute immediately before the callback is finished
@@ -38,18 +38,17 @@ class BiometricsHelper(private val appKeyStore: AppKeyStore, private val encrypt
             }})
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder().let {
-            it.setTitle(fragment.getString(R.string.biometrics_authentication))
-                .setSubtitle(fragment.getString(R.string.authenticate_using_biometrics))
-                .setNegativeButtonText(fragment.getString(android.R.string.cancel))
-                .setConfirmationRequired(false)
-            it.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_WEAK)
+            it.setTitle(fragment.getString(R.string.user_authentication))
+                .setSubtitle(fragment.getString(R.string.you_have_to_authenticate_to_unlock_your_device))
+                .setConfirmationRequired(true)
+                .setAllowedAuthenticators(if (onlyDeviceCredentials) BiometricManager.Authenticators.DEVICE_CREDENTIAL else BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
             it.build()
 
         }
         authenticate(biometricPrompt, promptInfo)
     }
 
-    fun encrypt(diceKey: DiceKey<*>, keyStoreType: AppKeyStore.KeyStoreCredentialsAllowed, fragment: Fragment) {
+    fun encrypt(diceKey: DiceKey<*>, keyStoreType: AppKeyStore.KeyStoreCredentialsAllowed, fragment: Fragment, onlyDeviceCredentials: Boolean = false) {
 
         if (keyStoreType == AppKeyStore.KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION && !canUseBiometrics(fragment.requireContext())) {
             fragment.toast(R.string.biometrics_unavailable_message)
@@ -63,9 +62,10 @@ class BiometricsHelper(private val appKeyStore: AppKeyStore, private val encrypt
                     fragment,
                     object : AuthenticationCallback(fragment) {
                         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                            encrypt(diceKey, keyStoreType, fragment)
+                            // onlyDeviceCredentials = true prevent eternal loops
+                            encrypt(diceKey, keyStoreType, fragment, onlyDeviceCredentials = false)
                         }
-                    })
+                    }, onlyDeviceCredentials = onlyDeviceCredentials)
                 return
             }
 
@@ -105,16 +105,17 @@ class BiometricsHelper(private val appKeyStore: AppKeyStore, private val encrypt
         }
     }
 
-    fun decrypt(encryptedDiceKey: EncryptedDiceKey, fragment: Fragment, success: (diceKey: DiceKey<Face>) -> Unit) {
+    fun decrypt(encryptedDiceKey: EncryptedDiceKey, fragment: Fragment, success: (diceKey: DiceKey<Face>) -> Unit, onlyDeviceCredentials: Boolean = false) {
         try {
             if (appKeyStore.isAuthenticationRequired(encryptedDiceKey.keyStoreType)) {
                 authenticateUser(
                     fragment = fragment,
                     callback = object : AuthenticationCallback(fragment) {
                         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                            decrypt(encryptedDiceKey, fragment, success)
+                            // onlyDeviceCredentials = true prevent eternal loops
+                            decrypt(encryptedDiceKey, fragment, success, onlyDeviceCredentials = true)
                         }
-                    })
+                    }, onlyDeviceCredentials = onlyDeviceCredentials)
                 return
             }
 

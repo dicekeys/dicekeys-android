@@ -58,9 +58,9 @@ class AppKeyStore {
     fun isAuthenticationRequired(keyStoreCredentialsAllowed: KeyStoreCredentialsAllowed): Boolean {
         try{
             when(keyStoreCredentialsAllowed){
-                KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
-                KeyStoreCredentialsAllowed.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeyStoreCredentialsAllowed.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
-                KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
+                KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keyStoreCredentialsAllowed, false)
+                KeyStoreCredentialsAllowed.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeyStoreCredentialsAllowed.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keyStoreCredentialsAllowed, false)
+                KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keyStoreCredentialsAllowed, false)
             }
         }catch (e: UserNotAuthenticatedException){
             e.printStackTrace()
@@ -100,7 +100,8 @@ class AppKeyStore {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return false
+        // Even if we weren't able to get the Cipher, we expect the key to be valid
+        return true
     }
 
     @Throws(Exception::class)
@@ -169,12 +170,11 @@ class AppKeyStore {
         return cipher
     }
 
-    private fun getEncryptionCipher(keystoreAlias: String, keyStoreCredentialsAllowed: KeyStoreCredentialsAllowed): Cipher {
-        if (!keyStoreKeyExists(keystoreAlias) || !isKeyStoreValid(keystoreAlias)) {
+    private fun getEncryptionCipher(keystoreAlias: String, keyStoreCredentialsAllowed: KeyStoreCredentialsAllowed, recreateKeyIfNeeded: Boolean): Cipher {
+        if ((!keyStoreKeyExists(keystoreAlias) || !isKeyStoreValid(keystoreAlias)) && recreateKeyIfNeeded) {
             deleteFromKeyStore(keystoreAlias)
             initializeKeyStoreKey(keystoreAlias, keyStoreCredentialsAllowed)
         }
-
         return getEncryptionCipher(keystoreAlias)
     }
 
@@ -189,9 +189,9 @@ class AppKeyStore {
     @Throws(Exception::class)
     fun getEncryptionCipher(keyStoreCredentialsAllowed: KeyStoreCredentialsAllowed): Cipher {
         return when(keyStoreCredentialsAllowed){
-            KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
-            KeyStoreCredentialsAllowed.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeyStoreCredentialsAllowed.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
-            KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keyStoreCredentialsAllowed)
+            KeyStoreCredentialsAllowed.ALLOW_ACCESS_WITHOUT_REAUTHENTICATION -> getEncryptionCipher(BASIC_KEYSTORE_ALIAS, keyStoreCredentialsAllowed, true)
+            KeyStoreCredentialsAllowed.ALLOW_BIOMETRIC_OR_KNOWLEDGE_BASED_AUTHENTICATION, KeyStoreCredentialsAllowed.ALLOW_ONLY_KNOWLEDGE_BASED_AUTHENTICATION -> getEncryptionCipher(AUTHENTICATION_KEYSTORE_ALIAS, keyStoreCredentialsAllowed, true)
+            KeyStoreCredentialsAllowed.ALLOW_ONLY_BIOMETRIC_AUTHENTICATION -> getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS, keyStoreCredentialsAllowed, true)
         }
     }
 

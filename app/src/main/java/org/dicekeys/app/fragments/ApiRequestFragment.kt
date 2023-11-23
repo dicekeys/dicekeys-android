@@ -63,9 +63,9 @@ class ApiRequestFragment : AbstractListDiceKeysFragment<ApiRequestFragmentBindin
         // Needs Decryption
         if(diceKey == null){
             encryptedStorage.getEncryptedData(diceKeyDescription.keyId)?.let {
-                biometricsHelper.decrypt(it , this) {
+                biometricsHelper.decrypt(it , this, {
                     setDiceKey(it)
-                }
+                })
             }
         }else{
             setDiceKey(diceKey)
