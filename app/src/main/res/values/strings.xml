@@ -175,6 +175,6 @@
     <string name="authenticate_using_biometrics">Authenticate using biometrics</string>
 
     <string name="user_authentication">User Authentication</string>
-    <string name="you_have_to_authenticate_to_unlock_your_device">You have to Authenticate to unlock your device</string>
+    <string name="you_have_to_authenticate_to_unlock_your_device">You have to authenticate to unlock your device</string>
 
 </resources>
