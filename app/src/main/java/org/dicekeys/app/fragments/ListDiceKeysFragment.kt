@@ -52,9 +52,9 @@ class ListDiceKeysFragment : AbstractListDiceKeysFragment<ListDicekeysFragmentBi
         // Needs Decryption
         if(diceKey == null){
             encryptedStorage.getEncryptedData(diceKeyDescription.keyId)?.let {
-                biometricsHelper.decrypt(it, this@ListDiceKeysFragment) { diceKey ->
+                biometricsHelper.decrypt(it, this@ListDiceKeysFragment, { diceKey ->
                     navigateToDiceKey(diceKey)
-                }
+                })
             }
         }else{
             navigateToDiceKey(diceKey)
