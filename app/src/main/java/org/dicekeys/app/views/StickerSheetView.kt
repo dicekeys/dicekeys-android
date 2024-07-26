@@ -81,7 +81,7 @@ class StickerSheetView @JvmOverloads constructor(
             return posiotions
         }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (canvas != null) {
             canvas.drawRect(1f, 1f, (width - 1).toFloat(), (height - 1).toFloat() , borderPaint)

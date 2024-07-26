@@ -61,7 +61,7 @@ When you set both references to sourceDiceView and targetDiceView it will displa
 * Go to build menu, Generate signed bundle/APK
 * Select "Android App Bundle" and press the "Next" button
 * With keys in place, "Next" button again
-* Select "release" and press "Finish" button
+* Select "release" and press "Create" button
 * Go to Google Play website [console](https://play.google.com/console)
 * Navigate to DiceKeys, then Production item on lefthand menu
 * Click create new release button

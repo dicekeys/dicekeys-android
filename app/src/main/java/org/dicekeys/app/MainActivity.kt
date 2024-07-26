@@ -56,12 +56,12 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
 
         navController.addOnDestinationChangedListener { navController, destination, _ ->
-
-            val insideDiceKeyNav = navController.backQueue.firstOrNull { it.destination.id == R.id.dicekey
-                    || it.destination.id == R.id.solokey
-                    || it.destination.id == R.id.backupSelect
-                    || it.destination.id == R.id.secrets
-            } != null
+            // https://issuetracker.google.com/issues/217465473#comment6
+            val id = navController.currentBackStackEntry?.destination?.id;
+            val insideDiceKeyNav = id == R.id.dicekey
+                    || id == R.id.solokey
+                    || id == R.id.backupSelect
+                    || id == R.id.secrets
 
             val isScan = navController.currentBackStackEntry?.destination?.id == R.id.scanFragment
 

@@ -30,7 +30,8 @@ class EditRecipeViewModel @AssistedInject constructor(
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
 
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+    // override fun getLifecycle(): Lifecycle = lifecycleRegistry
+    override val lifecycle: Lifecycle get() { return lifecycleRegistry }
 
     val viewLifecycleOwner: LifecycleOwner
         get() = this
