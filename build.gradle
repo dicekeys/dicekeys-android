@@ -1,12 +1,14 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.9.0'
     ext.kotlinx_coroutines_version = '1.6.4'
-    ext.kotlinx_serialization_version = '1.4.0'
-    ext.core_ktx_version = '1.9.0'
-    ext.hilt_version = '2.43.2'
+    ext.kotlinx_serialization_version = '1.6.3'
+    ext.core_ktx_version = '1.13.1'
+    ext.hilt_version = '2.51.1'
     ext.dokka_version = '0.10.1'
     ext.seeded_crypto = 'main-SNAPSHOT'
     ext.read_dicekey = 'main-SNAPSHOT'
@@ -15,13 +17,17 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath 'com.android.tools.build:gradle:8.5.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // https://kotlinlang.org/docs/gradle.html#dependency-on-the-standard-library
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.5.2"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
     }
+}
+
+ext {
+    buildToolsVersion = '33.0.1'
 }
 
 allprojects {
@@ -67,7 +73,7 @@ dokka {
     }
 }
 
-task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
+task dokkaMarkdown(type: DokkaTask) {
     outputFormat = 'gfm'
     outputDirectory = "docs"
     subProjects = ["seeded", "api"] //, "trustedapp", "dicekey", "read", 

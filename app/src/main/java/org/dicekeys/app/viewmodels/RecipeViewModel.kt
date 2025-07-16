@@ -150,7 +150,7 @@ class RecipeViewModel @AssistedInject constructor(
         lifecycleRegistry?.currentState = Lifecycle.State.DESTROYED
     }
 
-    override fun getLifecycle(): Lifecycle {
+    override val lifecycle: Lifecycle get() {
         if(lifecycleRegistry == null) {
             lifecycleRegistry = LifecycleRegistry(this)
             lifecycleRegistry?.currentState = Lifecycle.State.STARTED

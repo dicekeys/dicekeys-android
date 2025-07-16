@@ -95,7 +95,7 @@ class DiceKeyView @JvmOverloads constructor(
 
     val dieLidShape = DieLidShape(sizeModel.lidTabRadius, diceBoxPaint.color)
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas?.let {
             canvas.drawRoundRect(0f, 0f, sizeModel.boxHeight, sizeModel.boxWidth,

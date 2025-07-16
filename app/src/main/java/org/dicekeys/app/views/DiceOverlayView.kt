@@ -61,7 +61,7 @@ class DiceOverlayView @JvmOverloads constructor(
         return diceView.facePositions[index].face
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas?.let {
             val sourceDiceView = sourceDiceView
