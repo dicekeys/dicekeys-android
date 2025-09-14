@@ -1,5 +1,4 @@
 include ':app'
 include ':dicekey'
 include ':api'
-include ':demo'
 rootProject.name='DiceKeys'
