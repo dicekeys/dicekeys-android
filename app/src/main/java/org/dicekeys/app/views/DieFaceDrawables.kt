@@ -79,7 +79,7 @@ class Undoverline(val face: Face,
 
 class DieFace(val face: Face,
               var dieSize: Float,
-              val context: Context,   // <- added
+              val context: Context,
               val linearFractionOfFaceRenderedToDieSize: Float = 5f/8f,
               penColor: Int = Color.BLACK,
               faceSurfaceColor: Int = Color.WHITE,

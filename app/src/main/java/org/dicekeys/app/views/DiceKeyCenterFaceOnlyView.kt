@@ -129,12 +129,11 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
     val faceSurfacePaint = Paint()
     val borderColor = Paint()
 
-    val centerDieDrawable: DieFace get() = DieFace(centerFace, originalFaceSize,context,  penColor = diePenPaint.color, faceSurfaceColor = faceSurfacePaint.color)
-    val magnifiedCenterDieDrawable: DieFace get() = DieFace(centerFace, magnifiedFaceSize, context,penColor = diePenPaint.color, faceSurfaceColor = faceSurfacePaint.color, faceBorderColor = borderColor.color)
+    val centerDieDrawable: DieFace get() = DieFace(centerFace, originalFaceSize, context, penColor = diePenPaint.color, faceSurfaceColor = faceSurfacePaint.color)
+    val magnifiedCenterDieDrawable: DieFace get() = DieFace(centerFace, magnifiedFaceSize, context, penColor = diePenPaint.color, faceSurfaceColor = faceSurfacePaint.color, faceBorderColor = borderColor.color)
     val dieLidShape: DieLidShape get() = DieLidShape(diceKeySizeModel.lidTabRadius, diceBoxPaint.color)
 
     init {
-
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.StickerSheetView)
         linePaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_lineColor,
                 Color.argb(255 / 2, 255, 255, 255))
@@ -144,7 +143,6 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
         faceSurfacePaint.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_faceColor, Color.WHITE)
         borderColor.color = typedArray.getColor(R.styleable.DiceKeyCenterFaceOnlyView_borderColor, Color.GRAY)
         typedArray.recycle()
-
     }
 
     override fun onDraw(canvas: Canvas) {
