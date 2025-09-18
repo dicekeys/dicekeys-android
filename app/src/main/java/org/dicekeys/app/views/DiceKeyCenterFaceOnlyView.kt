@@ -129,8 +129,8 @@ class DiceKeyCenterFaceOnlyView @JvmOverloads constructor(
     val faceSurfacePaint = Paint()
     val borderColor = Paint()
 
-    val centerDieDrawable: DieFace get() = DieFace(centerFace, originalFaceSize, penColor = diePenPaint.color, faceSurfaceColor = faceSurfacePaint.color)
-    val magnifiedCenterDieDrawable: DieFace get() = DieFace(centerFace, magnifiedFaceSize, penColor = diePenPaint.color, faceSurfaceColor = faceSurfacePaint.color, faceBorderColor = borderColor.color)
+    val centerDieDrawable: DieFace get() = DieFace(centerFace, originalFaceSize, context, penColor = diePenPaint.color, faceSurfaceColor = faceSurfacePaint.color)
+    val magnifiedCenterDieDrawable: DieFace get() = DieFace(centerFace, magnifiedFaceSize, context, penColor = diePenPaint.color, faceSurfaceColor = faceSurfacePaint.color, faceBorderColor = borderColor.color)
     val dieLidShape: DieLidShape get() = DieLidShape(diceKeySizeModel.lidTabRadius, diceBoxPaint.color)
 
     init {

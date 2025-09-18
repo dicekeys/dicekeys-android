@@ -1,8 +1,10 @@
 package org.dicekeys.app.views
 
+import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
+import org.dicekeys.app.R
 import org.dicekeys.dicekey.Face
 import org.dicekeys.dicekey.FaceDimensionsFractional
 
@@ -77,8 +79,8 @@ class Undoverline(val face: Face,
 
 class DieFace(val face: Face,
               var dieSize: Float,
+              val context: Context,
               val linearFractionOfFaceRenderedToDieSize: Float = 5f/8f,
-              val font: Typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD),
               penColor: Int = Color.BLACK,
               faceSurfaceColor: Int = Color.WHITE,
               highlightSurfaceColor: Int = Color.parseColor("#FEFF8A"),
@@ -111,7 +113,7 @@ class DieFace(val face: Face,
     }
 
     val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        typeface = font
+        typeface = ResourcesCompat.getFont(context, R.font.inconsolata)
         color = penColor
         textAlign = Paint.Align.CENTER
         letterSpacing = FaceDimensionsFractional.spaceBetweenLetterAndDigit

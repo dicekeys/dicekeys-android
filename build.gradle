@@ -4,7 +4,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 apply plugin: 'org.jetbrains.dokka'
 
 buildscript {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '1.9.25'
     ext.kotlinx_coroutines_version = '1.6.4'
     ext.kotlinx_serialization_version = '1.6.3'
     ext.core_ktx_version = '1.13.1'
@@ -17,7 +17,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.1'
+        classpath 'com.android.tools.build:gradle:8.5.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // https://kotlinlang.org/docs/gradle.html#dependency-on-the-standard-library
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7"

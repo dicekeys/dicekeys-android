@@ -70,6 +70,7 @@ class StickerSheetView @JvmOverloads constructor(
                             drawable = DieFace(
                                     face = face,
                                     dieSize = faceSize,
+                                    context = context,
                                     penColor = diePenPaint.color,
                                     faceSurfaceColor = faceSurfacePaint.color,
                                     highlightSurfaceColor = highlighterPaint.color,

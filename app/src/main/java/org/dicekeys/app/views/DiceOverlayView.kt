@@ -82,6 +82,7 @@ class DiceOverlayView @JvmOverloads constructor(
                 val dieFaceUpright = DieFace(
                         getDieFace(targetDiceView, targetDiceViewIndex),
                         dieSize = bounds2.width(),
+                        context = context,
                         faceSurfaceColor = handDieFaceColor)
                 canvas.save()
                 canvas.translate(bounds2.left, bounds2.top)
