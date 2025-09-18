@@ -18,12 +18,12 @@ android {
         versionCode 14
         versionName "1.14"
 
-        testApplicationId "com.dicekeys.test"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testApplicationId = "com.dicekeys.test"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
-        dataBinding true
+        dataBinding = true
     }
 
     buildTypes {
@@ -46,11 +46,11 @@ android {
         }
     }
     lint {
-        abortOnError false
+        abortOnError = false
     }
-    namespace 'org.dicekeys.app'
+    namespace = 'org.dicekeys.app'
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     buildToolsVersion buildToolsVersion
 }

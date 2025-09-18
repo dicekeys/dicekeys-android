@@ -31,11 +31,11 @@ android {
     }
     testOptions {
         unitTests {
-            includeAndroidResources = true
+            includeAndroidResources true
         }
     }
-    namespace 'org.dicekeys.api'
-    buildToolsVersion buildToolsVersion
+    namespace = 'org.dicekeys.api'
+    buildToolsVersion = buildToolsVersion
 
 }
 

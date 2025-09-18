@@ -32,11 +32,11 @@ android {
         jvmToolchain(17)
     }
     buildFeatures {
-        viewBinding true
-        dataBinding true
+        viewBinding = true
+        dataBinding = true
     }
-    namespace 'org.dicekeys.demo'
-    buildToolsVersion buildToolsVersion
+    namespace = 'org.dicekeys.demo'
+    buildToolsVersion = buildToolsVersion
 }
 
 dependencies {
