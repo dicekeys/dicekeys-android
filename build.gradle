@@ -10,8 +10,8 @@ buildscript {
     ext.core_ktx_version = '1.13.1'
     ext.hilt_version = '2.51.1'
     ext.dokka_version = '0.10.1'
-    ext.seeded_crypto = 'main-SNAPSHOT'
-    ext.read_dicekey = 'main-SNAPSHOT'
+    ext.seeded_crypto = '0.0.2'
+    ext.read_dicekey = '0.0.5'
     repositories {
         google()
         mavenCentral()
