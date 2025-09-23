@@ -10,7 +10,7 @@ import org.dicekeys.api.getWildcardOfRegisteredDomainFromCandidateWebUrl
 class DomainTextInputEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = com.google.android.material.R.attr.editTextStyle
+    defStyleAttr: Int = android.R.attr.editTextStyle
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
     // Override _paste_ operation on the domain text field to replace pasted URLs with

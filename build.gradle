@@ -1,97 +1,62 @@
-import org.jetbrains.dokka.gradle.DokkaTask
-
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply plugin: 'org.jetbrains.dokka'
-
-buildscript {
-    ext.kotlin_version = '1.9.25'
-    ext.kotlinx_coroutines_version = '1.6.4'
-    ext.kotlinx_serialization_version = '1.6.3'
-    ext.core_ktx_version = '1.13.1'
-    ext.hilt_version = '2.51.1'
-    ext.dokka_version = '0.10.1'
-    ext.seeded_crypto = '0.0.2'
-    ext.read_dicekey = '0.0.5'
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // https://kotlinlang.org/docs/gradle.html#dependency-on-the-standard-library
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
-    }
+plugins {
+    id("com.android.application") version "8.13.0" apply false
+    id("com.android.library") version "8.13.0" apply false
+    id("org.jetbrains.kotlin.android") version "2.2.0" apply false
+    id("org.jetbrains.kotlin.plugin.parcelize") version "2.2.0" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0" apply false
+    id("com.google.dagger.hilt.android") version "2.57" apply false
+    id("androidx.navigation.safeargs.kotlin") version "2.9.4" apply false
+    id("org.jetbrains.dokka") version "1.9.20" apply false
 }
 
 ext {
-    buildToolsVersion = '33.0.1'
+    kotlinx_coroutines_version = "1.8.1"
+    kotlinx_serialization_version = "1.7.3"
+    core_ktx_version = "1.17.0"
+    seeded_crypto = "0.0.2"
+    read_dicekey = "0.0.5"
+    hilt_version = "2.57"
+    appcompat_version = "1.7.1"
+    material_version = "1.13.0"
+    constraintlayout_version = "2.2.1"
+    navigation_version = "2.9.4"
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
+
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+
+tasks.register("dokkaHtmlAll", DokkaTask) {
+    outputDirectory.set(buildDir.resolve("dokka"))
+    dokkaSourceSets.configureEach {
+        includeNonPublic.set(false)
+        samples.from("api/src/sample")
+        includes.from("packages.md", "extra.md")
+        jdkVersion.set(8)
+        externalDocumentationLink { url.set(URL("https://developer.android.com/reference/androidx/")) }
+        externalDocumentationLink { url.set(URL("https://developer.android.com/reference/")) }
     }
 }
 
-dokka {
-    outputFormat = 'html'
-    outputDirectory = "$buildDir/dokka"
-
-    // In case of a Gradle multiproject build, you can include subprojects here to get merged documentation
-    // Note however, that you have to have the Kotlin plugin available in the root project and in the subprojects
-    subProjects = ["seeded", "api"] //, "trustedapp", "dicekey", "read", 
-
-    configuration {
-        // Use to include or exclude non public members.
-        includeNonPublic = false
-        samples = ["api/src/sample"]
-
-        // List of files with module and package documentation
-        // https://kotlinlang.org/docs/reference/kotlin-doc.html#module-and-package-documentation
-        includes = ['packages.md', 'extra.md'] // , 'packages.md' 'extra.md']
-
-        // Used for linking to JDK documentation
-        jdkVersion = 8
-
-        // Allows linking to documentation of the project's dependencies (generated with Javadoc or Dokka)
-        // Repeat for multiple links
-        externalDocumentationLink {
-            // Root URL of the generated documentation to link with. The trailing slash is required!
-            url = new URL("https://developer.android.com/reference/androidx/")
-
-            // If package-list file is located in non-standard location
-            // packageListUrl = new URL("file:///home/user/localdocs/package-list")
-        }
-        externalDocumentationLink {
-            url = new URL("https://developer.android.com/reference/")
-        }
+tasks.register("dokkaMarkdown", DokkaTask) {
+    outputDirectory.set(file("docs"))
+    dokkaSourceSets.configureEach {
+        includeNonPublic.set(false)
+        samples.from("api/src/sample")
+        includes.from("packages.md", "extra.md")
+        jdkVersion.set(8)
+        externalDocumentationLink { url.set(URL("https://developer.android.com/reference/androidx/")) }
+        externalDocumentationLink { url.set(URL("https://developer.android.com/reference/")) }
     }
 }
 
-task dokkaMarkdown(type: DokkaTask) {
-    outputFormat = 'gfm'
-    outputDirectory = "docs"
-    subProjects = ["seeded", "api"] //, "trustedapp", "dicekey", "read", 
-
-    configuration {
-        samples = ["api/src/sample"]
-        includeNonPublic = false
-        includes = ['packages.md', 'extra.md']
-        jdkVersion = 8
-        externalDocumentationLink {
-            url = new URL("https://developer.android.com/reference/androidx/")
-        }
-        externalDocumentationLink {
-            url = new URL("https://developer.android.com/reference/")
-        }
-    }
+tasks.register("dokkaHtmlAllModules", DokkaMultiModuleTask) {
+    outputDirectory.set(buildDir.resolve("dokka-all"))
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register("dokkaMarkdownAllModules", DokkaMultiModuleTask) {
+    outputDirectory.set(buildDir.resolve("docs-all"))
+}
+tasks.register("clean", Delete) {
+    delete(rootProject.buildDir)
 }
