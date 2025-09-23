@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{sequence != null}"
+                app:isVisible="@{sequence != null}"
                 android:text="@{`sequence: ` + sequence}" />
 
             <TextView
@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{centerLetterAndDigit != null}"
+                app:isVisible="@{centerLetterAndDigit != null}"
                 android:text="@{`centerLetterAndDigit: ` + centerLetterAndDigit}" />
 
             <TextView
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{exception != null}"
+                app:isVisible="@{exception != null}"
                 android:text="@{`exception: ` + exception}" />
 
             <TextView
@@ -117,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{message != null}"
+                app:isVisible="@{message != null}"
                 android:text="@{`message: ` + message}" />
 
             <TextView
@@ -125,7 +125,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{passwordJson != null}"
+                app:isVisible="@{passwordJson != null}"
                 android:text="@{`passwordJson: ` + passwordJson}" />
 
             <TextView
@@ -133,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{secretJson != null}"
+                app:isVisible="@{secretJson != null}"
                 android:text="@{`secretJson: ` + secretJson}" />
 
             <TextView
@@ -141,7 +141,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{sealingKeyJson != null}"
+                app:isVisible="@{sealingKeyJson != null}"
                 android:text="@{`sealingKeyJson: ` + sealingKeyJson}" />
 
             <TextView
@@ -149,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{unsealingKeyJson != null}"
+                app:isVisible="@{unsealingKeyJson != null}"
                 android:text="@{`unsealingKeyJson: ` + unsealingKeyJson}" />
 
             <TextView
@@ -157,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{symmetricKeyJson != null}"
+                app:isVisible="@{symmetricKeyJson != null}"
                 android:text="@{`symmetricKeyJson: ` + symmetricKeyJson}" />
 
             <TextView
@@ -165,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{packagedSealedMessageJson != null}"
+                app:isVisible="@{packagedSealedMessageJson != null}"
                 android:text="@{`packagedSealedMessageJson: ` + packagedSealedMessageJson}" />
 
             <TextView
@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 android:layout_marginTop="16dp"
-                isVisible="@{base64urlDecode != null}"
+                app:isVisible="@{base64urlDecode != null}"
                 android:text="@{`base64urlDecode: ` + base64urlDecode}" />
 
 

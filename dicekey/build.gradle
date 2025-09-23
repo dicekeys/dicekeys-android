@@ -1,35 +1,33 @@
 plugins {
     id 'com.android.library'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
-    id 'kotlinx-serialization'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.serialization'
     id 'org.jetbrains.dokka'
+    id 'kotlin-kapt'
 }
 
 android {
-    compileSdk 35
+    compileSdkVersion 36
 
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 35
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
 
         ndk {
-            abiFilters  = ["arm64-v8a", "armeabi-v7a"]
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
         }
+    }
 
-        buildTypes {
-            release {
-                minifyEnabled false
-                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            }
-            debug {
-                debuggable true
-                initWith debug
-                jniDebuggable true
-            }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+            jniDebuggable true
         }
     }
 
@@ -37,30 +35,27 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain 17
+    }
+    buildFeatures {
+        viewBinding true
     }
 
-    viewBinding.enabled = true
     namespace 'org.dicekeys'
     buildToolsVersion buildToolsVersion
 }
 
 dependencies {
-    /**  --- DiceKeys --------------------------------------------------------------------------- */
     implementation "com.github.dicekeys:seeded-crypto-android:$seeded_crypto"
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Android  --------------------------------------------------------------------------- */
     implementation "androidx.core:core-ktx:$core_ktx_version"
-    /** ----------------------------------------------------------------------------------------- */
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+
+
 }
