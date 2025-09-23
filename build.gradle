@@ -16,10 +16,15 @@ ext {
     seeded_crypto = "0.0.2"
     read_dicekey = "0.0.5"
     hilt_version = "2.57"
+    appcompat_version = "1.7.1"
+    material_version = "1.13.0"
+    constraintlayout_version = "2.2.1"
+    navigation_version = "2.9.4"
 }
 
 
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 
 tasks.register("dokkaHtmlAll", DokkaTask) {
     outputDirectory.set(buildDir.resolve("dokka"))
@@ -45,6 +50,13 @@ tasks.register("dokkaMarkdown", DokkaTask) {
     }
 }
 
+tasks.register("dokkaHtmlAllModules", DokkaMultiModuleTask) {
+    outputDirectory.set(buildDir.resolve("dokka-all"))
+}
+
+tasks.register("dokkaMarkdownAllModules", DokkaMultiModuleTask) {
+    outputDirectory.set(buildDir.resolve("docs-all"))
+}
 tasks.register("clean", Delete) {
     delete(rootProject.buildDir)
 }
