@@ -87,6 +87,7 @@ class DiceKeyView @JvmOverloads constructor(
                     drawable = DieFace(
                             face = computedDiceKeyToRender.faces[it],
                             dieSize = faceSize,
+                            context = context,
                             penColor = diePenPaint.color,
                             faceSurfaceColor = faceSurfacePaint.color,
                             highlightSurfaceColor = highlighterPaint.color

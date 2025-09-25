@@ -65,7 +65,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), SharedPreferences.OnShar
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         findPreference<Preference>("version")?.summary = BuildConfig.VERSION_NAME
-        findPreference<Preference>("build")?.summary = BuildConfig.VERSION_CODE.toString(10)
+        findPreference<Preference>("build")?.summary =  BuildConfig.VERSION_CODE.toString(10)
 
         findPreference<Preference>("backup")?.setOnPreferenceClickListener {
             val date = DateFormat.format("yyyy-MM-dd_HH:mm", Date())

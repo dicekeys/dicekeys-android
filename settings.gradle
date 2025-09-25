@@ -1,5 +1,23 @@
-include ':app'
-include ':dicekey'
-include ':api'
-include ':demo'
-rootProject.name='DiceKeys'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+
+rootProject.name = "DiceKeys"
+
+include(":app")
+include(":api")
+include(":dicekey")
+include(":demo")
